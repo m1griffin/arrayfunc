@@ -9,6 +9,7 @@ ArrayFunc
 :Version: 0.9.3 for 2015-05-12
 :Copyright: 2014 - 2015
 :License: This document may be distributed under the Apache License V2.0.
+:Language: Python 3.x
 
 
 .. contents:: Table of Contents
