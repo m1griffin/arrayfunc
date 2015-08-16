@@ -23,9 +23,6 @@
 //
 //------------------------------------------------------------------------------
 
-/*--------------------------------------------------------------------------- */
-
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 // Calculate factorials.
@@ -38,10 +35,8 @@ signed int factorial_signed_int(signed int x, char *errflag);
 unsigned int factorial_unsigned_int(unsigned int x, char *errflag);
 signed long factorial_signed_long(signed long x, char *errflag);
 unsigned long factorial_unsigned_long(unsigned long x, char *errflag);
-#ifdef AF_HAVE_LONG_LONG
 signed long long factorial_signed_long_long(signed long long x, char *errflag);
 unsigned long long factorial_unsigned_long_long(unsigned long long x, char *errflag);
-#endif
 
 /*--------------------------------------------------------------------------- */
 // Calculate x raised to the power of y.
@@ -54,10 +49,8 @@ signed int arith_pow_signed_int(signed int x, signed int y, char *errflag);
 unsigned int arith_pow_unsigned_int(unsigned int x, unsigned int y, char *errflag);
 signed long arith_pow_signed_long(signed long x, signed long y, char *errflag);
 unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *errflag);
-#ifdef AF_HAVE_LONG_LONG
 signed long long arith_pow_signed_long_long(signed long long x, signed long long y, char *errflag);
 unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned long long y, char *errflag);
-#endif
 
 /*--------------------------------------------------------------------------- */
 

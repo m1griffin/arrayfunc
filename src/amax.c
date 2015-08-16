@@ -35,7 +35,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -45,9 +44,7 @@ static char *kwlist[] = {"data", "maxlen", NULL};
 
 
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -68,9 +65,7 @@ signed char max_signed_char(Py_ssize_t arraylen, signed char *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -91,9 +86,7 @@ unsigned char max_unsigned_char(Py_ssize_t arraylen, unsigned char *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -114,9 +107,7 @@ signed short max_signed_short(Py_ssize_t arraylen, signed short *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -137,9 +128,7 @@ unsigned short max_unsigned_short(Py_ssize_t arraylen, unsigned short *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -160,9 +149,7 @@ signed int max_signed_int(Py_ssize_t arraylen, signed int *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -183,9 +170,7 @@ unsigned int max_unsigned_int(Py_ssize_t arraylen, unsigned int *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -206,9 +191,7 @@ signed long max_signed_long(Py_ssize_t arraylen, signed long *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -229,9 +212,7 @@ unsigned long max_unsigned_long(Py_ssize_t arraylen, unsigned long *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -251,10 +232,8 @@ signed long long max_signed_long_long(Py_ssize_t arraylen, signed long long *dat
 
 	return maxfound;
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -274,10 +253,8 @@ unsigned long long max_unsigned_long_long(Py_ssize_t arraylen, unsigned long lon
 
 	return maxfound;
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -298,9 +275,7 @@ float max_float(Py_ssize_t arraylen, float *data) {
 	return maxfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -452,7 +427,6 @@ static PyObject *py_amax(PyObject *self, PyObject *args, PyObject *keywds) {
 			PyBuffer_Release(&datapy);
 			return PyLong_FromUnsignedLong(resultfound.L);
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultfound.q = max_signed_long_long(arraylength, data.q);
@@ -465,7 +439,6 @@ static PyObject *py_amax(PyObject *self, PyObject *args, PyObject *keywds) {
 			PyBuffer_Release(&datapy);
 			return PyLong_FromUnsignedLongLong(resultfound.Q);
 		}
-#endif
 		// float
 		case 'f' : {
 			resultfound.f = max_float(arraylength, data.f);

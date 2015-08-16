@@ -30,7 +30,6 @@
 #include <limits.h>
 #include <float.h>
 
-#include "arrayplatform.h"
 #include "arrayfunc.h"
 
 
@@ -80,7 +79,6 @@ PyMODINIT_FUNC PyInit_arrayguardbands(void) {
 	if (PyModule_AddObject(m, "UINT_MAX_GUARD_F", PyLong_FromUnsignedLong(UINT_MAX_GUARD_F)) < 0) { goto iserror; }
 
 
-#ifdef AF_HAVE_LONG_LONG
 	if (PyModule_AddObject(m, "LLONG_MAX_GUARD_F", PyLong_FromLongLong(LLONG_MAX_GUARD_F)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "LLONG_MIN_GUARD_F", PyLong_FromLongLong(LLONG_MIN_GUARD_F)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "ULLONG_MAX_GUARD_F", PyLong_FromUnsignedLongLong(ULLONG_MAX_GUARD_F)) < 0) { goto iserror; }
@@ -88,7 +86,6 @@ PyMODINIT_FUNC PyInit_arrayguardbands(void) {
 	if (PyModule_AddObject(m, "LLONG_MAX_GUARD_D", PyLong_FromLongLong(LLONG_MAX_GUARD_D)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "LLONG_MIN_GUARD_D", PyLong_FromLongLong(LLONG_MIN_GUARD_D)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "ULLONG_MAX_GUARD_D", PyLong_FromUnsignedLongLong(ULLONG_MAX_GUARD_D)) < 0) { goto iserror; }
-#endif
 
 
 	// This is the normal exit point.

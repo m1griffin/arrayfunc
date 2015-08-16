@@ -44,9 +44,7 @@ static char *kwlist[] = {"data", "maxlen", NULL};
 
 
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -67,9 +65,7 @@ signed char min_signed_char(Py_ssize_t arraylen, signed char *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -90,9 +86,7 @@ unsigned char min_unsigned_char(Py_ssize_t arraylen, unsigned char *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -113,9 +107,7 @@ signed short min_signed_short(Py_ssize_t arraylen, signed short *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -136,9 +128,7 @@ unsigned short min_unsigned_short(Py_ssize_t arraylen, unsigned short *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -159,9 +149,7 @@ signed int min_signed_int(Py_ssize_t arraylen, signed int *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -182,9 +170,7 @@ unsigned int min_unsigned_int(Py_ssize_t arraylen, unsigned int *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -205,9 +191,7 @@ signed long min_signed_long(Py_ssize_t arraylen, signed long *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -228,9 +212,7 @@ unsigned long min_unsigned_long(Py_ssize_t arraylen, unsigned long *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -250,10 +232,8 @@ signed long long min_signed_long_long(Py_ssize_t arraylen, signed long long *dat
 
 	return minfound;
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -273,10 +253,8 @@ unsigned long long min_unsigned_long_long(Py_ssize_t arraylen, unsigned long lon
 
 	return minfound;
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -297,9 +275,7 @@ float min_float(Py_ssize_t arraylen, float *data) {
 	return minfound;
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -319,7 +295,6 @@ double min_double(Py_ssize_t arraylen, double *data) {
 
 	return minfound;
 }
-
 
 /*--------------------------------------------------------------------------- */
 
@@ -450,7 +425,6 @@ static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 			PyBuffer_Release(&datapy);
 			return PyLong_FromUnsignedLong(resultfound.L);
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultfound.q = min_signed_long_long(arraylength, data.q);
@@ -463,7 +437,6 @@ static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 			PyBuffer_Release(&datapy);
 			return PyLong_FromUnsignedLongLong(resultfound.Q);
 		}
-#endif
 		// float
 		case 'f' : {
 			resultfound.f = min_float(arraylength, data.f);

@@ -30,7 +30,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -91,8 +90,6 @@ unsigned long fact_usl_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 36
 
 #endif // End for long integer.
 
-// If platform supports long long.
-#ifdef AF_HAVE_LONG_LONG
 #define MAX_SLL_FACT 20
 signed long long fact_sll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 
 				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
@@ -103,7 +100,6 @@ unsigned long long fact_usll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 403
 				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
 				20922789888000, 355687428096000, 6402373705728000, 121645100408832000,
 				2432902008176640000};
-#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -255,8 +251,6 @@ unsigned long factorial_unsigned_long(unsigned long x, char *errflag) {
 
 }
 
-// Not all platforms support long long.
-#ifdef AF_HAVE_LONG_LONG
 // Return the factorial of x.
 signed long long factorial_signed_long_long(signed long long x, char *errflag) {
 	*errflag = 0;
@@ -292,7 +286,6 @@ unsigned long long factorial_unsigned_long_long(unsigned long long x, char *errf
 	return fact_usll_data[x];
 
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -537,8 +530,6 @@ unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *er
 }
 
 
-// Not all platforms support long long.
-#ifdef AF_HAVE_LONG_LONG
 // Return x raised to the power of y.
 signed long long arith_pow_signed_long_long(signed long long x, signed long long y, char *errflag) {
 	signed long long i, z, ovtmp1, ovtmp2;
@@ -595,7 +586,6 @@ unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned l
 	}
 	return z;
 }
-#endif
 
 
 /*--------------------------------------------------------------------------- */

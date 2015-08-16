@@ -34,7 +34,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -45,7 +44,6 @@ static char *kwlist[] = {"data", "disovfl", "maxlen", NULL};
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -81,10 +79,8 @@ signed long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int 
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -116,10 +112,8 @@ unsigned long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signe
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -155,10 +149,8 @@ signed long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed in
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -190,10 +182,8 @@ unsigned long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, sig
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -229,10 +219,8 @@ signed long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *e
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -264,10 +252,8 @@ unsigned long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, signed 
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -303,10 +289,8 @@ signed long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int 
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -338,10 +322,8 @@ unsigned long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, signe
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -377,10 +359,8 @@ signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *da
 
 	return partialsum;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -412,10 +392,8 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 
 	return partialsum;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -447,10 +425,8 @@ float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed i
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -482,7 +458,6 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 
 	return partialsum;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -621,7 +596,6 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 			sumreturn = PyLong_FromUnsignedLong(resultfound.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultfound.q = asum_signed_long_long(arraylength, data.q, &errflag, disableovfl);
@@ -634,7 +608,6 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 			sumreturn = PyLong_FromUnsignedLongLong(resultfound.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultfound.f = asum_float(arraylength, data.f, &errflag, disableovfl);

@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -52,8 +51,8 @@ struct args_param {
 
 
 
-/*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -92,9 +91,7 @@ void cycle_signed_char(Py_ssize_t arraylen, signed char *data, signed char start
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -133,9 +130,7 @@ void cycle_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -174,9 +169,7 @@ void cycle_signed_short(Py_ssize_t arraylen, signed short *data, signed short st
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -215,9 +208,7 @@ void cycle_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned sh
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -256,9 +247,7 @@ void cycle_signed_int(Py_ssize_t arraylen, signed int *data, signed int startval
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -297,9 +286,7 @@ void cycle_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int st
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -338,9 +325,7 @@ void cycle_signed_long(Py_ssize_t arraylen, signed long *data, signed long start
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -379,9 +364,7 @@ void cycle_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -419,10 +402,8 @@ void cycle_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed 
 	}
 
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -460,10 +441,8 @@ void cycle_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, uns
 	}
 
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -502,9 +481,7 @@ void cycle_float(Py_ssize_t arraylen, float *data, float startvalue, float stopv
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    startvalue = The value to start filling the data array.
@@ -542,7 +519,6 @@ void cycle_double(Py_ssize_t arraylen, double *data, double startvalue, double s
 	}
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -673,10 +649,8 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 		param3py.I = 1;
 		param3py.l = 1;
 		param3py.L = 1;
-#ifdef AF_HAVE_LONG_LONG
 		param3py.q = 1;
 		param3py.Q = 1;
-#endif
 		param3py.f = 1.0;
 		param3py.d = 1.0;
 	}
@@ -807,7 +781,6 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 			}
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -826,7 +799,6 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 			}
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -926,7 +898,6 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 			cycle_unsigned_long(arraylength, data.L, param1py.L, param2py.L, param3py.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			cycle_signed_long_long(arraylength, data.q, param1py.q, param2py.q, param3py.q);
@@ -937,7 +908,6 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 			cycle_unsigned_long_long(arraylength, data.Q, param1py.Q, param2py.Q, param3py.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			cycle_float(arraylength, data.f, param1py.f, param2py.f, param3py.f);

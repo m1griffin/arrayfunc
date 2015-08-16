@@ -1,8 +1,8 @@
 
 REM Copy the build and source files into the build directory.
-COPY ../conf/*.py .
-COPY ../src/*.h .
-COPY ../src/*.c .
+COPY ..\conf\*.py .
+COPY ..\src\*.h .
+COPY ..\src\*.c .
 
 
 SET failcount=0
@@ -15,7 +15,7 @@ GOTO:EOF
 
 :DONE
 # Copy the object files into the arrayfunc directory.
-COPY *.pyd ../arrayfunc
+COPY *.pyd ..\arrayfunc
 ECHO Done - OK
 EXIT /B
 

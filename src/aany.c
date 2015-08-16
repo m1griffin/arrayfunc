@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -52,8 +51,8 @@ static char *kwlist[] = {"op", "data", "param", "maxlen", NULL};
 
 
 
-/*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -63,7 +62,7 @@ static char *kwlist[] = {"op", "data", "param", "maxlen", NULL};
 */
 signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -125,11 +124,9 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -139,7 +136,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 */
 signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -201,11 +198,9 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -215,7 +210,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 */
 signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -277,11 +272,9 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -291,7 +284,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 */
 signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -353,11 +346,9 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -367,7 +358,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 */
 signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -429,11 +420,9 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -443,7 +432,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 */
 signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -505,11 +494,9 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -519,7 +506,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 */
 signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -581,11 +568,9 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -595,7 +580,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 */
 signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -657,11 +642,9 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -671,7 +654,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 */
 signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -733,11 +716,9 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -747,7 +728,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 */
 signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -809,11 +790,9 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -823,7 +802,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 */
 signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -885,11 +864,9 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -899,7 +876,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 */
 signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, double param1) { 
 
-	// array indeindex counter. 
+	// array index counter. 
 	Py_ssize_t index; 
 
 	switch(opcode) {
@@ -961,7 +938,6 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
@@ -1197,7 +1173,6 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			}
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -1218,7 +1193,6 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			}
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -1318,7 +1292,6 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			resultcode = aany_unsigned_long(opcode, arraylength, data.L, param1py.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = aany_signed_long_long(opcode, arraylength, data.q, param1py.q);
@@ -1329,7 +1302,6 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			resultcode = aany_unsigned_long_long(opcode, arraylength, data.Q, param1py.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = aany_float(opcode, arraylength, data.f, param1py.f);

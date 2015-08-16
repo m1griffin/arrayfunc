@@ -32,7 +32,6 @@ import codegen_common
 
 func_template = '''
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -695,7 +694,6 @@ functionclosetemplate = '''
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-%(array64end)s
 /*--------------------------------------------------------------------------- */
 
 
@@ -840,12 +838,11 @@ with open('amap_code.txt', 'w') as f:
 		# Create the function declaration for an array type.
 		f.write(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
 				'arrayvartype' : codegen_common.arraytypes[funtypes], 
-				'errflag' : errflagcode, 'ovtmp' : ovtmp,
-				'array64start' : codegen_common.array64start[funtypes]})
+				'errflag' : errflagcode, 'ovtmp' : ovtmp})
 		# Create the C code for the function.
 		f.write(CreateFunction(csvdata, funtypes))
 		# Close off the end of the function.
-		f.write(functionclosetemplate % {'array64end' : codegen_common.array64end[funtypes]})
+		f.write(functionclosetemplate)
 
 
 ############################################################

@@ -31,7 +31,6 @@ import codegen_common
 
 # This is the template for each compress function.
 template = """/*--------------------------------------------------------------------------- */
-%(array64start)s
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -72,7 +71,6 @@ Py_ssize_t compress_%(funcmodifier)s(Py_ssize_t datalen, %(arraytype)s *data,
 	}
 	return outindex;
 }
-%(array64end)s
 """
 
 endcomment = """/*--------------------------------------------------------------------------- */
@@ -87,9 +85,7 @@ with open('compress_code.txt', 'w') as f:
 	for funtypes in codegen_common.arraycodes:
 		arraytype = codegen_common.arraytypes[funtypes]
 		f.write(template % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_'),
-			'array64start' : codegen_common.array64start[funtypes],
-			'array64end' : codegen_common.array64end[funtypes]})
+			'funcmodifier' : arraytype.replace(' ', '_')})
 
 	f.write(endcomment)
 

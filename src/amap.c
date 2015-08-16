@@ -199,10 +199,8 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 		param1py.I = 1;
 		param1py.l = 1;
 		param1py.L = 1;
-#ifdef AF_HAVE_LONG_LONG
 		param1py.q = 1;
 		param1py.Q = 1;
-#endif
 		param1py.f = 1.0;
 		param1py.d = 1.0;
 
@@ -342,7 +340,6 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 			}
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -361,7 +358,6 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 			}
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -480,7 +476,6 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = map_unsigned_long(opcode, arraylength, data.L, dataout.L, param1py.L, paramcount, disableovfl);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = map_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q, paramcount, disableovfl);
@@ -491,7 +486,6 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = map_unsigned_long_long(opcode, arraylength, data.Q, dataout.Q, param1py.Q, paramcount, disableovfl);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = map_float(opcode, arraylength, data.f, dataout.f, (float) param1py.f, paramcount, disableovfl);

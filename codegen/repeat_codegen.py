@@ -31,7 +31,6 @@ import codegen_common
 
 template = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -45,7 +44,6 @@ void repeat_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arrayty
 		data[x] = fillvalue;
 	}
 }
-%(array64end)s
 """
 
 
@@ -56,7 +54,5 @@ with open('repeat_code.txt', 'w') as f:
 	for funtypes in codegen_common.arraycodes:
 		arraytype = codegen_common.arraytypes[funtypes]
 		f.write(template % {'arraytype' : arraytype, 
-		'funcmodifier' : arraytype.replace(' ', '_'),
-			'array64start' : codegen_common.array64start[funtypes],
-			'array64end' : codegen_common.array64end[funtypes]})
+		'funcmodifier' : arraytype.replace(' ', '_')})
 

@@ -31,7 +31,6 @@ import codegen_common
 
 template = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The maximum value found.
@@ -51,7 +50,6 @@ template = """
 
 	return maxfound;
 }
-%(array64end)s
 """
 
 
@@ -63,8 +61,6 @@ with open('amax_code.txt', 'w') as f:
 		arraytype = codegen_common.arraytypes[funtypes]
 		datavals = {'arraytype' : arraytype, 
 			'funcmodifier' : arraytype.replace(' ', '_'),
-			'minval' : codegen_common.minvalue[funtypes],
-			'array64start' : codegen_common.array64start[funtypes],
-			'array64end' : codegen_common.array64end[funtypes]}
+			'minval' : codegen_common.minvalue[funtypes]}
 		f.write(template % datavals)
 

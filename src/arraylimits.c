@@ -30,7 +30,6 @@
 #include <limits.h>
 #include <float.h>
 
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -98,7 +97,6 @@ PyMODINIT_FUNC PyInit_arraylimits(void) {
 	if (PyModule_AddObject(m, "L_min", PyLong_FromUnsignedLong(0)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "L_max", PyLong_FromUnsignedLong(ULONG_MAX)) < 0) { goto iserror; }
 
-#ifdef AF_HAVE_LONG_LONG
 	// q - signed long long
 	if (PyModule_AddObject(m, "q_min", PyLong_FromLongLong(LLONG_MIN)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "q_max", PyLong_FromLongLong(LLONG_MAX)) < 0) { goto iserror; }
@@ -106,7 +104,6 @@ PyMODINIT_FUNC PyInit_arraylimits(void) {
 	// Q - unsigned long long
 	if (PyModule_AddObject(m, "Q_min", PyLong_FromUnsignedLongLong(0)) < 0) { goto iserror; }
 	if (PyModule_AddObject(m, "Q_max", PyLong_FromUnsignedLongLong(ULLONG_MAX)) < 0) { goto iserror; }
-#endif
 
 	// f - float
 	if (PyModule_AddObject(m, "f_min", PyFloat_FromDouble(-FLT_MAX)) < 0) { goto iserror; }

@@ -32,7 +32,6 @@ import codegen_common
 
 template = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -62,7 +61,6 @@ void count_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytyp
 	}
 
 }
-%(array64end)s
 """
 
 
@@ -73,7 +71,5 @@ with open('count_code.txt', 'w') as f:
 	for funtypes in codegen_common.arraycodes:
 		arraytype = codegen_common.arraytypes[funtypes]
 		f.write(template % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_'),
-			'array64start' : codegen_common.array64start[funtypes],
-			'array64end' : codegen_common.array64end[funtypes]})
+			'funcmodifier' : arraytype.replace(' ', '_')})
 

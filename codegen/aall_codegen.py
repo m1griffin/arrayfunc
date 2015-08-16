@@ -32,7 +32,6 @@ import codegen_common
 
 template_start = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -52,7 +51,6 @@ template_end = """	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-%(array64end)s
 /*--------------------------------------------------------------------------- */
 """
 
@@ -81,13 +79,12 @@ with open('aall_code.txt', 'w') as f:
 	for funtypes in codegen_common.arraycodes:
 		arraytype = codegen_common.arraytypes[funtypes]
 		f.write(template_start % {'arraytype' : arraytype, 
-				'funcmodifier' : arraytype.replace(' ', '_'),
-				'array64start' : codegen_common.array64start[funtypes]})
+				'funcmodifier' : arraytype.replace(' ', '_')})
 
 		for ops in compops:
 			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 			testop.update(ops)
 			f.write(op_template % testop)
 
-		f.write(template_end % {'array64end' : codegen_common.array64end[funtypes]})
+		f.write(template_end)
 

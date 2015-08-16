@@ -29,8 +29,6 @@
 
 #include <math.h>
 
-#include "arrayplatform.h"
-
 /*--------------------------------------------------------------------------- */
 
 // These are the op codes which define operator and functions.
@@ -131,10 +129,8 @@ union dataarrays {
 	unsigned int *I;
 	signed long *l;
 	unsigned long *L;
-#ifdef AF_HAVE_LONG_LONG
 	signed long long *q;
 	unsigned long long *Q;
-#endif
 	float *f;
 	double *d;
 };
@@ -150,10 +146,8 @@ struct paramsvals {
 	unsigned int I;
 	signed long l;
 	unsigned long L;
-#ifdef AF_HAVE_LONG_LONG
 	signed long long q;
 	unsigned long long Q;
-#endif
 	float f;
 	double d;
 };
@@ -231,7 +225,6 @@ Long long does not exist on some platforms.
 
 
 // Long long does not exist on all platforms.
-#ifdef AF_HAVE_LONG_LONG
 
 // Single precision (float) to long long integers. A single has 24 bits of precision.
 #define LLONG_MAX_GUARD_F (LLONG_MAX - 0xffffffffff)
@@ -242,9 +235,6 @@ Long long does not exist on some platforms.
 #define LLONG_MAX_GUARD_D (LLONG_MAX - 0xfff)
 #define LLONG_MIN_GUARD_D (LLONG_MIN + 0xfff)
 #define ULLONG_MAX_GUARD_D (ULLONG_MAX - 0x1fff)
-
-#endif
-
 
 
 /*--------------------------------------------------------------------------- */

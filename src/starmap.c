@@ -33,7 +33,6 @@
 #include "starmap_common.h"
 #include "arrayerrs.h"
 #include "arrayfunc.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -266,7 +265,6 @@ static PyObject *py_starmap(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = starmap_unsigned_long(opcode, arraylength, data.L, data2.L, dataout.L, disableovfl);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = starmap_signed_long_long(opcode, arraylength, data.q, data2.q, dataout.q, disableovfl);
@@ -277,7 +275,6 @@ static PyObject *py_starmap(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = starmap_unsigned_long_long(opcode, arraylength, data.Q, data2.Q, dataout.Q, disableovfl);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = starmap_float(opcode, arraylength, data.f, data2.f, dataout.f, disableovfl);

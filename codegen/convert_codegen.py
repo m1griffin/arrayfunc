@@ -50,7 +50,6 @@ convertsafe = {
 
 template_start = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -71,13 +70,12 @@ template_end = """	}
 	return ARR_ERR_INVALIDOP;
 
 }
-%(array64end)s
 /*--------------------------------------------------------------------------- */
 """
 
 # ==============================================================================
 # This copies data for cases where the input and output loops are different types and the input is signed data.
-copyloop_signed = """%(array64start)s
+copyloop_signed = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -88,12 +86,11 @@ copyloop_signed = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 
 # This copies data for cases where the input is float or double and the output is int.
-copyloop_floatint = """%(array64start)s
+copyloop_floatint = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -104,7 +101,6 @@ copyloop_floatint = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 
@@ -127,7 +123,7 @@ copyloop_doubletofloat = """
 
 # This copies data for cases where float or double must be converted to integer
 # arrays where the integer precision is greater than the floating point precision.
-copyloop_float = """%(array64start)s
+copyloop_float = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 // MS VC 2010 seems to have bugs when converting large floating point values 
@@ -144,12 +140,11 @@ copyloop_float = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 
 # This copies data for cases where the input and output loops are different types and the input is unsigned data.
-copyloop_unsigned = """%(array64start)s
+copyloop_unsigned = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -160,12 +155,11 @@ copyloop_unsigned = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 
 # This copies data for cases where the output is an unsigned integer and the input is signed data.
-copyloop_signedint_to_unsigned = """%(array64start)s
+copyloop_signedint_to_unsigned = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -176,12 +170,11 @@ copyloop_signedint_to_unsigned = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 
 # This copies data for cases where the input and output loops are the same type.
-copyloopsame = """%(array64start)s
+copyloopsame = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -189,11 +182,10 @@ copyloopsame = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 # This copies data for cases where the input range is smaller than the output size.
-copyloopnocheck = """%(array64start)s
+copyloopnocheck = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
 			for(x = 0; x < arraylen; x++) {
@@ -201,7 +193,6 @@ copyloopnocheck = """%(array64start)s
 			}
 			return 0;
 		}
-%(array64end)s
 """
 
 # ==============================================================================
@@ -214,8 +205,7 @@ with open('convert_code.txt', 'w') as f:
 
 
 		f.write(template_start % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_'),
-			'array64start' : codegen_common.array64start[funtypes]})
+			'funcmodifier' : arraytype.replace(' ', '_')})
 
 		# Create the individual cases.
 		for arraycode in codegen_common.arraycodes:
@@ -265,10 +255,8 @@ with open('convert_code.txt', 'w') as f:
 			testop = {'arraytype' : codegen_common.arraytypes[arraycode],
 				'arraycode' : arraycode,
 				'maxvalue' : maxvalue,
-				'minvalue' : minvalue,
-				'array64start' : codegen_common.array64start[arraycode],
-				'array64end' : codegen_common.array64end[arraycode]}
+				'minvalue' : minvalue}
 
 			f.write(codetype % testop)
 
-		f.write(template_end % {'array64end' : codegen_common.array64end[funtypes]})
+		f.write(template_end)

@@ -31,7 +31,6 @@ import codegen_common
 
 template = """
 /*--------------------------------------------------------------------------- */
-%(array64start)s
 /* arraylen = The length of the data arrays.
    data = The input data array.
 	Returns: The minimum value found.
@@ -51,7 +50,6 @@ template = """
 
 	return minfound;
 }
-%(array64end)s
 """
 
 
@@ -63,8 +61,6 @@ with open('amin_code.txt', 'w') as f:
 		arraytype = codegen_common.arraytypes[funtypes]
 		datavals = {'arraytype' : arraytype, 
 			'funcmodifier' : arraytype.replace(' ', '_'),
-			'maxval' : codegen_common.maxvalue[funtypes],
-			'array64start' : codegen_common.array64start[funtypes],
-			'array64end' : codegen_common.array64end[funtypes]}
+			'maxval' : codegen_common.maxvalue[funtypes]}
 		f.write(template % datavals)
 

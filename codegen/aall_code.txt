@@ -1,6 +1,5 @@
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -72,11 +71,9 @@ signed int aall_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -148,11 +145,9 @@ signed int aall_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -224,11 +219,9 @@ signed int aall_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -300,11 +293,9 @@ signed int aall_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -376,11 +367,9 @@ signed int aall_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -452,11 +441,9 @@ signed int aall_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -528,11 +515,9 @@ signed int aall_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -604,11 +589,9 @@ signed int aall_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -680,11 +663,9 @@ signed int aall_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -756,11 +737,9 @@ signed int aall_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -832,11 +811,9 @@ signed int aall_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -908,5 +885,4 @@ signed int aall_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */

@@ -39,7 +39,6 @@
 #include "arithcalcs.h"
 #include "arrayerrs.h"
 #include "arrayfunc.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -57,9 +56,7 @@ const float radtodeg_f = (float) (180.0 / M_PI);
 // The auto-generated code goes below.
 
 
-
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -584,13 +581,11 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -945,13 +940,11 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1476,13 +1469,11 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1837,13 +1828,11 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -2368,13 +2357,11 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -2729,13 +2716,11 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -3260,13 +3245,11 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -3621,13 +3604,11 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -4152,13 +4133,11 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -4513,13 +4492,11 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -5571,13 +5548,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -6629,7 +6604,6 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 

@@ -75,7 +75,6 @@ Py_ssize_t calcarraylength(char itemcode, Py_ssize_t bufferlength) {
 		case 'L' : {
 			return bufferlength / sizeof(unsigned long);
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			return bufferlength / sizeof(signed long long);
@@ -84,7 +83,6 @@ Py_ssize_t calcarraylength(char itemcode, Py_ssize_t bufferlength) {
 		case 'Q' : {
 			return bufferlength / sizeof(unsigned long long);
 		}
-#endif
 		// float
 		case 'f' : {
 			return bufferlength / sizeof(float);

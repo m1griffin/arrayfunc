@@ -29,7 +29,6 @@
 #define PY_SSIZE_T_CLEAN
 
 #include "Python.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -41,10 +40,8 @@ signed int starmap_signed_int(signed int opcode, Py_ssize_t arraylen, signed int
 signed int starmap_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int *data2, unsigned int *dataout, unsigned int disableovfl);
 signed int starmap_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long *data2, signed long *dataout, unsigned int disableovfl);
 signed int starmap_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long *data2, unsigned long *dataout, unsigned int disableovfl);
-#ifdef AF_HAVE_LONG_LONG
 signed int starmap_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *data2, signed long long *dataout, unsigned int disableovfl);
 signed int starmap_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long *data2, unsigned long long *dataout, unsigned int disableovfl);
-#endif
 signed int starmap_float(signed int opcode, Py_ssize_t arraylen, float *data, float *data2, float *dataout, unsigned int disableovfl);
 signed int starmap_double(signed int opcode, Py_ssize_t arraylen, double *data, double *data2, double *dataout, unsigned int disableovfl);
 

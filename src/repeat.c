@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -49,10 +48,7 @@ struct args_param {
 
 
 
-
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -67,9 +63,7 @@ void repeat_signed_char(Py_ssize_t arraylen, signed char *data, signed char fill
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -84,9 +78,7 @@ void repeat_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned cha
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -101,9 +93,7 @@ void repeat_signed_short(Py_ssize_t arraylen, signed short *data, signed short f
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -118,9 +108,7 @@ void repeat_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned s
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -135,9 +123,7 @@ void repeat_signed_int(Py_ssize_t arraylen, signed int *data, signed int fillval
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -152,9 +138,7 @@ void repeat_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int f
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -169,9 +153,7 @@ void repeat_signed_long(Py_ssize_t arraylen, signed long *data, signed long fill
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -186,9 +168,7 @@ void repeat_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned lon
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -202,10 +182,8 @@ void repeat_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed
 		data[x] = fillvalue;
 	}
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -219,10 +197,8 @@ void repeat_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, un
 		data[x] = fillvalue;
 	}
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -237,9 +213,7 @@ void repeat_float(Py_ssize_t arraylen, float *data, float fillvalue) {
 	}
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* arraylen = The length of the data arrays.
    data = The input data array.
    fillvalue = The value to fill the data array.
@@ -253,7 +227,6 @@ void repeat_double(Py_ssize_t arraylen, double *data, double fillvalue) {
 		data[x] = fillvalue;
 	}
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -472,7 +445,6 @@ py_repeat(PyObject *self, PyObject *args)
 			}
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -489,7 +461,6 @@ py_repeat(PyObject *self, PyObject *args)
 			}
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -584,7 +555,6 @@ py_repeat(PyObject *self, PyObject *args)
 			repeat_unsigned_long(arraylength, data.L, param1py.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			repeat_signed_long_long(arraylength, data.q, param1py.q);
@@ -595,7 +565,6 @@ py_repeat(PyObject *self, PyObject *args)
 			repeat_unsigned_long_long(arraylength, data.Q, param1py.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			repeat_float(arraylength, data.f, param1py.f);

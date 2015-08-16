@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -53,8 +52,8 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 
 
 
-/*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -137,11 +136,9 @@ Py_ssize_t afilter_signed_char(signed int opcode, Py_ssize_t arraylen, signed ch
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -224,11 +221,9 @@ Py_ssize_t afilter_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigne
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -311,11 +306,9 @@ Py_ssize_t afilter_signed_short(signed int opcode, Py_ssize_t arraylen, signed s
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -398,11 +391,9 @@ Py_ssize_t afilter_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsign
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -485,11 +476,9 @@ Py_ssize_t afilter_signed_int(signed int opcode, Py_ssize_t arraylen, signed int
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -572,11 +561,9 @@ Py_ssize_t afilter_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -659,11 +646,9 @@ Py_ssize_t afilter_signed_long(signed int opcode, Py_ssize_t arraylen, signed lo
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -746,11 +731,9 @@ Py_ssize_t afilter_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigne
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -833,11 +816,9 @@ Py_ssize_t afilter_signed_long_long(signed int opcode, Py_ssize_t arraylen, sign
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -920,11 +901,9 @@ Py_ssize_t afilter_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, un
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1007,11 +986,9 @@ Py_ssize_t afilter_float(signed int opcode, Py_ssize_t arraylen, float *data, fl
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1094,7 +1071,6 @@ Py_ssize_t afilter_double(signed int opcode, Py_ssize_t arraylen, double *data, 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -1350,7 +1326,6 @@ static PyObject *py_afilter(PyObject *self, PyObject *args, PyObject *keywds) {
 			}
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -1369,7 +1344,6 @@ static PyObject *py_afilter(PyObject *self, PyObject *args, PyObject *keywds) {
 			}
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -1485,7 +1459,6 @@ static PyObject *py_afilter(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = afilter_unsigned_long(opcode, arraylength, data.L, dataout.L, param1py.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = afilter_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q);
@@ -1496,7 +1469,6 @@ static PyObject *py_afilter(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = afilter_unsigned_long_long(opcode, arraylength, data.Q, dataout.Q, param1py.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = afilter_float(opcode, arraylength, data.f, dataout.f, param1py.f);

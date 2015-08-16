@@ -49,18 +49,6 @@ arraytypes = {'b' : 'signed char', 'B' : 'unsigned char',
 	'f' : 'float', 'd' : 'double'}
 
 
-# ==============================================================================
-
-
-# This tells us how to handle 64 bit integers.
-array64start = dict(zip(arraycodes, itertools.repeat('')))
-array64end = dict(array64start)
-
-array64start['q'] = '#ifdef AF_HAVE_LONG_LONG'
-array64start['Q'] = '#ifdef AF_HAVE_LONG_LONG'
-array64end['q'] = '#endif'
-array64end['Q'] = '#endif'
-
 
 # ==============================================================================
 

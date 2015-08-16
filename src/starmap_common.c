@@ -36,14 +36,12 @@
 #include "arithcalcs.h"
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -419,13 +417,11 @@ signed int starmap_signed_char(signed int opcode, Py_ssize_t arraylen, signed ch
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -717,13 +713,11 @@ signed int starmap_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigne
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1099,13 +1093,11 @@ signed int starmap_signed_short(signed int opcode, Py_ssize_t arraylen, signed s
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1397,13 +1389,11 @@ signed int starmap_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsign
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1779,13 +1769,11 @@ signed int starmap_signed_int(signed int opcode, Py_ssize_t arraylen, signed int
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -2077,13 +2065,11 @@ signed int starmap_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -2459,13 +2445,11 @@ signed int starmap_signed_long(signed int opcode, Py_ssize_t arraylen, signed lo
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -2757,13 +2741,11 @@ signed int starmap_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigne
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -3139,13 +3121,11 @@ signed int starmap_signed_long_long(signed int opcode, Py_ssize_t arraylen, sign
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -3437,13 +3417,11 @@ signed int starmap_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, un
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -3893,13 +3871,11 @@ signed int starmap_float(signed int opcode, Py_ssize_t arraylen, float *data, fl
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
 
 /*--------------------------------------------------------------------------- */
-
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -4349,6 +4325,6 @@ signed int starmap_double(signed int opcode, Py_ssize_t arraylen, double *data, 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 }
-
 /*--------------------------------------------------------------------------- */
+
 

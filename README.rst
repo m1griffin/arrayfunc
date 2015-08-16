@@ -158,12 +158,11 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 14.04 LTS   64 bit    GCC                         3.4
-Debian 7           32 bit    GCC                         3.2
+Debian 8           32 bit    GCC                         3.4
 FreeBSD 10         64 bit    LLVM                        3.4
 MS Windows 8.1     32 bit    MS Visual Studio C 2010     3.4
 ================= ========  ========================== =========================
 
 Some amap and amapi operations are not supported on MS Windows due to lack of 
-compiler support. Some array types are not supported on 32 bit platforms (this 
-is a limitation of the Python array module). See the documentation for details.
+compiler support. See the documentation for details.
 

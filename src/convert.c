@@ -35,7 +35,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -56,8 +55,8 @@ static char *kwlist[] = {"data", "dataout", "maxlen", NULL};
 
 
 
-/*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -79,7 +78,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -91,7 +89,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-
 		// signed short
 		case 'h': {
 			for(x = 0; x < arraylen; x++) {
@@ -99,7 +96,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-
 
 		// unsigned short
 		case 'H': {
@@ -112,7 +108,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-
 		// signed int
 		case 'i': {
 			for(x = 0; x < arraylen; x++) {
@@ -120,7 +115,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-
 
 		// unsigned int
 		case 'I': {
@@ -133,7 +127,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-
 		// signed long
 		case 'l': {
 			for(x = 0; x < arraylen; x++) {
@@ -141,7 +134,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-
 
 		// unsigned long
 		case 'L': {
@@ -154,7 +146,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -162,8 +153,7 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -174,7 +164,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -184,7 +173,6 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -192,18 +180,15 @@ signed int convert_signed_char(char arraycode, Py_ssize_t arraylen, signed char 
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -228,7 +213,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -236,7 +220,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -246,7 +229,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -254,7 +236,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -264,7 +245,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -272,7 +252,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -282,7 +261,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -291,7 +269,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -299,8 +276,7 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -308,7 +284,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -318,7 +293,6 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -326,18 +300,15 @@ signed int convert_unsigned_char(char arraycode, Py_ssize_t arraylen, unsigned c
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -362,7 +333,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -374,7 +344,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-
 		// signed short
 		case 'h': {
 			for(x = 0; x < arraylen; x++) {
@@ -382,7 +351,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-
 
 		// unsigned short
 		case 'H': {
@@ -395,7 +363,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-
 		// signed int
 		case 'i': {
 			for(x = 0; x < arraylen; x++) {
@@ -403,7 +370,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-
 
 		// unsigned int
 		case 'I': {
@@ -416,7 +382,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-
 		// signed long
 		case 'l': {
 			for(x = 0; x < arraylen; x++) {
@@ -424,7 +389,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-
 
 		// unsigned long
 		case 'L': {
@@ -437,7 +401,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -445,8 +408,7 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -457,7 +419,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -467,7 +428,6 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -475,18 +435,15 @@ signed int convert_signed_short(char arraycode, Py_ssize_t arraylen, signed shor
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -511,7 +468,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -522,7 +478,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -535,7 +490,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -543,7 +497,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -553,7 +506,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -561,7 +513,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -571,7 +522,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -580,7 +530,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -588,8 +537,7 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -597,7 +545,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -607,7 +554,6 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -615,18 +561,15 @@ signed int convert_unsigned_short(char arraycode, Py_ssize_t arraylen, unsigned 
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -651,7 +594,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -662,7 +604,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -675,7 +616,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -687,7 +627,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-
 		// signed int
 		case 'i': {
 			for(x = 0; x < arraylen; x++) {
@@ -695,7 +634,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-
 
 		// unsigned int
 		case 'I': {
@@ -708,7 +646,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-
 		// signed long
 		case 'l': {
 			for(x = 0; x < arraylen; x++) {
@@ -716,7 +653,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-
 
 		// unsigned long
 		case 'L': {
@@ -729,7 +665,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -737,8 +672,7 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -749,7 +683,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -759,7 +692,6 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -767,18 +699,15 @@ signed int convert_signed_int(char arraycode, Py_ssize_t arraylen, signed int *d
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -803,7 +732,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -814,7 +742,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -827,7 +754,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -838,7 +764,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -851,7 +776,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -859,7 +783,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -869,7 +792,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -878,7 +800,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -886,8 +807,7 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -895,7 +815,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -905,7 +824,6 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -913,18 +831,15 @@ signed int convert_unsigned_int(char arraycode, Py_ssize_t arraylen, unsigned in
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -949,7 +864,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -960,7 +874,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -973,7 +886,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -984,7 +896,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -997,7 +908,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1009,7 +919,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-
 		// signed long
 		case 'l': {
 			for(x = 0; x < arraylen; x++) {
@@ -1017,7 +926,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-
 
 		// unsigned long
 		case 'L': {
@@ -1030,7 +938,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1038,8 +945,7 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1050,7 +956,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1060,7 +965,6 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -1068,18 +972,15 @@ signed int convert_signed_long(char arraycode, Py_ssize_t arraylen, signed long 
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1104,7 +1005,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -1115,7 +1015,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -1128,7 +1027,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -1139,7 +1037,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -1152,7 +1049,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1160,7 +1056,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -1170,7 +1065,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -1179,7 +1073,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1187,8 +1080,7 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1196,7 +1088,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1206,7 +1097,6 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -1214,18 +1104,15 @@ signed int convert_unsigned_long(char arraycode, Py_ssize_t arraylen, unsigned l
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1250,7 +1137,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -1261,7 +1147,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -1274,7 +1159,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -1285,7 +1169,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -1298,7 +1181,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1309,7 +1191,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -1322,7 +1203,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -1334,7 +1214,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1342,8 +1221,7 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1354,7 +1232,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1364,7 +1241,6 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -1372,18 +1248,15 @@ signed int convert_signed_long_long(char arraycode, Py_ssize_t arraylen, signed 
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1408,7 +1281,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -1419,7 +1291,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -1432,7 +1303,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -1443,7 +1313,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -1456,7 +1325,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1467,7 +1335,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -1480,7 +1347,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -1492,7 +1358,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1503,8 +1368,7 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1512,7 +1376,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1522,7 +1385,6 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -1530,18 +1392,15 @@ signed int convert_unsigned_long_long(char arraycode, Py_ssize_t arraylen, unsig
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-#endif
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1566,7 +1425,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -1577,7 +1435,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -1590,7 +1447,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -1601,7 +1457,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -1614,7 +1469,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1625,7 +1479,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -1638,7 +1491,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -1650,7 +1502,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1661,8 +1512,7 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 // MS VC 2010 seems to have bugs when converting large floating point values 
@@ -1679,7 +1529,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1689,7 +1538,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			return 0;
 		}
 
-
 		// double
 		case 'd': {
 			for(x = 0; x < arraylen; x++) {
@@ -1697,18 +1545,15 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
 /* arraycode = The type code used by the destination array.
    arraylen = The length of the data arrays.
    data = The input data array.
@@ -1733,7 +1578,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			return 0;
 		}
 
-
 		// unsigned char
 		case 'B': {
 			for(x = 0; x < arraylen; x++) {
@@ -1744,7 +1588,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-
 
 		// signed short
 		case 'h': {
@@ -1757,7 +1600,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			return 0;
 		}
 
-
 		// unsigned short
 		case 'H': {
 			for(x = 0; x < arraylen; x++) {
@@ -1768,7 +1610,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-
 
 		// signed int
 		case 'i': {
@@ -1781,7 +1622,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			return 0;
 		}
 
-
 		// unsigned int
 		case 'I': {
 			for(x = 0; x < arraylen; x++) {
@@ -1792,7 +1632,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-
 
 		// signed long
 		case 'l': {
@@ -1805,7 +1644,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			return 0;
 		}
 
-
 		// unsigned long
 		case 'L': {
 			for(x = 0; x < arraylen; x++) {
@@ -1817,7 +1655,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			return 0;
 		}
 
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q': {
 			for(x = 0; x < arraylen; x++) {
@@ -1828,8 +1665,7 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-#endif
-#ifdef AF_HAVE_LONG_LONG
+
 		// unsigned long long
 		case 'Q': {
 // MS VC 2010 seems to have bugs when converting large floating point values 
@@ -1846,7 +1682,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-#endif
 
 		// float
 		case 'f': {
@@ -1867,14 +1702,12 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 			}
 			return 0;
 		}
-
 	}
 
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 
@@ -2028,7 +1861,6 @@ static PyObject *py_convert(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = convert_unsigned_long(arraycode, arraylength, data.L, dataout);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = convert_signed_long_long(arraycode, arraylength, data.q, dataout);
@@ -2039,7 +1871,6 @@ static PyObject *py_convert(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = convert_unsigned_long_long(arraycode, arraylength, data.Q, dataout);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = convert_float(arraycode, arraylength, data.f, dataout);

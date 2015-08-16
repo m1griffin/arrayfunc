@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+
+# This is not working yet!
+
 from distutils.core import setup, Extension
 
 extensions = [

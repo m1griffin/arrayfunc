@@ -52,7 +52,6 @@ zerotype = {'b' : '0', 'B' : '0',
 
 # Template for the asum functions with overflow.
 template_basic = """/*--------------------------------------------------------------------------- */
-%(array64start)s
 /* arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
@@ -131,7 +130,6 @@ func_close = """		}
 
 	return partialsum;
 }
-%(array64end)s
 /*--------------------------------------------------------------------------- */
 """
 
@@ -155,8 +153,7 @@ with open('asum_code.txt', 'w') as f:
 		datavalues = {'funcmodifier' : arraytype.replace(' ', '_'), 
 			'arraytype' : arraytype,
 			'sumtype' : sumtype[funtypes],
-			'zero' : zerotype[funtypes],
-			'array64start' : codegen_common.array64start[funtypes]}
+			'zero' : zerotype[funtypes]}
 
 		
 		# Basic template start.
@@ -169,6 +166,6 @@ with open('asum_code.txt', 'w') as f:
 		f.write(ovfl_template)
 
 		# Close off function.
-		f.write(func_close % {'array64end' : codegen_common.array64end[funtypes]})
+		f.write(func_close)
 
 

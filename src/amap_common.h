@@ -31,7 +31,6 @@
 #include "Python.h"
 
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -43,10 +42,8 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1, unsigned int paramcount, unsigned int disableovfl);
 signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1, unsigned int paramcount, unsigned int disableovfl);
 signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1, unsigned int paramcount, unsigned int disableovfl);
-#ifdef AF_HAVE_LONG_LONG
 signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1, unsigned int paramcount, unsigned int disableovfl);
 signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1, unsigned int paramcount, unsigned int disableovfl);
-#endif
 signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float *dataout, float param1, unsigned int paramcount, unsigned int disableovfl);
 signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, double *dataout, double param1, unsigned int paramcount, unsigned int disableovfl);
 

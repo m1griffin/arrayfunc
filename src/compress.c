@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -53,7 +52,6 @@ static char *kwlist[] = {"data", "dataout", "selecdtor", "maxlen", NULL};
 
 
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -94,9 +92,7 @@ Py_ssize_t compress_signed_char(Py_ssize_t datalen, signed char *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -137,9 +133,7 @@ Py_ssize_t compress_unsigned_char(Py_ssize_t datalen, unsigned char *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -180,9 +174,7 @@ Py_ssize_t compress_signed_short(Py_ssize_t datalen, signed short *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -223,9 +215,7 @@ Py_ssize_t compress_unsigned_short(Py_ssize_t datalen, unsigned short *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -266,9 +256,7 @@ Py_ssize_t compress_signed_int(Py_ssize_t datalen, signed int *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -309,9 +297,7 @@ Py_ssize_t compress_unsigned_int(Py_ssize_t datalen, unsigned int *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -352,9 +338,7 @@ Py_ssize_t compress_signed_long(Py_ssize_t datalen, signed long *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -395,9 +379,7 @@ Py_ssize_t compress_unsigned_long(Py_ssize_t datalen, unsigned long *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -438,9 +420,7 @@ Py_ssize_t compress_signed_long_long(Py_ssize_t datalen, signed long long *data,
 	}
 	return outindex;
 }
-#endif
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -481,9 +461,7 @@ Py_ssize_t compress_unsigned_long_long(Py_ssize_t datalen, unsigned long long *d
 	}
 	return outindex;
 }
-#endif
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -524,9 +502,7 @@ Py_ssize_t compress_float(Py_ssize_t datalen, float *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
-
 /* datalen = The length of the input array.
    data = The input data array.
    outlen = The length of the output array.
@@ -567,7 +543,6 @@ Py_ssize_t compress_double(Py_ssize_t datalen, double *data,
 	}
 	return outindex;
 }
-
 /*--------------------------------------------------------------------------- */
 
 
@@ -786,7 +761,6 @@ static PyObject *py_compress(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = compress_unsigned_long(datalen, data.L, outlen, dataout.L, selectorlen, selector.L);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			resultcode = compress_signed_long_long(datalen, data.q, outlen, dataout.q, selectorlen, selector.q);
@@ -797,7 +771,6 @@ static PyObject *py_compress(PyObject *self, PyObject *args, PyObject *keywds) {
 			resultcode = compress_unsigned_long_long(datalen, data.Q, outlen, dataout.Q, selectorlen, selector.Q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			resultcode = compress_float(datalen, data.f, outlen, dataout.f, selectorlen, selector.f);

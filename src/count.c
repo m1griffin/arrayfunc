@@ -32,7 +32,6 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "arrayplatform.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -51,8 +50,8 @@ struct args_param {
 
 
 
-/*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -83,9 +82,7 @@ void count_signed_char(Py_ssize_t arraylen, signed char *data, signed char start
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -116,9 +113,7 @@ void count_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -149,9 +144,7 @@ void count_signed_short(Py_ssize_t arraylen, signed short *data, signed short st
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -182,9 +175,7 @@ void count_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned sh
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -215,9 +206,7 @@ void count_signed_int(Py_ssize_t arraylen, signed int *data, signed int startval
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -248,9 +237,7 @@ void count_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int st
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -281,9 +268,7 @@ void count_signed_long(Py_ssize_t arraylen, signed long *data, signed long start
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -314,9 +299,7 @@ void count_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -346,10 +329,8 @@ void count_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed 
 	}
 
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-#ifdef AF_HAVE_LONG_LONG
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -379,10 +360,8 @@ void count_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, uns
 	}
 
 }
-#endif
 
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -413,9 +392,7 @@ void count_float(Py_ssize_t arraylen, float *data, float startvalue, float stepv
 
 }
 
-
 /*--------------------------------------------------------------------------- */
-
 /* * arraylen = The length of the data arrays.
    * data = The input data array.
    * startvalue = The value to start filling the data array.
@@ -445,9 +422,7 @@ void count_double(Py_ssize_t arraylen, double *data, double startvalue, double s
 	}
 
 }
-
 /*--------------------------------------------------------------------------- */
-
 
 /*--------------------------------------------------------------------------- */
 
@@ -540,9 +515,7 @@ py_count(PyObject *self, PyObject *args)
 
 	signed long param2tmp_l;
 
-#ifdef AF_HAVE_LONG_LONG
 	signed long long param2tmp_q;
-#endif
 
 
 	// If true, count down with the step value.
@@ -578,12 +551,8 @@ py_count(PyObject *self, PyObject *args)
 		param2py.L = 1;
 		param2py.f = 1.0;
 		param2py.d = 1.0;
-	
 		param2tmp_l = 1;
-
-#ifdef AF_HAVE_LONG_LONG
 		param2tmp_q = 1;
-#endif
 	}
 
 
@@ -711,7 +680,6 @@ py_count(PyObject *self, PyObject *args)
 			param2py.L = (unsigned long) labs(param2tmp_l);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
@@ -732,7 +700,6 @@ py_count(PyObject *self, PyObject *args)
 			param2py.Q = (unsigned long long) llabs(param2tmp_q);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
@@ -833,7 +800,6 @@ py_count(PyObject *self, PyObject *args)
 			count_unsigned_long(arraylength, data.L, param1py.L, param2py.L, countdown);
 			break;
 		}
-#ifdef AF_HAVE_LONG_LONG
 		// signed long long
 		case 'q' : {
 			count_signed_long_long(arraylength, data.q, param1py.q, param2py.q, countdown);
@@ -844,7 +810,6 @@ py_count(PyObject *self, PyObject *args)
 			count_unsigned_long_long(arraylength, data.Q, param1py.Q, param2py.Q, countdown);
 			break;
 		}
-#endif
 		// float
 		case 'f' : {
 			count_float(arraylength, data.f, param1py.f, param2py.f, countdown);
