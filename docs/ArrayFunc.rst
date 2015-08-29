@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 0.9.4 for 2015-08-15
+:Version: 0.9.5 for 2015-08-29
 :Copyright: 2014 - 2015
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.x
@@ -470,8 +470,8 @@ x = findindices(op, inparray, outparray, rparam, maxlen=500)
 
 * op - The arithmetic comparison operation.
 * inparray - The input data array to be examined.
-* outparray - The output array. This must be an integer array of array type 'l'
-  (signed long). 
+* outparray - The output array. This must be an integer array of array type 'q'
+  (signed long long). 
 * rparam - The 'y' parameter to be applied to 'op'. 
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
@@ -481,12 +481,12 @@ x = findindices(op, inparray, outparray, rparam, maxlen=500)
 example::
 
 	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('l', [0]*6)
+	outparray = array.array('q', [0]*6)
 	x = arrayfunc.findindices(arrayfunc.aops.af_lt, inparray, outparray, 5)
 	==> ('i', [0, 1, 5, 0, 0, 0])
 	==> x equals 3
 	x = arrayfunc.findindices(arrayfunc.aops.af_lt, inparray, outparray, 5, maxlen=4)
-	==> array('l', [0, 1, 0, 0, 0, 0])
+	==> array('q', [0, 1, 0, 0, 0, 0])
 	==> x equals 2
 
 

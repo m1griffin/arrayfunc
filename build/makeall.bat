@@ -1,4 +1,4 @@
-
+ECHO OFF
 REM Copy the build and source files into the build directory.
 COPY ..\conf\*.py .
 COPY ..\src\*.h .
@@ -9,12 +9,12 @@ SET failcount=0
 
 FOR /R %%A IN (*setup.py) DO CALL :pybuild %%A
 
-IF failcount EQU 0 GOTO :DONE
+IF %failcount% EQU 0 GOTO :DONE
 ECHO Compile failed with %failcount% errors.
 GOTO:EOF
 
 :DONE
-# Copy the object files into the arrayfunc directory.
+REM Copy the object files into the arrayfunc directory.
 COPY *.pyd ..\arrayfunc
 ECHO Done - OK
 EXIT /B

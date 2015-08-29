@@ -91,7 +91,7 @@ template = '''
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -630,7 +630,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.data = array.array('%(typecode)s', [100.0] * 10)
-		self.dataout = array.array('l', itertools.repeat(0, len(self.data)))
+		self.dataout = array.array('q', itertools.repeat(0, len(self.data)))
 
 
 	########################################################

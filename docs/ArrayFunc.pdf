@@ -446,7 +446,7 @@ endobj
 << /Outlines 139 0 R /PageLabels 218 0 R /PageMode /UseNone /Pages 193 0 R /Type /Catalog >>
 endobj
 138 0 obj
-<< /Author (Michael Griffin) /CreationDate (D:20150815172641+05'00') /Creator (\(unspecified\)) /Keywords () /Producer (ReportLab PDF Library - www.reportlab.com) /Subject (\(unspecified\)) 
+<< /Author (Michael Griffin) /CreationDate (D:20150829185843+05'00') /Creator (\(unspecified\)) /Keywords () /Producer (ReportLab PDF Library - www.reportlab.com) /Subject (\(unspecified\)) 
   /Title (ArrayFunc) >>
 endobj
 139 0 obj
@@ -673,7 +673,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.9.4 for 2015-08-15) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.9.5 for 2015-08-29) Tj T* ET
 Q
 Q
 q
@@ -3893,7 +3893,7 @@ Q
 endstream
 endobj
 203 0 obj
-<< /Length 7585 >>
+<< /Length 7590 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
 q
@@ -4159,7 +4159,7 @@ q
 1 0 0 1 23 -3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (outparray - The output array. This must be an integer array of array type 'l' \(signed long\).) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (outparray - The output array. This must be an integer array of array type 'q' \(signed long long\).) Tj T* ET
 Q
 Q
 q
@@ -4261,7 +4261,7 @@ q
 n -6 -6 498 108 re B*
 Q
 q
-BT 1 0 0 1 0 86 Tm 12 TL /F4 10 Tf 0 0 0 rg (inparray = array.array\('i', [1, 2, 5, 33, 54, -6]\)) Tj T* (outparray = array.array\('l', [0]*6\)) Tj T* (x = arrayfunc.findindices\(arrayfunc.aops.af_lt, inparray, outparray, 5\)) Tj T* (==) Tj (>) Tj ( \('i', [0, 1, 5, 0, 0, 0]\)) Tj T* (==) Tj (>) Tj ( x equals 3) Tj T* (x = arrayfunc.findindices\(arrayfunc.aops.af_lt, inparray, outparray, 5, maxlen=4\)) Tj T* (==) Tj (>) Tj ( array\('l', [0, 1, 0, 0, 0, 0]\)) Tj T* (==) Tj (>) Tj ( x equals 2) Tj T* ET
+BT 1 0 0 1 0 86 Tm 12 TL /F4 10 Tf 0 0 0 rg (inparray = array.array\('i', [1, 2, 5, 33, 54, -6]\)) Tj T* (outparray = array.array\('q', [0]*6\)) Tj T* (x = arrayfunc.findindices\(arrayfunc.aops.af_lt, inparray, outparray, 5\)) Tj T* (==) Tj (>) Tj ( \('i', [0, 1, 5, 0, 0, 0]\)) Tj T* (==) Tj (>) Tj ( x equals 3) Tj T* (x = arrayfunc.findindices\(arrayfunc.aops.af_lt, inparray, outparray, 5, maxlen=4\)) Tj T* (==) Tj (>) Tj ( array\('q', [0, 1, 0, 0, 0, 0]\)) Tj T* (==) Tj (>) Tj ( x equals 2) Tj T* ET
 Q
 Q
 Q
@@ -16409,50 +16409,50 @@ xref
 0000081676 00000 n
 0000088866 00000 n
 0000094717 00000 n
-0000102360 00000 n
-0000109981 00000 n
-0000116374 00000 n
-0000122974 00000 n
-0000133699 00000 n
-0000139236 00000 n
-0000147393 00000 n
-0000168651 00000 n
-0000186545 00000 n
-0000198819 00000 n
-0000207308 00000 n
-0000233423 00000 n
-0000259560 00000 n
-0000288201 00000 n
-0000297242 00000 n
-0000297548 00000 n
-0000297586 00000 n
-0000297624 00000 n
-0000297662 00000 n
-0000297700 00000 n
-0000297738 00000 n
-0000297776 00000 n
-0000297814 00000 n
-0000297852 00000 n
-0000297890 00000 n
-0000297929 00000 n
-0000297968 00000 n
-0000298007 00000 n
-0000298046 00000 n
-0000298085 00000 n
-0000298124 00000 n
-0000298163 00000 n
-0000298202 00000 n
-0000298241 00000 n
-0000298280 00000 n
-0000298319 00000 n
-0000298358 00000 n
-0000298397 00000 n
-0000298436 00000 n
+0000102365 00000 n
+0000109986 00000 n
+0000116379 00000 n
+0000122979 00000 n
+0000133704 00000 n
+0000139241 00000 n
+0000147398 00000 n
+0000168656 00000 n
+0000186550 00000 n
+0000198824 00000 n
+0000207313 00000 n
+0000233428 00000 n
+0000259565 00000 n
+0000288206 00000 n
+0000297247 00000 n
+0000297553 00000 n
+0000297591 00000 n
+0000297629 00000 n
+0000297667 00000 n
+0000297705 00000 n
+0000297743 00000 n
+0000297781 00000 n
+0000297819 00000 n
+0000297857 00000 n
+0000297895 00000 n
+0000297934 00000 n
+0000297973 00000 n
+0000298012 00000 n
+0000298051 00000 n
+0000298090 00000 n
+0000298129 00000 n
+0000298168 00000 n
+0000298207 00000 n
+0000298246 00000 n
+0000298285 00000 n
+0000298324 00000 n
+0000298363 00000 n
+0000298402 00000 n
+0000298441 00000 n
 trailer
 << /ID 
  % ReportLab generated PDF document -- digest (http://www.reportlab.com)
- [(\350\177\333VD\340\011\356\212k\027\2365\322\363q) (\350\177\333VD\340\011\356\212k\027\2365\322\363q)]
+ [(\263\2200\302[\246=h25\322\327V'\253\273) (\263\2200\302[\246=h25\322\327V'\253\273)]
  /Info 138 0 R /Root 137 0 R /Size 243 >>
 startxref
-298475
+298480
 %%EOF

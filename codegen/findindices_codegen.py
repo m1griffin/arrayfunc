@@ -40,7 +40,7 @@ template_start = """
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_%(funcmodifier)s(signed int opcode, Py_ssize_t arraylen, %(arraytype)s *data, Py_ssize_t *dataout, %(arraytype)s param1) { 
+Py_ssize_t findindices_%(funcmodifier)s(signed int opcode, Py_ssize_t arraylen, %(arraytype)s *data, signed long long *dataout, %(arraytype)s param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -64,7 +64,7 @@ op_template = """		// %(opcodename)s
 		case OP_%(oplabel)s: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] %(compare_ops)s param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}

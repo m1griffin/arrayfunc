@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     21-Jun-2014.
-# Ver:      14-Aug-2015.
+# Ver:      29-Aug-2015.
 #
 ###############################################################################
 #
@@ -65,7 +65,7 @@ class findindices_operator_b(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -608,7 +608,7 @@ class findindices_operator_B(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -1151,7 +1151,7 @@ class findindices_operator_h(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -1694,7 +1694,7 @@ class findindices_operator_H(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -2237,7 +2237,7 @@ class findindices_operator_i(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -2780,7 +2780,7 @@ class findindices_operator_I(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -3329,7 +3329,7 @@ class findindices_operator_l(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -3872,7 +3872,7 @@ class findindices_operator_L(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -4393,7 +4393,7 @@ class findindices_operator_q(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -4938,7 +4938,7 @@ class findindices_operator_Q(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -5457,7 +5457,7 @@ class findindices_operator_f(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -6000,7 +6000,7 @@ class findindices_operator_d(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -6543,7 +6543,7 @@ class findindices_operator_bytes(unittest.TestCase):
 		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
 
 		# Output arrays must be of a specific type.
-		self.OutputTypeCode = 'l'
+		self.OutputTypeCode = 'q'
 		self.dataout = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data)))
 		self.dataout2 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data2)))
 		self.dataout3 = array.array(self.OutputTypeCode, itertools.repeat(0, len(self.data3)))
@@ -7075,7 +7075,7 @@ class findindices_nan_f(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.data = array.array('f', [100.0] * 10)
-		self.dataout = array.array('l', itertools.repeat(0, len(self.data)))
+		self.dataout = array.array('q', itertools.repeat(0, len(self.data)))
 
 
 	########################################################
@@ -7138,7 +7138,7 @@ class findindices_nan_d(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.data = array.array('d', [100.0] * 10)
-		self.dataout = array.array('l', itertools.repeat(0, len(self.data)))
+		self.dataout = array.array('q', itertools.repeat(0, len(self.data)))
 
 
 	########################################################

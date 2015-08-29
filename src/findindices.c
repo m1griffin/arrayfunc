@@ -55,8 +55,6 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 /*--------------------------------------------------------------------------- */
 
 
-
-
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
@@ -66,7 +64,7 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, Py_ssize_t *dataout, signed char param1) { 
+Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed long long *dataout, signed char param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -80,7 +78,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -95,7 +93,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -110,7 +108,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -125,7 +123,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -140,7 +138,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -155,7 +153,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -181,7 +179,7 @@ Py_ssize_t findindices_signed_char(signed int opcode, Py_ssize_t arraylen, signe
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, Py_ssize_t *dataout, unsigned char param1) { 
+Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, signed long long *dataout, unsigned char param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -195,7 +193,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -210,7 +208,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -225,7 +223,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -240,7 +238,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -255,7 +253,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -270,7 +268,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -296,7 +294,7 @@ Py_ssize_t findindices_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, Py_ssize_t *dataout, signed short param1) { 
+Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed long long *dataout, signed short param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -310,7 +308,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -325,7 +323,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -340,7 +338,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -355,7 +353,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -370,7 +368,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -385,7 +383,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -411,7 +409,7 @@ Py_ssize_t findindices_signed_short(signed int opcode, Py_ssize_t arraylen, sign
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, Py_ssize_t *dataout, unsigned short param1) { 
+Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, signed long long *dataout, unsigned short param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -425,7 +423,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -440,7 +438,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -455,7 +453,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -470,7 +468,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -485,7 +483,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -500,7 +498,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -526,7 +524,7 @@ Py_ssize_t findindices_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, Py_ssize_t *dataout, signed int param1) { 
+Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed long long *dataout, signed int param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -540,7 +538,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -555,7 +553,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -570,7 +568,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -585,7 +583,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -600,7 +598,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -615,7 +613,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -641,7 +639,7 @@ Py_ssize_t findindices_signed_int(signed int opcode, Py_ssize_t arraylen, signed
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, Py_ssize_t *dataout, unsigned int param1) { 
+Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, signed long long *dataout, unsigned int param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -655,7 +653,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -670,7 +668,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -685,7 +683,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -700,7 +698,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -715,7 +713,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -730,7 +728,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -756,7 +754,7 @@ Py_ssize_t findindices_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, Py_ssize_t *dataout, signed long param1) { 
+Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long long *dataout, signed long param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -770,7 +768,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -785,7 +783,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -800,7 +798,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -815,7 +813,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -830,7 +828,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -845,7 +843,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -871,7 +869,7 @@ Py_ssize_t findindices_signed_long(signed int opcode, Py_ssize_t arraylen, signe
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, Py_ssize_t *dataout, unsigned long param1) { 
+Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, signed long long *dataout, unsigned long param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -885,7 +883,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -900,7 +898,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -915,7 +913,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -930,7 +928,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -945,7 +943,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -960,7 +958,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -986,7 +984,7 @@ Py_ssize_t findindices_unsigned_long(signed int opcode, Py_ssize_t arraylen, uns
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, Py_ssize_t *dataout, signed long long param1) { 
+Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -1000,7 +998,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1015,7 +1013,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1030,7 +1028,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1045,7 +1043,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1060,7 +1058,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1075,7 +1073,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1101,7 +1099,7 @@ Py_ssize_t findindices_signed_long_long(signed int opcode, Py_ssize_t arraylen, 
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, Py_ssize_t *dataout, unsigned long long param1) { 
+Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, signed long long *dataout, unsigned long long param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -1115,7 +1113,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1130,7 +1128,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1145,7 +1143,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1160,7 +1158,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1175,7 +1173,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1190,7 +1188,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1216,7 +1214,7 @@ Py_ssize_t findindices_unsigned_long_long(signed int opcode, Py_ssize_t arraylen
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data, Py_ssize_t *dataout, float param1) { 
+Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data, signed long long *dataout, float param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -1230,7 +1228,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1245,7 +1243,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1260,7 +1258,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1275,7 +1273,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1290,7 +1288,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1305,7 +1303,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1331,7 +1329,7 @@ Py_ssize_t findindices_float(signed int opcode, Py_ssize_t arraylen, float *data
    Returns 0 or a positive integer indicating the number of input elements 
          copied to the output array, or an error code.
 */
-Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *data, Py_ssize_t *dataout, double param1) { 
+Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *data, signed long long *dataout, double param1) { 
 
 	// array index counter. 
 	Py_ssize_t index, outindex; 
@@ -1345,7 +1343,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] == param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1360,7 +1358,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] > param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1375,7 +1373,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] >= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1390,7 +1388,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] < param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1405,7 +1403,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] <= param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1420,7 +1418,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (data[index] != param1) {
-					dataout[outindex] = index;
+					dataout[outindex] = (signed long long) index;
 					outindex++;
 				}
 			}
@@ -1553,7 +1551,7 @@ static PyObject *py_findindices(PyObject *self, PyObject *args, PyObject *keywds
 	}
 
 	// The output array must be a specified type.
-	if (argtypes.array2type != 'l') {
+	if (argtypes.array2type != 'q') {
 		ErrMsgOutputArrayTypeInvalid();
 		return NULL;
 	}
@@ -1766,7 +1764,7 @@ static PyObject *py_findindices(PyObject *self, PyObject *args, PyObject *keywds
 
 
 	// The length of the output array.
-	outarraylength = calcarraylength('l', dataoutbufflength);
+	outarraylength = calcarraylength('q', dataoutbufflength);
 	if (arraylength != outarraylength) {
 		// Release the buffers. 
 		PyBuffer_Release(&datapy);
@@ -1786,62 +1784,62 @@ static PyObject *py_findindices(PyObject *self, PyObject *args, PyObject *keywds
 	switch(itemcode) {
 		// signed char
 		case 'b' : {
-			resultcode = findindices_signed_char(opcode, arraylength, data.b, dataout.l, param1py.b);
+			resultcode = findindices_signed_char(opcode, arraylength, data.b, dataout.q, param1py.b);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultcode = findindices_unsigned_char(opcode, arraylength, data.B, dataout.l, param1py.B);
+			resultcode = findindices_unsigned_char(opcode, arraylength, data.B, dataout.q, param1py.B);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultcode = findindices_signed_short(opcode, arraylength, data.h, dataout.l, param1py.h);
+			resultcode = findindices_signed_short(opcode, arraylength, data.h, dataout.q, param1py.h);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultcode = findindices_unsigned_short(opcode, arraylength, data.H, dataout.l, param1py.H);
+			resultcode = findindices_unsigned_short(opcode, arraylength, data.H, dataout.q, param1py.H);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultcode = findindices_signed_int(opcode, arraylength, data.i, dataout.l, param1py.i);
+			resultcode = findindices_signed_int(opcode, arraylength, data.i, dataout.q, param1py.i);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultcode = findindices_unsigned_int(opcode, arraylength, data.I, dataout.l, param1py.I);
+			resultcode = findindices_unsigned_int(opcode, arraylength, data.I, dataout.q, param1py.I);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultcode = findindices_signed_long(opcode, arraylength, data.l, dataout.l, param1py.l);
+			resultcode = findindices_signed_long(opcode, arraylength, data.l, dataout.q, param1py.l);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultcode = findindices_unsigned_long(opcode, arraylength, data.L, dataout.l, param1py.L);
+			resultcode = findindices_unsigned_long(opcode, arraylength, data.L, dataout.q, param1py.L);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultcode = findindices_signed_long_long(opcode, arraylength, data.q, dataout.l, param1py.q);
+			resultcode = findindices_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultcode = findindices_unsigned_long_long(opcode, arraylength, data.Q, dataout.l, param1py.Q);
+			resultcode = findindices_unsigned_long_long(opcode, arraylength, data.Q, dataout.q, param1py.Q);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultcode = findindices_float(opcode, arraylength, data.f, dataout.l, param1py.f);
+			resultcode = findindices_float(opcode, arraylength, data.f, dataout.q, param1py.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = findindices_double(opcode, arraylength, data.d, dataout.l, param1py.d);
+			resultcode = findindices_double(opcode, arraylength, data.d, dataout.q, param1py.d);
 			break;
 		}
 		// We don't know this code.
@@ -1888,7 +1886,7 @@ x = findindices(op, inparray, outparray, rparam, maxlen=y)\n\
 * op - The arithmetic comparison operation.\n\
 * inparray - The input data array to be examined.\n\
 * outparray - The output array. This must be an integer array of array \n\
-  type 'l' (signed long). \n\
+  type 'q' (signed long long). \n\
 * rparam - The parameter to be applied to 'op'. \n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
