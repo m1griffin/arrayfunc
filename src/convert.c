@@ -53,8 +53,7 @@ static char *kwlist[] = {"data", "dataout", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
-
-
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* arraycode = The type code used by the destination array.

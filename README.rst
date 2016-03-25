@@ -5,9 +5,9 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Copyright: 2014 - 2015
+:Copyright: 2014 - 2016
 :License: This document may be distributed under the Apache 2.0 License.
-:Language: Python 3.x
+:Language: Python 3.4
 
 ---------------------------------------------------------------------
 
@@ -98,10 +98,12 @@ starmap         Like amap, but where a second array acts as the second
 starmapi        Like starmap, but the results are written in place to the first 
                 input array.
 asum            Calculate the arithmetic sum of an array.
+acalc           Calculate arbitrary equations over an array. 
 ============== =================================================================
 
 Amap and amapi support more than 70 different operations. Starmap and starmapi
-support more than two dozen different operations.
+support more than two dozen different operations. ACalc supports more than 50
+operations.
 
 
 Data Conversion
@@ -138,10 +140,10 @@ Performance
 Performance will vary depending on the function, operation, array data type 
 used, and whether overflow checking is enabled. 
 
-Average performance increase for amap is 95 times faster than native Python.
-For functions other than amap, amapi, starmap, and starmapi is 63 times faster 
-than native Python. However, some functions and operations may be more than 350
-times faster than native Python.
+Average performance increase for amap is 80 times faster than native Python.
+Functions other than amap, starmap, and acalc average is 50 times faster  than
+native Python. However, some functions and operations may be more than 200 to 
+300 times faster than native Python.
 
 Detailed performance figures are listed in the documentation.
 
@@ -160,9 +162,9 @@ OS                   Bits      Compiler                  Python Version Tested
 Ubuntu 14.04 LTS   64 bit    GCC                         3.4
 Debian 8           32 bit    GCC                         3.4
 FreeBSD 10         64 bit    LLVM                        3.4
-MS Windows 8.1     32 bit    MS Visual Studio C 2010     3.4
+MS Windows 10      32 bit    MS Visual Studio C 2010     3.4
 ================= ========  ========================== =========================
 
-Some amap and amapi operations are not supported on MS Windows due to lack of 
-compiler support. See the documentation for details.
+Some amap, amapi, and acalc operations are not supported on MS Windows due to 
+lack of compiler support. See the documentation for details.
 

@@ -24,6 +24,11 @@
 //------------------------------------------------------------------------------
 
 
+// This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
+// the M_PI constant. This must be immediately above <math.h>.
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 /*--------------------------------------------------------------------------- */
 // Calculate factorials.
 
@@ -51,6 +56,14 @@ signed long arith_pow_signed_long(signed long x, signed long y, char *errflag);
 unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *errflag);
 signed long long arith_pow_signed_long_long(signed long long x, signed long long y, char *errflag);
 unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned long long y, char *errflag);
+
+/*--------------------------------------------------------------------------- */
+
+// Used to calculate degrees to radians and radians to degrees.
+const double degtorad_d = M_PI / 180.0;
+const double radtodeg_d = 180.0 / M_PI;
+const float degtorad_f = (float) (M_PI / 180.0);
+const float radtodeg_f = (float) (180.0 / M_PI);
 
 /*--------------------------------------------------------------------------- */
 

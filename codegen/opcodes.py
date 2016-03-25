@@ -32,7 +32,7 @@ import codegen_common
 
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
-csvdata = codegen_common.ReadCSVData()
+csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 # The constant definitions for the opcodes.
 with open('defblock.txt', 'w') as f:

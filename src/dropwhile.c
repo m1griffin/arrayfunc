@@ -49,8 +49,7 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
-
-
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.

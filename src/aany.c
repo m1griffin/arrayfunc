@@ -48,7 +48,9 @@ struct args_param {
 static char *kwlist[] = {"op", "data", "param", "maxlen", NULL};
 
 
+/*--------------------------------------------------------------------------- */
 
+// Auto generated code goes below.
 
 
 

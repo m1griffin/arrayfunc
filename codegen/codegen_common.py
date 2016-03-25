@@ -77,13 +77,13 @@ OvflTestSkip = """	# Whether this test can be peformed depends on the integer wo
 # ==============================================================================
 
 # MSVC 2010 appears to have bugs when converting float or double to unsigned long long.
-MSVCQTestSkip = """	# MSVC 2010 appears to have bugs when converting float or double to unsigned long long.
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to bugs in the platform C compiler.')
+MSVCQTestSkip = """	# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
+	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support or due to bugs in the platform C compiler.')
 """
 
 # This version is used to skip entire classes rather than just individual functions.
-MSVCQTestSkipFunc = """# MSVC 2010 appears to have bugs when converting float or double to unsigned long long.
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to bugs in the platform C compiler.')
+MSVCQTestSkipFunc = """# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
+@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support due to bugs in the platform C compiler.')
 """
 
 # ==============================================================================
@@ -165,7 +165,7 @@ minguardvalue = {
 # ==============================================================================
 
 
-def ReadCSVData():
+def ReadCSVData(filename):
 	"""Read the operator and function definition data from a CSV file. All of
 	the data to create the C code is stored in a spreadsheet and then saved to
 	a CSV file. This function reads in the file, and saves it in a list of
@@ -176,7 +176,7 @@ def ReadCSVData():
 
 	"""
 	csvreaddata = []
-	with open('arrayfunc.csv', 'r') as csvfile:
+	with open(filename, 'r') as csvfile:
 		opreader = csv.reader(csvfile, delimiter='\t')
 		# The first row is the descriptive headers, which we use as key names.
 		dataformat = next(opreader)

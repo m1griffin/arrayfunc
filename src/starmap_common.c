@@ -39,7 +39,7 @@
 
 /*--------------------------------------------------------------------------- */
 
-
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
@@ -4326,5 +4326,3 @@ signed int starmap_double(signed int opcode, Py_ssize_t arraylen, double *data, 
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
-
-

@@ -30,9 +30,6 @@
 
 #include "Python.h"
 
-// This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
-// the M_PI constant. This must be immediately above <math.h>.
-#define _USE_MATH_DEFINES
 #include <math.h>
 #include <limits.h>
 
@@ -42,19 +39,10 @@
 
 /*--------------------------------------------------------------------------- */
 
-/*--------------------------------------------------------------------------- */
-
-// Used to calculate degrees to radians and radians to degrees.
-const double degtorad_d = M_PI / 180.0;
-const double radtodeg_d = 180.0 / M_PI;
-const float degtorad_f = (float) (M_PI / 180.0);
-const float radtodeg_f = (float) (180.0 / M_PI);
-
 
 /*--------------------------------------------------------------------------- */
 
 // The auto-generated code goes below.
-
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
@@ -6605,5 +6593,4 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
-
 

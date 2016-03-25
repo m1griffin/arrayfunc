@@ -813,7 +813,7 @@ def CreateFunction(csvdata, arraycode):
 ############################################################
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
-csvdata = codegen_common.ReadCSVData()
+csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 with open('amap_code.txt', 'w') as f:
 	# Output the generated code.

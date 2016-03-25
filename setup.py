@@ -5,6 +5,7 @@ from distutils.core import setup, Extension
 extensions = [
 ('aall', ['src/aall.c', 'src/arrayfunc.c', 'src/arithcalcs.c', 'src/arrayerrs.c']),
 ('aany', ['src/aany.c', 'src/arrayfunc.c', 'src/arithcalcs.c', 'src/arrayerrs.c']),
+('acalcvm', ['src/acalcvm.c', 'src/acalcvm_common.c', 'src/arrayfunc.c', 'src/arrayerrs.c', 'src/arithcalcs.c']),
 ('afilter', ['src/afilter.c', 'src/arrayfunc.c', 'src/arithcalcs.c', 'src/arrayerrs.c']),
 ('amapi', ['src/amapi.c', 'src/amap_common.c', 'src/arrayfunc.c', 'src/arithcalcs.c', 'src/arrayerrs.c']),
 ('amap', ['src/amap.c', 'src/amap_common.c', 'src/arrayfunc.c', 'src/arithcalcs.c', 'src/arrayerrs.c']),
@@ -32,7 +33,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '0.9.1rc1',
+	version = '1.0.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/arrayfunc/arrayfunc',
@@ -40,7 +41,7 @@ setup(name = 'arrayfunc',
 	author_email = 'm12.griffin@gmail.com',
 	license = 'Apache License V2.0',
 	classifiers = [
-		'Development Status :: 4 - Beta',
+		'Development Status :: 5 - Production/Stable',
 		'Intended Audience :: Developers',
 		'Topic :: Scientific/Engineering :: Mathematics',
 		'License :: OSI Approved :: Apache Software License',

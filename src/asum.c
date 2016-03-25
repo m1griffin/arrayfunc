@@ -43,6 +43,8 @@ static char *kwlist[] = {"data", "disovfl", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
+// Auto-generated code goes below.
+
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data array.
    data = The input data array.

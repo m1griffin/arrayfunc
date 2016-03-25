@@ -6,10 +6,10 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 0.9.5 for 2015-08-29
-:Copyright: 2014 - 2015
+:Version: 1.0.0 for 2016-03-23
+:Copyright: 2014 - 2016
 :License: This document may be distributed under the Apache License V2.0.
-:Language: Python 3.x
+:Language: Python 3.4 or later
 
 
 .. contents:: Table of Contents
@@ -25,7 +25,7 @@ functions in the standard Python Itertools module together with some additional
 ones from other sources.
 
 The purpose of these functions is to perform mathematical calculations on arrays
-faster than using native Python.
+significantly faster than using native Python.
 
 ---------------------------------------------------------------------
 
@@ -103,6 +103,7 @@ starmap         Like amap, but where a second array acts as the second
 starmapi        Like starmap, but the results are written in place to the first 
                 input array.
 asum            Calculate the arithmetic sum of an array.
+acalc           Calculate arbitrary equations over an array. 
 ============== =================================================================
 
 
@@ -679,6 +680,7 @@ example::
 	arrayfunc.asum(inparray, maxlen=5)
 	==> -85
 
+
 convert
 _______
 
@@ -742,9 +744,6 @@ d                 double                 d_min       d_max
 bytes             Python bytes type      bytes_min   bytes_max
 ================ =====================  =========== ============================
 
-**Note:** the 'q' and 'Q' array types and therefor limit attributes may not be 
-present on all platforms.
-
 
 example::
 
@@ -759,6 +758,124 @@ example::
 	==> -3.4028234663852886e+38
 	arrayfunc.arraylimits.f_max
 	==> 3.4028234663852886e+38
+
+
+
+ACalc
+-----
+
+Description
+___________
+
+Calculate arbitrary equations over an array.
+
+ACalc solves complex equations (expressions) over an array. It accepts a valid
+Python mathematical expression as a string, compiles it, and executes it. The
+expression can include constants, variables, and the same functions as defined
+in the "math" module.
+
+ACalc consists of a class "calc" with two methods, "comp" (compile) and 
+"execute". 
+
+For simple calculations, amap will normally be much, much faster than acalc. 
+However, acalc is useful for equations requiring multiple terms, as it can solve
+them in a single operation whereas amap (or amapi) would require multiple 
+function calls (once for each term).
+
+Initialisation
+______________
+
+The "calc" class is initialised with the input and output arrays. The input and
+output arrays must be of the same array type. The array type determines the data
+type of the calculation. That is, an integer array will result in integer math,
+and a floating point array will result in floating point math.
+
+The first parameter is the input array, and the second parameter is the output
+array. These arrays remain associated with the equation object.
+
+example::
+
+	data = array.array('b', [0,1,2,3,4,5,6,7,8,9])
+	dataout = array.array('b', [0]*len(data))
+	eqnd = acalc.calc(data, dataout)
+
+Compiling
+_________
+
+The compile method accepts three positional parameters. These are:
+
+* Equation - This is the equation as a string.
+* Array variable - This defines which variable in the equation represents the
+  current array index value. This must be a string which follows the same rules
+  as valid Python variable names.
+* Other variables - This is a sequence of strings, with each element 
+  corresponding to a variable in the equation. The sequence can be a list or
+  a tuple.
+
+example::
+
+	eqnd.comp('x + y - z + 5', 'x', ['y', 'z'])
+
+example::
+
+	eqnd.comp('-x', 'x', [])
+
+
+example::
+
+	eqnd.comp('abs(x) + y - (z << 2)', 'x', ('y', 'z'))
+
+
+Executing
+_________
+
+Once an equation is compiled, it can be executed. A compiled equation can be 
+executed multiple times with different parameter values without recompiling it. 
+
+The execute method accepts one positional parameter which represents the 
+additional variables and two keyword parameters which are used to control the
+execution of the equation.
+
+* Variable values - This is a list or tuple of of numeric values which 
+  corresponds to the additional (non-array) variables in the equation. The
+  order and number of elements must match the sequence of additional variables
+  defined in the compile step. 
+* disovfl - If this keyword parameter is True, overflow checking will be
+  disabled. This is an optional parameter.
+* maxlen - Limit the length of the array used. This must be a valid positive 
+  integer. If a zero or negative length, or a value which is greater than the
+  actual length of the array is specified, this parameter is ignored.
+
+
+example::
+
+	eqnd.execute([-25, 3])
+
+
+example::
+
+	eqnd.execute([-25, 3], disovfl=True)
+
+
+example::
+
+	eqnd.execute([-25, 3], disovfl=False, maxlen=500)
+
+
+Complete Example
+________________
+
+example::
+
+	import array
+	from arraycalc import acalc
+	data = array.array('b', [0,1,2,3,4,5,6,7,8,9])
+	dataout = array.array('b', [0]*len(data))
+	eqnd = acalc.calc(data, dataout)
+	eqnd.comp('x + y - z + 5', 'x', ['y', 'z'])
+	eqnd.execute([-25, 3])
+	print(dataout)
+	array('b', [-23, -22, -21, -20, -19, -18, -17, -16, -15, -14])
 
 
 
@@ -981,19 +1098,6 @@ math_tanh        math.tanh(x)                       X                    X
 math_trunc       math.trunc(x)                      X                    
 =============== ====================== ===== ===== === ===== ========= =====
 
-Notes
-_____
-
-* The regular and floor division operators (af_div, af_div_r, af_floordiv, and
-  af_floordiv_r) all perform division using the native division instructions. 
-  That is, integer division always results in an integer result, and floating
-  point division always results in a floating point result. 
-* The math_gamma function (and the Python math.gamma) functions are equivalent
-  to the C library tgamma function. The C library gamma and lgamma functions are
-  equivalent to each other. 
-* The raise to power (af_pow,  af_pow_r) operators will not accept a negative 
-  exponent for integers, as the result would be a fractional number which is not 
-  compatible with an integer array.
 
 
 Additional Operators
@@ -1022,11 +1126,99 @@ and a parameter of 3. The resulting output is [1, 2, 3, 3, -2]. The effect has
 been to limit the maximum value to no more than 3.
 
 
+
+ACalc Operators and Functions
+-----------------------------
+
+The following operators and functions are equivalent to ones found in the
+Python standard library. ACalc uses the representation in the "equivalent to"
+column to actually specify the equations. The "name" column is only for 
+reference purposes.
+
+For explanations of the math functions, see the Python standard documentation 
+for the standard math library. 
+
+=============== ====================== ===== ===== === ===== =====
+Name             Equivalent to          b h   B H   f   OV    Win
+                                        i l   I L   d            
+=============== ====================== ===== ===== === ===== =====
+add              x + y                   X     X    X    X      X
+sub              x - y                   X     X    X    X      X
+mult             x * y                   X     X    X    X      X
+div              x / y                   X     X    X    X      X
+floordiv         x // y                  X     X    X    X      X
+mod              x % y                   X     X    X    X      X
+uadd             +x                      X     X    X           X
+usub             -x                      X     X    X    X      X
+pow              x**y                    X     X    X    X      X
+bitand           x & y                   X     X                X
+bitor            x | y                   X     X                X
+bitxor           x ^ y                   X     X                X
+invert           ~x                      X     X                X
+lshift           x << y                  X     X                X
+rshift           x >> y                  X     X                X
+abs              abs(x)                  X     X    X    X      X
+math.acos        math.acos(x)                       X           X
+math.acosh       math.acosh(x)                      X           
+math.asin        math.asin(x)                       X           X
+math.asinh       math.asinh(x)                      X           
+math.atan        math.atan(x)                       X           X
+math.atan2       math.atan2(x, y)                   X           X
+math.atanh       math.atanh(x)                      X           
+math.ceil        math.ceil(x)                       X           X
+math.copysign    math.copysign(x, y)                X           X
+math.cos         math.cos(x)                        X           X
+math.cosh        math.cosh(x)                       X           X
+math.degrees     math.degrees(x)                    X           X
+math.erf         math.erf(x)                        X           
+math.erfc        math.erfc(x)                       X           
+math.exp         math.exp(x)                        X           X
+math.expm1       math.expm1(x)                      X           
+math.fabs        math.fabs(x)                       X           X
+math.factorial   math.factorial(x)       X     X         X      X
+math.floor       math.floor(x)                      X           X
+math.fmod        math.fmod(x, y)                    X           X
+math.gamma       math.gamma(x)                      X           
+math.hypot       math.hypot(x, y)                   X           X
+math.ldexp       math.ldexp(x, y)                   X           X
+math.lgamma      math.lgamma(x)                     X           
+math.log         math.log(x)                        X           X
+math.log10       math.log10(x)                      X           X
+math.log1p       math.log1p(x)                      X           
+math.pow         math.pow(x, y)                     X           X
+math.radians     math.radians(x)                    X           X
+math.sin         math.sin(x)                        X           X
+math.sinh        math.sinh(x)                       X           X
+math.sqrt        math.sqrt(x)                       X           X
+math.tan         math.tan(x)                        X           X
+math.tanh        math.tanh(x)                       X           X
+math.trunc       math.trunc(x)                      X           
+=============== ====================== ===== ===== === ===== =====
+
+
+Notes on Operators and Functions
+--------------------------------
+
+* The regular and floor division operators (/, //) all perform division using 
+  the native division instructions. That is, integer division always results in 
+  an integer result, and floating point division always results in a floating 
+  point result. 
+* The math.gamma function (and the Python math.gamma) functions are equivalent
+  to the C library tgamma function. The C library gamma and lgamma functions are
+  equivalent to each other. 
+* The raise to power (x**y) operator will not accept a negative exponent for 
+  integers, as the result would be a fractional number which is not compatible 
+  with an integer array.
+* Some mathematical operations are not supported by the Microsoft compiler. This
+  This is indicated by the *Win* column.
+
+
+
 Platform Compiler Support
 -------------------------
 
-Amap and Amapi Functions
-________________________
+Amap, Amapi, and ACalc Functions
+________________________________
 
 The Microsoft Visual Studio 2010 C compiler is built to an older C standard 
 (C89) than GCC and does not have some functions in its standard library. The 
@@ -1125,6 +1317,146 @@ code in most cases.
 
 ---------------------------------------------------------------------
 
+Exceptions
+==========
+
+Exceptions - General
+--------------------
+
+The following exceptions apply to most functions.
+
+================ ===========================================  =====================================================
+Exception type   Text                                          Description
+================ ===========================================  =====================================================
+ArithmeticError   arithmetic error in calculation.             An arithmetic error occured in a calculation.
+IndexError        array length error.                          One or more arrays has an invalid length (e.g a 
+                                                               length of zero).
+IndexError        input array length error.                    The input array has an invalid length.
+IndexError        output length error.                         The output array has an invalid length.
+IndexError        array length mismatch.                       Two or more arrays which are expected to be of equal 
+                                                               length are not.
+OverflowError     arithmetic overflow in calculation.          An arithmetic integer overflow ocurred in a 
+                                                               calculation. 
+OverflowError     arithmetic overflow in parameter.            The size or range of a non-array parameter was not
+                                                               compatible with the array parameters.
+TypeError         array and parameter type mismatch.           A non-array parameter data type was not compatible 
+                                                               with the array parameters.
+TypeError         array type mismatch.                         An array parameter is not compatible with another
+                                                               array parameter. For most functions, both arrays 
+                                                               must be of the same type.
+TypeError         unknown array type.                          The array type is unknown.
+TypeError         array.array or bytes expected.               A non-array parameter was found where an array 
+                                                               (or bytes) parameter was expected. 
+ValueError        operator not valid for this function.        An operator parameter used was not valid for this
+                                                               function. 
+ValueError        operator not valid for this platform.        The operator used is not supported on this platform.
+TypeError         parameter error.                             An unspecified error occured when parsing the 
+                                                               parameters.
+TypeError         parameter missing.                           An expected parameter was missing. 
+ValueError        parameter not valid for this operation.      A value is not valid for this operation. E.g.
+                                                               attempting to perform a factorial on a negative 
+                                                               number.
+IndexError        selector length error.                       The selector array length is incorrect.
+ValueError        conversion not valid for this type.          The conversion attempted was invalid.
+ValueError        cannot convert float NaN to integer.         Cannot convert NaN (Not A Number) floating point
+                                                               value in the input array to integer.
+TypeError         output array type invalid.                   The output array type is invalid.
+================ ===========================================  =====================================================
+
+
+
+
+Exceptions - ACalc
+------------------
+
+ACalc has additional exceptions which are defined here. In addition to these,
+some of the general exceptions also apply.
+
+
+Initialisation
+______________
+
+This are the exceptions which can occurr during class initialisation.
+
+============== ===========================================  =====================================================
+Exception type   Text                                        Description
+============== ===========================================  =====================================================
+TypeError      first parameter must be an array or bytes     The first parameter is of an incorrect type.
+               in ACalc init.
+TypeError      second parameter must be an array or bytes    The first parameter is of an incorrect type.
+               in ACalc init.
+TypeError      unknown array type in ACalc init.             The type of one of the parameters is not recognised.
+TypeError      data array type mismatch error in             The parameters are not of the same array type.
+               ACalc init.
+============== ===========================================  =====================================================
+
+
+Compile
+_______
+
+These are the exceptions which can occur during the compile phase.
+
+================ ====================================  =====================================================
+Exception type     Text                                        Description
+================ ====================================  =====================================================
+ValueError       unknown call name in ACalc compile.   A function call name is not recognised.
+OverflowError    equation constant 'x' is out of       The specified constant is not valid for the array
+                 range for the selected array type     type selected.
+                 in ACalc compile.
+ValueError       Invalid operations in ACalc           The specified operators are invalid.
+                 compile: 'x'.
+ValueError       Unsupported operations in ACalc       The specified operators are not supported on the 
+                 compile: 'x'                          current platform. Some platforms do not support all
+                                                       features.
+ValueError       array name used in additional         The variable which specifies the array element was 
+                 parameters in ACalc compile.          repeated in the additional parameters list.
+ValueError       undefined variables in ACalc          A variable was used in the equation which was not 
+                 compile: 'x'.                         defined in the parameter list.
+ValueError       unused variables in ACalc compile:    A variable was defined in the parameter list but was
+                 'x'.                                  not used in the equation.
+ValueError       duplicate parameter names in          One or more variable names were repeated in the
+                 ACalc compile.                        parameter list.
+ValueError       unbalanced parentheses in ACalc       The left and right parentheses "(", ")", do not match.
+                 compile.
+ValueError       invalid tokens in ACalc compile:      An invalid symbol was present in the equation.
+                 'x'.
+SyntaxError      invalid syntax in equation in         A syntax error was found in the equation.
+                 ACalc compile in position 'x' 'y'.
+ValueError       unsupported element in equation       The equation contains one or more elements which are
+                 in ACalc compile.                     likely valid Python, but are not supported in ACalc.
+ValueError       unsupported function call in          An unsupported function call was made.
+                 equation in ACalc compile.
+SyntaxError      parsing error in ACalc compile:       An unspecified parsing error occured.
+                 'x'
+ValueError       unknown compile error in ACalc        An unspecified compile error occured.
+                 compile.
+ValueError       stack overflow or underflow           The equation was checked before execution, and a
+                 in ACalc compile.                     stack overflow was detected. The equation may be
+                                                       too complex.
+================ ====================================  =====================================================
+
+
+Run Time
+________
+
+These are the exceptions which can occur during the execution phase. All errors 
+except for the arithmetic overflow errors should have been detected during the 
+compile phase. These run-time checks are in addition to the compile checks.
+
+
+================ ====================================  ======================================
+Exception type     Text                                        Description
+================ ====================================  ======================================
+ValueError        ACalc vm stack overflow or            A stack overflow was detected.
+                  underflow.
+ValueError        ACalc vm uknown op code.              An unknown opcde was detected.
+ValueError        ACalc vm variable array overflow.     The variable array index overflowed.
+ValueError        ACalc vm operator is invalid for      An operator used was invalid for the
+                  array type.                           array type.
+================ ====================================  ======================================
+
+
+---------------------------------------------------------------------
 
 Performance
 ===========
@@ -1145,97 +1477,183 @@ of '50' means that the corresponding Arrayfunc operation ran 50 times faster
 than the closest native Python equivalent. Overflow checking was on in all 
 tests.
 
+Both relative performance (the speed-up as compared to Python) and absolute
+performance (the actual execution speed of Python and ArrayFunc) will vary
+significantly depending upon the compiler (which is OS platform dependent) and 
+whether compiled to 32 or 64 bit. If your precise actual benchmark performance 
+results matter, be sure to conduct your testing using the actual OS and compiler 
+your final program will be deployed on. The values listed below were measured on 
+x86-64 Linux compiled with GCC. 
+
+
+Note: Some Arrayfunc functions in the "other functions" table do not work
+exactly the same way as the built-in or "itertools" Python equivalents. This 
+means that the benchmark results should be taken as general guidelines rather
+than precise comparisons. 
+
+
 Amap
 ----
 
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
         opcode     b     B     h     H     i     I     l     L     q     Q     f     d
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        af_add   150   181   170   168   155    81    71    47    56    50    41    40
-        af_div    77    71    81    81    82    58    76    55    71    56    86    82
-      af_div_r    77    77    87    86    86    64    83    53    81    56    74    65
-   af_floordiv    39    33    26    40    37    28    40    27    34    27    49    50
- af_floordiv_r    30    40    33    41    40    30    39    25    35    27    43    47
-        af_mod    33    37    27    39    39    28    42    26    33    27    25    27
-      af_mod_r    36    37    38    39    37    28    39    28    35    27    23    20
-       af_mult   108   150   100   155   102    89    71    49    62    48    46    41
-        af_neg   172         180         142          81          67          47    42
-        af_pow    75    74    67    64    49    43    28    24    26    24    14    13
-      af_pow_r    67    54    59    61    47    41    27    24    25    23   2.5   4.1
-        af_sub   173   178   168   166   123    93    88    51    62    66    42    39
-      af_sub_r   145   169   134   140   123    89    76    48    65    52    48    39
-        af_and   185   298   279   211   163   133    89    64    79    64            
-         af_or   174   280   270   193   170   124    89    63    70    60            
-        af_xor   198   309   294   208   158   129    96    55    75    60            
-     af_invert   235   244   365   364   219   222   116    88   114    99            
-         af_eq   210   244   191   186   152   115    74    58    73    63   126    72
-         af_gt   168   194   178   183   151   118    85    63    70    55   147    83
-        af_gte   165   244   180   183   153   111    85    58    72    62   148    90
-         af_lt   172   231   175   188   153   116    84    57    68    58   115    70
-        af_lte   168   197   182   181   163   113    51    55    73    57   152    87
-         af_ne   201   233   182   172   155   118    87    58    70    59   151    88
-     af_lshift   212   298   204   200   202   128   110    72    83    68            
-   af_lshift_r   210   278   205   192   188   130    83    64    81    65            
-     af_rshift   209   288   198   198   209   130    94    62    82    66            
-   af_rshift_r   217   265   204   197   215   142    92    63    80    65            
-        af_abs   128         136         125          82          61         121    75
-     math_acos                                                                13    12
-    math_acosh                                                               8.0   6.2
-     math_asin                                                                17    14
-    math_asinh                                                               7.5   7.4
-     math_atan                                                                14    14
-    math_atan2                                                               9.9    10
-  math_atan2_r                                                                13   8.4
-    math_atanh                                                               7.9   8.6
-     math_ceil                                                                77    75
- math_copysign                                                                78    78
-      math_cos                                                                20    10
-     math_cosh                                                                11   8.6
-  math_degrees                                                                59    49
-      math_erf                                                                17    15
-     math_erfc                                                                10   8.5
-      math_exp                                                                15    12
-    math_expm1                                                               8.0   8.2
-     math_fabs                                                                81    75
-math_factorial    85    93    82   108    86    73    80    66    80    69            
-    math_floor                                                                76    74
-     math_fmod                                                                12    13
-   math_fmod_r                                                                12    12
-    math_gamma                                                               1.3   1.5
+        af_add   122   130   125   136    95    76    60    61    61    53    41    39
+        af_div    58    55    61    58    58    54    59    50    62    47    78    69
+      af_div_r    56    62    63    63    68    53    59    44    66    44    71    58
+   af_floordiv    34    30    26    36    35    32    34    28    42    28    54    47
+ af_floordiv_r    26    35    29    38    35    30    34    26    35    27    51    40
+        af_mod    32    34    23    40    38    29    33    26    35    28    27    27
+      af_mod_r    33    30    31    37    30    27    32    26    30    28    20    18
+       af_mult    92   136    84   130    87   106    60    61    57    51    47    39
+        af_neg   109         132         115          67          63          39    35
+        af_pow    52    49    47    45    34    30    19    16    18    16    15    14
+      af_pow_r    47    41    43    40    33    30    19    18    18    17   2.6   4.0
+        af_sub   136   135   124   124   108    91    63    57    70    50    39    40
+      af_sub_r   131   142   104   108   108    86    61    44    61    48    44    39
+        af_and   155   238   235   161   150   122    72    71    79    66            
+         af_or   151   234   238   161   147   124    78    73    75    70            
+        af_xor   150   235   227   162   161   129    89    76    82    72            
+     af_invert   180   190   282   300   210   193   102    96   114   107            
+         af_eq   159   182   143   142   133    99    72    59    75    58   127    83
+         af_gt   151   154   147   146   139   105    70    58    79    62   157    84
+        af_gte   147   201   146   147   147   105    70    60    76    57   158   104
+         af_lt   137   188   160   145   137   108    73    60    75    60   170    97
+        af_lte   139   155   133   158   138   117    74    62    77    64   175   107
+         af_ne   161   194   151   172   134   128    76    68    76    63   163   115
+     af_lshift   177   240   183   164   192   118   108    83   100    91            
+   af_lshift_r   181   254   197   175   185   141   102    77    94    84            
+     af_rshift   170   238   159   150   191   124    92    72    95    77            
+   af_rshift_r   170   217   157   187   194   129    88    70    92    84            
+        af_abs   101         100          94          70          72         139    76
+     math_acos                                                                12    12
+    math_acosh                                                               6.7   5.2
+     math_asin                                                                13    11
+    math_asinh                                                               6.7   6.8
+     math_atan                                                                12    12
+    math_atan2                                                               8.4   8.4
+  math_atan2_r                                                                11   7.2
+    math_atanh                                                               6.6   7.4
+     math_ceil                                                                69    67
+ math_copysign                                                                73    65
+      math_cos                                                                16   8.4
+     math_cosh                                                                11   7.2
+  math_degrees                                                                58    47
+      math_erf                                                                15    13
+     math_erfc                                                               8.4   7.6
+      math_exp                                                                12   8.9
+    math_expm1                                                               7.1   6.9
+     math_fabs                                                                64    65
+math_factorial    73    41    74    93    75    62    65    59    77    56            
+    math_floor                                                                60    63
+     math_fmod                                                                12    11
+   math_fmod_r                                                                31    30
+    math_gamma                                                               1.1   1.3
     math_hypot                                                                19    14
-  math_hypot_r                                                                21    15
-    math_isinf                                                                59    51
-    math_isnan                                                                66    52
-    math_ldexp                                                                70    67
-   math_lgamma                                                              10.0   6.9
-      math_log                                                                17   9.9
-    math_log10                                                                12   7.9
-    math_log1p                                                                11    10
-      math_pow                                                                24    23
-    math_pow_r                                                               4.2   6.8
-  math_radians                                                                61    50
-      math_sin                                                                18   9.4
-     math_sinh                                                               6.1   5.5
-     math_sqrt                                                                59    48
-      math_tan                                                               7.5   6.5
-     math_tanh                                                               7.0   6.4
-    math_trunc                                                                58    48
- aops_subst_gt   199   199   222   233   195   174   108    75    88    70   181    91
-aops_subst_gte   188   208   222   228   187   143   102    72    84    73   164    82
- aops_subst_lt   216   244   234   220   171   162   101    75    87    74   149    87
-aops_subst_lte   178   219   221   203   175   143    97    69    93    74   153    83
+  math_hypot_r                                                                21    13
+    math_isinf                                                                53    54
+    math_isnan                                                                57    54
+    math_ldexp                                                                58    54
+   math_lgamma                                                               8.8   6.1
+      math_log                                                                15   8.9
+    math_log10                                                               9.8   7.0
+    math_log1p                                                               9.0   8.6
+      math_pow                                                                21    20
+    math_pow_r                                                               3.7   6.0
+  math_radians                                                                55    47
+      math_sin                                                                15   8.4
+     math_sinh                                                               5.0   5.3
+     math_sqrt                                                                48    41
+      math_tan                                                               7.0   5.6
+     math_tanh                                                               6.1   5.6
+    math_trunc                                                                49    42
+ aops_subst_gt   160   185   193   161   193   139    99    79    98    90   212    89
+aops_subst_gte   147   181   177   178   150   137    82    66    74    61   143    73
+ aops_subst_lt   180   200   200   180   176   149    68    72    63    62   165    67
+aops_subst_lte   174   174   172   183   160   145    66    58    65    60   141    61
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    95
-Maximum:    365
-Minimum:    1.3
+Average:    84
+Maximum:    300
+Minimum:    1.1
 Array size: 100000
 =========== ========
+
+
+
+ACalc
+-----
+
+============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+        opcode     b     B     h     H     i     I     l     L     q     Q     f     d
+============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+           add    20    21    21    22    21    18    20    16    21    18    18    21
+           sub    22    26    23    25    24    21    25    20    24    21    17    20
+          mult    12    14   7.2    13   5.2   7.3   3.3   4.8   3.2   4.9    20    19
+           div    25    36    37    38    37    28    25    21    24    23    32    36
+      floordiv    19    21    20    21    21    17    18    13    17    14    26    27
+           mod    17    22    13    20    19    19    20    15    21    16    16    15
+          uadd    44    57    54    59    51    45    57    35    48    37    17    19
+          usub    33          29          33          30          31          20    20
+           pow    33    34    30    30    25    22    16    14    16    15    11    11
+        bitand    27    31    31    36    31    26    28    27    29    23            
+         bitor    27    31    30    28    31    25    28    22    29    23            
+        bitxor    29    32    38    33    29    29    33    29    28    23            
+        invert    56    58    59    59    62    44    57    45    63    53            
+        lshift    30    32    29    34    33    27    32    30    31    25            
+        rshift    30    35    31    31    30    23    30    23    30    24            
+           abs    39    65    38    53    38    44    35    51    34    55    40    35
+     math_acos                                                               9.6   9.6
+    math_acosh                                                               6.3   5.0
+     math_asin                                                                11    10
+    math_asinh                                                               5.6   6.6
+     math_atan                                                                10   9.7
+    math_atan2                                                               8.1   7.4
+    math_atanh                                                               6.4   7.0
+     math_ceil                                                                40    43
+ math_copysign                                                                33    36
+      math_cos                                                                12   7.9
+     math_cosh                                                               8.9   6.6
+  math_degrees                                                                30    29
+      math_erf                                                                13    12
+     math_erfc                                                               7.6   7.0
+      math_exp                                                                10   7.9
+    math_expm1                                                               6.5   6.5
+     math_fabs                                                                66    56
+math_factorial    35    40    36    40    37    27    34    31    39    26            
+    math_floor                                                                39    39
+     math_fmod                                                               9.3    11
+    math_gamma                                                               1.1   1.3
+    math_hypot                                                                15    11
+    math_ldexp                                                                32    32
+   math_lgamma                                                               7.1   5.6
+      math_log                                                                12   8.2
+    math_log10                                                               8.5   6.8
+    math_log1p                                                               7.6   8.3
+      math_pow                                                                16    16
+  math_radians                                                                27    27
+      math_sin                                                                12   7.8
+     math_sinh                                                               4.6   4.9
+     math_sqrt                                                                31    27
+      math_tan                                                               6.4   5.6
+     math_tanh                                                               5.2   4.8
+    math_trunc                                                                31    33
+============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+
+
+=========== ========
+Stat         Value
+=========== ========
+Average:    25
+Maximum:    66
+Minimum:    1.1
+Array size: 100000
+=========== ========
+
 
 
 Other Functions
@@ -1244,29 +1662,28 @@ Other Functions
 ===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
    function     b     B     h     H     i     I     l     L     q     Q     f     d
 ===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
-       aall   9.9    13    14    12    10    12   5.9   7.3   6.5   7.9    14   7.5
-       aany   9.8    13    10    12   9.2    13   6.5   6.9   6.4   6.6    13   7.9
-    afilter   280   266   257   271   182   132   109    80   106    72   183   110
-       amax    24    34    22    32    21    22    13    14    14    14    33    23
-       amin    23    35    23    31    23    24    14    15    13    14    31    24
-       asum   9.6    12   9.6    11   9.7    13   8.8   9.6   8.2   6.9   3.6   3.9
-   compress    53    57    53    53    52    36    42    31    45    31    46    40
-      count   267   263   255   266   134    89    80    56    70    55   112    95
-      cycle   111   111   109   106    89    61    66    41    56    39    36    36
-  dropwhile   133   135   129   130   111    84    63    48    64    47   113    61
-  findindex    21    22    21    21    17    18    12    14    12    13    15    12
-findindices    37    37    36    51    32    33    20    22    22    22    34    27
-     repeat   126   129   118   122    76    14    43   9.8    44    10   109    62
-  takewhile   231   296   248   225   186   132    97    80   101    72   160   102
+       aall    11   8.8   8.7   8.8   8.2   8.7   6.5   7.8   6.7   7.9    15   8.2
+       aany   9.8   7.2   5.9   7.2   5.7   7.4   6.0   6.3   5.9   6.2    11   6.5
+    afilter   224   222   215   212   143    99    87    60    86    59   157    88
+       amax    21    28    22    24    19    20    12    13    13    13    30    23
+       amin    20    29    20    29    20    18    12    12    12    12    29    23
+       asum   6.1   8.5   6.6   8.1   7.1   8.7   5.7   6.4   5.7   6.3   2.8   2.8
+   compress    35    38    35    36    36    18    31    16    30    16    33    30
+      count   221   202   207   207   111    81    64    46    64    47   105    85
+      cycle    94    97    92    96    81    57    54    37    54    38    35    35
+  dropwhile    88    85    87    86    85    61    53    38    53    39    87    52
+  findindex    15    15    15    14    18    18    10    12    10    13    15    12
+findindices    21    21    21    21    20    21    19    20    19    20    33    28
+     repeat   131   129   120   117    79    22    47    13    47    13   107    62
+  takewhile   239   179   173   139   157    85    90    61    90    61   123    89
 ===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
-
-
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    63
-Maximum:    296
-Minimum:    3.6
+Average:    51
+Maximum:    239
+Minimum:    2.8
 Array size: 1000000
 =========== ========
+

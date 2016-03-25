@@ -1794,7 +1794,7 @@ test_templates = {'test_template' : test_template,
 # ==============================================================================
 
 # Read the operator and function definition data.
-csvdatatmp = codegen_common.ReadCSVData()
+csvdatatmp = codegen_common.ReadCSVData('arrayfunc.csv')
 csvdata = [x for x in csvdatatmp if x['#params'] != '0']
 
 

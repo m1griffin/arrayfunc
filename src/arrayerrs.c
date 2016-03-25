@@ -33,35 +33,35 @@
 
 // Standard messages. 
 void ErrMsgArithCalc(void) {
-	PyErr_SetString(PyExc_ArithmeticError, "Arithmetic error in calculation.");
+	PyErr_SetString(PyExc_ArithmeticError, "arithmetic error in calculation.");
 }
 
 void ErrMsgArrayLengthErr(void) {
-	PyErr_SetString(PyExc_IndexError, "Array length error.");
+	PyErr_SetString(PyExc_IndexError, "array length error.");
 }
 
 void ErrMsgArrayLengthMismatch(void) {
-	PyErr_SetString(PyExc_IndexError, "Array length mismatch.");
+	PyErr_SetString(PyExc_IndexError, "array length mismatch.");
 }
 
 void ErrMsgArithOverflowCalc(void) {
-	PyErr_SetString(PyExc_OverflowError, "Arithmetic overflow in calculation.");
+	PyErr_SetString(PyExc_OverflowError, "arithmetic overflow in calculation.");
 }
 
 void ErrMsgArithOverflowParam(void) {
-	PyErr_SetString(PyExc_OverflowError, "Arithmetic overflow in parameter.");
+	PyErr_SetString(PyExc_OverflowError, "arithmetic overflow in parameter.");
 }
 
 void ErrMsgArrayAndParamMismatch(void) {
-	PyErr_SetString(PyExc_TypeError, "Array and parameter type mismatch.");
+	PyErr_SetString(PyExc_TypeError, "array and parameter type mismatch.");
 }
 
 void ErrMsgArrayTypeMismatch(void) {
-	PyErr_SetString(PyExc_TypeError, "Array type mismatch.");
+	PyErr_SetString(PyExc_TypeError, "array type mismatch.");
 }
 
 void ErrMsgUnknownArrayType(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown array type.");
+	PyErr_SetString(PyExc_TypeError, "unknown array type.");
 }
 
 void ErrMsgArrayorBytesExpected(void) {
@@ -69,80 +69,54 @@ void ErrMsgArrayorBytesExpected(void) {
 }
 
 void ErrMsgOperatorNotValidforthisFunction(void) {
-	PyErr_SetString(PyExc_ValueError, "Operator not valid for this function.");
+	PyErr_SetString(PyExc_ValueError, "operator not valid for this function.");
 }
 
 void ErrMsgOperatorNotValidforthisPlatform(void) {
-	PyErr_SetString(PyExc_ValueError, "Operator not valid for this platform.");
+	PyErr_SetString(PyExc_ValueError, "operator not valid for this platform.");
 }
 
 void ErrMsgParameterError(void) {
-	PyErr_SetString(PyExc_TypeError, "Parameter error.");
+	PyErr_SetString(PyExc_TypeError, "parameter error.");
 }
 
 void ErrMsgParameterMissing(void) {
-	PyErr_SetString(PyExc_TypeError, "Parameter missing.");
+	PyErr_SetString(PyExc_TypeError, "parameter missing.");
 }
 
 void ErrMsgParameterNotValidforthisOperation(void) {
-	PyErr_SetString(PyExc_ValueError, "Parameter not valid for this operation.");
+	PyErr_SetString(PyExc_ValueError, "parameter not valid for this operation.");
 }
 
 
 
 // Used for compress.
 void ErrMsgArrayLengthInput(void) {
-	PyErr_SetString(PyExc_IndexError, "Input array length error.");
+	PyErr_SetString(PyExc_IndexError, "input array length error.");
 }
 
 void ErrMsgArrayLengthOutput(void) {
-	PyErr_SetString(PyExc_IndexError, "Output length error.");
+	PyErr_SetString(PyExc_IndexError, "output length error.");
 }
 
 void ErrMsgArrayLengthSelector(void) {
-	PyErr_SetString(PyExc_IndexError, "Selector length error.");
+	PyErr_SetString(PyExc_IndexError, "selector length error.");
 }
 
 
 // Used for convert.
 void ErrMsgConversionNotValidforthisType(void) {
-	PyErr_SetString(PyExc_ValueError, "Conversion not valid for this type.");
+	PyErr_SetString(PyExc_ValueError, "conversion not valid for this type.");
 }
 
 void ErrMsgNaNError(void) {
-	PyErr_SetString(PyExc_ValueError, "Cannot convert float NaN to integer.");
+	PyErr_SetString(PyExc_ValueError, "cannot convert float NaN to integer.");
 }
 
 
 // Used for findindices. 
 void ErrMsgOutputArrayTypeInvalid(void) {
-	PyErr_SetString(PyExc_TypeError, "Output array type invalid.");
-}
-
-
-// Used for arraylimits and arrayguardbands.
-void ErrMsgSourceArrayNotFloat(void) {
-	PyErr_SetString(PyExc_TypeError, "Source array code type is not a float or double.");
-}
-
-void ErrMsgUnknownDestinationArrayTypeCode(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown destination array code type.");
-}
-
-void ErrMsgUknownDestinationCode(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown destination itemcode.");
-}
-
-void ErrMsgUknownLimitType(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown limit type.");
-}
-
-void ErrMsgUknownItemCode(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown itemcode.");
-}
-
-void ErrMsgUknownSourceItemcode(void) {
-	PyErr_SetString(PyExc_TypeError, "Unknown source itemcode.");
+	PyErr_SetString(PyExc_TypeError, "output array type invalid.");
 }
 
 

@@ -51,9 +51,9 @@ struct args_param {
 // intend to use them for keywords or not. 
 static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 
-
 /*--------------------------------------------------------------------------- */
 
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
@@ -1434,6 +1434,7 @@ Py_ssize_t findindices_double(signed int opcode, Py_ssize_t arraylen, double *da
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 

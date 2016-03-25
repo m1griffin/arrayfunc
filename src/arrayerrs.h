@@ -70,11 +70,4 @@ void ErrMsgNaNError(void);
 
 void ErrMsgOutputArrayTypeInvalid(void);
 
-void ErrMsgSourceArrayNotFloat(void);
-void ErrMsgUnknownDestinationArrayTypeCode(void);
-void ErrMsgUknownDestinationCode(void);
-void ErrMsgUknownLimitType(void);
-void ErrMsgUknownItemCode(void);
-void ErrMsgUknownSourceItemcode(void);
-
 /*--------------------------------------------------------------------------- */

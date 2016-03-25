@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     05-Jun-2014.
-# Ver:      29-Aug-2015.
+# Ver:      06-Mar-2016.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.

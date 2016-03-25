@@ -41,7 +41,7 @@ topheader = '\n'.join([headerbar, headertext1, headertext2, headerbar])
 # ==============================================================================
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
-csvdata = codegen_common.ReadCSVData()
+csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 
 # The documentation for the opcodes.

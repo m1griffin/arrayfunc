@@ -68,7 +68,7 @@ op_template = """		// %(opcodename)s
 # ==============================================================================
 
 # Read in the op codes.
-oplist = codegen_common.ReadCSVData()
+oplist = codegen_common.ReadCSVData('arrayfunc.csv')
 
 # Filter out
 compops = [x for x in oplist if x['compare_ops'] != '']

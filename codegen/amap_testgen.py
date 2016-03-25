@@ -2195,7 +2195,7 @@ test_templates = {'test_template' : test_template,
 # ==============================================================================
 
 # Read the operator and function definition data.
-csvdata = codegen_common.ReadCSVData()
+csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 
 # ==============================================================================

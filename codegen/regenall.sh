@@ -43,6 +43,12 @@ filecount=$(($filecount + 1))
 echo "Generating:  opcodes.py"
 ./opcodes.py
 filecount=$(($filecount + 1))
+echo "Generating:  acalcdocsgen.py"
+./acalcdocsgen.py
+filecount=$(($filecount + 1))
+echo "Generating:  acalcopcodes.py"
+./acalcopcodes.py
+filecount=$(($filecount + 1))
 
 
 # Time at which the test sequence completed.

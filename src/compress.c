@@ -50,6 +50,7 @@ static char *kwlist[] = {"data", "dataout", "selecdtor", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* datalen = The length of the input array.

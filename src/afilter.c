@@ -50,8 +50,7 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
-
-
+// Auto generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
@@ -1072,6 +1071,7 @@ Py_ssize_t afilter_double(signed int opcode, Py_ssize_t arraylen, double *data, 
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 

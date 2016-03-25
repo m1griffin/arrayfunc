@@ -42,7 +42,9 @@
 // intend to use them for keywords or not. 
 static char *kwlist[] = {"data", "maxlen", NULL};
 
+/*--------------------------------------------------------------------------- */
 
+// Auto-generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
@@ -295,7 +297,6 @@ double max_double(Py_ssize_t arraylen, double *data) {
 
 	return maxfound;
 }
-
 
 /*--------------------------------------------------------------------------- */
 

@@ -696,7 +696,7 @@ def CreateFunction(csvdata, arraycode):
 ############################################################
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
-csvdata = codegen_common.ReadCSVData()
+csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 
 with open('starmap_code.txt', 'w') as f:
