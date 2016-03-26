@@ -7,7 +7,7 @@ ArrayFunc
 
 :Copyright: 2014 - 2016
 :License: This document may be distributed under the Apache 2.0 License.
-:Language: Python 3.4
+:Language: Python 3.4 or later
 
 ---------------------------------------------------------------------
 
@@ -160,6 +160,7 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 14.04 LTS   64 bit    GCC                         3.4
+Ubuntu 16.04 LTS   64 bit    GCC                         3.5
 Debian 8           32 bit    GCC                         3.4
 FreeBSD 10         64 bit    LLVM                        3.4
 MS Windows 10      32 bit    MS Visual Studio C 2010     3.4

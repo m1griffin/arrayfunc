@@ -50,5 +50,6 @@ setup(name = 'arrayfunc',
 	keywords = 'mathematical array functions',
 	ext_package='arrayfunc',
 	ext_modules = [Extension(x, y) for x,y in extensions],
-	packages=['arrayfunc'])
+	packages=['arrayfunc']
+	)
 

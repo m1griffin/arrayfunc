@@ -1229,7 +1229,7 @@ math functions, this means that the MS Windows version of Arrayfunc does not
 implement some math functions. These are indicated above by the "Win" column in
 the above tables.
 
-The "math" library in Python implements it's own versions of these functions to
+The "math" library in Python implements its own versions of these functions to
 paper over the missing functions for the MS Windows version. Arrayfunc however
 relies on the C libraries. 
 
@@ -1383,7 +1383,7 @@ Exception type   Text                                        Description
 ============== ===========================================  =====================================================
 TypeError      first parameter must be an array or bytes     The first parameter is of an incorrect type.
                in ACalc init.
-TypeError      second parameter must be an array or bytes    The first parameter is of an incorrect type.
+TypeError      second parameter must be an array or bytes    The second parameter is of an incorrect type.
                in ACalc init.
 TypeError      unknown array type in ACalc init.             The type of one of the parameters is not recognised.
 TypeError      data array type mismatch error in             The parameters are not of the same array type.
