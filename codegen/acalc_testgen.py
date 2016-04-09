@@ -241,6 +241,24 @@ class acalcccomp_calc_comp_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
+	def test_compile_reserved_words_as_variables_00(self):
+		"""Test acalc compile comp reserved words as variables - "abs" may not be a variable name  - Array code %(typelabel)s.
+		"""
+		with self.assertRaisesRegex(ValueError, '"abs" may not be used as a variable name in ACalc compile.'):
+			self.eqn.comp('abs + 1', 'abs', ())
+
+
+	########################################################
+	def test_compile_reserved_words_as_variables_01(self):
+		"""Test acalc compile comp reserved words as variables - abs, try, def may not be a variable name  - Array code %(typelabel)s.
+		"""
+		# Use a regex in testing the error message, since we don't know the order 
+		# the multiple results will come out in. 
+		with self.assertRaisesRegex(ValueError, '"...", "...", "..." may not be used as a variable name in ACalc compile.$'):
+			self.eqn.comp('abs + 1 + if + def', 'abs', ('try', 'def'))
+
+
+	########################################################
 	def test_compile_invalid_tokens_arrayclass_00(self):
 		"""Test acalc compile comp unbalanced parentheses - this should pass  - Array code %(typelabel)s.
 		"""
@@ -391,14 +409,13 @@ class acalcccomp_calc_comp_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
-
-# The basic template for testing each array type for _FilterFuncCalls.
-calc_comp__FilterFuncCalls_template = '''
+# The basic template for testing each array type for _CheckParamKeywords.
+calc_comp__CheckParamKeywords_template = '''
 ##############################################################################
-class acalcccomp_calc_comp__FilterFuncCalls_%(typelabel)s(unittest.TestCase):
+class acalcccomp_calc_comp__CheckParamKeywords_%(typelabel)s(unittest.TestCase):
 	"""Test for basic class compile.
 	"""
-	# Template: calc_comp__FilterFuncCalls_template
+	# Template: calc_comp__CheckParamKeywords_template
 
 
 	########################################################
@@ -420,143 +437,126 @@ class acalcccomp_calc_comp__FilterFuncCalls_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_00(self):
-		"""Test acalc compile _FilterFuncCalls - this should pass without a function call  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_00(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', [] - Array variable only  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pushconst', 2, False), ('pusharray', 'x', False), 
-			('pushconst', 1, False), ('add', None, False), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('x', [])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
+		self.assertEqual(result, set([]))
 
-		result = self.eqn._FilterFuncCalls(nodelist)
+	########################################################
+	def test_compile__CheckParamKeywords_01(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', ['y'] - Array and one additional variable  - Array code %(typelabel)s.
+		"""
+		result = self.eqn._CheckParamKeywords('x', ['y'])
 
-		self.assertEqual(len(result), nodelength)
+		self.assertEqual(result, set([]))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_01(self):
-		"""Test acalc compile _FilterFuncCalls - abs(x) - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_02(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', ['y', 'z'] - Array and two additional variables  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pusharray', 'x', False), ('pushvar', 'abs', False), ('abs', None, True)]
+		result = self.eqn._CheckParamKeywords('x', ['y', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set([]))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_02(self):
-		"""Test acalc compile _FilterFuncCalls - math.sin(x) - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_03(self):
+		"""Test acalc compile _CheckParamKeywords - 'xtest', ['ytest', 'ztest'] - Long variable names  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pusharray', 'x', False), ('pushvar', 'math', False), ('math.sin', None, True)]
+		result = self.eqn._CheckParamKeywords('xtest', ['ytest', 'ztest'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set([]))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_03(self):
-		"""Test acalc compile _FilterFuncCalls - 1 + abs(x)  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_04(self):
+		"""Test acalc compile _CheckParamKeywords - 'abs', ['y', 'z'] - abs as array variable name  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pusharray', 'x', False), ('pushvar', 'abs', False), 
-			('abs', None, True), ('pushconst', 1, False), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('abs', ['y', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set(['abs']))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_04(self):
-		"""Test acalc compile _FilterFuncCalls - 1 + math.sin(x)  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_05(self):
+		"""Test acalc compile _CheckParamKeywords - 'math', ['y', 'z'] - math as array variable name  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pusharray', 'x', False), ('pushvar', 'math', False), 
-			('math.sin', None, True), ('pushconst', 1, False), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('math', ['y', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set(['math']))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_05(self):
-		"""Test acalc compile _FilterFuncCalls - abs(x) + 2  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_06(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', ['abs', 'z'] - abs as additional variable name  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pushconst', 2, False), ('pusharray', 'x', False), 
-			('pushvar', 'abs', False), ('abs', None, True), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('x', ['abs', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set(['abs']))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_06(self):
-		"""Test acalc compile _FilterFuncCalls - math.sin(x) + 2  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_07(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', ['math', 'z'] - math as additional variable name  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pushconst', 2, False), ('pusharray', 'x', False), 
-			('pushvar', 'math', False), ('math.sin', None, True), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('x', ['math', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set(['math']))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_07(self):
-		"""Test acalc compile _FilterFuncCalls - 1 + abs(x) + 2  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_08(self):
+		"""Test acalc compile _CheckParamKeywords - 'abs', ['math', 'z'] - both as variable names  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pushconst', 2, False), ('pusharray', 'x', False), 
-			('pushvar', 'abs', False), ('abs', None, True), ('pushconst', 1, False), 
-			('add', None, False), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('abs', ['math', 'z'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
-
-		result = self.eqn._FilterFuncCalls(nodelist)
-
-		self.assertEqual(len(result), nodelength - 1)
+		self.assertEqual(result, set(['abs', 'math']))
 
 
 	########################################################
-	def test_compile__FilterFuncCalls_08(self):
-		"""Test acalc compile _FilterFuncCalls - 1 + math.sin(x) + 2  - Array code %(typelabel)s.
+	def test_compile__CheckParamKeywords_09(self):
+		"""Test acalc compile _CheckParamKeywords - 'x', ['math', 'abs'] - both as variable names  - Array code %(typelabel)s.
 		"""
-		nodedata = [('pushconst', 2, False), ('pusharray', 'x', False), 
-			('pushvar', 'math', False), ('math.sin', None, True), ('pushconst', 1, False), 
-			('add', None, False), ('add', None, False)]
+		result = self.eqn._CheckParamKeywords('x', ['math', 'abs'])
 
-		nodelist = [arrayfunc.acalc.OpCodeContainer(x, y, z)  for x, y, z in nodedata]
-		nodelength = len(nodelist)
+		self.assertEqual(result, set(['abs', 'math']))
 
-		result = self.eqn._FilterFuncCalls(nodelist)
 
-		self.assertEqual(len(result), nodelength - 1)
+	########################################################
+	def test_compile__CheckParamKeywords_10(self):
+		"""Test acalc compile _CheckParamKeywords - 'if', [] - if as array variable  - Array code %(typelabel)s.
+		"""
+		result = self.eqn._CheckParamKeywords('if', [])
+
+		self.assertEqual(result, set(['if']))
+
+
+	########################################################
+	def test_compile__CheckParamKeywords_11(self):
+		"""Test acalc compile _CheckParamKeywords - 'if', [] - if as additional variable  - Array code %(typelabel)s.
+		"""
+		result = self.eqn._CheckParamKeywords('x', ['if'])
+
+		self.assertEqual(result, set(['if']))
+
+
+	########################################################
+	def test_compile__CheckParamKeywords_12(self):
+		"""Test acalc compile _CheckParamKeywords - 'if', ['def'] - if as array and def as additional variables  - Array code %(typelabel)s.
+		"""
+		result = self.eqn._CheckParamKeywords('if', ['def'])
+
+		self.assertEqual(result, set(['if', 'def']))
+
 
 
 ##############################################################################
 
 '''
+
 
 
 # ==============================================================================
@@ -1626,6 +1626,21 @@ with open('test_acalc.py', 'w') as f:
 	f.write(calc_init_platform_math_template % datarec)
 
 
+	####################################################################
+
+	# Calc._CheckParamKeywords tests.
+	# Output the generated code for all array types.
+	for funtypes in codegen_common.arraycodes:
+		datarec = {'typelabel' : funtypes, 'typecode' : funtypes}
+		datarec.update(notbytesdata)
+		f.write(calc_comp__CheckParamKeywords_template % datarec)
+
+
+	# Output the generated code for bytes data types.
+	datarec = {'typelabel' : 'bytes', 'typecode' : 'B'}
+	datarec.update(isbytesdata)
+	f.write(calc_comp__CheckParamKeywords_template % datarec)
+
 
 	####################################################################
 
@@ -1641,22 +1656,6 @@ with open('test_acalc.py', 'w') as f:
 	datarec = {'typelabel' : 'bytes', 'typecode' : 'B'}
 	datarec.update(isbytesdata)
 	f.write(calc_comp_template % datarec)
-
-
-	####################################################################
-
-	# Calc class _FilterFuncCalls function tests.
-	# Output the generated code for all array types.
-	for funtypes in codegen_common.arraycodes:
-		datarec = {'typelabel' : funtypes, 'typecode' : funtypes}
-		datarec.update(notbytesdata)
-		f.write(calc_comp__FilterFuncCalls_template % datarec)
-
-
-	# Output the generated code for bytes data types.
-	datarec = {'typelabel' : 'bytes', 'typecode' : 'B'}
-	datarec.update(isbytesdata)
-	f.write(calc_comp__FilterFuncCalls_template % datarec)
 
 
 	####################################################################

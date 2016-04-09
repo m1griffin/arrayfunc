@@ -24,10 +24,12 @@
 ################################################################################
 
 import ast
+import keyword
 import collections
 import itertools
 import array
 import platform
+import math
 
 import arrayfunc.acalcvm
 
@@ -152,7 +154,6 @@ class AnalyseCode(ast.NodeVisitor):
 			raise ValueError('unknown call name in ACalc compile.')
 
 		op = OpCodeContainer(opcode, None, True)
-
 		self._AddOpCode(op)
 
 		self.generic_visit(node)
@@ -161,14 +162,35 @@ class AnalyseCode(ast.NodeVisitor):
 
 	########################################################
 	def visit_Name(self, node):
-		if node.id == self._ArrayName:
-			opcode = 'pusharray'
-		else:
-			opcode = 'pushvar'
+		# Drop this if it is 'math'. This name is reserved for the math library.
+		# Since we don't actually import the math library, we can drop this
+		# operation. The math library functions and attributes can tell for
+		# themselves if they are being called.
+		if node.id not in ('math', 'abs'):
+			if node.id == self._ArrayName:
+				opcode = 'pusharray'
+			else:
+				opcode = 'pushvar'
 
-		op = OpCodeContainer(opcode, node.id, False)
+			op = OpCodeContainer(opcode, node.id, False)
+			self._AddOpCode(op)
 
-		self._AddOpCode(op)
+		self.generic_visit(node)
+		return node
+
+
+	########################################################
+	def visit_Attribute(self, node):
+		# We recognise only two attributes.
+		if (node.attr in ('pi', 'e')) and (node.value.id == 'math'):
+			if node.attr == 'pi':
+				value = math.pi
+			else:
+				value = math.e
+		
+			op = OpCodeContainer('pushconst', value, False)
+			self._AddOpCode(op)
+
 		self.generic_visit(node)
 		return node
 
@@ -176,10 +198,10 @@ class AnalyseCode(ast.NodeVisitor):
 	########################################################
 	def visit_Num(self, node):
 		op = OpCodeContainer('pushconst', node.n, False)
-
 		self._AddOpCode(op)
 		self.generic_visit(node)
 		return node
+
 
 ##############################################################################
 
@@ -359,6 +381,23 @@ class calc:
 		self._UnsupportedCodes = _UnsupportedCodes
 
 
+	########################################################
+	def _CheckParamKeywords(self, arrayname, paramnames):
+		"""Check that the variable names do not collide with any Python keyword
+		names, or with 'math' or 'abs'.
+		Parameters: arrayname (string) = The variable used as the current array
+				element.
+			paramnames (sequence) = The list of additional parameter names.
+		Returns: (set) = Returns the set of names which collide with keywords. 
+		"""
+		paramcheck = set(paramnames)
+		paramcheck.add(arrayname)
+
+		pythonkeywords = set(keyword.kwlist)
+		pythonkeywords.update(set(('math', 'abs')))
+
+		return paramcheck & pythonkeywords
+
 
 	########################################################
 	def _AllNodesValid(self, astnode):
@@ -400,23 +439,6 @@ class calc:
 
 		return not invalidfuncs
 
-
-	########################################################
-	def _FilterFuncCalls(self, nodelist):
-		"""Filter out load instructions where the load parameter is a function 
-		name followed by a call to the function. 
-		Parameters: nodelist (list) = The object containing the analysed ast
-			reduced to a list of objects with text attributes.
-		Returns (list) = The original list with redundant load nodes pruned.
-		"""
-		# Get the list of function calls.
-		flist = [x for x,y in enumerate(nodelist) if y.iscall]
-
-		# Use a reversed list so we can work from the end.
-		for x in reversed(flist):
-			del nodelist[x - 1]
-
-		return nodelist
 
 
 	########################################################
@@ -549,7 +571,6 @@ class calc:
 		# the calculated value because we can't effectively use the first array
 		# element in the stack (the first instruction must be PUSH, which 
 		# increments the stack), plus, size is max index + 1. 
-
 		return min(stackprofile) > 0, max(stackprofile) + 2
 
 
@@ -654,10 +675,18 @@ class calc:
 
 		self._ParamNames = paramnames
 
-		# First, do a simple parentheses count to see if there is a
-		# missing '(' or ')'. This does not check actual syntax. However, this
-		# is a simple test so it pays to do a simple check first for a missing
-		# one in order to give a better error message.
+		# Make sure that we are not attempting to use any Python keywords, or
+		# the names 'math' or 'abs' as a variable name. 
+		badparams = self._CheckParamKeywords(arrayname, paramnames)
+		if badparams:
+			raise ValueError('"%s" may not be used as a variable name in ACalc compile.' % '", "'.join(badparams))
+
+
+
+		# Do a simple parentheses count to see if there is a missing'(' or ')'.
+		# This does not check actual syntax. However, this is a simple test so 
+		# it pays to do a simple check first for a missing one in order to give 
+		# a better one in order to give a better error message.
 		if equation.count('(') != equation.count(')'):
 			raise ValueError('unbalanced parentheses in ACalc compile.')
 
@@ -676,6 +705,7 @@ class calc:
 			# inst.args[1][2] extracts the character position where an error was found,
 			# and inst.args[1][3] repeats the equation itself.
 			raise SyntaxError('invalid syntax in equation in ACalc compile in position %d  %s.' %(inst.args[1][2], inst.args[1][3]))
+
 
 
 		# Check to see if all nodes are of the supported type.
@@ -702,7 +732,7 @@ class calc:
 
 		# Filter out the excess component in function calls.
 		opcodelist = eqcomp.GetOpCodes()
-		opcodelist = self._FilterFuncCalls(opcodelist)
+
 
 		# Convert any unary usub '-' or uadd '+' associated with a constant
 		# to an actual signed number. 
