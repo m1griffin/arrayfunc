@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 1.0.0 for 2016-03-23
+:Version: 1.1.0 for 2016-04-08
 :Copyright: 2014 - 2016
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.4 or later
@@ -117,8 +117,8 @@ convert    Convert arrays between data types. The data will be converted into
            the form required by the output array.
 ========= ======================================================================
 
-Attributes
-__________
+Array Limit Attributes
+______________________
 
 In addition to functions, a set of attributes are provided representing the 
 platform specific maximum and minimum numerical values for each array type. 
@@ -1212,6 +1212,18 @@ Notes on Operators and Functions
 * Some mathematical operations are not supported by the Microsoft compiler. This
   This is indicated by the *Win* column.
 
+
+ACalc Math Constants
+--------------------
+
+ACalc also supports the following math constants as attributes:
+
+* math.pi
+* math.e
+
+These are indentical to the "math" module attributes. This allows these 
+mathematical constants to be used in equations. See the Python math module
+documentation for more information on these constants.
 
 
 Platform Compiler Support

@@ -5,6 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
+:Version: 1.1.0 for 2016-04-08
 :Copyright: 2014 - 2016
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.4 or later
@@ -168,4 +169,12 @@ MS Windows 10      32 bit    MS Visual Studio C 2010     3.4
 
 Some amap, amapi, and acalc operations are not supported on MS Windows due to 
 lack of compiler support. See the documentation for details.
+
+---------------------------------------------------------------------
+
+Release History
+===============
+
+* 1.0.0 - First release.
+* 1.1.0 - Added support for math constants math.pi and math.e.
 
