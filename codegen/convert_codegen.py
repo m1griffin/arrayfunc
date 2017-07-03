@@ -126,12 +126,6 @@ copyloop_doubletofloat = """
 copyloop_float = """
 		// %(arraytype)s
 		case '%(arraycode)s': {
-// MS VC 2010 seems to have bugs when converting large floating point values 
-// to large unsigned long long integers. Values larger than 2**63 do not covert
-// correctly. This problem does not occur with GCC. 
-#ifdef _MSC_VER
-	return ARR_ERR_PLATFORM;
-#endif
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] > %(maxvalue)s) || (data[x] < %(minvalue)s) || (!isfinite(data[x]))) {
 					return ARR_ERR_OVFL;

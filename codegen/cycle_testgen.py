@@ -33,18 +33,18 @@ import codegen_common
 signedtestdata = {'initval' : 0, 'zeroparam' : 0, 'largestart' : 10,
 			'negstart' : -10, 'startdown' : 125, 'stopval' : 100,
 			'smallstep' : 1, 'oddstep' : 7, 'negstep' : -1,
-			'fractionalstep' : 1, 'stepone' : 1, 'invalidtype' : "'a'", 'skiplonglong' : ''}
+			'fractionalstep' : 1, 'stepone' : 1, 'invalidtype' : "'a'"}
 
 unsignedtestdata = {'initval' : 0, 'zeroparam' : 0, 'largestart' : 10,
 			'negstart' : 10, 'startdown' : 125, 'stopval' : 100,
 			'smallstep' : 1, 'oddstep' : 7, 'negstep' : 1,
-			'fractionalstep' : 1, 'stepone' : 1, 'invalidtype' : "'a'", 'skiplonglong' : ''}
+			'fractionalstep' : 1, 'stepone' : 1, 'invalidtype' : "'a'"}
 
 
 floattestdata = {'initval' : 0.0, 'zeroparam' : 0.0, 'largestart' : 10.0,
 			'negstart' : -10.0, 'stopval' : 100.0, 'startdown' : 125.0,
 			'smallstep' : 1.0, 'oddstep' : 7.0, 'negstep' : -1.0,
-			'fractionalstep' : 0.1, 'stepone' : 1.0, 'invalidtype' : "'a'", 'skiplonglong' : ''}
+			'fractionalstep' : 0.1, 'stepone' : 1.0, 'invalidtype' : "'a'"}
 
 
 testdata = {'b' : copy.copy(signedtestdata),
@@ -62,16 +62,12 @@ testdata = {'b' : copy.copy(signedtestdata),
 }
 
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
 
 # ==============================================================================
 
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass cycle_%(typelabel)s(unittest.TestCase):
+class cycle_%(typelabel)s(unittest.TestCase):
 	"""Test for basic cycle function.
 	"""
 
@@ -360,7 +356,11 @@ endclass = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('cycle\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

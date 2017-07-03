@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34,16 +34,20 @@ import codegen_common
 # Read in the data from the CSV spreadsheet which holds the configuration.
 csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
+# ==============================================================================
+
 # The constant definitions for the opcodes.
-with open('defblock.txt', 'w') as f:
+with open('opcodes.txt', 'w') as f:
+	f.write('C source code definitions which define operator and functions.\n\n')
+
+	# The constant definitions for the opcodes.
 	for opcode in csvdata:
 		f.write('#define OP_%s %s\n' % (opcode['opcodename'].upper(), opcode['opcode']))
 
-# ==============================================================================
 
-# The named tuple defining the op code names.
-with open('opcodes.txt', 'w') as f:
+	f.write('\n\n\n\nPython source code definitions which define operator and functions.\n\n')
 
+	# The named tuple defining the op code names.
 	f.write("aops = collections.namedtuple('aops', [\n")
 
 	# Op code names.

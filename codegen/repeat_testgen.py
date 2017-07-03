@@ -34,19 +34,19 @@ import codegen_common
 signedtestdata = {'initval' : 5, 'zeroparam' : 0, 
 		'invalidtype1' : "'a'", 'invalidtype2' : 10.0, 
 		'overflow' : 'self.MaxVal + 1', 'underflow' : 'self.MinVal - 1',
-		'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+		'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 
 unsignedtestdata = {'initval' : 5, 'zeroparam' : 0, 
 		'invalidtype1' : "'a'", 'invalidtype2' : 10.0, 
 		'overflow' : 'self.MaxVal + 1', 'underflow' : 'self.MinVal - 1',
-		'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+		'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 
 floattestdata = {'initval' : 5.0, 'zeroparam' : 0.0, 
 		'invalidtype1' : "'a'", 'invalidtype2' : 10, 
 		'overflow' : 'self.MaxVal * 1.1', 'underflow' : 'self.MinVal * 1.1',
-		'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+		'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 
 testdata = {'b' : copy.copy(signedtestdata),
@@ -68,16 +68,11 @@ testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
-
 # ==============================================================================
 
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass repeat_%(typelabel)s(unittest.TestCase):
+class repeat_%(typelabel)s(unittest.TestCase):
 	"""Test for basic repeat function.
 	"""
 
@@ -243,7 +238,11 @@ endclass = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('repeat\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

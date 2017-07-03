@@ -66,12 +66,3 @@ const float degtorad_f = (float) (M_PI / 180.0);
 const float radtodeg_f = (float) (180.0 / M_PI);
 
 /*--------------------------------------------------------------------------- */
-
-// This is for Microsoft msvc 2010 compatilibility.
-float ms_compat_copysignf(float x, float y);
-
-#ifdef _MSC_VER
-#define copysignf ms_compat_copysignf
-#endif
-
-/*--------------------------------------------------------------------------- */

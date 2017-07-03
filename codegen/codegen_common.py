@@ -76,18 +76,6 @@ OvflTestSkip = """	# Whether this test can be peformed depends on the integer wo
 
 # ==============================================================================
 
-# MSVC 2010 appears to have bugs when converting float or double to unsigned long long.
-MSVCQTestSkip = """	# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support or due to bugs in the platform C compiler.')
-"""
-
-# This version is used to skip entire classes rather than just individual functions.
-MSVCQTestSkipFunc = """# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support due to bugs in the platform C compiler.')
-"""
-
-# ==============================================================================
-
 # This defines the minimum value for each type.
 minvalue = {
 	'b' : 'SCHAR_MIN',	# signed char

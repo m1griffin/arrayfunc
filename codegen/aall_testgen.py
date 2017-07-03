@@ -39,8 +39,7 @@ signedtestdata = {'testdata' : 100, 'paramdata1' : "'e'", 'paramdata2' : 100.5,
 	'lt_true1' : 101, 'lt_false1' : 100, 
 	'lte_true1' : 101, 'lte_true2' : 100, 'lte_false1' : 99, 
 	'ne_true1' : 99, 'ne_false1' : 100,
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 
-	'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 
 unsignedtestdata = {'testdata' : 100, 'paramdata1' : "'e'", 'paramdata2' : 100.5,
@@ -51,8 +50,7 @@ unsignedtestdata = {'testdata' : 100, 'paramdata1' : "'e'", 'paramdata2' : 100.5
 	'lt_true1' : 101, 'lt_false1' : 100, 
 	'lte_true1' : 101, 'lte_true2' : 100, 'lte_false1' : 99, 
 	'ne_true1' : 99, 'ne_false1' : 100,
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 
-	'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 floattestdata = {'testdata' : 100.0, 'paramdata1' : "'e'", 'paramdata2' : 100,
 	'overflowinc' : '* 1.1', 'overflowdec' : '* 1.1', 
@@ -62,8 +60,7 @@ floattestdata = {'testdata' : 100.0, 'paramdata1' : "'e'", 'paramdata2' : 100,
 	'lt_true1' : 101.0, 'lt_false1' : 100.0, 
 	'lte_true1' : 101.0, 'lte_true2' : 100.0, 'lte_false1' : 99.0, 
 	'ne_true1' : 99.0, 'ne_false1' : 100.0,
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 
-	'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 
 
@@ -86,11 +83,6 @@ testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
-
 
 # This is used to test floating point data with nan, inf, and -inf.
 nantestdata = [{'seq' : '01', 'testval' : 0.0},
@@ -106,7 +98,7 @@ nantestdata = [{'seq' : '01', 'testval' : 0.0},
 # The basic template for testing each array type for operator function.
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass aall_operator_%(typelabel)s(unittest.TestCase):
+class aall_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -114,70 +106,278 @@ op_template = '''
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data = array.array('%(typecode)s', [%(testdata)s]*10)
+		# Data with one element different. This is evenly divisible by the SIMD
+		# register size and should be caught by the SIMD code.
+		datalisteven = [100] * 160
+
+		datalisteven2 = [100] * 160
+		datalisteven2[-1] = 99
+
+		datalisteven3 = [100] * 160
+		datalisteven3[-1] = 101
+
+		# Data with one element different. This is not evenly divisible by the 
+		# SIMD register size and should be handled by the non-SIMD code which 
+		# catches the odd array data after the SIMD operation.
+		# For gt, gte
+		datalistodd = [100] * 160
+		datalistodd.append(100)
+
+		datalistodd2 = [100] * 160
+		datalistodd2.append(99)
+
+		datalistodd3 = [100] * 160
+		datalistodd3.append(101)
+
+
+		self.dataeven = array.array('%(typecode)s', datalisteven)
+		self.dataodd = array.array('%(typecode)s', datalistodd)
+		self.dataeven2 = array.array('%(typecode)s', datalisteven2)
+		self.dataodd2 = array.array('%(typecode)s', datalistodd2)
+		self.dataeven3 = array.array('%(typecode)s', datalisteven3)
+		self.dataodd3 = array.array('%(typecode)s', datalistodd3)
+
 
 		# For bytes types, we need a non-array data type.
 		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
+			self.dataeven = bytes(self.dataeven)
+			self.dataodd = bytes(self.dataodd)
+			self.dataeven2 = bytes(self.dataeven2)
+			self.dataodd2 = bytes(self.dataodd2)
+			self.dataeven3 = bytes(self.dataeven3)
+			self.dataodd3 = bytes(self.dataodd3)
 
 
 	########################################################
 	def test_operator_01_eq(self):
-		"""Test eq  - Array code %(typelabel)s.
+		"""Test eq  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(eq_true1)s)
+		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.dataeven, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(eq_false1)s)
-		self.assertFalse(result)
+
 
 	########################################################
-	def test_operator_02_gt(self):
-		"""Test gt  - Array code %(typelabel)s.
+	def test_operator_02_eq(self):
+		"""Test eq  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.data, %(gt_true1)s)
-		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.data, %(gt_false1)s)
+		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.dataeven2, 100%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
-	########################################################
-	def test_operator_03_gte(self):
-		"""Test gte  - Array code %(typelabel)s.
-		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.data, %(gte_true1)s)
-		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.data, %(gte_true2)s)
-		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.data, %(gte_false1)s)
-		self.assertFalse(result)
 
 	########################################################
-	def test_operator_04_lt(self):
-		"""Test lt  - Array code %(typelabel)s.
+	def test_operator_03_eq(self):
+		"""Test eq  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.data, %(lt_true1)s)
+		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.dataodd, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.data, %(lt_false1)s)
-		self.assertFalse(result)
+
 
 	########################################################
-	def test_operator_05_lte(self):
-		"""Test lte  - Array code %(typelabel)s.
+	def test_operator_04_eq(self):
+		"""Test eq  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.data, %(lte_true1)s)
-		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.data, %(lte_true2)s)
-		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.data, %(lte_false1)s)
+		result = arrayfunc.aall(arrayfunc.aops.af_eq, self.dataodd2, 100%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
+
+
 	########################################################
-	def test_operator_06_ne(self):
-		"""Test ne  - Array code %(typelabel)s.
+	def test_operator_05_gt(self):
+		"""Test gt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.data, %(ne_true1)s)
+		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.dataeven, 99%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
-		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.data, %(ne_false1)s)
+
+
+	########################################################
+	def test_operator_06_gt(self):
+		"""Test gt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.dataeven3, 100%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
+
+
+	########################################################
+	def test_operator_07_gt(self):
+		"""Test gt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.dataodd, 99%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_08_gt(self):
+		"""Test gt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gt, self.dataodd3, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+
+	########################################################
+	def test_operator_09_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataeven, 99%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_10_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataeven, 100%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_11_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataeven2, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+	########################################################
+	def test_operator_12_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataodd, 100%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_13_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataodd, 100%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_14_gte(self):
+		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_gte, self.dataodd2, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+
+	########################################################
+	def test_operator_15_lt(self):
+		"""Test lt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.dataeven, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_16_lt(self):
+		"""Test lt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.dataeven, 98%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+	########################################################
+	def test_operator_17_lt(self):
+		"""Test lt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.dataodd, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_18_lt(self):
+		"""Test lt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lt, self.dataodd, 98%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+
+	########################################################
+	def test_operator_19_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataeven, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_20_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataeven, 100%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_21_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataeven3, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+	########################################################
+	def test_operator_22_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataodd, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_23_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataodd, 100%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_24_lte(self):
+		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_lte, self.dataodd3, 98%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+
+	########################################################
+	def test_operator_25_ne(self):
+		"""Test ne  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.dataeven, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_26_ne(self):
+		"""Test ne  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.dataeven2, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+	########################################################
+	def test_operator_27_ne(self):
+		"""Test ne  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.dataodd, 101%(decimal)s %(nosimd)s)
+		self.assertTrue(result)
+
+
+	########################################################
+	def test_operator_28_ne(self):
+		"""Test ne  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
+		"""
+		result = arrayfunc.aall(arrayfunc.aops.af_ne, self.dataodd2, 100%(decimal)s %(nosimd)s)
+		self.assertFalse(result)
+
+
+
 
 ##############################################################################
 
@@ -188,7 +388,7 @@ op_template = '''
 # The basic template for testing parameters.
 param_template = '''
 ##############################################################################
-%(skiplonglong)sclass aall_parameter_%(typelabel)s(unittest.TestCase):
+class aall_parameter_%(typelabel)s(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
 
@@ -196,7 +396,7 @@ param_template = '''
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data = array.array('%(typecode)s', [%(testdata)s]*10)
+		self.data = array.array('%(typecode)s', [%(testdata)s]*100)
 		self.dataempty = array.array('%(typecode)s')
 
 		# For bytes types, we need a non-array data type.
@@ -216,6 +416,7 @@ param_template = '''
 		with self.assertRaises(TypeError):
 			result = all()
 
+
 	########################################################
 	def test_param_02_one_params(self):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
@@ -226,6 +427,7 @@ param_template = '''
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = all()
+
 
 	########################################################
 	def test_param_03_two_params(self):
@@ -238,12 +440,13 @@ param_template = '''
 		with self.assertRaises(TypeError):
 			result = all()
 
+
 	########################################################
-	def test_param_04_five_params(self):
-		"""Test exception when five parameters passed  - Array code %(typelabel)s.
+	def test_param_04_six_params(self):
+		"""Test exception when six parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(testdata)s, 99, 99)
+			result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(testdata)s, 99, 0, 99)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -261,9 +464,10 @@ param_template = '''
 		with self.assertRaises(TypeError):
 			result = all([1,2,3], xx=2)
 
+
 	########################################################
 	def test_param_06_invalid_keyword_param_type(self):
-		"""Test exception with invalid keyword parameter type passed  - Array code %(typelabel)s.
+		"""Test exception with invalid maxlen keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(testdata)s, maxlen='x')
@@ -271,6 +475,7 @@ param_template = '''
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = all(1)
+
 
 	########################################################
 	def test_param_07_invalid_opcode_param_value(self):
@@ -291,6 +496,7 @@ param_template = '''
 		with self.assertRaises(TypeError):
 			result = all(1)
 
+
 	########################################################
 	def test_param_09_invalid_array_param_value(self):
 		"""Test exception with invalid array parameter type  - Array code %(typelabel)s.
@@ -301,6 +507,7 @@ param_template = '''
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = all(1)
+
 
 	########################################################
 	def test_param_10_invalid_array_param_length(self):
@@ -324,6 +531,18 @@ param_template = '''
 			result = all(1)
 
 
+	########################################################
+	def test_param_12_invalid_keyword_param_type(self):
+		"""Test exception with invalid nosimd keyword parameter type passed  - Array code %(typelabel)s.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.aall(arrayfunc.aops.af_eq, self.data, %(testdata)s, nosimd='x')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = all(1)
+
+
 ##############################################################################
 
 '''
@@ -333,7 +552,7 @@ param_template = '''
 # The basic template for testing parameter overflow.
 overflow_template = '''
 ##############################################################################
-%(skiplonglong)sclass aall_overflow_%(typelabel)s(unittest.TestCase):
+class aall_overflow_%(typelabel)s(unittest.TestCase):
 	"""Test for parameter overflow.
 	"""
 
@@ -341,7 +560,7 @@ overflow_template = '''
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data = array.array('%(typecode)s', [%(testdata)s]*10)
+		self.data = array.array('%(typecode)s', [%(testdata)s]*100)
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
 
@@ -388,9 +607,9 @@ class aall_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data_nan = array.array('%(typecode)s', [float('nan')]*10)
-		self.data_inf = array.array('%(typecode)s', [float('inf')]*10)
-		self.data_ninf = array.array('%(typecode)s', [float('-inf')]*10)
+		self.data_nan = array.array('%(typecode)s', [float('nan')]*100)
+		self.data_inf = array.array('%(typecode)s', [float('inf')]*100)
+		self.data_ninf = array.array('%(typecode)s', [float('-inf')]*100)
 
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
@@ -562,7 +781,7 @@ class aall_nanparam_%(typelabel)s(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data = array.array('%(typecode)s', [100.0]*10)
+		self.data = array.array('%(typecode)s', [100.0]*100)
 
 
 	########################################################
@@ -597,7 +816,11 @@ class aall_nanparam_%(typelabel)s(unittest.TestCase):
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('aall\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -612,12 +835,43 @@ with open('test_aall.py', 'w') as f:
 	# The copyright header.
 	f.write(codegen_common.HeaderTemplate % headerdate)
 
+	############################################################################
+
 	# Output the generated code for basic operator tests.
 	for funtypes in codegen_common.arraycodes:
 		datarec = testdata[funtypes]
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
+		if funtypes in codegen_common.floatarrays:
+			datarec['decimal'] = '.0'
+		else:
+			datarec['decimal'] = ''
+
+		# With SIMD.
+		datarec['simdpresent'] = 'with'
+		datarec['nosimd'] = ''
 		f.write(op_template % datarec)
+
+		# Without SIMD.
+		datarec['simdpresent'] = 'without'
+		datarec['nosimd'] = ', nosimd=True'
+		f.write(op_template % datarec)
+
+	# Do the tests for bytes.
+	datarec = testdata['B']
+	datarec['typecode'] = 'B'
+	datarec['typelabel'] = 'bytes'
+	datarec['decimal'] = ''
+	# With SIMD.
+	datarec['simdpresent'] = 'with'
+	datarec['nosimd'] = ''
+	f.write(op_template % datarec)
+	# Without SIMD.
+	datarec['simdpresent'] = 'without'
+	datarec['nosimd'] = ', nosimd=True'
+	f.write(op_template % datarec)
+
+	############################################################################
 
 	# Output the generated code for parameter tests.
 	for funtypes in codegen_common.arraycodes:
@@ -626,6 +880,7 @@ with open('test_aall.py', 'w') as f:
 		datarec['typelabel'] = funtypes
 		f.write(param_template % datarec)
 
+	############################################################################
 
 	# Output the generated code for parameter overflow tests.
 	for funtypes in codegen_common.arraycodes:
@@ -641,10 +896,10 @@ with open('test_aall.py', 'w') as f:
 	datarec = testdata['B']
 	datarec['typecode'] = 'B'
 	datarec['typelabel'] = 'bytes'
-	f.write(op_template % datarec)
 	f.write(param_template % datarec)
 	f.write(overflow_template % datarec)
 
+	############################################################################
 
 	# Output the generated code for nan and inf data in array tests.
 	datarec = {}

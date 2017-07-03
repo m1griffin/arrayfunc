@@ -4326,3 +4326,5 @@ signed int starmap_double(signed int opcode, Py_ssize_t arraylen, double *data, 
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
+
+

@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -420,7 +420,6 @@ void count_double(Py_ssize_t arraylen, double *data, double startvalue, double s
 	}
 
 }
-
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -570,7 +569,7 @@ py_count(PyObject *self, PyObject *args)
 				return NULL;
 			} else {
 				param1py.b = (signed char) param1tmp_l;
-				param2py.b = (signed char) abs(param2tmp_l);
+				param2py.b = (signed char) labs(param2tmp_l);
 				countdown = (param2tmp_l < 0);
 			}
 			break;
@@ -588,7 +587,7 @@ py_count(PyObject *self, PyObject *args)
 				return NULL;
 			} else {
 				param1py.B = (unsigned char) param1tmp_l;
-				param2py.B = (signed char) abs(param2tmp_l);
+				param2py.B = (signed char) labs(param2tmp_l);
 				countdown = (param2tmp_l < 0);
 			}
 			break;
@@ -616,7 +615,7 @@ py_count(PyObject *self, PyObject *args)
 				return NULL;
 			} else {
 				param1py.H = (unsigned short) param1tmp_l;
-				param2py.H = (unsigned short) abs(param2tmp_l);
+				param2py.H = (unsigned short) labs(param2tmp_l);
 				countdown = (param2tmp_l < 0);
 			}
 			break;
@@ -655,7 +654,7 @@ py_count(PyObject *self, PyObject *args)
 					return NULL;
 				}
 			}
-			param2py.I = abs(param2tmp_l);
+			param2py.I = labs(param2tmp_l);
 			countdown = (param2tmp_l < 0);
 			break;
 		}
@@ -728,7 +727,7 @@ py_count(PyObject *self, PyObject *args)
 				return NULL;
 			}
 			countdown = (param2py.d < 0.0);
-			param2py.d = fabsf(param2py.d);
+			param2py.d = fabs(param2py.d);
 			break;
 		}
 		// We don't know this code.

@@ -35,22 +35,6 @@ bytesconverterdata = 'data = bytes(data)'
 bytesconverterdataout = 'dataout = bytes(dataout)'
 
 
-testdata = {
-	'b' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''}, 
-	'B' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''},
-	'h' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''}, 
-	'H' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''},
-	'i' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''}, 
-	'I' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''},
-	'l' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''}, 
-	'L' : {'skiplonglong' : '', 'MSVCQTestSkip' : ''},
-	'q' : {'skiplonglong' : codegen_common.LongLongTestSkipq, 'MSVCQTestSkip' : ''}, 
-	'Q' : {'skiplonglong' : codegen_common.LongLongTestSkipQ, 'MSVCQTestSkip' : ''},
-	'f' : {'skiplonglong' : '', 'MSVCQTestSkip' : codegen_common.MSVCQTestSkip}, 
-	'd' : {'skiplonglong' : '', 'MSVCQTestSkip' : codegen_common.MSVCQTestSkip},
-	}
-
-
 # ==============================================================================
 
 
@@ -179,7 +163,7 @@ arrayguardbands = guardbands()
 # The template used to generate the tests.
 template = '''
 ##############################################################################
-%(skiplonglong)sclass convert_%(typelabel)s(unittest.TestCase):
+class convert_%(typelabel)s(unittest.TestCase):
 	"""Test for basic convert function.
 	"""
 
@@ -448,7 +432,7 @@ template = '''
 
 
 	########################################################
-	%(funclonglongtestskip)s%(MSVCQTestSkip)s
+	%(funclonglongtestskip)s
 	def test_convert_10(self):
 		"""Test convert in array code  %(typelabel)s - Convert to array code Q.
 		"""
@@ -645,7 +629,7 @@ template = '''
 # This is used to start the test for converting floating point nan, inf, or -inf. 
 intnantesttemplate = '''
 ##############################################################################
-%(skiplonglong)s%(MSVCQTestSkipFunc)sclass convert_nan_%(typecode)s_%(fromtype)s(unittest.TestCase):
+class convert_nan_%(typecode)s_%(fromtype)s(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
 
@@ -822,7 +806,11 @@ class convert_nan_float(unittest.TestCase):
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('convert\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -847,7 +835,6 @@ with open('test_convert.py', 'w') as f:
 		datarec['bytesconverterdata'] = ''
 		datarec['bytesconverterdataout'] = ''
 		datarec['funclonglongtestskip'] = codegen_common.FuncLongLongTestSkip
-		datarec.update(testdata[funtypes])
 		f.write(template % datarec)
 
 
@@ -857,7 +844,6 @@ with open('test_convert.py', 'w') as f:
 	datarec['bytesconverterdata'] = bytesconverterdata
 	datarec['bytesconverterdataout'] = bytesconverterdataout
 	datarec['funclonglongtestskip'] = codegen_common.FuncLongLongTestSkip
-	datarec.update(testdata['B'])
 	f.write(template % datarec)
 
 
@@ -866,14 +852,6 @@ with open('test_convert.py', 'w') as f:
 		# Integer array types.
 		for seq, funtypes in enumerate(codegen_common.intarrays):
 			tdata = {'typecode' : funtypes, 'fromtype' : fromtype}
-			tdata.update(testdata[funtypes])
-			# MS VC 2010 seems to have bugs when converting large floating point values 
-			# to large unsigned long long integers. Values larger than 2**63 do not covert
-			# correctly. This problem does not occur with GCC. 
-			if funtypes == 'Q':
-				tdata['MSVCQTestSkipFunc'] = codegen_common.MSVCQTestSkipFunc
-			else:
-				tdata['MSVCQTestSkipFunc'] = ''
 			f.write(intnantesttemplate % tdata)
 		# Bytes type.
 		f.write(bytesnantesttemplate % {'fromtype' : fromtype})

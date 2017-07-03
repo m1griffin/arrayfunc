@@ -3995,7 +3995,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// uadd
-				case CALCOP_FLOAT_UADD: { 
+				case CALCOP_FLOAT_UADD: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4007,10 +4007,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// usub
-				case CALCOP_FLOAT_USUB: { 
+				case CALCOP_FLOAT_USUB: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4022,7 +4022,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// pow
 				case CALCOP_FLOAT_POW: {
@@ -4048,7 +4048,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.acos
-				case CALCOP_FLOAT_MATH_ACOS: { 
+				case CALCOP_FLOAT_MATH_ACOS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4060,15 +4060,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.acosh
-				case CALCOP_FLOAT_MATH_ACOSH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ACOSH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4080,12 +4075,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.asin
-				case CALCOP_FLOAT_MATH_ASIN: { 
+				case CALCOP_FLOAT_MATH_ASIN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4097,15 +4090,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.asinh
-				case CALCOP_FLOAT_MATH_ASINH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ASINH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4117,12 +4105,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.atan
-				case CALCOP_FLOAT_MATH_ATAN: { 
+				case CALCOP_FLOAT_MATH_ATAN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4134,7 +4120,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.atan2
 				case CALCOP_FLOAT_MATH_ATAN2: {
@@ -4153,12 +4139,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.atanh
-				case CALCOP_FLOAT_MATH_ATANH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ATANH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4170,12 +4151,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.ceil
-				case CALCOP_FLOAT_MATH_CEIL: { 
+				case CALCOP_FLOAT_MATH_CEIL: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4187,7 +4166,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.copysign
 				case CALCOP_FLOAT_MATH_COPYSIGN: {
@@ -4206,7 +4185,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.cos
-				case CALCOP_FLOAT_MATH_COS: { 
+				case CALCOP_FLOAT_MATH_COS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4218,10 +4197,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.cosh
-				case CALCOP_FLOAT_MATH_COSH: { 
+				case CALCOP_FLOAT_MATH_COSH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4233,10 +4212,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.degrees
-				case CALCOP_FLOAT_MATH_DEGREES: { 
+				case CALCOP_FLOAT_MATH_DEGREES: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4248,15 +4227,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.erf
-				case CALCOP_FLOAT_MATH_ERF: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ERF: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4268,17 +4242,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.erfc
-				case CALCOP_FLOAT_MATH_ERFC: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ERFC: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4290,12 +4257,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.exp
-				case CALCOP_FLOAT_MATH_EXP: { 
+				case CALCOP_FLOAT_MATH_EXP: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4307,15 +4272,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.expm1
-				case CALCOP_FLOAT_MATH_EXPM1: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_EXPM1: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4327,9 +4287,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.fabs
 				case CALCOP_FLOAT_MATH_FABS: {
@@ -4339,7 +4297,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.floor
-				case CALCOP_FLOAT_MATH_FLOOR: { 
+				case CALCOP_FLOAT_MATH_FLOOR: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4351,7 +4309,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.fmod
 				case CALCOP_FLOAT_MATH_FMOD: {
@@ -4370,12 +4328,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.gamma
-				case CALCOP_FLOAT_MATH_GAMMA: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_GAMMA: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4387,9 +4340,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.hypot
 				case CALCOP_FLOAT_MATH_HYPOT: {
@@ -4427,12 +4378,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.lgamma
-				case CALCOP_FLOAT_MATH_LGAMMA: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_LGAMMA: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4444,12 +4390,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.log
-				case CALCOP_FLOAT_MATH_LOG: { 
+				case CALCOP_FLOAT_MATH_LOG: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4461,10 +4405,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.log10
-				case CALCOP_FLOAT_MATH_LOG10: { 
+				case CALCOP_FLOAT_MATH_LOG10: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4476,15 +4420,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.log1p
-				case CALCOP_FLOAT_MATH_LOG1P: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_LOG1P: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4496,9 +4435,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.pow
 				case CALCOP_FLOAT_MATH_POW: {
@@ -4517,7 +4454,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 					break;
 					}
 				// math.radians
-				case CALCOP_FLOAT_MATH_RADIANS: { 
+				case CALCOP_FLOAT_MATH_RADIANS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4529,10 +4466,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sin
-				case CALCOP_FLOAT_MATH_SIN: { 
+				case CALCOP_FLOAT_MATH_SIN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4544,10 +4481,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sinh
-				case CALCOP_FLOAT_MATH_SINH: { 
+				case CALCOP_FLOAT_MATH_SINH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4559,10 +4496,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sqrt
-				case CALCOP_FLOAT_MATH_SQRT: { 
+				case CALCOP_FLOAT_MATH_SQRT: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4574,10 +4511,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.tan
-				case CALCOP_FLOAT_MATH_TAN: { 
+				case CALCOP_FLOAT_MATH_TAN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4589,10 +4526,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.tanh
-				case CALCOP_FLOAT_MATH_TANH: { 
+				case CALCOP_FLOAT_MATH_TANH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4604,15 +4541,10 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.trunc
-				case CALCOP_FLOAT_MATH_TRUNC: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_TRUNC: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4624,9 +4556,7 @@ signed int exequation_float(Py_ssize_t arraylen, float *data, float *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 
 			}
@@ -4845,7 +4775,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// uadd
-				case CALCOP_FLOAT_UADD: { 
+				case CALCOP_FLOAT_UADD: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4857,10 +4787,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// usub
-				case CALCOP_FLOAT_USUB: { 
+				case CALCOP_FLOAT_USUB: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4872,7 +4802,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// pow
 				case CALCOP_FLOAT_POW: {
@@ -4898,7 +4828,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.acos
-				case CALCOP_FLOAT_MATH_ACOS: { 
+				case CALCOP_FLOAT_MATH_ACOS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4910,15 +4840,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.acosh
-				case CALCOP_FLOAT_MATH_ACOSH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ACOSH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4930,12 +4855,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.asin
-				case CALCOP_FLOAT_MATH_ASIN: { 
+				case CALCOP_FLOAT_MATH_ASIN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4947,15 +4870,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.asinh
-				case CALCOP_FLOAT_MATH_ASINH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ASINH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4967,12 +4885,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.atan
-				case CALCOP_FLOAT_MATH_ATAN: { 
+				case CALCOP_FLOAT_MATH_ATAN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -4984,7 +4900,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.atan2
 				case CALCOP_FLOAT_MATH_ATAN2: {
@@ -5003,12 +4919,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.atanh
-				case CALCOP_FLOAT_MATH_ATANH: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ATANH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5020,12 +4931,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.ceil
-				case CALCOP_FLOAT_MATH_CEIL: { 
+				case CALCOP_FLOAT_MATH_CEIL: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5037,7 +4946,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.copysign
 				case CALCOP_FLOAT_MATH_COPYSIGN: {
@@ -5056,7 +4965,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.cos
-				case CALCOP_FLOAT_MATH_COS: { 
+				case CALCOP_FLOAT_MATH_COS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5068,10 +4977,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.cosh
-				case CALCOP_FLOAT_MATH_COSH: { 
+				case CALCOP_FLOAT_MATH_COSH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5083,10 +4992,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.degrees
-				case CALCOP_FLOAT_MATH_DEGREES: { 
+				case CALCOP_FLOAT_MATH_DEGREES: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5098,15 +5007,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.erf
-				case CALCOP_FLOAT_MATH_ERF: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ERF: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5118,17 +5022,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.erfc
-				case CALCOP_FLOAT_MATH_ERFC: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_ERFC: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5140,12 +5037,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.exp
-				case CALCOP_FLOAT_MATH_EXP: { 
+				case CALCOP_FLOAT_MATH_EXP: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5157,15 +5052,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.expm1
-				case CALCOP_FLOAT_MATH_EXPM1: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_EXPM1: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5177,9 +5067,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.fabs
 				case CALCOP_FLOAT_MATH_FABS: {
@@ -5189,7 +5077,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.floor
-				case CALCOP_FLOAT_MATH_FLOOR: { 
+				case CALCOP_FLOAT_MATH_FLOOR: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5201,7 +5089,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.fmod
 				case CALCOP_FLOAT_MATH_FMOD: {
@@ -5220,12 +5108,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.gamma
-				case CALCOP_FLOAT_MATH_GAMMA: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_GAMMA: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5237,9 +5120,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.hypot
 				case CALCOP_FLOAT_MATH_HYPOT: {
@@ -5277,12 +5158,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.lgamma
-				case CALCOP_FLOAT_MATH_LGAMMA: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_LGAMMA: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5294,12 +5170,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.log
-				case CALCOP_FLOAT_MATH_LOG: { 
+				case CALCOP_FLOAT_MATH_LOG: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5311,10 +5185,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.log10
-				case CALCOP_FLOAT_MATH_LOG10: { 
+				case CALCOP_FLOAT_MATH_LOG10: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5326,15 +5200,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.log1p
-				case CALCOP_FLOAT_MATH_LOG1P: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_LOG1P: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5346,9 +5215,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 				// math.pow
 				case CALCOP_FLOAT_MATH_POW: {
@@ -5367,7 +5234,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 					break;
 					}
 				// math.radians
-				case CALCOP_FLOAT_MATH_RADIANS: { 
+				case CALCOP_FLOAT_MATH_RADIANS: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5379,10 +5246,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sin
-				case CALCOP_FLOAT_MATH_SIN: { 
+				case CALCOP_FLOAT_MATH_SIN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5394,10 +5261,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sinh
-				case CALCOP_FLOAT_MATH_SINH: { 
+				case CALCOP_FLOAT_MATH_SINH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5409,10 +5276,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.sqrt
-				case CALCOP_FLOAT_MATH_SQRT: { 
+				case CALCOP_FLOAT_MATH_SQRT: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5424,10 +5291,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.tan
-				case CALCOP_FLOAT_MATH_TAN: { 
+				case CALCOP_FLOAT_MATH_TAN: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5439,10 +5306,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.tanh
-				case CALCOP_FLOAT_MATH_TANH: { 
+				case CALCOP_FLOAT_MATH_TANH: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5454,15 +5321,10 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
+					break;
 					}
 				// math.trunc
-				case CALCOP_FLOAT_MATH_TRUNC: { 
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-
+				case CALCOP_FLOAT_MATH_TRUNC: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -5474,9 +5336,7 @@ signed int exequation_double(Py_ssize_t arraylen, double *data, double *dataout,
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; 
-					#endif
-
+					break;
 					}
 
 			}

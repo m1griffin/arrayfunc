@@ -589,22 +589,3 @@ unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned l
 
 
 /*--------------------------------------------------------------------------- */
-
-// This is for compatibility with Microsoft msvc 2010.
-// This is equivalent to the standard copysignf.
-float ms_compat_copysignf(float x, float y) {
-	char xneg, yneg;
-
-	xneg = x < 0.0;
-	yneg = y < 0.0;
-
-	// Check if signs are different.
-	if (xneg != yneg) {
-		return -x;
-	} else {
-		return x;
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */

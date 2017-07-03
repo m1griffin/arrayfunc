@@ -33,9 +33,9 @@ import codegen_common
 
 
 inttestdata = {'initvalin' : 5, 'initvalout' : 6, 'selector' : '[0, 1]', 
-	'zeros' : '[0]', 'ones' : '[1]', 'skiplonglong' : '', 'testtype' : 'int'}
+	'zeros' : '[0]', 'ones' : '[1]', 'testtype' : 'int'}
 floattestdata = {'initvalin' : 5.5, 'initvalout' : 6.6, 'selector' : '[0.0, 1.1]', 
-	'zeros' : '[0.0]', 'ones' : '[1.1]', 'skiplonglong' : '', 'testtype' : 'float'}
+	'zeros' : '[0.0]', 'ones' : '[1.1]', 'testtype' : 'float'}
 
 testdata = {
 	'b' : inttestdata, 'B' : inttestdata,
@@ -51,10 +51,6 @@ testdata = {
 	'f' : floattestdata, 'd' : floattestdata,
 }
 
-
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
 
 
 # This is used to insert code to convert the test data to bytes type. 
@@ -81,7 +77,7 @@ nantestseq = [nantestdata, inftestdata, ninftestdata]
 
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
+class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 	"""Test for basic compress function.
 	"""
 
@@ -374,7 +370,11 @@ endclass = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('compress\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

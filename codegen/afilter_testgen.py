@@ -40,8 +40,7 @@ intparams = {'testdata' : 100, 'paramdata1' : "'e'", 'paramdata2' : 100.5,
 	'lt_true1' : 102, 'lt_false1' : 95, 
 	'lte_true1' : 102, 'lte_true2' : 101, 'lte_false1' : 95, 
 	'ne_true1' : 99, 'ne_false1' : 100,
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 
-	'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 floatparams = {'testdata' : 100.0, 'paramdata1' : "'e'", 'paramdata2' : 100,
 	'overflowinc' : '* 1.1', 'overflowdec' : '* 1.1', 'typeconvert' : 'float', 
@@ -51,8 +50,7 @@ floatparams = {'testdata' : 100.0, 'paramdata1' : "'e'", 'paramdata2' : 100,
 	'lt_true1' : 102.0, 'lt_false1' : 95.0, 
 	'lte_true1' : 102.0, 'lte_true2' : 101.0, 'lte_false1' : 95.0, 
 	'ne_true1' : 99.0, 'ne_false1' : 100.0,
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 
-	'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 testdata = {
 	'b' : intparams,
@@ -73,9 +71,6 @@ testdata = {
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
-# Patch in the case for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
 
 
 # This is used to test floating point data with nan, inf, and -inf.
@@ -91,7 +86,7 @@ nantestdata = [{'seq' : '01', 'testval' : 0.0},
 # The basic template for testing each array type for operator function.
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass afilter_operator_%(typelabel)s(unittest.TestCase):
+class afilter_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -206,7 +201,7 @@ op_template = '''
 # The basic template for testing parameters.
 param_template = '''
 ##############################################################################
-%(skiplonglong)sclass afilter_parameter_%(typelabel)s(unittest.TestCase):
+class afilter_parameter_%(typelabel)s(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
 
@@ -378,7 +373,7 @@ param_template = '''
 # The basic template for testing parameter overflow.
 overflow_template = '''
 ##############################################################################
-%(skiplonglong)sclass afilter_overflow_%(typelabel)s(unittest.TestCase):
+class afilter_overflow_%(typelabel)s(unittest.TestCase):
 	"""Test for parameter overflow.
 	"""
 
@@ -645,7 +640,11 @@ class afilter_nanparam_%(typelabel)s(unittest.TestCase):
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('afilter\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

@@ -34,11 +34,11 @@ import codegen_common
 
 intparams = {'overflowinc' : '+ 1', 'overflowdec' : '- 1', 
 	'typeconvert' : 'int', 'invalidtypeconvert' : 'float',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 floatparams = {'overflowinc' : '* 1.1', 'overflowdec' : '* 1.1', 
 	'typeconvert' : 'float', 'invalidtypeconvert' : 'int',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 testdata = {
 	'b' : intparams,
@@ -59,16 +59,12 @@ testdata = {
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
 # ==============================================================================
 
 # The template used to generate the tests.
 template = '''
 ##############################################################################
-%(skiplonglong)sclass takewhile_operator_%(typelabel)s(unittest.TestCase):
+class takewhile_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -589,7 +585,11 @@ classend = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('takewhile\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

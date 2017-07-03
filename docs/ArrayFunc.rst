@@ -6,8 +6,8 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 1.1.0 for 2016-04-08
-:Copyright: 2014 - 2016
+:Version: 2.0.0 for 2017-06-21
+:Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.4 or later
 
@@ -333,7 +333,7 @@ Returns True if any element in an array meets the selected criteria.
 
 x = aany(op, inparray, rparam)
 
-x = aany(op, inparray, rparam, maxlen=500)
+x = aany(op, inparray, rparam, maxlen=500, nosimd=True)
 
 * op - The arithmetic comparison operation.
 * inparray - The input data array to be examined.
@@ -341,6 +341,7 @@ x = aany(op, inparray, rparam, maxlen=500)
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled.
 * x - The boolean result.
 
 example::
@@ -361,7 +362,7 @@ Returns True if all elements in an array meet the selected criteria.
 
 x = aall(op, inparray, rparam)
 
-x = aall(op, inparray, rparam, maxlen=500)
+x = aall(op, inparray, rparam, maxlen=500, nosimd=True)
 
 * op - The arithmetic comparison operation.
 * inparray - The input data array to be examined.
@@ -369,6 +370,7 @@ x = aall(op, inparray, rparam, maxlen=500)
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled.
 * x - The boolean result.
 
 example::
@@ -394,10 +396,13 @@ x = amax(inparray)
 
 x = amax(inparray, maxlen=500)
 
+x = amax(inparray, maxlen=500, nosimd=True)
+
 * inparray - The input data array to be examined.
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled.
 * x - The maximum value.
 
 example::
@@ -418,10 +423,13 @@ x = amin(inparray)
 
 x = amin(inparray, maxlen=500)
 
+x = amin(inparray, maxlen=500, nosimd=True)
+
 * inparray - The input data array to be examined.
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled.
 * x - The minimum value.
 
 example::
@@ -440,7 +448,7 @@ Returns the index of the first value in an array to meet the specified criteria.
 
 x = findindex(op, inparray, rparam)
 
-x = findindex(op, inparray, rparam, maxlen=500)
+x = findindex(op, inparray, rparam, maxlen=500, nosimd=True)
 
 * op - The arithmetic comparison operation.
 * inparray - The input data array to be examined.
@@ -448,6 +456,7 @@ x = findindex(op, inparray, rparam, maxlen=500)
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled.
 * x - The resulting index. This will be negative if no match was found.
 
 example::
@@ -659,7 +668,7 @@ impossible due to limits on array indices in the array module).
 
 asum(inparray)
 
-asum(inparray, disovfl=True, maxlen=5)
+asum(inparray, disovfl=True, maxlen=5, nosimd=True)
 
 * inparray - The array to be summed.
 * disovfl - If this keyword parameter is True, integer overflow checking will be
@@ -667,6 +676,8 @@ asum(inparray, disovfl=True, maxlen=5)
 * maxlen - Limit the length of the array used. This must be a valid positive 
   integer. If a zero or negative length, or a value which is greater than the
   actual length of the array is specified, this parameter is ignored.
+* nosimd - If true, use of SIMD is disabled. SIMD will only be enabled if 
+  overflow checking is also disabled.
 
 example::
 
@@ -879,8 +890,8 @@ example::
 
 
 
-Option Flags
-------------
+Option Flags and Parameters
+---------------------------
 
 Arithmetic Overflow Control
 ___________________________
@@ -927,6 +938,27 @@ array.
 If the array length limit value is zero, negative, or greater than the actual 
 size of the array, the length limit will be ignored and the entire array used. 
 The default is to use the entire array.
+
+
+SIMD Control
+____________
+
+SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
+multiple operations to take place in parallel. Some, but not all, functions will
+make use of these instructions to speed up execution. 
+
+Those functions which do support SIMD features will automatically make use of 
+them by default unless this feature is disabled. There is normally no reason
+to disable SIMD, but should there be hardware related problems the function can
+be forced to fall back to conventional execution mode. 
+
+If the optional parameter "nosimd" is set to true ("nosimd=True"), SIMD 
+execution will be disabled. The default is "False". 
+
+To repeat, there is normally no reason to wish to disable SIMD. 
+
+See the documentation section on SIMD support has more detail.
+
 
 ---------------------------------------------------------------------
 
@@ -1023,80 +1055,85 @@ The following operators and functions are equivalent to ones found in the
 Python standard library. For explanations of the math functions, see the 
 Python standard documentation for the standard math library. 
 
-=============== ====================== ===== ===== === ===== ========= =====
-Name             Equivalent to          b h   B H   f   OV    Compare   Win
-                                        i l   I L   d         Ops      
-=============== ====================== ===== ===== === ===== ========= =====
-af_add           x + y                   X     X    X    X               X
-af_div           x / y                   X     X    X    X               X
-af_div_r         y / x                   X     X    X    X               X
-af_floordiv      x // y                  X     X    X    X               X
-af_floordiv_r    y // x                  X     X    X    X               X
-af_mod           x % y                   X     X    X    X               X
-af_mod_r         y % x                   X     X    X    X               X
-af_mult          x * y                   X     X    X    X               X
-af_neg           -x                      X          X    X               X
-af_pow           x**y                    X     X    X    X               X
-af_pow_r         y**x                    X     X    X    X               X
-af_sub           x - y                   X     X    X    X               X
-af_sub_r         y - x                   X     X    X    X               X
-af_and           x & y                   X     X                         X
-af_or            x | y                   X     X                         X
-af_xor           x ^ y                   X     X                         X
-af_invert        ~x                      X     X                         X
-af_eq            x == y                  X     X    X           X        X
-af_gt            x > y                   X     X    X           X        X
-af_gte           x >= y                  X     X    X           X        X
-af_lt            x < y                   X     X    X           X        X
-af_lte           x <= y                  X     X    X           X        X
-af_ne            x != y                  X     X    X           X        X
-af_lshift        x << y                  X     X                         X
-af_lshift_r      y << x                  X     X                         X
-af_rshift        x >> y                  X     X                         X
-af_rshift_r      y >> x                  X     X                         X
-af_abs           abs(x)                  X          X    X               X
-math_acos        math.acos(x)                       X                    X
-math_acosh       math.acosh(x)                      X                    
-math_asin        math.asin(x)                       X                    X
-math_asinh       math.asinh(x)                      X                    
-math_atan        math.atan(x)                       X                    X
-math_atan2       math.atan2(x, y)                   X                    X
-math_atan2_r     math.atan2(y, x)                   X                    X
-math_atanh       math.atanh(x)                      X                    
-math_ceil        math.ceil(x)                       X                    X
-math_copysign    math.copysign(x, y)                X                    X
-math_cos         math.cos(x)                        X                    X
-math_cosh        math.cosh(x)                       X                    X
-math_degrees     math.degrees(x)                    X                    X
-math_erf         math.erf(x)                        X                    
-math_erfc        math.erfc(x)                       X                    
-math_exp         math.exp(x)                        X                    X
-math_expm1       math.expm1(x)                      X                    
-math_fabs        math.fabs(x)                       X                    X
-math_factorial   math.factorial(x)       X     X         X               X
-math_floor       math.floor(x)                      X                    X
-math_fmod        math.fmod(x, y)                    X                    X
-math_fmod_r      math.fmod(y, x)                    X                    X
-math_gamma       math.gamma(x)                      X                    
-math_hypot       math.hypot(x, y)                   X                    X
-math_hypot_r     math.hypot(y, x)                   X                    X
-math_isinf       math.isinf(x)                      X                    
-math_isnan       math.isnan(x)                      X                    
-math_ldexp       math.ldexp(x, y)                   X                    X
-math_lgamma      math.lgamma(x)                     X                    
-math_log         math.log(x)                        X                    X
-math_log10       math.log10(x)                      X                    X
-math_log1p       math.log1p(x)                      X                    
-math_pow         math.pow(x, y)                     X                    X
-math_pow_r       math.pow(y, x)                     X                    X
-math_radians     math.radians(x)                    X                    X
-math_sin         math.sin(x)                        X                    X
-math_sinh        math.sinh(x)                       X                    X
-math_sqrt        math.sqrt(x)                       X                    X
-math_tan         math.tan(x)                        X                    X
-math_tanh        math.tanh(x)                       X                    X
-math_trunc       math.trunc(x)                      X                    
-=============== ====================== ===== ===== === ===== ========= =====
+
+=============== ====================== ===== ===== === ===== =========
+Name             Equivalent to          b h   B H   f   OV    Compare
+                                        i l   I L   d         Ops    
+=============== ====================== ===== ===== === ===== =========
+af_add           x + y                   X     X    X    X             
+af_div           x / y                   X     X    X    X             
+af_div_r         y / x                   X     X    X    X             
+af_floordiv      x // y                  X     X    X    X             
+af_floordiv_r    y // x                  X     X    X    X             
+af_mod           x % y                   X     X    X    X             
+af_mod_r         y % x                   X     X    X    X             
+af_mult          x * y                   X     X    X    X             
+af_neg           -x                      X          X    X             
+af_pow           x**y                    X     X    X    X             
+af_pow_r         y**x                    X     X    X    X             
+af_sub           x - y                   X     X    X    X             
+af_sub_r         y - x                   X     X    X    X             
+af_and           x & y                   X     X                       
+af_or            x | y                   X     X                       
+af_xor           x ^ y                   X     X                       
+af_invert        ~x                      X     X                       
+af_eq            x == y                  X     X    X           X      
+af_gt            x > y                   X     X    X           X      
+af_gte           x >= y                  X     X    X           X      
+af_lt            x < y                   X     X    X           X      
+af_lte           x <= y                  X     X    X           X      
+af_ne            x != y                  X     X    X           X      
+af_lshift        x << y                  X     X                       
+af_lshift_r      y << x                  X     X                       
+af_rshift        x >> y                  X     X                       
+af_rshift_r      y >> x                  X     X                       
+af_abs           abs(x)                  X          X    X             
+math_acos        math.acos(x)                       X                  
+math_acosh       math.acosh(x)                      X                  
+math_asin        math.asin(x)                       X                  
+math_asinh       math.asinh(x)                      X                  
+math_atan        math.atan(x)                       X                  
+math_atan2       math.atan2(x, y)                   X                  
+math_atan2_r     math.atan2(y, x)                   X                  
+math_atanh       math.atanh(x)                      X                  
+math_ceil        math.ceil(x)                       X                  
+math_copysign    math.copysign(x, y)                X                  
+math_cos         math.cos(x)                        X                  
+math_cosh        math.cosh(x)                       X                  
+math_degrees     math.degrees(x)                    X                  
+math_erf         math.erf(x)                        X                  
+math_erfc        math.erfc(x)                       X                  
+math_exp         math.exp(x)                        X                  
+math_expm1       math.expm1(x)                      X                  
+math_fabs        math.fabs(x)                       X                  
+math_factorial   math.factorial(x)       X     X         X             
+math_floor       math.floor(x)                      X                  
+math_fmod        math.fmod(x, y)                    X                  
+math_fmod_r      math.fmod(y, x)                    X                  
+math_gamma       math.gamma(x)                      X                  
+math_hypot       math.hypot(x, y)                   X                  
+math_hypot_r     math.hypot(y, x)                   X                  
+math_isinf       math.isinf(x)                      X                  
+math_isnan       math.isnan(x)                      X                  
+math_ldexp       math.ldexp(x, y)                   X                  
+math_lgamma      math.lgamma(x)                     X                  
+math_log         math.log(x)                        X                  
+math_log10       math.log10(x)                      X                  
+math_log1p       math.log1p(x)                      X                  
+math_pow         math.pow(x, y)                     X                  
+math_pow_r       math.pow(y, x)                     X                  
+math_radians     math.radians(x)                    X                  
+math_sin         math.sin(x)                        X                  
+math_sinh        math.sinh(x)                       X                  
+math_sqrt        math.sqrt(x)                       X                  
+math_tan         math.tan(x)                        X                  
+math_tanh        math.tanh(x)                       X                  
+math_trunc       math.trunc(x)                      X                  
+aops_subst_gt    x > y                   X     X    X                  
+aops_subst_gte   x >= y                  X     X    X                  
+aops_subst_lt    x < y                   X     X    X                  
+aops_subst_lte   x <= y                  X     X    X                  
+=============== ====================== ===== ===== === ===== =========
 
 
 
@@ -1138,62 +1175,62 @@ reference purposes.
 For explanations of the math functions, see the Python standard documentation 
 for the standard math library. 
 
-=============== ====================== ===== ===== === ===== =====
-Name             Equivalent to          b h   B H   f   OV    Win
-                                        i l   I L   d            
-=============== ====================== ===== ===== === ===== =====
-add              x + y                   X     X    X    X      X
-sub              x - y                   X     X    X    X      X
-mult             x * y                   X     X    X    X      X
-div              x / y                   X     X    X    X      X
-floordiv         x // y                  X     X    X    X      X
-mod              x % y                   X     X    X    X      X
-uadd             +x                      X     X    X           X
-usub             -x                      X     X    X    X      X
-pow              x**y                    X     X    X    X      X
-bitand           x & y                   X     X                X
-bitor            x | y                   X     X                X
-bitxor           x ^ y                   X     X                X
-invert           ~x                      X     X                X
-lshift           x << y                  X     X                X
-rshift           x >> y                  X     X                X
-abs              abs(x)                  X     X    X    X      X
-math.acos        math.acos(x)                       X           X
-math.acosh       math.acosh(x)                      X           
-math.asin        math.asin(x)                       X           X
-math.asinh       math.asinh(x)                      X           
-math.atan        math.atan(x)                       X           X
-math.atan2       math.atan2(x, y)                   X           X
-math.atanh       math.atanh(x)                      X           
-math.ceil        math.ceil(x)                       X           X
-math.copysign    math.copysign(x, y)                X           X
-math.cos         math.cos(x)                        X           X
-math.cosh        math.cosh(x)                       X           X
-math.degrees     math.degrees(x)                    X           X
-math.erf         math.erf(x)                        X           
-math.erfc        math.erfc(x)                       X           
-math.exp         math.exp(x)                        X           X
-math.expm1       math.expm1(x)                      X           
-math.fabs        math.fabs(x)                       X           X
-math.factorial   math.factorial(x)       X     X         X      X
-math.floor       math.floor(x)                      X           X
-math.fmod        math.fmod(x, y)                    X           X
-math.gamma       math.gamma(x)                      X           
-math.hypot       math.hypot(x, y)                   X           X
-math.ldexp       math.ldexp(x, y)                   X           X
-math.lgamma      math.lgamma(x)                     X           
-math.log         math.log(x)                        X           X
-math.log10       math.log10(x)                      X           X
-math.log1p       math.log1p(x)                      X           
-math.pow         math.pow(x, y)                     X           X
-math.radians     math.radians(x)                    X           X
-math.sin         math.sin(x)                        X           X
-math.sinh        math.sinh(x)                       X           X
-math.sqrt        math.sqrt(x)                       X           X
-math.tan         math.tan(x)                        X           X
-math.tanh        math.tanh(x)                       X           X
-math.trunc       math.trunc(x)                      X           
-=============== ====================== ===== ===== === ===== =====
+=============== ====================== ===== ===== === =====
+Name             Equivalent to          b h   B H   f   OV 
+                                        i l   I L   d      
+=============== ====================== ===== ===== === =====
+add              x + y                   X     X    X    X     
+sub              x - y                   X     X    X    X     
+mult             x * y                   X     X    X    X     
+div              x / y                   X     X    X    X     
+floordiv         x // y                  X     X    X    X     
+mod              x % y                   X     X    X    X     
+uadd             +x                      X     X    X          
+usub             -x                      X     X    X    X     
+pow              x**y                    X     X    X    X     
+bitand           x & y                   X     X               
+bitor            x | y                   X     X               
+bitxor           x ^ y                   X     X               
+invert           ~x                      X     X               
+lshift           x << y                  X     X               
+rshift           x >> y                  X     X               
+abs              abs(x)                  X     X    X    X     
+math.acos        math.acos(x)                       X          
+math.acosh       math.acosh(x)                      X          
+math.asin        math.asin(x)                       X          
+math.asinh       math.asinh(x)                      X          
+math.atan        math.atan(x)                       X          
+math.atan2       math.atan2(x, y)                   X          
+math.atanh       math.atanh(x)                      X          
+math.ceil        math.ceil(x)                       X          
+math.copysign    math.copysign(x, y)                X          
+math.cos         math.cos(x)                        X          
+math.cosh        math.cosh(x)                       X          
+math.degrees     math.degrees(x)                    X          
+math.erf         math.erf(x)                        X          
+math.erfc        math.erfc(x)                       X          
+math.exp         math.exp(x)                        X          
+math.expm1       math.expm1(x)                      X          
+math.fabs        math.fabs(x)                       X          
+math.factorial   math.factorial(x)       X     X         X     
+math.floor       math.floor(x)                      X          
+math.fmod        math.fmod(x, y)                    X          
+math.gamma       math.gamma(x)                      X          
+math.hypot       math.hypot(x, y)                   X          
+math.ldexp       math.ldexp(x, y)                   X          
+math.lgamma      math.lgamma(x)                     X          
+math.log         math.log(x)                        X          
+math.log10       math.log10(x)                      X          
+math.log1p       math.log1p(x)                      X          
+math.pow         math.pow(x, y)                     X          
+math.radians     math.radians(x)                    X          
+math.sin         math.sin(x)                        X          
+math.sinh        math.sinh(x)                       X          
+math.sqrt        math.sqrt(x)                       X          
+math.tan         math.tan(x)                        X          
+math.tanh        math.tanh(x)                       X          
+math.trunc       math.trunc(x)                      X          
+=============== ====================== ===== ===== === =====
 
 
 Notes on Operators and Functions
@@ -1209,8 +1246,6 @@ Notes on Operators and Functions
 * The raise to power (x**y) operator will not accept a negative exponent for 
   integers, as the result would be a fractional number which is not compatible 
   with an integer array.
-* Some mathematical operations are not supported by the Microsoft compiler. This
-  This is indicated by the *Win* column.
 
 
 ACalc Math Constants
@@ -1229,44 +1264,10 @@ documentation for more information on these constants.
 Platform Compiler Support
 -------------------------
 
-Amap, Amapi, and ACalc Functions
-________________________________
-
-The Microsoft Visual Studio 2010 C compiler is built to an older C standard 
-(C89) than GCC and does not have some functions in its standard library. The 
-Microsoft compiler is used for the MS Windows versions of Python. 
-
-Since Arrayfunc depends on the standard C libraries to implement the underlying
-math functions, this means that the MS Windows version of Arrayfunc does not 
-implement some math functions. These are indicated above by the "Win" column in
-the above tables.
-
-The "math" library in Python implements its own versions of these functions to
-paper over the missing functions for the MS Windows version. Arrayfunc however
-relies on the C libraries. 
-
-
-Long Long Integer ('Q' and 'q') Array Types
-___________________________________________
-
-Not all platforms support long long array types. The presence of these arrays
-can be tested for by examining the array module array codes.
-
-Example::
-
-	if 'q' in array.typecodes:
-		print('Long long integer arrays are present')
-
-
-Using Unsigned Long Long Arrays with Convert on Microsoft Windows
-_________________________________________________________________
-
-The Microsoft VC 2010 compiler appears to not convert floating point numbers to
-unsigned long long integers correctly under some circumstances. Due to this 
-problem, converting float or double to unsigned long long is disabled when the
-library is compiled with the Microsoft VC compiler. Attempts to perform this
-operation will result in an exception.
-
+Beginning with version 2.0 of ArrayFunc, versions compiled with the Microsoft 
+MSVS compiler now has feature parity with the GCC version. This change is due 
+to the Microsoft C compiler now supporting a new enough version of the 'C' 
+standard.
 
 
 Integer Overflow Checking
@@ -1470,6 +1471,73 @@ ValueError        ACalc vm operator is invalid for      An operator used was inv
 
 ---------------------------------------------------------------------
 
+SIMD Support
+============
+
+General
+-------
+
+SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
+multiple operations to take place in parallel. Some, but not all, functions will
+make use of these instructions to speed up execution. 
+
+Those functions which do support SIMD features will automatically make use of 
+them by default unless this feature is disabled. There is normally no reason
+to disable SIMD, but should there be hardware related problems the function can
+be forced to fall back to conventional execution mode. 
+
+
+Platform Support
+----------------
+
+SIMD instructions are presently supported only on 64 bit x86 (i.e. AMD64) using
+the GCC compiler. Other compilers or platforms will still run the same functions
+and should produce the same results, but they will not benefit from SIMD
+acceleration. 
+
+However, non-SIMD functions will still be much faster standard Python code. See
+the performance benchmarks to see what the relative speed differences are. With
+wider data types (e.g. double precision floating point) SIMD provides only
+marginal speed ups anyway. 
+
+
+Data Type Support
+-----------------
+
+The following table shows which array data types are supported by 64 bit x86 
+SIMD instructions.
+
+=========== === === === === === === === === === === === ===
+  function   b   B   h   H   i   I   l   L   q   Q   f   d
+=========== === === === === === === === === === === === ===
+      aall   X       X       X                       X   X
+      aany   X       X       X                       X   X
+      amax   X   X   X   X   X   X                   X   X
+      amin   X   X   X   X   X   X                   X   X
+      asum                                           X   X
+ findindex   X       X       X                       X   X
+=========== === === === === === === === === === === === ===
+
+
+SIMD Support Attributes
+-----------------------
+
+There is a module which can be used to detect if ArrayFunc is compiled with 
+SIMD support and if the current hardware supports the required SIMD level.
+
+arrayfunc.simdsupport.hassimd
+
+The attribute "hassimd" will be True if the module supports SIMD.
+
+example::
+
+	import arrayfunc
+	arrayfunc.simdsupport.hassimd
+	==> True
+
+
+---------------------------------------------------------------------
+
 Performance
 ===========
 
@@ -1508,90 +1576,90 @@ Amap
 ----
 
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        opcode     b     B     h     H     i     I     l     L     q     Q     f     d
+      function     b     B     h     H     i     I     l     L     q     Q     f     d
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        af_add   122   130   125   136    95    76    60    61    61    53    41    39
-        af_div    58    55    61    58    58    54    59    50    62    47    78    69
-      af_div_r    56    62    63    63    68    53    59    44    66    44    71    58
-   af_floordiv    34    30    26    36    35    32    34    28    42    28    54    47
- af_floordiv_r    26    35    29    38    35    30    34    26    35    27    51    40
-        af_mod    32    34    23    40    38    29    33    26    35    28    27    27
-      af_mod_r    33    30    31    37    30    27    32    26    30    28    20    18
-       af_mult    92   136    84   130    87   106    60    61    57    51    47    39
-        af_neg   109         132         115          67          63          39    35
-        af_pow    52    49    47    45    34    30    19    16    18    16    15    14
-      af_pow_r    47    41    43    40    33    30    19    18    18    17   2.6   4.0
-        af_sub   136   135   124   124   108    91    63    57    70    50    39    40
-      af_sub_r   131   142   104   108   108    86    61    44    61    48    44    39
-        af_and   155   238   235   161   150   122    72    71    79    66            
-         af_or   151   234   238   161   147   124    78    73    75    70            
-        af_xor   150   235   227   162   161   129    89    76    82    72            
-     af_invert   180   190   282   300   210   193   102    96   114   107            
-         af_eq   159   182   143   142   133    99    72    59    75    58   127    83
-         af_gt   151   154   147   146   139   105    70    58    79    62   157    84
-        af_gte   147   201   146   147   147   105    70    60    76    57   158   104
-         af_lt   137   188   160   145   137   108    73    60    75    60   170    97
-        af_lte   139   155   133   158   138   117    74    62    77    64   175   107
-         af_ne   161   194   151   172   134   128    76    68    76    63   163   115
-     af_lshift   177   240   183   164   192   118   108    83   100    91            
-   af_lshift_r   181   254   197   175   185   141   102    77    94    84            
-     af_rshift   170   238   159   150   191   124    92    72    95    77            
-   af_rshift_r   170   217   157   187   194   129    88    70    92    84            
-        af_abs   101         100          94          70          72         139    76
-     math_acos                                                                12    12
-    math_acosh                                                               6.7   5.2
-     math_asin                                                                13    11
-    math_asinh                                                               6.7   6.8
-     math_atan                                                                12    12
-    math_atan2                                                               8.4   8.4
-  math_atan2_r                                                                11   7.2
-    math_atanh                                                               6.6   7.4
-     math_ceil                                                                69    67
- math_copysign                                                                73    65
-      math_cos                                                                16   8.4
-     math_cosh                                                                11   7.2
-  math_degrees                                                                58    47
-      math_erf                                                                15    13
-     math_erfc                                                               8.4   7.6
-      math_exp                                                                12   8.9
-    math_expm1                                                               7.1   6.9
-     math_fabs                                                                64    65
-math_factorial    73    41    74    93    75    62    65    59    77    56            
-    math_floor                                                                60    63
-     math_fmod                                                                12    11
-   math_fmod_r                                                                31    30
-    math_gamma                                                               1.1   1.3
-    math_hypot                                                                19    14
-  math_hypot_r                                                                21    13
-    math_isinf                                                                53    54
-    math_isnan                                                                57    54
-    math_ldexp                                                                58    54
-   math_lgamma                                                               8.8   6.1
-      math_log                                                                15   8.9
-    math_log10                                                               9.8   7.0
-    math_log1p                                                               9.0   8.6
-      math_pow                                                                21    20
-    math_pow_r                                                               3.7   6.0
-  math_radians                                                                55    47
-      math_sin                                                                15   8.4
-     math_sinh                                                               5.0   5.3
-     math_sqrt                                                                48    41
-      math_tan                                                               7.0   5.6
-     math_tanh                                                               6.1   5.6
-    math_trunc                                                                49    42
- aops_subst_gt   160   185   193   161   193   139    99    79    98    90   212    89
-aops_subst_gte   147   181   177   178   150   137    82    66    74    61   143    73
- aops_subst_lt   180   200   200   180   176   149    68    72    63    62   165    67
-aops_subst_lte   174   174   172   183   160   145    66    58    65    60   141    61
+        af_add   162   140   164   144   149   126    97    86   128    85   135    93
+        af_div    78    66    80    77    80    70    84    70    81    69   214   225
+      af_div_r    72    80    81    85    85    74    87    74    83    75   145   127
+   af_floordiv    22    32    19    39    35    31    40    30    37    29   108   100
+ af_floordiv_r    38    38    38    39    40    32    37    32    40    32    88    85
+        af_mod    29    37    26    41    40    31    40    29    38    30    45    46
+      af_mod_r    35    32    39    37    38    28    40    28    36    28    32    33
+       af_mult   101   136    99   118    93   129    85    74    82    68   134   107
+        af_neg   147         146         157         104         122         119    87
+        af_pow    61    60    56    54    38    33    21    20    21    19    20    21
+      af_pow_r    48    53    47    47    35    35    20    18    20    18   2.8   4.9
+        af_sub   152   163   152   157   145   119   113    85    93    90   104    98
+      af_sub_r   168   152   159   165   147   127    92    83   109    84   119   100
+        af_and   259   182   207   185   163   199   117   107   122    90            
+         af_or   150   258   191   267   181   120   119    93   116   100            
+        af_xor   314   208   170   296   251   122   142    93   116    87            
+     af_invert   201   336   225   210   282   261   153   134   148   135            
+         af_eq   219   236   155   170   128   108   107    77   100    80   160   127
+         af_gt   158   151   138   137   172   113   100    79   103    77   243   140
+        af_gte   167   169   178   169   138   129   103    80   119    81   227   149
+         af_lt   148   141   145   150   159   101    99    75   109    80   216   149
+        af_lte   197   207   176   182   152   128   100    82   121    88   220   166
+         af_ne   162   151   149   155   165   109   107    81   110    89   196   162
+     af_lshift   200   225   165   170   230   201   142   113   114    99            
+   af_lshift_r   212   253   196   185   244   170   124   112   123    96            
+     af_rshift   218   190   191   189   189   164   129    90   145   106            
+   af_rshift_r   212   158   227   190   200   156   119    98   130    97            
+        af_abs   107         110         130          96         102          99    86
+     math_acos                                                                17    14
+    math_acosh                                                               8.0   7.5
+     math_asin                                                                18    15
+    math_asinh                                                               8.7   8.9
+     math_atan                                                                17    14
+    math_atan2                                                                10   9.4
+  math_atan2_r                                                                13   8.2
+    math_atanh                                                               8.4   9.4
+     math_ceil                                                               122   131
+ math_copysign                                                               214   189
+      math_cos                                                                24    11
+     math_cosh                                                                12   9.2
+  math_degrees                                                               169   119
+      math_erf                                                                17    16
+     math_erfc                                                               9.8   8.5
+      math_exp                                                                15    12
+    math_expm1                                                               8.2   8.7
+     math_fabs                                                               258   141
+math_factorial    82    81    73    70    78    84    84    69    76    66            
+    math_floor                                                               117   104
+     math_fmod                                                                15    15
+   math_fmod_r                                                                51    43
+    math_gamma                                                               1.5   1.6
+    math_hypot                                                                29    16
+  math_hypot_r                                                                30    18
+    math_isinf                                                               114   103
+    math_isnan                                                               260   173
+    math_ldexp                                                                65    66
+   math_lgamma                                                               8.9   6.4
+      math_log                                                                20    13
+    math_log10                                                                11   8.7
+    math_log1p                                                               9.2    11
+      math_pow                                                                34    35
+    math_pow_r                                                               4.1   7.0
+  math_radians                                                               150   138
+      math_sin                                                                20    10
+     math_sinh                                                               6.5   6.7
+     math_sqrt                                                                72    55
+      math_tan                                                               8.2   6.6
+     math_tanh                                                               6.3   6.9
+    math_trunc                                                                78    77
+ aops_subst_gt   202   216   189   184   214   139   122    97   120   103   278   124
+aops_subst_gte   183   212   210   205   190   170   121   100   128   122   182   125
+ aops_subst_lt   196   198   229   205   169   161   117   105   123   103   162   151
+aops_subst_lte   207   222   181   233   191   152   138   104   126   108   165   129
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    84
-Maximum:    300
-Minimum:    1.1
+Average:    108
+Maximum:    336
+Minimum:    1.5
 Array size: 100000
 =========== ========
 
@@ -1601,68 +1669,68 @@ ACalc
 -----
 
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        opcode     b     B     h     H     i     I     l     L     q     Q     f     d
+      function     b     B     h     H     i     I     l     L     q     Q     f     d
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-           add    20    21    21    22    21    18    20    16    21    18    18    21
-           sub    22    26    23    25    24    21    25    20    24    21    17    20
-          mult    12    14   7.2    13   5.2   7.3   3.3   4.8   3.2   4.9    20    19
-           div    25    36    37    38    37    28    25    21    24    23    32    36
-      floordiv    19    21    20    21    21    17    18    13    17    14    26    27
-           mod    17    22    13    20    19    19    20    15    21    16    16    15
-          uadd    44    57    54    59    51    45    57    35    48    37    17    19
-          usub    33          29          33          30          31          20    20
-           pow    33    34    30    30    25    22    16    14    16    15    11    11
-        bitand    27    31    31    36    31    26    28    27    29    23            
-         bitor    27    31    30    28    31    25    28    22    29    23            
-        bitxor    29    32    38    33    29    29    33    29    28    23            
-        invert    56    58    59    59    62    44    57    45    63    53            
-        lshift    30    32    29    34    33    27    32    30    31    25            
-        rshift    30    35    31    31    30    23    30    23    30    24            
-           abs    39    65    38    53    38    44    35    51    34    55    40    35
-     math_acos                                                               9.6   9.6
-    math_acosh                                                               6.3   5.0
-     math_asin                                                                11    10
-    math_asinh                                                               5.6   6.6
-     math_atan                                                                10   9.7
-    math_atan2                                                               8.1   7.4
-    math_atanh                                                               6.4   7.0
-     math_ceil                                                                40    43
- math_copysign                                                                33    36
-      math_cos                                                                12   7.9
-     math_cosh                                                               8.9   6.6
-  math_degrees                                                                30    29
-      math_erf                                                                13    12
-     math_erfc                                                               7.6   7.0
-      math_exp                                                                10   7.9
-    math_expm1                                                               6.5   6.5
-     math_fabs                                                                66    56
-math_factorial    35    40    36    40    37    27    34    31    39    26            
-    math_floor                                                                39    39
-     math_fmod                                                               9.3    11
-    math_gamma                                                               1.1   1.3
-    math_hypot                                                                15    11
-    math_ldexp                                                                32    32
-   math_lgamma                                                               7.1   5.6
-      math_log                                                                12   8.2
-    math_log10                                                               8.5   6.8
-    math_log1p                                                               7.6   8.3
-      math_pow                                                                16    16
-  math_radians                                                                27    27
-      math_sin                                                                12   7.8
-     math_sinh                                                               4.6   4.9
-     math_sqrt                                                                31    27
-      math_tan                                                               6.4   5.6
-     math_tanh                                                               5.2   4.8
-    math_trunc                                                                31    33
+           add    21    21    23    22    24    18    24    17    22    18    28    30
+           sub    21    21    25    25    24    18    22    20    22    19    27    26
+          mult    11    13   8.2    13   5.3   7.2   3.4   4.4   3.2   4.5    26    27
+           div    44    40    35    41    44    38    41    28    39    31    50    50
+      floordiv    19    18    19    20    19    17    17    12    14    12    43    45
+           mod    17    18    14    20    19    16    19    11    18    12    21    22
+          uadd    53    46    65    58    62    41    54    39    53    39    32    35
+          usub    31          35          34          33          32          32    33
+           pow    35    33    32    31    27    24    17    14    16    15    15    14
+        bitand    31    30    35    33    31    28    33    26    30    27            
+         bitor    29    29    33    32    30    27    33    25    30    26            
+        bitxor    32    35    37    36    34    27    36    25    33    25            
+        invert    55    48    61    57    60    45    56    50    61    52            
+        lshift    33    29    31    32    31    27    32    26    30    26            
+        rshift    30    29    31    33    31    26    31    24    29    25            
+           abs    39    57    39    67    36    57    38    54    37    52    46    51
+     math_acos                                                                13    12
+    math_acosh                                                               7.0   6.5
+     math_asin                                                                14    12
+    math_asinh                                                               7.3   7.8
+     math_atan                                                                13    12
+    math_atan2                                                               8.7   8.2
+    math_atanh                                                               7.3   8.2
+     math_ceil                                                                71    70
+ math_copysign                                                                49    50
+      math_cos                                                                18   9.8
+     math_cosh                                                                11   8.3
+  math_degrees                                                                48    53
+      math_erf                                                                14    14
+     math_erfc                                                               9.2   8.1
+      math_exp                                                                14   9.5
+    math_expm1                                                               7.4   8.0
+     math_fabs                                                                63    63
+math_factorial    35    33    39    40    39    40    39    31    42    35            
+    math_floor                                                                74    64
+     math_fmod                                                                13    12
+    math_gamma                                                               1.3   1.5
+    math_hypot                                                                20    13
+    math_ldexp                                                                34    35
+   math_lgamma                                                               8.1   6.2
+      math_log                                                                16    11
+    math_log10                                                               9.7   8.5
+    math_log1p                                                               8.5   9.4
+      math_pow                                                                22    25
+  math_radians                                                                53    55
+      math_sin                                                                16   9.3
+     math_sinh                                                               5.8   5.6
+     math_sqrt                                                                40    34
+      math_tan                                                               7.2   6.0
+     math_tanh                                                               5.7   6.3
+    math_trunc                                                                47    48
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    25
-Maximum:    66
-Minimum:    1.1
+Average:    28
+Maximum:    74
+Minimum:    1.3
 Array size: 100000
 =========== ========
 
@@ -1671,31 +1739,106 @@ Array size: 100000
 Other Functions
 ---------------
 
-===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
+Asumov in the following indicates asum with overflow checking turned off. This
+is required to enable SIMD features.
+
+
+Arrayfunc faster than Python factor.
+
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
    function     b     B     h     H     i     I     l     L     q     Q     f     d
-===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
-       aall    11   8.8   8.7   8.8   8.2   8.7   6.5   7.8   6.7   7.9    15   8.2
-       aany   9.8   7.2   5.9   7.2   5.7   7.4   6.0   6.3   5.9   6.2    11   6.5
-    afilter   224   222   215   212   143    99    87    60    86    59   157    88
-       amax    21    28    22    24    19    20    12    13    13    13    30    23
-       amin    20    29    20    29    20    18    12    12    12    12    29    23
-       asum   6.1   8.5   6.6   8.1   7.1   8.7   5.7   6.4   5.7   6.3   2.8   2.8
-   compress    35    38    35    36    36    18    31    16    30    16    33    30
-      count   221   202   207   207   111    81    64    46    64    47   105    85
-      cycle    94    97    92    96    81    57    54    37    54    38    35    35
-  dropwhile    88    85    87    86    85    61    53    38    53    39    87    52
-  findindex    15    15    15    14    18    18    10    12    10    13    15    12
-findindices    21    21    21    21    20    21    19    20    19    20    33    28
-     repeat   131   129   120   117    79    22    47    13    47    13   107    62
-  takewhile   239   179   173   139   157    85    90    61    90    61   123    89
-===========  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====  ====
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+       aall   9.5   9.8   7.6   7.6   8.0   9.2   6.0   6.2   6.3   6.7    14   9.2
+       aany   7.7   9.9    10   6.0   7.7   7.5   6.1   6.3   6.1   6.2    11   9.8
+    afilter   279   217   254   247   174   125   104    77   112    83   190   107
+       amax    36    30    23    23    19    21    14    13    14    14    38    28
+       amin    24    24    34    32    21    21    14    14    14    14    47    28
+       asum   7.0   9.8   8.8   9.8   6.9   9.4   6.6   7.1   6.4   7.0    11    10
+     asumov    14    16    14    17    12    14   7.5   8.5   7.4   7.9    11    11
+   compress    41    41    40    38    41    21    33    16    32    16    28    32
+      count   261   221   245   253   132    93    75    52    74    53   129   114
+      cycle   116   121   109   132   111    65    71    43    75    43    44    47
+  dropwhile   108   108   106   104   103    75    66    48    65    49   104    69
+  findindex    13    16    16    12    19    15    11    11    11    11    26    20
+findindices    39    31    37    38    34    29    23    26    23    25    40    34
+     repeat   143   122   124   128    93    23    52    15    53    15   141    78
+  takewhile   214   208   206   221   186   122   106    80   103    76   196   110
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    51
-Maximum:    239
-Minimum:    2.8
+Average:    58
+Maximum:    279
+Minimum:    6.0
 Array size: 1000000
 =========== ========
 
+
+Arrayfunc with SIMD faster than Python factor.
+
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+   function     b     B     h     H     i     I     l     L     q     Q     f     d
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+       aall    88          33          14                                  21    12
+       aany   129          63          19                                  29    12
+    afilter                                                                        
+       amax   571   459   126   129    40    41                            69    34
+       amin   311   306    98   100    35    35                            57    33
+       asum                                                                        
+     asumov                                                                32    14
+   compress                                                                        
+      count                                                                        
+      cycle                                                                        
+  dropwhile                                                                        
+  findindex   245          80          28                                  52    27
+findindices                                                                        
+     repeat                                                                        
+  takewhile                                                                        
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+
+
+=========== ========
+Stat         Value
+=========== ========
+Average:    101
+Maximum:    571
+Minimum:    11.6
+Array size: 1000000
+=========== ========
+
+
+
+Arrayfunc with SIMD faster than Arrayfunc without SIMD factor.
+SIMD is not supported for all array types, so some types will not show a speed up.
+
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+   function     b     B     h     H     i     I     l     L     q     Q     f     d
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+       aall   9.2         4.3         1.8                                 1.5   1.3
+       aany    17         6.2         2.4                                 2.6   1.2
+    afilter                                                                        
+       amax    16    16   5.4   5.5   2.1   2.0                           1.8   1.2
+       amin    13    13   2.9   3.2   1.7   1.7                           1.2   1.2
+       asum                                                                        
+     asumov                                                               2.8   1.3
+   compress                                                                        
+      count                                                                        
+      cycle                                                                        
+  dropwhile                                                                        
+  findindex    19         5.1         1.5                                 2.0   1.3
+findindices                                                                        
+     repeat                                                                        
+  takewhile                                                                        
+=========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+
+
+=========== ========
+Stat         Value
+=========== ========
+Average:    5
+Maximum:    19
+Minimum:    1.2
+Array size: 1000000
+=========== ========

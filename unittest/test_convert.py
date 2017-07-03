@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     22-Jun-2014.
-# Ver:      06-Mar-2016.
+# Ver:      26-Jun-2017.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -3851,8 +3851,6 @@ class convert_L(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class convert_q(unittest.TestCase):
 	"""Test for basic convert function.
 	"""
@@ -4314,8 +4312,6 @@ class convert_q(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class convert_Q(unittest.TestCase):
 	"""Test for basic convert function.
 	"""
@@ -5046,9 +5042,7 @@ class convert_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')	# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support or due to bugs in the platform C compiler.')
-
+	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  f - Convert to array code Q.
 		"""
@@ -5509,9 +5503,7 @@ class convert_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')	# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support or due to bugs in the platform C compiler.')
-
+	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  d - Convert to array code Q.
 		"""
@@ -6468,8 +6460,6 @@ class convert_nan_L_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class convert_nan_q_f(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
@@ -6508,10 +6498,6 @@ class convert_nan_q_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
-# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support due to bugs in the platform C compiler.')
 class convert_nan_Q_f(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
@@ -6892,8 +6878,6 @@ class convert_nan_L_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class convert_nan_q_d(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
@@ -6932,10 +6916,6 @@ class convert_nan_q_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
-# MSVC 2010 either does not support this function or appears to have bugs when converting float or double to unsigned long long.
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test due to lack of compiler support due to bugs in the platform C compiler.')
 class convert_nan_Q_d(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
@@ -7102,6 +7082,10 @@ class convert_nan_float(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\n\n')
+		f.write('convert\n\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################

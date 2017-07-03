@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 1.1.0 for 2016-04-08
-:Copyright: 2014 - 2016
+:Version: 2.0.0 for 2017-06-30
+:Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.4 or later
 
@@ -160,15 +160,13 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 ================= ========  ========================== =========================
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
-Ubuntu 14.04 LTS   64 bit    GCC                         3.4
 Ubuntu 16.04 LTS   64 bit    GCC                         3.5
-Debian 8           32 bit    GCC                         3.4
-FreeBSD 10         64 bit    LLVM                        3.4
-MS Windows 10      32 bit    MS Visual Studio C 2010     3.4
+Debian 9           32 bit    GCC                         3.5
+Debian 9           64 bit    GCC                         3.5
+FreeBSD 11         64 bit    LLVM                        3.5
+MS Windows 10      64 bit    MS Visual Studio C 2015     3.6
 ================= ========  ========================== =========================
 
-Some amap, amapi, and acalc operations are not supported on MS Windows due to 
-lack of compiler support. See the documentation for details.
 
 ---------------------------------------------------------------------
 
@@ -177,4 +175,9 @@ Release History
 
 * 1.0.0 - First release.
 * 1.1.0 - Added support for math constants math.pi and math.e.
-
+* 2.0.0 - Many changes. Updated MS Windows support to 3.6 and latest compiler.
+          This in turn brought the Windows version up to feature parity with
+          the other versions. Changed supported MS Windows version from 32 bit
+          to 64 bit. Added SIMD support for some functions which provided a 
+          significant performance for those affected. Updated supported versions
+          of Debian and FreeBSD to current releases.

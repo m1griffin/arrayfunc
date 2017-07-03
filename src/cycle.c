@@ -517,8 +517,8 @@ void cycle_double(Py_ssize_t arraylen, double *data, double startvalue, double s
 	}
 
 }
-
 /*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 
@@ -674,7 +674,7 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 				param1py.b = (signed char) param1tmp_l;
 				param2py.b = (signed char) param2tmp_l;
 				// Step must be positive.
-				param3py.b = (signed char) abs(param3tmp_l);
+				param3py.b = (signed char) labs(param3tmp_l);
 			}
 			break;
 		}

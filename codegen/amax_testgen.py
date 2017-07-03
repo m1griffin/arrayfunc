@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -35,22 +35,19 @@ signedtestdata = {'gentest' : 'itertools.chain(range(1,10,2), range(11,-88,-3))'
 			'increasing' : 'range(1,100)',
 			'decreasing' : 'range(100,1,-1)',
 			'maxval' : 'itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))',
-			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)', 
-			'skiplonglong' : ''}
+			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)'}
 
 unsignedtestdata = {'gentest' : 'itertools.chain(range(1,10,2), range(88,12,-3))',
 			'increasing' : 'range(1,100)',
 			'decreasing' : 'range(100,1,-1)',
 			'maxval' : 'itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3))',
-			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)', 
-			'skiplonglong' : ''}
+			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)'}
 
 floattestdata = {'gentest' : '[float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))]',
 			'increasing' : '[float(x) for x in range(1,100)]',
 			'decreasing' : '[float(x) for x in range(100,1,-1)]',
 			'maxval' : '[float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))]',
-			'minval' : '[float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)]', 
-			'skiplonglong' : ''}
+			'minval' : '[float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)]'}
 
 testdata = {
 	'b' : signedtestdata, 'B' : unsignedtestdata,
@@ -60,10 +57,6 @@ testdata = {
 	'q' : copy.copy(signedtestdata), 'Q' : copy.copy(unsignedtestdata),
 	'f' : floattestdata, 'd' : floattestdata,
 	}
-
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
 
 
 # This is used to insert code to convert the test data to bytes type. 
@@ -76,7 +69,7 @@ bytesconverter = 'data = bytes(data)'
 op_template = '''
 
 ##############################################################################
-%(skiplonglong)sclass amax_operator_%(typelabel)s(unittest.TestCase):
+class amax_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -92,7 +85,7 @@ op_template = '''
 
 	########################################################
 	def test_function_01(self):
-		"""Test amax  - Array code %(typelabel)s. General test.
+		"""Test amax  - Array code %(typelabel)s. General test with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
 		%(bytesconverter)s
@@ -102,7 +95,17 @@ op_template = '''
 
 	########################################################
 	def test_function_02(self):
-		"""Test amax  - Array code %(typelabel)s. Test increasing values.
+		"""Test amax  - Array code %(typelabel)s. General test without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(gentest)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_function_03(self):
+		"""Test amax  - Array code %(typelabel)s. Test increasing values with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(increasing)s)
 		%(bytesconverter)s
@@ -111,8 +114,18 @@ op_template = '''
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test amax  - Array code %(typelabel)s. Test decreasing values.
+	def test_function_04(self):
+		"""Test amax  - Array code %(typelabel)s. Test increasing values without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(increasing)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_function_05(self):
+		"""Test amax  - Array code %(typelabel)s. Test decreasing values with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(decreasing)s)
 		%(bytesconverter)s
@@ -121,8 +134,18 @@ op_template = '''
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test amax  - Array code %(typelabel)s. Test finding max for data type.
+	def test_function_06(self):
+		"""Test amax  - Array code %(typelabel)s. Test decreasing values without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(decreasing)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_function_07(self):
+		"""Test amax  - Array code %(typelabel)s. Test finding max for data type with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
 		%(bytesconverter)s
@@ -131,8 +154,18 @@ op_template = '''
 
 
 	########################################################
-	def test_function_05(self):
-		"""Test amax  - Array code %(typelabel)s. Test finding value from array that contains min for data type.
+	def test_function_08(self):
+		"""Test amax  - Array code %(typelabel)s. Test finding max for data type without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(maxval)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_function_09(self):
+		"""Test amax  - Array code %(typelabel)s. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(minval)s)
 		%(bytesconverter)s
@@ -141,8 +174,18 @@ op_template = '''
 
 
 	########################################################
-	def test_function_06(self):
-		"""Test amax  - Array code %(typelabel)s. Test optional lim parameter.
+	def test_function_10(self):
+		"""Test amax  - Array code %(typelabel)s. Test finding value from array that contains min for data type without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(minval)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_function_11(self):
+		"""Test amax  - Array code %(typelabel)s. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
 		%(bytesconverter)s
@@ -151,8 +194,18 @@ op_template = '''
 
 
 	########################################################
-	def test_function_07(self):
-		"""Test amax  - Array code %(typelabel)s. Test invalid parameter type.
+	def test_function_12(self):
+		"""Test amax  - Array code %(typelabel)s. Test optional lim parameter without SIMD.
+		"""
+		data = array.array('%(typecode)s', %(maxval)s)
+		%(bytesconverter)s
+		result = arrayfunc.amax(data, maxlen=5, nosimd=True)
+		self.assertEqual(result, max(data[:5]))
+
+
+	########################################################
+	def test_function_13(self):
+		"""Test amax  - Array code %(typelabel)s. Test invalid parameter type with SIMD.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amax(1)
@@ -163,7 +216,19 @@ op_template = '''
 
 
 	########################################################
-	def test_function_08(self):
+	def test_function_14(self):
+		"""Test amax  - Array code %(typelabel)s. Test invalid parameter type without SIMD.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.amax(1, nosimd=True)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = max(1)
+
+
+	########################################################
+	def test_function_15(self):
 		"""Test amax  - Array code %(typelabel)s. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
@@ -175,13 +240,13 @@ op_template = '''
 
 
 	########################################################
-	def test_function_09(self):
+	def test_function_16(self):
 		"""Test amax  - Array code %(typelabel)s. Test excess parameters.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
 		%(bytesconverter)s
 		with self.assertRaises(TypeError):
-			result = arrayfunc.amax(data, 5, 2)
+			result = arrayfunc.amax(data, 5, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -209,10 +274,10 @@ class amax_nan_%(typelabel)s(unittest.TestCase):
 		self.MaxVal = arrayfunc.arraylimits.%(typecode)s_max
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 
-		self.data_nan = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5])
-		self.data_inf = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5])
-		self.data_ninf = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5])
-		self.data_mixed = array.array('%(typecode)s', [float('inf'), 0.0, float('-inf'), float('nan'), self.MaxVal, self.MinVal, 100.5])
+		self.data_nan = array.array('%(typecode)s', [-10.0, -1000.0, -1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5, 100.1, 100.1])
+		self.data_inf = array.array('%(typecode)s', [-10.0, -1000.0, -1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5, 100.1, 100.1])
+		self.data_ninf = array.array('%(typecode)s', [-10.0, -1000.0, -1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5, 100.1, 100.1])
+		self.data_mixed = array.array('%(typecode)s', [-10.0, -1000.0, float('inf'), 0.0, float('-inf'), float('nan'), self.MaxVal, self.MinVal, 100.5, 100.1, 100.1])
 
 
 	########################################################
@@ -225,20 +290,52 @@ class amax_nan_%(typelabel)s(unittest.TestCase):
 
 
 # The basic template for individual tests with floating point arrays with nan, inf -inf.
-nantest_template = '''
+inftest_template = '''
 	########################################################
-	def test_%(testarray)s_%(testseq)s(self):
-		"""Test array with %(testarray)s - Array code %(typelabel)s.
+	def test_%(testarray)s_SIMD_%(testseq)s(self):
+		"""Test array with %(testarray)s - Array code %(typelabel)s with SIMD.
 		"""
 		data = self.rottest(self.data_%(testarray)s, %(testseq)s)
 		result = arrayfunc.amax(data)
-		# nan does not equal nan.
-		if math.isnan(result):
-			self.assertEqual(math.isnan(result), math.isnan(max(data)))
-		else:
-			self.assertEqual(result, max(data))
+		self.assertEqual(result, max(data))
+
+
+	########################################################
+	def test_%(testarray)s_NOSIMD_%(testseq)s(self):
+		"""Test array with %(testarray)s - Array code %(typelabel)s without SIMD.
+		"""
+		data = self.rottest(self.data_%(testarray)s, %(testseq)s)
+		result = arrayfunc.amax(data, nosimd=True)
+		self.assertEqual(result, max(data))
 
 '''
+
+nantest_template = '''
+	########################################################
+	def test_%(testarray)s_SIMD_%(testseq)s(self):
+		"""Test array with %(testarray)s - Array code %(typelabel)s with SIMD.
+		"""
+		data = self.rottest(self.data_%(testarray)s, %(testseq)s)
+		result = arrayfunc.amax(data)
+		# We don't actually test the result as there is no meaningful order
+		# comparison with NaN.
+
+
+	########################################################
+	def test_%(testarray)s_NOSIMD_%(testseq)s(self):
+		"""Test array with %(testarray)s - Array code %(typelabel)s without SIMD.
+		"""
+		data = self.rottest(self.data_%(testarray)s, %(testseq)s)
+		result = arrayfunc.amax(data, nosimd=True)
+		# We don't actually test the result as there is no meaningful order
+		# comparison with NaN.
+
+'''
+
+
+
+# ==============================================================================
+
 
 testclose = '''
 ##############################################################################
@@ -249,7 +346,11 @@ testclose = '''
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('amax\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -289,10 +390,16 @@ with open('test_amax.py', 'w') as f:
 		f.write(nan_template % datarec)
 
 		# Add tests for each special data type. 
-		for testarray in ('nan', 'inf', 'ninf', 'mixed'):
+		for testarray in ('inf', 'ninf'):
 			# Add a test to rotate through the data.
-			for testseq in range(0, 7):
+			for testseq in range(0, 11):
+				f.write(inftest_template % {'testarray' : testarray, 'testseq' : testseq, 'typelabel' : funtypes})
+
+		for testarray in ('nan', 'mixed'):
+			# Add a test to rotate through the data.
+			for testseq in range(0, 11):
 				f.write(nantest_template % {'testarray' : testarray, 'testseq' : testseq, 'typelabel' : funtypes})
+
 
 		# Close off the test.
 		f.write(testclose)

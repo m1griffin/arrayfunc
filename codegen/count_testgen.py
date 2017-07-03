@@ -34,17 +34,17 @@ import codegen_common
 signedtestdata = {'initval' : 0, 'zeroparam' : 0, 'largestart' : 10,
 			'negstart' : -10, 'smallstep' : 1, 'oddstep' : 7, 'negstep' : -1,
 			'fractionalstep' : 1, 'stepone' : 1, 'invalidstep' : "'a'",
-			'invalidtype' : "'a'", 'maxsteptypecode' : '', 'skiplonglong' : ''}
+			'invalidtype' : "'a'", 'maxsteptypecode' : ''}
 
 unsignedtestdata = {'initval' : 0, 'zeroparam' : 0, 'largestart' : 10,
 			'negstart' : 10, 'smallstep' : 1, 'oddstep' : 7, 'negstep' : -1,
 			'fractionalstep' : 1, 'stepone' : 1, 'invalidstep' : "'a'",
-			'invalidtype' : "'a'", 'maxsteptypecode' : '', 'skiplonglong' : ''}
+			'invalidtype' : "'a'", 'maxsteptypecode' : ''}
 
 floattestdata = {'initval' : 0.0, 'zeroparam' : 0.0, 'largestart' : 10.0,
 			'negstart' : -10.0, 'smallstep' : 1.0, 'oddstep' : 7.0, 'negstep' : -1.0,
 			'fractionalstep' : 0.1, 'stepone' : 1.0, 'invalidstep' : "'a'",
-			'invalidtype' : "'a'", 'maxsteptypecode' : '', 'skiplonglong' : ''}
+			'invalidtype' : "'a'", 'maxsteptypecode' : ''}
 
 testdata = {'b' : copy.copy(signedtestdata),
 	'B' : copy.copy(unsignedtestdata),
@@ -74,16 +74,11 @@ testdata['f']['maxsteptypecode'] = 'f'
 testdata['d']['maxsteptypecode'] = 'd'
 
 
-
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
 # ==============================================================================
 
 op_template = '''
 ##############################################################################
-%(skiplonglong)sclass count_%(typelabel)s(unittest.TestCase):
+class count_%(typelabel)s(unittest.TestCase):
 	"""Test for basic count function.
 	"""
 
@@ -334,7 +329,11 @@ endclass = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('count\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

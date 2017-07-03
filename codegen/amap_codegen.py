@@ -65,11 +65,11 @@ intparamtmp_template = """	int paramtmp;	// Used for temporary type conversion c
 
 # The basic template for each operator.
 basic_template = '''	// %(comment)s
-	case OP_%(labelname)s: {%(paramcount)s %(unsupportedop1)s
+	case OP_%(labelname)s: {%(paramcount)s
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = %(operation)s;
 		}
-		return ARR_NO_ERR; %(unsupportedop2)s
+		return ARR_NO_ERR;
 	}
 '''
 
@@ -77,7 +77,7 @@ basic_template = '''	// %(comment)s
 
 # The basic template for each operator with or without overflow checking.
 template_ovfl_begin = '''	// %(comment)s
-	case OP_%(labelname)s: {%(paramcount)s %(unsupportedop1)s
+	case OP_%(labelname)s: {%(paramcount)s
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -91,7 +91,7 @@ template_ovfl_begin = '''	// %(comment)s
 template_ovfl_end = '''
 			}
 		}
-		return ARR_NO_ERR; %(unsupportedop2)s
+		return ARR_NO_ERR;
 	}
 '''
 
@@ -103,20 +103,6 @@ template_ovfl_int = template_ovfl_begin + '\t\t\t\tif (errflag != 0) return ARR_
 # The basic template for each operator with integer post operation flag overflow checking.
 template_ovfl_float = template_ovfl_begin + '\t\t\t\tif (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}' + template_ovfl_end
 
-
-# ==============================================================================
-
-# Used when the function is not supported by some compilers.
-template_unsupportedop1 = '''
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-'''
-
-template_unsupportedop2 = '''
-		#endif
-'''
 
 
 # ==============================================================================
@@ -778,14 +764,6 @@ def CreateFunction(csvdata, arraycode):
 		else:
 			opvalues['paramcount'] = ''
 
-
-		# Some compilers do not support some math functions.
-		if op['msvs_has'] == '0':
-			opvalues['unsupportedop1'] = template_unsupportedop1
-			opvalues['unsupportedop2'] = template_unsupportedop2
-		else:
-			opvalues['unsupportedop1'] = ''
-			opvalues['unsupportedop2'] = ''
 
 
 		# This forms part of the case label.

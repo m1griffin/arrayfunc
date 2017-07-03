@@ -1,15 +1,16 @@
 REM Benchmark all the functions associated with arrayfunc.
 
+echo off
 
 echo "Testing amap benchmarks."
 
-benchmark.py
+benchamap.py
 
 REM ============================================================================
 
 echo "Testing acalc benchmarks."
 
-acalcbenchmark.py
+benchacalc.py
 
 REM ============================================================================
 

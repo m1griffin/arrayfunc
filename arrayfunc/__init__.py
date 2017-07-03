@@ -36,5 +36,6 @@ from arrayfunc.convert import convert
 import arrayfunc.acalc
 from arrayfunc.acalcvm import acalcvm
 
+import arrayfunc.simdsupport
 import arrayfunc.arraylimits
 import arrayfunc.arrayguardbands

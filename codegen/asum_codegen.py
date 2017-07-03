@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -31,38 +31,20 @@ import codegen_common
 # ==============================================================================
 
 
-# This defines how python array codes translate to C data types for summation.
-# Integer types are split into signed and unsigned longs.
-sumtype = {'b' : 'signed long', 'B' : 'unsigned long', 
-	'h' : 'signed long', 'H' : 'unsigned long', 
-	'i' : 'signed long', 'I' : 'unsigned long', 
-	'l' : 'signed long', 'L' : 'unsigned long', 
-	'q' : 'signed long long', 'Q' : 'unsigned long long', 
-	'f' : 'float', 'd' : 'double'}
-
-# Zero, in integer or floating point format.
-zerotype = {'b' : '0', 'B' : '0', 
-	'h' : '0', 'H' : '0', 
-	'i' : '0', 'I' : '0', 
-	'l' : '0', 'L' : '0', 
-	'q' : '0', 'Q' : '0', 
-	'f' : '0.0', 'd' : '0.0'}
-
-# ==============================================================================
-
-# Template for the asum functions with overflow.
+# Template for the asum functions with overflow for signed integer.
 template_basic = """/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: %(arraycode)s
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 %(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
-	%(sumtype)s partialsum = %(zero)s;
+	%(sumtype)s partialsum = 0;
 
 	*errflag = 0;
 	// Overflow checking disabled.
@@ -73,18 +55,7 @@ template_basic = """/*----------------------------------------------------------
 	} else {
 		// Overflow checking enabled.
 		for(x = 0; x < arraylen; x++) {
-"""
-
-# Overflow checking for unsigned integers.
-uint_overflow = """			if (data[x] > (ULONG_MAX - partialsum)) { 
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
-			}
-			partialsum = partialsum + data[x];
-"""
-
-# Overflow checking for signed integers.
-int_overflow = """			if ((partialsum > 0) && (data[x] > (LONG_MAX - partialsum))) {
+			if ((partialsum > 0) && (data[x] > (LONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
@@ -93,39 +64,99 @@ int_overflow = """			if ((partialsum > 0) && (data[x] > (LONG_MAX - partialsum))
 				return partialsum; 
 			}
 			partialsum = partialsum + data[x];
+		}
+	}
+
+	return partialsum;
+}
+/*--------------------------------------------------------------------------- */
+
 """
 
-# Overflow checking for unsigned long long integers.
-ulonglongint_overflow = """			if (data[x] > (ULLONG_MAX - partialsum)) { 
+# ==============================================================================
+
+
+# Template for the asum functions with overflow for unsigned integer.
+template_basic_u = """/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   arraylen = The length of the data array.
+   data = The input data array.
+   errflag = Set to true if an overflow error occured in integer operations.
+   disableovfl = If true, arithmetic overflow checking is disabled.
+   Returns: The sum of the array.
+*/
+%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	%(sumtype)s partialsum = 0;
+
+	*errflag = 0;
+	// Overflow checking disabled.
+	if (disableovfl) {
+		for(x = 0; x < arraylen; x++) {
+			partialsum = partialsum + data[x];
+		}
+	} else {
+		// Overflow checking enabled.
+		for(x = 0; x < arraylen; x++) {
+			if (data[x] > (ULONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
 			partialsum = partialsum + data[x];
+		}
+	}
+
+	return partialsum;
+}
+/*--------------------------------------------------------------------------- */
+
 """
 
-# Overflow checking for signed long long integers.
-longlongint_overflow = """			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
-			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
-				*errflag = ARR_ERR_OVFL;
-				return partialsum; 
-			}
+# ==============================================================================
+
+# This is used for floating point SIMD versions only.
+simdtemplate = """
+/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   arraylen = The length of the data array.
+   data = The input data array.
+   errflag = Set to true if an overflow error occured in integer operations.
+   disableovfl = If true, arithmetic overflow checking is disabled.
+   nosimd = If true, disable SIMD.
+   Returns: The sum of the array.
+*/
+%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl, unsigned int nosimd) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	%(sumtype)s partialsum = 0.0;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version. Only use this if overflow checking is disabled.
+	if (disableovfl && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+		return asum_%(funcmodifier)s_simd(arraylen, data);
+	}
+#endif
+
+
+	*errflag = 0;
+	// Overflow checking disabled.
+	if (disableovfl) {
+		for(x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
-"""
-
-
-# Overflow checking for floating point numbers.
-float_overflow = """			partialsum = partialsum + data[x];
+		}
+	} else {
+		// Overflow checking enabled.
+		for(x = 0; x < arraylen; x++) {
+			partialsum = partialsum + data[x];
 			if (!isfinite(partialsum)) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
-"""
-
-# Close off the function.
-func_close = """		}
+		}
 	}
 
 	return partialsum;
@@ -134,38 +165,124 @@ func_close = """		}
 """
 
 # ==============================================================================
-# Overflow template format.
-overflowstyles = {'b' : int_overflow, 'B' : uint_overflow, 
-	'h' : int_overflow, 'H' : uint_overflow, 
-	'i' : int_overflow, 'I' : uint_overflow, 
-	'l' : int_overflow, 'L' : uint_overflow, 
-	'q' : longlongint_overflow, 'Q' : ulonglongint_overflow, 
-	'f' : float_overflow, 'd' : float_overflow}
+
+# This is used for floating point SIMD versions only.
+simdsupport = """
+/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   arraylen = The length of the data array.
+   data = The input data array.
+   errflag = Set to true if an overflow error occured in integer operations.
+   disableovfl = If true, arithmetic overflow checking is disabled.
+   nosimd = If true, disable SIMD.
+   Returns: The sum of the array.
+*/
+#ifdef AF_HASSIMD
+%(sumtype)s asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
+
+	// array index counter. 
+	Py_ssize_t x, alignedlength; 
+	unsigned int y;
+	%(sumtype)s partialsum = 0.0;
+
+	%(sumtype)s sumvals[%(simdwidth)s];
+	%(simdattr)s sumslice, dataslice;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Initialise the sum values.
+	sumslice = (%(simdattr)s) %(simdload)s(data);
+
+	// Use SIMD.
+	for(x = %(simdwidth)s; x < alignedlength; x += %(simdwidth)s) {
+		dataslice = (%(simdattr)s) %(simdload)s(&data[x]);
+		sumslice = %(simdop)s (sumslice, dataslice);
+	}
+
+	// Add up the values within the slice.
+	%(simdstore)s(sumvals, (%(simdattr)s) sumslice);
+	for (y = 0; y < %(simdwidth)s; y++) {
+		partialsum = partialsum + sumvals[y];
+	}
+
+	// Add the values within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		partialsum = partialsum + data[x];
+	}
+
+
+	return partialsum;
+}
+#endif
+/*--------------------------------------------------------------------------- */
+"""
+
+
+# ==============================================================================
+
+simdvalues = {
+'f' : {'simdattr' : 'v4sf', 'simdstoreattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 'simdload' : '__builtin_ia32_loadups', 'simdop' : '__builtin_ia32_addps', 'simdstore' : '__builtin_ia32_storeups'},
+'d' : {'simdattr' : 'v2df', 'simdstoreattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd', 'simdop' : '__builtin_ia32_addpd', 'simdstore' : '__builtin_ia32_storeupd'},
+}
+
+
+# This defines how python array codes translate to C data types for summation.
+# Integer types are split into signed and unsigned longs.
+sumtype = {'b' : 'signed long', 'B' : 'unsigned long', 
+	'h' : 'signed long', 'H' : 'unsigned long', 
+	'i' : 'signed long', 'I' : 'unsigned long', 
+	'l' : 'signed long', 'L' : 'unsigned long', 
+	'q' : 'signed long long', 'Q' : 'unsigned long long', 
+	'f' : 'float', 'd' : 'double'}
 
 # ==============================================================================
 
 
 with open('asum_code.txt', 'w') as f:
-	# Output the generated code.
+	# Output the generated code for integer types.
 	for funtypes in codegen_common.arraycodes:
 		arraytype = codegen_common.arraytypes[funtypes]
 
-		datavalues = {'funcmodifier' : arraytype.replace(' ', '_'), 
+		datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
 			'arraytype' : arraytype,
 			'sumtype' : sumtype[funtypes],
-			'zero' : zerotype[funtypes]}
+			'arraycode' : funtypes}
 
-		
-		# Basic template start.
-		f.write(template_basic % datavalues)
 
 		# The type of overflow check we do depends on the array type.
-		ovfl_template = overflowstyles[funtypes]
+		if funtypes in codegen_common.signedint:
+			codetemplate = template_basic
+		elif funtypes in codegen_common.unsignedint:
+			codetemplate = template_basic_u
+		elif funtypes in codegen_common.floatarrays:
+			codetemplate = simdtemplate
+			datavals.update(simdvalues[funtypes])
 
-		# Overflow code.
-		f.write(ovfl_template)
 
-		# Close off function.
-		f.write(func_close)
+		# Basic template start.
+		f.write(codetemplate % datavals)
 
+
+
+with open('asum_simd_x86.txt', 'w') as f:
+	# Output the generated code for floating point types.
+	for funtypes in codegen_common.floatarrays:
+		arraytype = codegen_common.arraytypes[funtypes]
+
+		datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
+			'arraytype' : arraytype,
+			'sumtype' : sumtype[funtypes],
+			'arraycode' : funtypes}
+
+		# Use the SIMD values.
+		datavals.update(simdvalues[funtypes])
+
+		# Use the SIMD template.
+		f.write(simdsupport % datavals)
+
+
+# ==============================================================================
 

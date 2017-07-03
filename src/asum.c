@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -34,23 +34,29 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "asum_simd_x86.h"
+#endif
 
 /*--------------------------------------------------------------------------- */
 
 // The list of keyword arguments. All argument must be listed, whether we 
 // intend to use them for keywords or not. 
-static char *kwlist[] = {"data", "disovfl", "maxlen", NULL};
+static char *kwlist[] = {"data", "disovfl", "maxlen", "nosimd", NULL};
 
 /*--------------------------------------------------------------------------- */
 
 // Auto-generated code goes below.
-
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 signed long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *errflag, signed int disableovfl) { 
 
@@ -82,12 +88,14 @@ signed long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int 
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: B
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 unsigned long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signed int *errflag, signed int disableovfl) { 
 
@@ -115,12 +123,14 @@ unsigned long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signe
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: h
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 signed long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int *errflag, signed int disableovfl) { 
 
@@ -152,12 +162,14 @@ signed long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed in
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: H
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 unsigned long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, signed int *errflag, signed int disableovfl) { 
 
@@ -185,12 +197,14 @@ unsigned long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, sig
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: i
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 signed long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *errflag, signed int disableovfl) { 
 
@@ -222,12 +236,14 @@ signed long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *e
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: I
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 unsigned long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, signed int *errflag, signed int disableovfl) { 
 
@@ -255,12 +271,14 @@ unsigned long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, signed 
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: l
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 signed long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int *errflag, signed int disableovfl) { 
 
@@ -292,12 +310,14 @@ signed long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int 
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: L
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 unsigned long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, signed int *errflag, signed int disableovfl) { 
 
@@ -325,12 +345,14 @@ unsigned long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, signe
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: q
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed int *errflag, signed int disableovfl) { 
 
@@ -347,11 +369,11 @@ signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *da
 	} else {
 		// Overflow checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
+			if ((partialsum > 0) && (data[x] > (LONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
-			if ((partialsum < 0) && (data[x] < (LLONG_MIN - partialsum))) {
+			if ((partialsum < 0) && (data[x] < (LONG_MIN - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
@@ -362,12 +384,14 @@ signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *da
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: Q
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   Returns: The sum of the array.
 */
 unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, signed int *errflag, signed int disableovfl) { 
 
@@ -384,7 +408,7 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	} else {
 		// Overflow checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			if (data[x] > (ULLONG_MAX - partialsum)) { 
+			if (data[x] > (ULONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
 			}
@@ -395,18 +419,31 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: f
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   nosimd = If true, disable SIMD.
+   Returns: The sum of the array.
 */
-float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int disableovfl) { 
+float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int disableovfl, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	float partialsum = 0.0;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version. Only use this if overflow checking is disabled.
+	if (disableovfl && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		return asum_float_simd(arraylen, data);
+	}
+#endif
+
 
 	*errflag = 0;
 	// Overflow checking disabled.
@@ -428,18 +465,30 @@ float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed i
 	return partialsum;
 }
 /*--------------------------------------------------------------------------- */
+
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data array.
+/* For array code: d
+   arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
    disableovfl = If true, arithmetic overflow checking is disabled.
-	Returns: The sum of the array.
+   nosimd = If true, disable SIMD.
+   Returns: The sum of the array.
 */
-double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signed int disableovfl) { 
+double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signed int disableovfl, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
 	double partialsum = 0.0;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version. Only use this if overflow checking is disabled.
+	if (disableovfl && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		return asum_double_simd(arraylen, data);
+	}
+#endif
+
 
 	*errflag = 0;
 	// Overflow checking disabled.
@@ -500,12 +549,14 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 	struct paramsvals resultfound;
 	struct arrayparamstypes arr1type = {0, 0, ' '};
 
+	// If true, disable using SIMD.
+	unsigned int nosimd = 0;
 
 	// -------------------------------------------------------------------------
 
 
 	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "O|in:asum", kwlist, &dataobj, &disableovfl, &arraymaxlen)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "O|ini:asum", kwlist, &dataobj, &disableovfl, &arraymaxlen, &nosimd)) {
 		ErrMsgParameterError();
 		return NULL;
 	}
@@ -523,8 +574,8 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 
 
 	// Now we will fetch the actual data.
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "y*|in:asum", kwlist, 
-			&datapy, &disableovfl, &arraymaxlen)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "y*|ini:asum", kwlist, 
+			&datapy, &disableovfl, &arraymaxlen, &nosimd)) {
 		return NULL;
 	}
 
@@ -612,13 +663,13 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 		}
 		// float
 		case 'f' : {
-			resultfound.f = asum_float(arraylength, data.f, &errflag, disableovfl);
+			resultfound.f = asum_float(arraylength, data.f, &errflag, disableovfl, nosimd);
 			sumreturn = PyFloat_FromDouble((double) resultfound.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultfound.d = asum_double(arraylength, data.d, &errflag, disableovfl);
+			resultfound.d = asum_double(arraylength, data.d, &errflag, disableovfl, nosimd);
 			sumreturn = PyFloat_FromDouble(resultfound.d);
 			break;
 		}
@@ -662,6 +713,7 @@ indices in the array module). \n\
 \n\
 x = asum(inparray)\n\
 x = asum(inparray, disovfl=True, maxlen=y)\n\
+x = asum(inparray, nosimd=True)\n\
 \n\
 * inparray - The array to be summed.\n\
 * disovfl - If this keyword parameter is True, integer overflow checking \n\
@@ -669,7 +721,9 @@ x = asum(inparray, disovfl=True, maxlen=y)\n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\
-  parameter is ignored.");
+  parameter is ignored. \n\
+* nosimd - If true, disable SIMD. SIMD will only be enabled if overflow \n\
+  checking is also disabled.");
 
 
 

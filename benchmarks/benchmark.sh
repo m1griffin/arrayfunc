@@ -8,7 +8,7 @@ echo "Testing amap benchmarks."
 # Time at which the test sequence started.
 starttime=$(date '+%s')
 
-./benchmark.py
+./benchamap.py
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')
@@ -24,7 +24,7 @@ echo "Testing acalc benchmarks."
 # Time at which the test sequence started.
 starttime=$(date '+%s')
 
-./acalcbenchmark.py
+./benchacalc.py
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')

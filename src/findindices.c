@@ -1866,7 +1866,7 @@ static PyObject *py_findindices(PyObject *self, PyObject *args, PyObject *keywds
 	}
 
 	// Return the number of items filtered through.
-	return PyLong_FromLong(resultcode);
+	return PyLong_FromSsize_t(resultcode);
 
 
 }

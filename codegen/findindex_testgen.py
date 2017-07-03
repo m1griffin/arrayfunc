@@ -33,12 +33,12 @@ import codegen_common
 
 
 intparams = {'overflowinc' : '+ 1', 'overflowdec' : '- 1', 
-	'typeconvert' : 'int', 'invalidtypeconvert' : 'float',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'decimal' : '', 'invaliddecimal' : '.5',
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 floatparams = {'overflowinc' : '* 1.1', 'overflowdec' : '* 1.1', 
-	'typeconvert' : 'float', 'invalidtypeconvert' : 'int',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'decimal' : '.0', 'invaliddecimal' : '',
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 testdata = {
 	'b' : intparams,
@@ -59,21 +59,18 @@ testdata = {
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
 
 # This is used to insert code to convert the test data to bytes type. 
-bytesconverter = 'data = bytes(data)'
+bytesconvertereven = 'self.dataeven = bytes(self.dataeven)'
+bytesconverterodd = 'self.dataodd = bytes(self.dataodd)'
 
 
 # ==============================================================================
 
 # The template used to generate the tests.
-template = '''
+op_template = '''
 ##############################################################################
-%(skiplonglong)sclass findindex_operator_%(typelabel)s(unittest.TestCase):
+class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -82,14 +79,21 @@ template = '''
 		"""Initialise.
 		"""
 		self.TypeCode = '%(typecode)s'
-		self.TestData = [%(typeconvert)s(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [%(typeconvert)s(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = %(typeconvert)s(100)
-		self.zerofill = %(typeconvert)s(0)
+		# Data with one element different. This is evenly divisible by the SIMD
+		# register size and should be caught by the SIMD code.
+		datalisteven = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103] * 16
 
-		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
+
+		# Data with one element different. This is not evenly divisible by the 
+		# SIMD register size and should be handled by the non-SIMD code which 
+		# catches the odd array data after the SIMD operation.
+		# For gt, gte
+		datalistodd = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103] * 16
+		datalistodd.extend([103, 103, 103])
+
+
+		self.dataeven = array.array('%(typecode)s', datalisteven)
+		self.dataodd = array.array('%(typecode)s', datalistodd)
 
 
 		# These are the compare operators to use when testing the findindex function.
@@ -103,7 +107,7 @@ template = '''
 			}
 
 		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
+		self.dataovfl = array.array(self.TypeCode, list(range(97, 107)))
 
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
@@ -111,15 +115,6 @@ template = '''
 
 		# This is used in testing parameters.
 		self.dataempty = array.array(self.TypeCode)
-
-
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.data2 = bytes(self.data2)
-			self.data3 = bytes(self.data3)
-			self.dataovfl = bytes(self.dataovfl)
-			self.dataempty = bytes(self.dataempty)
 
 
 
@@ -143,261 +138,804 @@ template = '''
 
 	########################################################
 	def test_operator_eq_01(self):
-		"""Test eq  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test eq  - Array code %(typelabel)s. - Parameter in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(101)
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param)
-		expected = self.FindIndex('==', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_eq_02(self):
-		"""Test eq  - Array code %(typelabel)s. - Parameter at start.
+		"""Test eq  - Array code %(typelabel)s. - Parameter in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(97)
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param)
-		expected = self.FindIndex('==', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_eq_03(self):
-		"""Test eq  - Array code %(typelabel)s. - Parameter at end.
+		"""Test eq  - Array code %(typelabel)s. - Parameter at start of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(103)
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param)
-		expected = self.FindIndex('==', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[0] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_eq_04(self):
-		"""Test eq  - Array code %(typelabel)s. - Parameter not found.
+		"""Test eq  - Array code %(typelabel)s. - Parameter at start of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(110)
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param)
-		expected = self.FindIndex('==', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[0] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_eq_05(self):
+		"""Test eq  - Array code %(typelabel)s. - Parameter at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[-1] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		expected = self.FindIndex('==', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_eq_06(self):
+		"""Test eq  - Array code %(typelabel)s. - Parameter at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[-1] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		expected = self.FindIndex('==', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_eq_07(self):
+		"""Test eq  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		expected = self.FindIndex('==', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_eq_08(self):
+		"""Test eq  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		expected = self.FindIndex('==', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+	#####
 
 
 
 	########################################################
 	def test_operator_gt_01(self):
-		"""Test gt  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test gt  - Array code %(typelabel)s. - Parameter in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(101)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.data, param)
-		expected = self.FindIndex('>', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gt_02(self):
-		"""Test gt  - Array code %(typelabel)s. - Parameter at start.
+		"""Test gt  - Array code %(typelabel)s. - Parameter in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(96)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.data, param)
-		expected = self.FindIndex('>', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gt_03(self):
-		"""Test gt  - Array code %(typelabel)s. - Parameter at end.
+		"""Test gt  - Array code %(typelabel)s. - Parameter at start of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(102)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.data, param)
-		expected = self.FindIndex('>', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[0] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gt_04(self):
-		"""Test gt  - Array code %(typelabel)s. - Parameter not found.
+		"""Test gt  - Array code %(typelabel)s. - Parameter at start of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(110)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.data, param)
-		expected = self.FindIndex('>', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[0] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gt_05(self):
+		"""Test gt  - Array code %(typelabel)s. - Parameter at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[-1] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		expected = self.FindIndex('>', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gt_06(self):
+		"""Test gt  - Array code %(typelabel)s. - Parameter at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[-1] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		expected = self.FindIndex('>', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gt_07(self):
+		"""Test gt  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		expected = self.FindIndex('>', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gt_08(self):
+		"""Test gt  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		expected = self.FindIndex('>', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+	#####
 
 
 
 	########################################################
 	def test_operator_gte_01(self):
-		"""Test gte  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test gte  - Array code %(typelabel)s. - Parameter > in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(101)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.data, param)
-		expected = self.FindIndex('>=', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gte_02(self):
-		"""Test gte  - Array code %(typelabel)s. - Parameter at start.
+		"""Test gte  - Array code %(typelabel)s. - Parameter == in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(97)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.data, param)
-		expected = self.FindIndex('>=', self.data, param)
+		param = 105%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gte_03(self):
-		"""Test gte  - Array code %(typelabel)s. - Parameter at end.
+		"""Test gte  - Array code %(typelabel)s. - Parameter > in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(103)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.data, param)
-		expected = self.FindIndex('>=', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_gte_04(self):
-		"""Test gte  - Array code %(typelabel)s. - Parameter not found.
+		"""Test gte  - Array code %(typelabel)s. - Parameter == in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(110)
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.data, param)
-		expected = self.FindIndex('>=', self.data, param)
+		param = 105%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_05(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter > at start of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[0] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_06(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter == at start of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[0] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_07(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter > at start of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[0] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_08(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter == at start of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[0] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_09(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter > at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[-1] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_10(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter == at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataeven[-1] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_11(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter > at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[-1] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_12(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter == at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 105%(decimal)s
+		self.dataodd[-1] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_13(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_gte_14(self):
+		"""Test gte  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 110%(decimal)s
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+	#####
 
 
 
 	########################################################
 	def test_operator_lt_01(self):
-		"""Test lt  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test lt  - Array code %(typelabel)s. - Parameter in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(101)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.data2, param)
-		expected = self.FindIndex('<', self.data2, param)
+		param = 90%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lt_02(self):
-		"""Test lt  - Array code %(typelabel)s. - Parameter at start.
+		"""Test lt  - Array code %(typelabel)s. - Parameter in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(104)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.data2, param)
-		expected = self.FindIndex('<', self.data2, param)
+		param = 90%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lt_03(self):
-		"""Test lt  - Array code %(typelabel)s. - Parameter at end.
+		"""Test lt  - Array code %(typelabel)s. - Parameter at start of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(98)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.data2, param)
-		expected = self.FindIndex('<', self.data2, param)
+		param = 90%(decimal)s
+		self.dataeven[0] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lt_04(self):
-		"""Test lt  - Array code %(typelabel)s. - Parameter not found.
+		"""Test lt  - Array code %(typelabel)s. - Parameter at start of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(96)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.data2, param)
-		expected = self.FindIndex('<', self.data2, param)
+		param = 90%(decimal)s
+		self.dataodd[0] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lt_05(self):
+		"""Test lt  - Array code %(typelabel)s. - Parameter at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[-1] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		expected = self.FindIndex('<', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lt_06(self):
+		"""Test lt  - Array code %(typelabel)s. - Parameter at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[-1] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		expected = self.FindIndex('<', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lt_07(self):
+		"""Test lt  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
+		"""
+		param = 85%(decimal)s
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		expected = self.FindIndex('<', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lt_08(self):
+		"""Test lt  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 85%(decimal)s
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		expected = self.FindIndex('<', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+	#####
 
 
 
 	########################################################
 	def test_operator_lte_01(self):
-		"""Test lte  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test lte  - Array code %(typelabel)s. - Parameter < in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(101)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lte, self.data2, param)
-		expected = self.FindIndex('<=', self.data2, param)
+		param = 90%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lte_02(self):
-		"""Test lte  - Array code %(typelabel)s. - Parameter at start.
+		"""Test lte  - Array code %(typelabel)s. - Parameter == in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(103)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lte, self.data2, param)
-		expected = self.FindIndex('<=', self.data2, param)
+		param = 90%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lte_03(self):
-		"""Test lte  - Array code %(typelabel)s. - Parameter at end.
+		"""Test lte  - Array code %(typelabel)s. - Parameter < in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(98)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lte, self.data2, param)
-		expected = self.FindIndex('<=', self.data2, param)
+		param = 90%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_lte_04(self):
-		"""Test lte  - Array code %(typelabel)s. - Parameter not found.
+		"""Test lte  - Array code %(typelabel)s. - Parameter == in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(96)
-		result = arrayfunc.findindex(arrayfunc.aops.af_lte, self.data2, param)
-		expected = self.FindIndex('<=', self.data2, param)
+		param = 90%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_05(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter < at start of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[0] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_06(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter == at start of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[0] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_07(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter < at start of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[0] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_08(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter == at start of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[0] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_09(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter < at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[-1] = param + 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_10(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter == at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[-1] = param
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_11(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter < at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[-1] = param + 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_12(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter == at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[-1] = param
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_13(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
+		"""
+		param = 85%(decimal)s
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		expected = self.FindIndex('>=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_lte_14(self):
+		"""Test lte  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 85%(decimal)s
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		expected = self.FindIndex('>=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+	#####
 
 
 
 	########################################################
 	def test_operator_ne_01(self):
-		"""Test ne  - Array code %(typelabel)s. - Parameter in middle.
+		"""Test ne  - Array code %(typelabel)s. - Parameter in middle of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(100)
-		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 100, 100, 101, 100, 100, 100, 100]])
-		%(bytesconverter)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, data, param)
-		expected = self.FindIndex('!=', data, param)
+		param = 90%(decimal)s
+		self.dataeven[len(self.dataeven) // 2] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_ne_02(self):
-		"""Test ne  - Array code %(typelabel)s. - Parameter at start.
+		"""Test ne  - Array code %(typelabel)s. - Parameter in middle of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(103)
-		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [101, 100, 100, 100, 100, 100, 100, 100, 100, 100]])
-		%(bytesconverter)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, data, param)
-		expected = self.FindIndex('!=', data, param)
+		param = 90%(decimal)s
+		self.dataodd[len(self.dataodd) // 2] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_ne_03(self):
-		"""Test ne  - Array code %(typelabel)s. - Parameter at end.
+		"""Test ne  - Array code %(typelabel)s. - Parameter at start of even length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(98)
-		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 100, 100, 100, 100, 100, 100, 101]])
-		%(bytesconverter)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, data, param)
-		expected = self.FindIndex('!=', data, param)
+		param = 90%(decimal)s
+		self.dataeven[0] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
 
 	########################################################
 	def test_operator_ne_04(self):
-		"""Test ne  - Array code %(typelabel)s. - Parameter not found.
+		"""Test ne  - Array code %(typelabel)s. - Parameter at start of odd length array %(simdpresent)s SIMD.
 		"""
-		param = %(typeconvert)s(100)
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.data3, param)
-		expected = self.FindIndex('!=', self.data3, param)
+		param = 90%(decimal)s
+		self.dataodd[0] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_ne_05(self):
+		"""Test ne  - Array code %(typelabel)s. - Parameter at end of even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[-1] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		expected = self.FindIndex('!=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_ne_06(self):
+		"""Test ne  - Array code %(typelabel)s. - Parameter at end of odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[-1] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		expected = self.FindIndex('!=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_ne_07(self):
+		"""Test ne  - Array code %(typelabel)s. - Parameter found in even length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataeven[-1] = param - 1
+		%(bytesconvertereven)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		expected = self.FindIndex('!=', self.dataeven, param)
+		self.assertEqual(result, expected)
+
+
+	########################################################
+	def test_operator_ne_08(self):
+		"""Test ne  - Array code %(typelabel)s. - Parameter found in odd length array %(simdpresent)s SIMD.
+		"""
+		param = 90%(decimal)s
+		self.dataodd[-1] = param - 1
+		%(bytesconverterodd)s
+		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		expected = self.FindIndex('!=', self.dataodd, param)
+		self.assertEqual(result, expected)
+
+
+
+##############################################################################
+
+'''
+
+
+# ==============================================================================
+
+# The basic template for testing parameters.
+param_template = '''
+##############################################################################
+class findindex_parameter_%(typelabel)s(unittest.TestCase):
+	"""Test for correct parameters.
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('%(typecode)s', [100]*100)
+		self.dataempty = array.array('%(typecode)s')
+
+		# For bytes types, we need a non-array data type.
+		if '%(typelabel)s' == 'bytes':
+			self.data = bytes(self.data)
+			self.dataempty = bytes(self.dataempty)
+
+
+		# These are the compare operators to use when testing the findindex function.
+		self.opvals = {
+			'<' : operator.lt,
+			'<=' : operator.le,
+			'==' : operator.eq,
+			'!=' : operator.ne,
+			'>=' : operator.ge,
+			'>' : operator.gt
+			}
+
+
+
+	########################################################
+	def FindIndex(self, op, data, param, maxlen=0):
+		"""Emulate the test function.
+		"""
+		# Get the type of compare operation we want, and convert it into a
+		# function we can use as a predicate.
+		opfunc = self.opvals[op]
+		opval = lambda x: opfunc(x, param)
+
+		for i,j in enumerate(data):
+			if (maxlen > 0) and (i >= maxlen):
+				return -1
+			if opval(j):
+				return i
+		
+		return -1
 
 
 
 	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code %(typelabel)s.
+		"""Test array limits  - Array code %(typelabel)s.
 		"""
-		param = %(typeconvert)s(101)
+		param = 101%(decimal)s
 		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, maxlen=len(self.data)//2)
 		expected = self.FindIndex('==', self.data, param, maxlen=len(self.data)//2)
 		self.assertEqual(result, expected)
@@ -405,9 +943,9 @@ template = '''
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code %(typelabel)s.
+		"""Test array limits  - Array code %(typelabel)s.
 		"""
-		param = %(typeconvert)s(101)
+		param = 101%(decimal)s
 		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, maxlen=-1)
 		expected = self.FindIndex('==', self.data, param, maxlen=-1)
 		self.assertEqual(result, expected)
@@ -438,12 +976,12 @@ template = '''
 
 
 	########################################################
-	def test_param_five_params(self):
-		"""Test exception when too many (five) parameters passed  - Array code %(typelabel)s.
+	def test_param_six_params(self):
+		"""Test exception when too many (six) parameters passed  - Array code %(typelabel)s.
 		"""
-		param = %(typeconvert)s(101)
+		param = 101%(decimal)s
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, 3, maxlen=2)
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, 3, maxlen=2, nosimd=True)
 
 
 	########################################################
@@ -451,15 +989,23 @@ template = '''
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, %(typeconvert)s(100), xx=2)
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, xx=2)
 
 
 	########################################################
-	def test_param_invalid_keyword_param_type(self):
-		"""Test exception with invalid keyword parameter type passed  - Array code %(typelabel)s.
+	def test_param_invalid_keyword_param_type_1(self):
+		"""Test exception with invalid maxlen keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, %(typeconvert)s(100), maxlen='x')
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, maxlen='x')
+
+
+	########################################################
+	def test_param_invalid_keyword_param_type_2(self):
+		"""Test exception with invalid nosimd keyword parameter type passed  - Array code %(typelabel)s.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, nosimd='x')
 
 
 	########################################################
@@ -467,7 +1013,7 @@ template = '''
 		"""Test exception with invalid first parameter value  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.findindex(-1, self.data, %(typeconvert)s(100))
+			result = arrayfunc.findindex(-1, self.data, 100%(decimal)s)
 
 
 	########################################################
@@ -475,7 +1021,7 @@ template = '''
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex('a', self.data, %(typeconvert)s(100))
+			result = arrayfunc.findindex('a', self.data, 100%(decimal)s)
 
 
 	########################################################
@@ -483,7 +1029,7 @@ template = '''
 		"""Test exception with invalid array input parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, 99, %(typeconvert)s(100))
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, 99, 100%(decimal)s)
 
 
 	########################################################
@@ -491,7 +1037,7 @@ template = '''
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataempty, %(typeconvert)s(100))
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataempty, 100%(decimal)s)
 
 
 	########################################################
@@ -507,13 +1053,39 @@ template = '''
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, %(invalidtypeconvert)s(100.5))
+			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(invaliddecimal)s)
 
 
 '''
 
-# Overflow testing. This can't be used with all types.
+
+# ==============================================================================
+
+# The basic template for testing parameter overflow.
 overflow_template = '''
+##############################################################################
+class findindex_overflow_%(typelabel)s(unittest.TestCase):
+	"""Test for parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = '%(typecode)s'
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, list(range(97, 107)))
+
+		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
+		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
+
+		# For bytes types, we need a non-array data type.
+		if '%(typelabel)s' == 'bytes':
+			self.dataovfl = bytes(self.dataovfl)
+
+
+
 	########################################################
 %(skipminoverflow)s	def test_overflow_min(self):
 		"""Test parameter overflow min  - Array code %(typelabel)s.
@@ -539,6 +1111,8 @@ overflow_template = '''
 
 '''
 
+
+# ==============================================================================
 
 # The template used to generate the tests for nan, inf, -inf.
 nan_template = '''
@@ -606,17 +1180,16 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 '''
 
 
-
-classend = """
-##############################################################################
-"""
-
 # ==============================================================================
 
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('findindex\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -636,33 +1209,89 @@ with open('test_findindex.py', 'w') as f:
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
 		datarec['bytesconverter'] = ''
-		f.write(template % datarec)
+		datarec['bytesconvertereven'] = ''
+		datarec['bytesconverterodd'] = ''
+		if funtypes in codegen_common.floatarrays:
+			datarec['decimal'] = '.0'
+		else:
+			datarec['decimal'] = ''
 
-		# There are some array types we can't test for overflow.
-		if funtypes not in 'LQ':
-			datarec = testdata[funtypes]
-			datarec['typecode'] = funtypes
-			datarec['typelabel'] = funtypes
-			datarec['bytesconverter'] = ''
-			f.write(overflow_template % datarec)
+		# With SIMD.
+		datarec['simdpresent'] = 'with'
+		datarec['nosimd'] = ''
+		f.write(op_template % datarec)
 
-		# This is just a comment to close off the class.
-		f.write(classend)
+		# Without SIMD.
+		datarec['simdpresent'] = 'without'
+		datarec['nosimd'] = ', nosimd=True'
+		f.write(op_template % datarec)
 
 
 	# Do the tests for bytes.
 	datarec = testdata['B']
 	datarec['typecode'] = 'B'
 	datarec['typelabel'] = 'bytes'
-	datarec['bytesconverter'] = bytesconverter
-	f.write(template % datarec)
+	datarec['decimal'] = ''
+	datarec['bytesconvertereven'] = bytesconvertereven
+	datarec['bytesconverterodd'] = bytesconverterodd
+	# With SIMD.
+	datarec['simdpresent'] = 'with'
+	datarec['nosimd'] = ''
+	f.write(op_template % datarec)
+	# Without SIMD.
+	datarec['simdpresent'] = 'without'
+	datarec['nosimd'] = ', nosimd=True'
+	f.write(op_template % datarec)
+
+	############################################################################
+
+	# Output the generated code for parameter tests.
+	for funtypes in codegen_common.arraycodes:
+		datarec = testdata[funtypes]
+		datarec['typecode'] = funtypes
+		datarec['typelabel'] = funtypes
+		f.write(param_template % datarec)
+
+	# Do the tests for bytes.
+	datarec = testdata['B']
+	datarec['typecode'] = 'B'
+	datarec['typelabel'] = 'bytes'
+	f.write(param_template % datarec)
+
+	############################################################################
+
+	# Output the generated code for parameter overflow tests.
+	for funtypes in codegen_common.arraycodes:
+		# There are some array types we can't test for overflow.
+		if funtypes not in 'LQ':
+			datarec = testdata[funtypes]
+			datarec['typecode'] = funtypes
+			datarec['typelabel'] = funtypes
+			f.write(overflow_template % datarec)
+
+
+
+	# Do the tests for bytes.
+	datarec = testdata['B']
+	datarec['typecode'] = 'B'
+	datarec['typelabel'] = 'bytes'
 	f.write(overflow_template % datarec)
 
-	# Test for nan, inf, -inf.
+	############################################################################
+
+
+	# Output the generated code for nan and inf data in array tests.
+	datarec = {}
 	for funtypes in codegen_common.floatarrays:
-		f.write(nan_template % {'typelabel' : funtypes, 'typecode' : funtypes})
+		datarec['typecode'] = funtypes
+		datarec['typelabel'] = funtypes
+		f.write(nan_template % datarec)
+
+
+	############################################################################
 
 
 	f.write(endtemplate)
 
 
+	############################################################################

@@ -1514,12 +1514,6 @@ signed int convert_float(char arraycode, Py_ssize_t arraylen, float *data, union
 
 		// unsigned long long
 		case 'Q': {
-// MS VC 2010 seems to have bugs when converting large floating point values 
-// to large unsigned long long integers. Values larger than 2**63 do not covert
-// correctly. This problem does not occur with GCC. 
-#ifdef _MSC_VER
-	return ARR_ERR_PLATFORM;
-#endif
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] > ULLONG_MAX_GUARD_F) || (data[x] < 0) || (!isfinite(data[x]))) {
 					return ARR_ERR_OVFL;
@@ -1667,12 +1661,6 @@ signed int convert_double(char arraycode, Py_ssize_t arraylen, double *data, uni
 
 		// unsigned long long
 		case 'Q': {
-// MS VC 2010 seems to have bugs when converting large floating point values 
-// to large unsigned long long integers. Values larger than 2**63 do not covert
-// correctly. This problem does not occur with GCC. 
-#ifdef _MSC_VER
-	return ARR_ERR_PLATFORM;
-#endif
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] > ULLONG_MAX_GUARD_D) || (data[x] < 0) || (!isfinite(data[x]))) {
 					return ARR_ERR_OVFL;

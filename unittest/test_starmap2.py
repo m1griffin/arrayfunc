@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     03-Jul-2014.
-# Ver:      06-Mar-2016.
+# Ver:      26-Jun-2017.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -4723,8 +4723,6 @@ class starmap_intoverflow_L(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class starmap_intoverflow_q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -5585,8 +5583,6 @@ class starmap_intoverflow_q(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class starmap_intoverflow_Q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -9395,8 +9391,6 @@ class starmap_parameter_L(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class starmap_parameter_q(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
@@ -9672,8 +9666,6 @@ class starmap_parameter_q(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class starmap_parameter_Q(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
@@ -19287,6 +19279,10 @@ class starmap_nan_param_aops_subst_lte_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\n\n')
+		f.write('starmap\n\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################

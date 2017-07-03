@@ -7,7 +7,7 @@
 #
 ################################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -209,61 +209,61 @@ class AnalyseCode(ast.NodeVisitor):
 # This defines the individual op code byte values for float and integer. Values are "None"
 # if the operation is not valid for that data type.
 _OpCodes = {
-	'unknown' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([0, False, 0, False, 0, True]),
-	'pusharray' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([1, False, 1, False, 1, True]),
-	'pushvar' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([2, False, 2, False, 1, True]),
-	'pushconst' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([3, False, 3, False, 1, True]),
-	'add' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([4, False, 4, False, -1, True]),
-	'sub' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([5, False, 5, False, -1, True]),
-	'mult' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([6, False, 6, False, -1, True]),
-	'div' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([7, False, 7, False, -1, True]),
-	'floordiv' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([8, False, 8, False, -1, True]),
-	'mod' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([9, False, 9, False, -1, True]),
-	'uadd' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([10, False, 10, False, 0, True]),
-	'usub' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([11, True, 11, False, 0, True]),
-	'pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([12, False, 12, False, -1, True]),
-	'bitand' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([13, False, None, False, -1, True]),
-	'bitor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([14, False, None, False, -1, True]),
-	'bitxor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([15, False, None, False, -1, True]),
-	'invert' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([16, False, None, False, 0, True]),
-	'lshift' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([17, False, None, False, -1, True]),
-	'rshift' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([18, False, None, False, -1, True]),
-	'abs' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([19, False, 13, True, 0, True]),
-	'math.acos' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 14, True, 0, True]),
-	'math.acosh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 15, True, 0, False]),
-	'math.asin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 16, True, 0, True]),
-	'math.asinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 17, True, 0, False]),
-	'math.atan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 18, True, 0, True]),
-	'math.atan2' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 19, True, -1, True]),
-	'math.atanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 20, True, 0, False]),
-	'math.ceil' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 21, True, 0, True]),
-	'math.copysign' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 22, True, -1, True]),
-	'math.cos' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 23, True, 0, True]),
-	'math.cosh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 24, True, 0, True]),
-	'math.degrees' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 25, True, 0, True]),
-	'math.erf' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 26, True, 0, False]),
-	'math.erfc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 27, True, 0, False]),
-	'math.exp' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 28, True, 0, True]),
-	'math.expm1' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 29, True, 0, False]),
-	'math.fabs' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 30, True, 0, True]),
-	'math.factorial' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([20, False, None, True, 0, True]),
-	'math.floor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 31, True, 0, True]),
-	'math.fmod' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 32, True, -1, True]),
-	'math.gamma' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 33, True, 0, False]),
-	'math.hypot' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 34, True, -1, True]),
-	'math.ldexp' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 35, True, -1, True]),
-	'math.lgamma' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 36, True, 0, False]),
-	'math.log' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 37, True, 0, True]),
-	'math.log10' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 38, True, 0, True]),
-	'math.log1p' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 39, True, 0, False]),
-	'math.pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 40, True, -1, True]),
-	'math.radians' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 41, True, 0, True]),
-	'math.sin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 42, True, 0, True]),
-	'math.sinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 43, True, 0, True]),
-	'math.sqrt' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 44, True, 0, True]),
-	'math.tan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 45, True, 0, True]),
-	'math.tanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 46, True, 0, True]),
-	'math.trunc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([None, False, 47, True, 0, False]),
+	'unknown' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([0, False, 0, False, 0]),
+	'pusharray' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([1, False, 1, False, 1]),
+	'pushvar' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([2, False, 2, False, 1]),
+	'pushconst' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([3, False, 3, False, 1]),
+	'add' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([4, False, 4, False, -1]),
+	'sub' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([5, False, 5, False, -1]),
+	'mult' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([6, False, 6, False, -1]),
+	'div' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([7, False, 7, False, -1]),
+	'floordiv' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([8, False, 8, False, -1]),
+	'mod' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([9, False, 9, False, -1]),
+	'uadd' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([10, False, 10, False, 0]),
+	'usub' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([11, True, 11, False, 0]),
+	'pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([12, False, 12, False, -1]),
+	'bitand' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([13, False, None, False, -1]),
+	'bitor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([14, False, None, False, -1]),
+	'bitxor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([15, False, None, False, -1]),
+	'invert' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([16, False, None, False, 0]),
+	'lshift' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([17, False, None, False, -1]),
+	'rshift' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([18, False, None, False, -1]),
+	'abs' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([19, False, 13, True, 0]),
+	'math.acos' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 14, True, 0]),
+	'math.acosh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 15, True, 0]),
+	'math.asin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 16, True, 0]),
+	'math.asinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 17, True, 0]),
+	'math.atan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 18, True, 0]),
+	'math.atan2' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 19, True, -1]),
+	'math.atanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 20, True, 0]),
+	'math.ceil' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 21, True, 0]),
+	'math.copysign' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 22, True, -1]),
+	'math.cos' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 23, True, 0]),
+	'math.cosh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 24, True, 0]),
+	'math.degrees' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 25, True, 0]),
+	'math.erf' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 26, True, 0]),
+	'math.erfc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 27, True, 0]),
+	'math.exp' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 28, True, 0]),
+	'math.expm1' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 29, True, 0]),
+	'math.fabs' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 30, True, 0]),
+	'math.factorial' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([20, False, None, True, 0]),
+	'math.floor' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 31, True, 0]),
+	'math.fmod' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 32, True, -1]),
+	'math.gamma' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 33, True, 0]),
+	'math.hypot' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 34, True, -1]),
+	'math.ldexp' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 35, True, -1]),
+	'math.lgamma' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 36, True, 0]),
+	'math.log' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 37, True, 0]),
+	'math.log10' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 38, True, 0]),
+	'math.log1p' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 39, True, 0]),
+	'math.pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 40, True, -1]),
+	'math.radians' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 41, True, 0]),
+	'math.sin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 42, True, 0]),
+	'math.sinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 43, True, 0]),
+	'math.sqrt' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 44, True, 0]),
+	'math.tan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 45, True, 0]),
+	'math.tanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 46, True, 0]),
+	'math.trunc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 47, True, 0]),
 	}
 
 
@@ -279,14 +279,6 @@ _OpCodesFloat = dict([(x,y.floatval) for x,y in _OpCodes.items() if y.floatval i
 # These are the supported library and built-in functions.
 # This just contains the base name, and not the extended type codes.
 _LibFuncs = [x for x,y in _OpCodes.items() if y.mathlib]
-
-# Find operations and math functions which are not supported by the
-# platform compiler.
-if platform.python_compiler().startswith('MSC'):
-	_UnsupportedCodes = [x for x,y in _OpCodes.items() if not y.msvs_has]
-# We need the else clause to support some of the unit tests.
-else:
-	_UnsupportedCodes = []
 
 
 # These tokens should not be present. This is not intended as an exhaustive
@@ -371,14 +363,6 @@ class calc:
 		# will be replaced later.
 		self._VMStack = array.array(self._ArrayType, [0] * self._VMStackSegments)
 
-
-		# This exists for the purpose of unit testing.
-		# The MS Windows VC 2010 does not support some math functions. This 
-		# function finds those so the compiler can find them and provide 
-		# exceptions. This is provided as a separate functions so that the unit
-		# tests can fiddle with it. 
-		# This is redundant if MS VC ever comes to support all functions.
-		self._UnsupportedCodes = _UnsupportedCodes
 
 
 	########################################################
@@ -549,11 +533,6 @@ class calc:
 		# These operations are invalid on all platforms.
 		if invalidops:
 			raise ValueError('invalid operations in ACalc compile: %s.' % ', '.join(invalidops))
-
-		# These operations are not supported by the current platform.
-		unsupportedops = nodeset & set(self._UnsupportedCodes)
-		if unsupportedops:
-			raise ValueError('unsupported operations in ACalc compile: %s.' % ', '.join(unsupportedops))
 
 
 

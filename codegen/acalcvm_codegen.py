@@ -184,7 +184,7 @@ floatstackconsume_template = '''				// %(comment)s
 # This is for operations which only operates on the top of the stack and replaces
 # it with the new value.
 floatstackneutral_template = '''				// %(comment)s
-				case CALCOP_FLOAT_%(labelname)s: { %(unsupportedop1)s
+				case CALCOP_FLOAT_%(labelname)s: {
 					// Overflow checking disabled.
 					if (disableovfl) {
 						for(x = 0; x < slicestride; x++) {
@@ -196,7 +196,7 @@ floatstackneutral_template = '''				// %(comment)s
 							if (!isfinite(vmstack[stackpointer + x])) {return CALC_ERR_ARITHMETIC;}
 						}
 					}
-					break; %(unsupportedop2)s
+					break;
 					}
 '''
 
@@ -226,21 +226,6 @@ template_ovfl_end = '''
 
 # The basic template for each operator with integer post operation flag overflow checking.
 template_ovfl_int = template_ovfl_begin + '\t\t\t\t\t\t\tif (errflag != 0) return CALC_ERR_ARITHMETIC;' + template_ovfl_end
-
-
-# ==============================================================================
-
-# Used when the function is not supported by some compilers.
-template_unsupportedop1 = '''
-					// This op is not supported by MSVC 2010.
-					#ifdef _MSC_VER
-						return ARR_ERR_PLATFORM;
-					#else
-'''
-
-template_unsupportedop2 = '''
-					#endif
-'''
 
 
 # ==============================================================================
@@ -742,14 +727,6 @@ def CreateFunction(csvdata, arraycode):
 		else:
 			opvalues['paramcount'] = ''
 
-
-		# Some compilers do not support some math functions.
-		if op['msvs_has'] == '0':
-			opvalues['unsupportedop1'] = template_unsupportedop1
-			opvalues['unsupportedop2'] = template_unsupportedop2
-		else:
-			opvalues['unsupportedop1'] = ''
-			opvalues['unsupportedop2'] = ''
 
 
 		# This forms part of the case label.

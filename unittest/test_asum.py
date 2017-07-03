@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      06-Mar-2016.
+# Ver:      26-Jun-2017.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import arrayfunc
 
 
 ##############################################################################
-class asum_operator_b(unittest.TestCase):
+class asum_operator_b_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -63,70 +63,70 @@ class asum_operator_b(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code b. General test.
+		"""Test asum  - Array code b. General test .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code b. General test with overflow checking on.
+		"""Test asum  - Array code b. General test with overflow checking on .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code b. General test with overflow checking off.
+		"""Test asum  - Array code b. General test with overflow checking off .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code b. General test with array limit applied.
+		"""Test asum  - Array code b. General test with array limit applied .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code b. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code b. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code b. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code b. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code b. Test invalid parameter type for array data.
+		"""Test asum  - Array code b. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -134,12 +134,12 @@ class asum_operator_b(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code b. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code b. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -147,12 +147,12 @@ class asum_operator_b(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code b. Test invalid parameter type for limit.
+		"""Test asum  - Array code b. Test invalid parameter type for limit .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -173,12 +173,12 @@ class asum_operator_b(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code b. Test too many (four) parameters.
+		"""Test asum  - Array code b. Test too many (five) parameters.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -189,7 +189,7 @@ class asum_operator_b(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_B(unittest.TestCase):
+class asum_operator_B_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -205,70 +205,70 @@ class asum_operator_B(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code B. General test.
+		"""Test asum  - Array code B. General test .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code B. General test with overflow checking on.
+		"""Test asum  - Array code B. General test with overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code B. General test with overflow checking off.
+		"""Test asum  - Array code B. General test with overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code B. General test with array limit applied.
+		"""Test asum  - Array code B. General test with array limit applied .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code B. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code B. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code B. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code B. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code B. Test invalid parameter type for array data.
+		"""Test asum  - Array code B. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -276,12 +276,12 @@ class asum_operator_B(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code B. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code B. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -289,12 +289,12 @@ class asum_operator_B(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code B. Test invalid parameter type for limit.
+		"""Test asum  - Array code B. Test invalid parameter type for limit .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -315,12 +315,12 @@ class asum_operator_B(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code B. Test too many (four) parameters.
+		"""Test asum  - Array code B. Test too many (five) parameters.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -331,7 +331,7 @@ class asum_operator_B(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_h(unittest.TestCase):
+class asum_operator_h_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -347,70 +347,70 @@ class asum_operator_h(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code h. General test.
+		"""Test asum  - Array code h. General test .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code h. General test with overflow checking on.
+		"""Test asum  - Array code h. General test with overflow checking on .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code h. General test with overflow checking off.
+		"""Test asum  - Array code h. General test with overflow checking off .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code h. General test with array limit applied.
+		"""Test asum  - Array code h. General test with array limit applied .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code h. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code h. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code h. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code h. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code h. Test invalid parameter type for array data.
+		"""Test asum  - Array code h. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -418,12 +418,12 @@ class asum_operator_h(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code h. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code h. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -431,12 +431,12 @@ class asum_operator_h(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code h. Test invalid parameter type for limit.
+		"""Test asum  - Array code h. Test invalid parameter type for limit .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -457,12 +457,12 @@ class asum_operator_h(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code h. Test too many (four) parameters.
+		"""Test asum  - Array code h. Test too many (five) parameters.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -473,7 +473,7 @@ class asum_operator_h(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_H(unittest.TestCase):
+class asum_operator_H_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -489,70 +489,70 @@ class asum_operator_H(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code H. General test.
+		"""Test asum  - Array code H. General test .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code H. General test with overflow checking on.
+		"""Test asum  - Array code H. General test with overflow checking on .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code H. General test with overflow checking off.
+		"""Test asum  - Array code H. General test with overflow checking off .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code H. General test with array limit applied.
+		"""Test asum  - Array code H. General test with array limit applied .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code H. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code H. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code H. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code H. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code H. Test invalid parameter type for array data.
+		"""Test asum  - Array code H. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -560,12 +560,12 @@ class asum_operator_H(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code H. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code H. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -573,12 +573,12 @@ class asum_operator_H(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code H. Test invalid parameter type for limit.
+		"""Test asum  - Array code H. Test invalid parameter type for limit .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -599,12 +599,12 @@ class asum_operator_H(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code H. Test too many (four) parameters.
+		"""Test asum  - Array code H. Test too many (five) parameters.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -615,7 +615,7 @@ class asum_operator_H(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_i(unittest.TestCase):
+class asum_operator_i_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -631,70 +631,70 @@ class asum_operator_i(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code i. General test.
+		"""Test asum  - Array code i. General test .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code i. General test with overflow checking on.
+		"""Test asum  - Array code i. General test with overflow checking on .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code i. General test with overflow checking off.
+		"""Test asum  - Array code i. General test with overflow checking off .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code i. General test with array limit applied.
+		"""Test asum  - Array code i. General test with array limit applied .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code i. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code i. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code i. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code i. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code i. Test invalid parameter type for array data.
+		"""Test asum  - Array code i. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -702,12 +702,12 @@ class asum_operator_i(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code i. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code i. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -715,12 +715,12 @@ class asum_operator_i(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code i. Test invalid parameter type for limit.
+		"""Test asum  - Array code i. Test invalid parameter type for limit .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -741,12 +741,12 @@ class asum_operator_i(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code i. Test too many (four) parameters.
+		"""Test asum  - Array code i. Test too many (five) parameters.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -757,7 +757,7 @@ class asum_operator_i(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_I(unittest.TestCase):
+class asum_operator_I_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -773,70 +773,70 @@ class asum_operator_I(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code I. General test.
+		"""Test asum  - Array code I. General test .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code I. General test with overflow checking on.
+		"""Test asum  - Array code I. General test with overflow checking on .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code I. General test with overflow checking off.
+		"""Test asum  - Array code I. General test with overflow checking off .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code I. General test with array limit applied.
+		"""Test asum  - Array code I. General test with array limit applied .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code I. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code I. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code I. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code I. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code I. Test invalid parameter type for array data.
+		"""Test asum  - Array code I. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -844,12 +844,12 @@ class asum_operator_I(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code I. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code I. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -857,12 +857,12 @@ class asum_operator_I(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code I. Test invalid parameter type for limit.
+		"""Test asum  - Array code I. Test invalid parameter type for limit .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -883,12 +883,12 @@ class asum_operator_I(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code I. Test too many (four) parameters.
+		"""Test asum  - Array code I. Test too many (five) parameters.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -899,7 +899,7 @@ class asum_operator_I(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class asum_operator_l(unittest.TestCase):
+class asum_operator_l_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -915,70 +915,70 @@ class asum_operator_l(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code l. General test.
+		"""Test asum  - Array code l. General test .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code l. General test with overflow checking on.
+		"""Test asum  - Array code l. General test with overflow checking on .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code l. General test with overflow checking off.
+		"""Test asum  - Array code l. General test with overflow checking off .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code l. General test with array limit applied.
+		"""Test asum  - Array code l. General test with array limit applied .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code l. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code l. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code l. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code l. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code l. Test invalid parameter type for array data.
+		"""Test asum  - Array code l. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -986,12 +986,12 @@ class asum_operator_l(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code l. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code l. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -999,12 +999,12 @@ class asum_operator_l(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code l. Test invalid parameter type for limit.
+		"""Test asum  - Array code l. Test invalid parameter type for limit .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1025,12 +1025,12 @@ class asum_operator_l(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code l. Test too many (four) parameters.
+		"""Test asum  - Array code l. Test too many (five) parameters.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1045,7 +1045,7 @@ class asum_operator_l(unittest.TestCase):
 		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3)))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 	########################################################
@@ -1055,13 +1055,13 @@ class asum_operator_l(unittest.TestCase):
 		data = array.array('l', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 ##############################################################################
 
 ##############################################################################
-class asum_operator_L(unittest.TestCase):
+class asum_operator_L_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1077,70 +1077,70 @@ class asum_operator_L(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code L. General test.
+		"""Test asum  - Array code L. General test .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code L. General test with overflow checking on.
+		"""Test asum  - Array code L. General test with overflow checking on .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code L. General test with overflow checking off.
+		"""Test asum  - Array code L. General test with overflow checking off .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code L. General test with array limit applied.
+		"""Test asum  - Array code L. General test with array limit applied .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code L. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code L. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code L. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code L. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code L. Test invalid parameter type for array data.
+		"""Test asum  - Array code L. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1148,12 +1148,12 @@ class asum_operator_L(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code L. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code L. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1161,12 +1161,12 @@ class asum_operator_L(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code L. Test invalid parameter type for limit.
+		"""Test asum  - Array code L. Test invalid parameter type for limit .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1187,12 +1187,12 @@ class asum_operator_L(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code L. Test too many (four) parameters.
+		"""Test asum  - Array code L. Test too many (five) parameters.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1207,15 +1207,13 @@ class asum_operator_L(unittest.TestCase):
 		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(88,12,-3)))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
-class asum_operator_q(unittest.TestCase):
+class asum_operator_q_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1231,70 +1229,70 @@ class asum_operator_q(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code q. General test.
+		"""Test asum  - Array code q. General test .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code q. General test with overflow checking on.
+		"""Test asum  - Array code q. General test with overflow checking on .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code q. General test with overflow checking off.
+		"""Test asum  - Array code q. General test with overflow checking off .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code q. General test with array limit applied.
+		"""Test asum  - Array code q. General test with array limit applied .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code q. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code q. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code q. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code q. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code q. Test invalid parameter type for array data.
+		"""Test asum  - Array code q. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1302,12 +1300,12 @@ class asum_operator_q(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code q. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code q. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1315,12 +1313,12 @@ class asum_operator_q(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code q. Test invalid parameter type for limit.
+		"""Test asum  - Array code q. Test invalid parameter type for limit .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1341,12 +1339,12 @@ class asum_operator_q(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code q. Test too many (four) parameters.
+		"""Test asum  - Array code q. Test too many (five) parameters.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1361,7 +1359,7 @@ class asum_operator_q(unittest.TestCase):
 		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3)))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 	########################################################
@@ -1371,15 +1369,13 @@ class asum_operator_q(unittest.TestCase):
 		data = array.array('q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
-class asum_operator_Q(unittest.TestCase):
+class asum_operator_Q_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1395,70 +1391,70 @@ class asum_operator_Q(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code Q. General test.
+		"""Test asum  - Array code Q. General test .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code Q. General test with overflow checking on.
+		"""Test asum  - Array code Q. General test with overflow checking on .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code Q. General test with overflow checking off.
+		"""Test asum  - Array code Q. General test with overflow checking off .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code Q. General test with array limit applied.
+		"""Test asum  - Array code Q. General test with array limit applied .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code Q. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code Q. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code Q. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code Q. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for array data.
+		"""Test asum  - Array code Q. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1466,12 +1462,12 @@ class asum_operator_Q(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code Q. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1479,12 +1475,12 @@ class asum_operator_Q(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for limit.
+		"""Test asum  - Array code Q. Test invalid parameter type for limit .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1505,12 +1501,12 @@ class asum_operator_Q(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code Q. Test too many (four) parameters.
+		"""Test asum  - Array code Q. Test too many (five) parameters.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1525,13 +1521,13 @@ class asum_operator_Q(unittest.TestCase):
 		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(88,12,-3)))
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data )
 
 
 ##############################################################################
 
 ##############################################################################
-class asum_operator_f(unittest.TestCase):
+class asum_operator_f_without_SIMD(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1547,70 +1543,70 @@ class asum_operator_f(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code f. General test.
+		"""Test asum  - Array code f. General test without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code f. General test with overflow checking on.
+		"""Test asum  - Array code f. General test with overflow checking on without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code f. General test with overflow checking off.
+		"""Test asum  - Array code f. General test with overflow checking off without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code f. General test with array limit applied.
+		"""Test asum  - Array code f. General test with array limit applied without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code f. General test with array limit applied and overflow checking on without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code f. General test with array limit applied and overflow checking off without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code f. Test invalid parameter type for array data.
+		"""Test asum  - Array code f. Test invalid parameter type for array data without SIMD.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1618,12 +1614,12 @@ class asum_operator_f(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code f. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code f. Test invalid parameter type for overflow flag without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1631,12 +1627,12 @@ class asum_operator_f(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code f. Test invalid parameter type for limit.
+		"""Test asum  - Array code f. Test invalid parameter type for limit without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1657,12 +1653,12 @@ class asum_operator_f(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code f. Test too many (four) parameters.
+		"""Test asum  - Array code f. Test too many (five) parameters.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1677,7 +1673,7 @@ class asum_operator_f(unittest.TestCase):
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))])
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data , nosimd=True)
 
 
 	########################################################
@@ -1687,13 +1683,13 @@ class asum_operator_f(unittest.TestCase):
 		data = array.array('f', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data , nosimd=True)
 
 
 ##############################################################################
 
 ##############################################################################
-class asum_operator_d(unittest.TestCase):
+class asum_operator_d_without_SIMD(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1709,70 +1705,70 @@ class asum_operator_d(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code d. General test.
+		"""Test asum  - Array code d. General test without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code d. General test with overflow checking on.
+		"""Test asum  - Array code d. General test with overflow checking on without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code d. General test with overflow checking off.
+		"""Test asum  - Array code d. General test with overflow checking off without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code d. General test with array limit applied.
+		"""Test asum  - Array code d. General test with array limit applied without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code d. General test with array limit applied and overflow checking on without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code d. General test with array limit applied and overflow checking off without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code d. Test invalid parameter type for array data.
+		"""Test asum  - Array code d. Test invalid parameter type for array data without SIMD.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1780,12 +1776,12 @@ class asum_operator_d(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code d. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code d. Test invalid parameter type for overflow flag without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1793,12 +1789,12 @@ class asum_operator_d(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code d. Test invalid parameter type for limit.
+		"""Test asum  - Array code d. Test invalid parameter type for limit without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1819,12 +1815,12 @@ class asum_operator_d(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code d. Test too many (four) parameters.
+		"""Test asum  - Array code d. Test too many (five) parameters.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1839,7 +1835,7 @@ class asum_operator_d(unittest.TestCase):
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))])
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data , nosimd=True)
 
 
 	########################################################
@@ -1849,13 +1845,297 @@ class asum_operator_d(unittest.TestCase):
 		data = array.array('d', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
 		
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data)
+			result = arrayfunc.asum(data , nosimd=True)
 
 
 ##############################################################################
 
 ##############################################################################
-class asum_operator_bytes(unittest.TestCase):
+class asum_operator_f_with_SIMD(unittest.TestCase):
+	"""Test for basic operator function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'f'
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+
+	########################################################
+	def test_function_01(self):
+		"""Test asum  - Array code f. General test with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_02(self):
+		"""Test asum  - Array code f. General test with overflow checking on with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=False )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_03(self):
+		"""Test asum  - Array code f. General test with overflow checking off with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=True )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_04(self):
+		"""Test asum  - Array code f. General test with array limit applied with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_05(self):
+		"""Test asum  - Array code f. General test with array limit applied and overflow checking on with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_06(self):
+		"""Test asum  - Array code f. General test with array limit applied and overflow checking off with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_07(self):
+		"""Test asum  - Array code f. Test invalid parameter type for array data with.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1 )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+	########################################################
+	def test_function_08(self):
+		"""Test asum  - Array code f. Test invalid parameter type for overflow flag with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, disovfl='a' )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum([1, 2, 3], disovfl='a')
+
+	########################################################
+	def test_function_09(self):
+		"""Test asum  - Array code f. Test invalid parameter type for limit with.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, maxlen='a' )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum([1, 2, 3], disovfl='a')
+
+
+	########################################################
+	def test_function_10(self):
+		"""Test asum  - Array code f. Test no parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_function_11(self):
+		"""Test asum  - Array code f. Test too many (five) parameters.
+		"""
+		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, False, 2, 2, 2)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(data, 0, 2)
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_operator_d_with_SIMD(unittest.TestCase):
+	"""Test for basic operator function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'd'
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+
+	########################################################
+	def test_function_01(self):
+		"""Test asum  - Array code d. General test with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_02(self):
+		"""Test asum  - Array code d. General test with overflow checking on with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=False )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_03(self):
+		"""Test asum  - Array code d. General test with overflow checking off with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=True )
+		self.assertEqual(result, sum(data))
+
+
+	########################################################
+	def test_function_04(self):
+		"""Test asum  - Array code d. General test with array limit applied with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_05(self):
+		"""Test asum  - Array code d. General test with array limit applied and overflow checking on with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_06(self):
+		"""Test asum  - Array code d. General test with array limit applied and overflow checking off with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		self.assertEqual(result, sum(data[:10]))
+
+
+	########################################################
+	def test_function_07(self):
+		"""Test asum  - Array code d. Test invalid parameter type for array data with.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1 )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+	########################################################
+	def test_function_08(self):
+		"""Test asum  - Array code d. Test invalid parameter type for overflow flag with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, disovfl='a' )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum([1, 2, 3], disovfl='a')
+
+	########################################################
+	def test_function_09(self):
+		"""Test asum  - Array code d. Test invalid parameter type for limit with.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, maxlen='a' )
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum([1, 2, 3], disovfl='a')
+
+
+	########################################################
+	def test_function_10(self):
+		"""Test asum  - Array code d. Test no parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_function_11(self):
+		"""Test asum  - Array code d. Test too many (five) parameters.
+		"""
+		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
+		
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(data, False, 2, 2, 2)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(data, 0, 2)
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_operator_bytes_(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -1871,70 +2151,70 @@ class asum_operator_bytes(unittest.TestCase):
 
 	########################################################
 	def test_function_01(self):
-		"""Test asum  - Array code bytes. General test.
+		"""Test asum  - Array code bytes. General test .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data)
+		result = arrayfunc.asum(data )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_02(self):
-		"""Test asum  - Array code bytes. General test with overflow checking on.
+		"""Test asum  - Array code bytes. General test with overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data, disovfl=False)
+		result = arrayfunc.asum(data, disovfl=False )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_03(self):
-		"""Test asum  - Array code bytes. General test with overflow checking off.
+		"""Test asum  - Array code bytes. General test with overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data, disovfl=True)
+		result = arrayfunc.asum(data, disovfl=True )
 		self.assertEqual(result, sum(data))
 
 
 	########################################################
 	def test_function_04(self):
-		"""Test asum  - Array code bytes. General test with array limit applied.
+		"""Test asum  - Array code bytes. General test with array limit applied .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data, maxlen=10)
+		result = arrayfunc.asum(data, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_05(self):
-		"""Test asum  - Array code bytes. General test with array limit applied and overflow checking on.
+		"""Test asum  - Array code bytes. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_06(self):
-		"""Test asum  - Array code bytes. General test with array limit applied and overflow checking off.
+		"""Test asum  - Array code bytes. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10)
+		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
 	########################################################
 	def test_function_07(self):
-		"""Test asum  - Array code bytes. Test invalid parameter type for array data.
+		"""Test asum  - Array code bytes. Test invalid parameter type for array data .
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1)
+			result = arrayfunc.asum(1 )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1942,12 +2222,12 @@ class asum_operator_bytes(unittest.TestCase):
 
 	########################################################
 	def test_function_08(self):
-		"""Test asum  - Array code bytes. Test invalid parameter type for overflow flag.
+		"""Test asum  - Array code bytes. Test invalid parameter type for overflow flag .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a')
+			result = arrayfunc.asum(data, disovfl='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1955,12 +2235,12 @@ class asum_operator_bytes(unittest.TestCase):
 
 	########################################################
 	def test_function_09(self):
-		"""Test asum  - Array code bytes. Test invalid parameter type for limit.
+		"""Test asum  - Array code bytes. Test invalid parameter type for limit .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a')
+			result = arrayfunc.asum(data, maxlen='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1981,12 +2261,12 @@ class asum_operator_bytes(unittest.TestCase):
 
 	########################################################
 	def test_function_11(self):
-		"""Test asum  - Array code bytes. Test too many (four) parameters.
+		"""Test asum  - Array code bytes. Test too many (five) parameters.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		data = bytes(data)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2)
+			result = arrayfunc.asum(data, False, 2, 2, 2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2006,31 +2286,151 @@ class asum_nan_f(unittest.TestCase):
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
 
-		self.data_nan = array.array('f', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5])
-		self.data_inf = array.array('f', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5])
-		self.data_ninf = array.array('f', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5])
+		self.data_nan = array.array('f', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5] * 10)
+		self.data_inf = array.array('f', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5] * 10)
+		self.data_ninf = array.array('f', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5] * 10)
 
 
 	########################################################
 	def test_nan_01(self):
-		"""Test array with nan - Array code f.
+		"""Test array with nan - Array code f, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_nan)
 
 	########################################################
 	def test_nan_02(self):
-		"""Test array with infinity - Array code f.
+		"""Test array with infinity - Array code f, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_inf)
 
 	########################################################
 	def test_nan_03(self):
-		"""Test array with negative infinity - Array code f.
+		"""Test array with negative infinity - Array code f, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_ninf)
+
+	########################################################
+	def test_nan_04(self):
+		"""Test array with nan - Array code f, overflow disabled.
+		"""
+		expected = sum(self.data_nan)
+		result = arrayfunc.asum(self.data_nan, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_05(self):
+		"""Test array with infinity - Array code f, overflow disabled.
+		"""
+		expected = sum(self.data_inf)
+		result = arrayfunc.asum(self.data_inf, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_06(self):
+		"""Test array with negative infinity - Array code f, overflow disabled.
+		"""
+		expected = sum(self.data_ninf)
+		result = arrayfunc.asum(self.data_ninf, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_07(self):
+		"""Test array with nan - Array code f, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_nan)
+		result = arrayfunc.asum(self.data_nan, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_08(self):
+		"""Test array with infinity - Array code f, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_inf)
+		result = arrayfunc.asum(self.data_inf, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_09(self):
+		"""Test array with negative infinity - Array code f, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_ninf)
+		result = arrayfunc.asum(self.data_ninf, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
 
 
 ##############################################################################
@@ -2048,31 +2448,151 @@ class asum_nan_d(unittest.TestCase):
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
 
-		self.data_nan = array.array('d', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5])
-		self.data_inf = array.array('d', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5])
-		self.data_ninf = array.array('d', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5])
+		self.data_nan = array.array('d', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5] * 10)
+		self.data_inf = array.array('d', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5] * 10)
+		self.data_ninf = array.array('d', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5] * 10)
 
 
 	########################################################
 	def test_nan_01(self):
-		"""Test array with nan - Array code d.
+		"""Test array with nan - Array code d, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_nan)
 
 	########################################################
 	def test_nan_02(self):
-		"""Test array with infinity - Array code d.
+		"""Test array with infinity - Array code d, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_inf)
 
 	########################################################
 	def test_nan_03(self):
-		"""Test array with negative infinity - Array code d.
+		"""Test array with negative infinity - Array code d, default SIMD state.
 		"""
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(self.data_ninf)
+
+	########################################################
+	def test_nan_04(self):
+		"""Test array with nan - Array code d, overflow disabled.
+		"""
+		expected = sum(self.data_nan)
+		result = arrayfunc.asum(self.data_nan, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_05(self):
+		"""Test array with infinity - Array code d, overflow disabled.
+		"""
+		expected = sum(self.data_inf)
+		result = arrayfunc.asum(self.data_inf, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_06(self):
+		"""Test array with negative infinity - Array code d, overflow disabled.
+		"""
+		expected = sum(self.data_ninf)
+		result = arrayfunc.asum(self.data_ninf, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_07(self):
+		"""Test array with nan - Array code d, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_nan)
+		result = arrayfunc.asum(self.data_nan, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_08(self):
+		"""Test array with infinity - Array code d, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_inf)
+		result = arrayfunc.asum(self.data_inf, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+	########################################################
+	def test_nan_09(self):
+		"""Test array with negative infinity - Array code d, overflow and SIMD disabled.
+		"""
+		expected = sum(self.data_ninf)
+		result = arrayfunc.asum(self.data_ninf, nosimd=True, disovfl=True)
+
+		# NaN cannot be compared using normal means.
+		if math.isnan(expected):
+			self.assertTrue(math.isnan(result))
+		elif math.isnan(result):
+			self.assertTrue(math.isnan(expected))
+		# Inf or -inf can be compared using an exact match.
+		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
+			self.assertEqual(result, expected)
+		# Anything else can be compared normally.
+		else:
+			deltaval = min((abs(expected), abs(result))) / 100.0
+			self.assertAlmostEqual(result, expected, delta=deltaval)
 
 
 ##############################################################################
@@ -2080,6 +2600,10 @@ class asum_nan_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\n\n')
+		f.write('asum\n\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################

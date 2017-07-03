@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 ##############################################################################
 # Project:  arrayfunc
-# Purpose:  Generate the unit tests for the calc op code definitions.
+# Purpose:  Generate the op codes and related data for calc op code definitions.
 # Language: Python 3.4
 # Date:     04-Feb-2016
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import codegen_common
 # Read in the data from the CSV spreadsheet which holds the configuration.
 csvdata = codegen_common.ReadCSVData('arraycalc.csv')
 
-rectemplate = "\t\t\t'%s' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack', 'msvs_has'])._make([%s, %s, %s, %s, %s, %s]),\n"
+rectemplate = "\t'%s' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([%s, %s, %s, %s, %s]),\n"
 
 # ==============================================================================
 
@@ -62,7 +62,7 @@ intstack = []
 floatstack = []
 
 
-pydefs.append('\t\tself._OpCodes = {\n')
+pydefs.append('_OpCodes = {\n')
 
 opcounterint = -1
 opcounterfloat = -1
@@ -93,11 +93,9 @@ for opcode in csvdata:
 	stackeffect = opcode['stack_effect']
 	# Operation is for signed types only.
 	signedonly = opcode['signed_only'] == '1'
-	# This funciton is supported by Microsoft VC. 
-	msvs_has = opcode['msvs_has'] == '1'
-	pydefs.append(rectemplate % (opcode['opcodename'], opvalueint, signedonly, opvaluefloat, matlib, stackeffect, msvs_has))
+	pydefs.append(rectemplate % (opcode['opcodename'], opvalueint, signedonly, opvaluefloat, matlib, stackeffect))
 
-pydefs.append('\t\t\t}\n')
+pydefs.append('\t}\n')
 
 intstacklen = len(intstack)
 floatstacklen = len(floatstack)

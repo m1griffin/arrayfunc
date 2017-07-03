@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,6 +32,11 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "aany_simd_x86.h"
+#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -45,7 +50,7 @@ struct args_param {
 
 // The list of keyword arguments. All argument must be listed, whether we 
 // intend to use them for keywords or not. 
-static char *kwlist[] = {"op", "data", "param", "maxlen", NULL};
+static char *kwlist[] = {"op", "data", "param", "maxlen", "nosimd", NULL};
 
 
 /*--------------------------------------------------------------------------- */
@@ -53,75 +58,83 @@ static char *kwlist[] = {"op", "data", "param", "maxlen", NULL};
 // Auto generated code goes below.
 
 
-
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
    Returns 1 if the condition was true at least once, ARR_ERR_NOTFOUND,
 		if it was not found, or an error code if the opcode was invalid.
 */
-signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1) { 
+signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t index; 
 
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		return aany_signed_char_simd(opcode, arraylen, data, param1);
+	}
+#endif
+
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -129,7 +142,8 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -142,60 +156,60 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -203,73 +217,82 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
    Returns 1 if the condition was true at least once, ARR_ERR_NOTFOUND,
 		if it was not found, or an error code if the opcode was invalid.
 */
-signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1) { 
+signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t index; 
 
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		return aany_signed_short_simd(opcode, arraylen, data, param1);
+	}
+#endif
+
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -277,7 +300,8 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -290,60 +314,60 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -351,73 +375,82 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
    Returns 1 if the condition was true at least once, ARR_ERR_NOTFOUND,
 		if it was not found, or an error code if the opcode was invalid.
 */
-signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1) { 
+signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t index; 
 
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		return aany_signed_int_simd(opcode, arraylen, data, param1);
+	}
+#endif
+
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -425,7 +458,8 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -438,60 +472,60 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -499,7 +533,8 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -512,60 +547,60 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -573,7 +608,8 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -586,60 +622,60 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -647,7 +683,8 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -660,60 +697,60 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -721,7 +758,8 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
@@ -734,60 +772,60 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 	Py_ssize_t index; 
 
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -795,73 +833,82 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
    Returns 1 if the condition was true at least once, ARR_ERR_NOTFOUND,
 		if it was not found, or an error code if the opcode was invalid.
 */
-signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float param1) { 
+signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float param1, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t index; 
 
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		return aany_float_simd(opcode, arraylen, data, param1);
+	}
+#endif
+
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -869,73 +916,82 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-/* opcode = The operator or function code to select what to execute.
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
    arraylen = The length of the data arrays.
    data = The input data array.
    param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
    Returns 1 if the condition was true at least once, ARR_ERR_NOTFOUND,
 		if it was not found, or an error code if the opcode was invalid.
 */
-signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, double param1) { 
+signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, double param1, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t index; 
 
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		return aany_double_simd(opcode, arraylen, data, param1);
+	}
+#endif
+
 	switch(opcode) {
-		// af_eq
-		case OP_AF_EQ: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return 1;
-				}
+	// af_eq
+	case OP_AF_EQ: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gt
-		case OP_AF_GT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gt
+	case OP_AF_GT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_gte
-		case OP_AF_GTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_gte
+	case OP_AF_GTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lt
-		case OP_AF_LT: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lt
+	case OP_AF_LT: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_lte
-		case OP_AF_LTE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_lte
+	case OP_AF_LTE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
-		// af_ne
-		case OP_AF_NE: {
-			for(index = 0; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return 1;
-				}
+		return ARR_ERR_NOTFOUND;
+	}
+	// af_ne
+	case OP_AF_NE: {
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return 1;
 			}
-			return ARR_ERR_NOTFOUND;
 		}
+		return ARR_ERR_NOTFOUND;
+	}
 	}
 	// The operation code is unknown.
 	return ARR_ERR_INVALIDOP;
@@ -962,11 +1018,12 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 	struct args_param argtypes = {' ', ' ', 0};
 	struct arrayparamstypes arrtype = {0, 0, ' '};
 	signed int opcode;
+	unsigned int nosimd = 0;
 
 
 	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iOO|n:aany", kwlist, 
-			&opcode, &dataobj, &param1obj, &arraymaxlen)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iOO|ni:aany", kwlist, 
+			&opcode, &dataobj, &param1obj, &arraymaxlen, &nosimd)) {
 		argtypes.error = 1;
 		return argtypes;
 	}
@@ -1033,6 +1090,9 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 	// The error code returned by the function.
 	signed int resultcode;
 
+	// If true, disable using SIMD.
+	unsigned int nosimd = 0;
+
 	// -------------------------------------------------------------------------
 
 
@@ -1061,8 +1121,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed char
 		case 'b' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|n:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
+					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -1078,8 +1138,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// unsigned char
 		case 'B' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|n:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
+					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -1095,8 +1155,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed short
 		case 'h' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*h|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.h, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*h|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.h, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1104,8 +1164,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// unsigned short
 		case 'H' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|n:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
+					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -1121,8 +1181,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed int
 		case 'i' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*i|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.i, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*i|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.i, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1134,8 +1194,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// same size, then we cannot check for overflow.
 			if (sizeof(signed long) > sizeof(unsigned int)) {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|n:aany", kwlist, 
-						&opcode, &datapy, &param1tmp_l, &arraymaxlen)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
+						&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 					return NULL;
 				}
 				// Check the data range manually.
@@ -1148,8 +1208,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 				}
 			} else {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*I|n:aany", kwlist, 
-						&opcode, &datapy, &param1py.I, &arraymaxlen)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*I|ni:aany", kwlist, 
+						&opcode, &datapy, &param1py.I, &arraymaxlen, &nosimd)) {
 					return NULL;
 				}
 			}
@@ -1158,8 +1218,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed long
 		case 'l' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1169,8 +1229,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// The format string and parameter names depend on the expected data types.
 			// We don't have a guaranteed data size larger than unsigned long, so
 			// we can't manually range check it.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*k|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.L, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*k|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.L, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1178,8 +1238,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*L|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.q, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*L|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.q, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1189,8 +1249,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// The format string and parameter names depend on the expected data types.
 			// We don't have a guaranteed data size larger than unsigned long, so
 			// we can't manually range check it.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*K|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.Q, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*K|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.Q, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -1198,8 +1258,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*f|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.f, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*f|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.f, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -1213,8 +1273,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// double
 		case 'd' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*d|n:aany", kwlist, 
-					&opcode, &datapy, &param1py.d, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*d|ni:aany", kwlist, 
+					&opcode, &datapy, &param1py.d, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -1256,7 +1316,7 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 	switch(itemcode) {
 		// signed char
 		case 'b' : {
-			resultcode = aany_signed_char(opcode, arraylength, data.b, param1py.b);
+			resultcode = aany_signed_char(opcode, arraylength, data.b, param1py.b, nosimd);
 			break;
 		}
 		// unsigned char
@@ -1266,7 +1326,7 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		}
 		// signed short
 		case 'h' : {
-			resultcode = aany_signed_short(opcode, arraylength, data.h, param1py.h);
+			resultcode = aany_signed_short(opcode, arraylength, data.h, param1py.h, nosimd);
 			break;
 		}
 		// unsigned short
@@ -1276,7 +1336,7 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		}
 		// signed int
 		case 'i' : {
-			resultcode = aany_signed_int(opcode, arraylength, data.i, param1py.i);
+			resultcode = aany_signed_int(opcode, arraylength, data.i, param1py.i, nosimd);
 			break;
 		}
 		// unsigned int
@@ -1306,12 +1366,12 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		}
 		// float
 		case 'f' : {
-			resultcode = aany_float(opcode, arraylength, data.f, param1py.f);
+			resultcode = aany_float(opcode, arraylength, data.f, param1py.f, nosimd);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = aany_double(opcode, arraylength, data.d, param1py.d);
+			resultcode = aany_double(opcode, arraylength, data.d, param1py.d, nosimd);
 			break;
 		}
 		// We don't know this code.
@@ -1362,6 +1422,7 @@ x = aany(op, inparray, rparam, maxlen=y)\n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\
   parameter is ignored. \n\
+* nosimd - If true, disable SIMD. \n\
 * x - The boolean result.");
 
 

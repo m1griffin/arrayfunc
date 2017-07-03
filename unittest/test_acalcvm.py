@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     28-Jan-2016.
-# Ver:      09-Apr-2016.
+# Ver:      26-Jun-2017.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34443,8 +34443,6 @@ class acalcvm_operator_L(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class acalcvm_operator_q(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
@@ -39252,8 +39250,6 @@ class acalcvm_operator_q(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class acalcvm_operator_Q(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
@@ -47735,7 +47731,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm(self):
 		"""Test acalcvm math_acosh  - Array code f.
 		"""
@@ -47768,7 +47763,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_ov(self):
 		"""Test acalcvm math_acosh with overflow checking disabled  - Array code f.
 		"""
@@ -47800,7 +47794,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_lim(self):
 		"""Test acalcvm math_acosh with array limit  - Array code f.
 		"""
@@ -47834,7 +47827,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_acosh with overflow checking disabled and array limit - Array code f.
 		"""
@@ -47999,7 +47991,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm(self):
 		"""Test acalcvm math_asinh  - Array code f.
 		"""
@@ -48032,7 +48023,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_ov(self):
 		"""Test acalcvm math_asinh with overflow checking disabled  - Array code f.
 		"""
@@ -48064,7 +48054,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_lim(self):
 		"""Test acalcvm math_asinh with array limit  - Array code f.
 		"""
@@ -48098,7 +48087,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_asinh with overflow checking disabled and array limit - Array code f.
 		"""
@@ -48913,7 +48901,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm(self):
 		"""Test acalcvm math_atanh  - Array code f.
 		"""
@@ -48946,7 +48933,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_ov(self):
 		"""Test acalcvm math_atanh with overflow checking disabled  - Array code f.
 		"""
@@ -48978,7 +48964,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_lim(self):
 		"""Test acalcvm math_atanh with array limit  - Array code f.
 		"""
@@ -49012,7 +48997,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_atanh with overflow checking disabled and array limit - Array code f.
 		"""
@@ -50217,7 +50201,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm(self):
 		"""Test acalcvm math_erf  - Array code f.
 		"""
@@ -50250,7 +50233,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_ov(self):
 		"""Test acalcvm math_erf with overflow checking disabled  - Array code f.
 		"""
@@ -50282,7 +50264,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_lim(self):
 		"""Test acalcvm math_erf with array limit  - Array code f.
 		"""
@@ -50316,7 +50297,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_erf with overflow checking disabled and array limit - Array code f.
 		"""
@@ -50351,7 +50331,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm(self):
 		"""Test acalcvm math_erfc  - Array code f.
 		"""
@@ -50384,7 +50363,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_ov(self):
 		"""Test acalcvm math_erfc with overflow checking disabled  - Array code f.
 		"""
@@ -50416,7 +50394,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_lim(self):
 		"""Test acalcvm math_erfc with array limit  - Array code f.
 		"""
@@ -50450,7 +50427,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_erfc with overflow checking disabled and array limit - Array code f.
 		"""
@@ -50615,7 +50591,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm(self):
 		"""Test acalcvm math_expm1  - Array code f.
 		"""
@@ -50648,7 +50623,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_ov(self):
 		"""Test acalcvm math_expm1 with overflow checking disabled  - Array code f.
 		"""
@@ -50680,7 +50654,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_lim(self):
 		"""Test acalcvm math_expm1 with array limit  - Array code f.
 		"""
@@ -50714,7 +50687,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_expm1 with overflow checking disabled and array limit - Array code f.
 		"""
@@ -51529,7 +51501,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm(self):
 		"""Test acalcvm math_gamma  - Array code f.
 		"""
@@ -51562,7 +51533,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_ov(self):
 		"""Test acalcvm math_gamma with overflow checking disabled  - Array code f.
 		"""
@@ -51594,7 +51564,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_lim(self):
 		"""Test acalcvm math_gamma with array limit  - Array code f.
 		"""
@@ -51628,7 +51597,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_gamma with overflow checking disabled and array limit - Array code f.
 		"""
@@ -52963,7 +52931,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm(self):
 		"""Test acalcvm math_lgamma  - Array code f.
 		"""
@@ -52996,7 +52963,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_ov(self):
 		"""Test acalcvm math_lgamma with overflow checking disabled  - Array code f.
 		"""
@@ -53028,7 +52994,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_lim(self):
 		"""Test acalcvm math_lgamma with array limit  - Array code f.
 		"""
@@ -53062,7 +53027,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_lgamma with overflow checking disabled and array limit - Array code f.
 		"""
@@ -53357,7 +53321,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm(self):
 		"""Test acalcvm math_log1p  - Array code f.
 		"""
@@ -53390,7 +53353,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_ov(self):
 		"""Test acalcvm math_log1p with overflow checking disabled  - Array code f.
 		"""
@@ -53422,7 +53384,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_lim(self):
 		"""Test acalcvm math_log1p with array limit  - Array code f.
 		"""
@@ -53456,7 +53417,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_log1p with overflow checking disabled and array limit - Array code f.
 		"""
@@ -54661,7 +54621,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm(self):
 		"""Test acalcvm math_trunc  - Array code f.
 		"""
@@ -54694,7 +54653,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_ov(self):
 		"""Test acalcvm math_trunc with overflow checking disabled  - Array code f.
 		"""
@@ -54726,7 +54684,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_lim(self):
 		"""Test acalcvm math_trunc with array limit  - Array code f.
 		"""
@@ -54760,7 +54717,6 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_trunc with overflow checking disabled and array limit - Array code f.
 		"""
@@ -59492,7 +59448,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm(self):
 		"""Test acalcvm math_acosh  - Array code d.
 		"""
@@ -59525,7 +59480,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_ov(self):
 		"""Test acalcvm math_acosh with overflow checking disabled  - Array code d.
 		"""
@@ -59557,7 +59511,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_lim(self):
 		"""Test acalcvm math_acosh with array limit  - Array code d.
 		"""
@@ -59591,7 +59544,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_acosh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_acosh with overflow checking disabled and array limit - Array code d.
 		"""
@@ -59756,7 +59708,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm(self):
 		"""Test acalcvm math_asinh  - Array code d.
 		"""
@@ -59789,7 +59740,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_ov(self):
 		"""Test acalcvm math_asinh with overflow checking disabled  - Array code d.
 		"""
@@ -59821,7 +59771,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_lim(self):
 		"""Test acalcvm math_asinh with array limit  - Array code d.
 		"""
@@ -59855,7 +59804,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_asinh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_asinh with overflow checking disabled and array limit - Array code d.
 		"""
@@ -60670,7 +60618,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm(self):
 		"""Test acalcvm math_atanh  - Array code d.
 		"""
@@ -60703,7 +60650,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_ov(self):
 		"""Test acalcvm math_atanh with overflow checking disabled  - Array code d.
 		"""
@@ -60735,7 +60681,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_lim(self):
 		"""Test acalcvm math_atanh with array limit  - Array code d.
 		"""
@@ -60769,7 +60714,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_atanh_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_atanh with overflow checking disabled and array limit - Array code d.
 		"""
@@ -61974,7 +61918,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm(self):
 		"""Test acalcvm math_erf  - Array code d.
 		"""
@@ -62007,7 +61950,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_ov(self):
 		"""Test acalcvm math_erf with overflow checking disabled  - Array code d.
 		"""
@@ -62039,7 +61981,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_lim(self):
 		"""Test acalcvm math_erf with array limit  - Array code d.
 		"""
@@ -62073,7 +62014,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erf_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_erf with overflow checking disabled and array limit - Array code d.
 		"""
@@ -62108,7 +62048,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm(self):
 		"""Test acalcvm math_erfc  - Array code d.
 		"""
@@ -62141,7 +62080,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_ov(self):
 		"""Test acalcvm math_erfc with overflow checking disabled  - Array code d.
 		"""
@@ -62173,7 +62111,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_lim(self):
 		"""Test acalcvm math_erfc with array limit  - Array code d.
 		"""
@@ -62207,7 +62144,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_erfc_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_erfc with overflow checking disabled and array limit - Array code d.
 		"""
@@ -62372,7 +62308,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm(self):
 		"""Test acalcvm math_expm1  - Array code d.
 		"""
@@ -62405,7 +62340,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_ov(self):
 		"""Test acalcvm math_expm1 with overflow checking disabled  - Array code d.
 		"""
@@ -62437,7 +62371,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_lim(self):
 		"""Test acalcvm math_expm1 with array limit  - Array code d.
 		"""
@@ -62471,7 +62404,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_expm1_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_expm1 with overflow checking disabled and array limit - Array code d.
 		"""
@@ -63286,7 +63218,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm(self):
 		"""Test acalcvm math_gamma  - Array code d.
 		"""
@@ -63319,7 +63250,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_ov(self):
 		"""Test acalcvm math_gamma with overflow checking disabled  - Array code d.
 		"""
@@ -63351,7 +63281,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_lim(self):
 		"""Test acalcvm math_gamma with array limit  - Array code d.
 		"""
@@ -63385,7 +63314,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_gamma_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_gamma with overflow checking disabled and array limit - Array code d.
 		"""
@@ -64720,7 +64648,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm(self):
 		"""Test acalcvm math_lgamma  - Array code d.
 		"""
@@ -64753,7 +64680,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_ov(self):
 		"""Test acalcvm math_lgamma with overflow checking disabled  - Array code d.
 		"""
@@ -64785,7 +64711,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_lim(self):
 		"""Test acalcvm math_lgamma with array limit  - Array code d.
 		"""
@@ -64819,7 +64744,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_lgamma_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_lgamma with overflow checking disabled and array limit - Array code d.
 		"""
@@ -65114,7 +65038,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm(self):
 		"""Test acalcvm math_log1p  - Array code d.
 		"""
@@ -65147,7 +65070,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_ov(self):
 		"""Test acalcvm math_log1p with overflow checking disabled  - Array code d.
 		"""
@@ -65179,7 +65101,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_lim(self):
 		"""Test acalcvm math_log1p with array limit  - Array code d.
 		"""
@@ -65213,7 +65134,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_log1p_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_log1p with overflow checking disabled and array limit - Array code d.
 		"""
@@ -66418,7 +66338,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm(self):
 		"""Test acalcvm math_trunc  - Array code d.
 		"""
@@ -66451,7 +66370,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_ov(self):
 		"""Test acalcvm math_trunc with overflow checking disabled  - Array code d.
 		"""
@@ -66483,7 +66401,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_lim(self):
 		"""Test acalcvm math_trunc with array limit  - Array code d.
 		"""
@@ -66517,7 +66434,6 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_operator_math_trunc_1_acalcvm_ov_lim(self):
 		"""Test acalcvm math_trunc with overflow checking disabled and array limit - Array code d.
 		"""
@@ -72802,8 +72718,6 @@ class acalcvm_intoverflow_L(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class acalcvm_intoverflow_q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -73220,8 +73134,6 @@ class acalcvm_intoverflow_q(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class acalcvm_intoverflow_Q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -74002,7 +73914,6 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_acalcvm(self):
 		"""Test acalcvm floating point error in math.acosh  - Array code f.
 		"""
@@ -74033,7 +73944,6 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_acalcvm(self):
 		"""Test acalcvm floating point error in math.atanh  - Array code f.
 		"""
@@ -74064,7 +73974,6 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_acalcvm(self):
 		"""Test acalcvm floating point error in math.gamma  - Array code f.
 		"""
@@ -74080,7 +73989,6 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_acalcvm(self):
 		"""Test acalcvm floating point error in math.lgamma  - Array code f.
 		"""
@@ -74126,7 +74034,6 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_acalcvm(self):
 		"""Test acalcvm floating point error in math.log1p  - Array code f.
 		"""
@@ -74207,7 +74114,6 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_acalcvm(self):
 		"""Test acalcvm floating point error in math.acosh  - Array code d.
 		"""
@@ -74238,7 +74144,6 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_acalcvm(self):
 		"""Test acalcvm floating point error in math.atanh  - Array code d.
 		"""
@@ -74269,7 +74174,6 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_acalcvm(self):
 		"""Test acalcvm floating point error in math.gamma  - Array code d.
 		"""
@@ -74285,7 +74189,6 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_acalcvm(self):
 		"""Test acalcvm floating point error in math.lgamma  - Array code d.
 		"""
@@ -74331,7 +74234,6 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_acalcvm(self):
 		"""Test acalcvm floating point error in math.log1p  - Array code d.
 		"""
@@ -79977,11 +79879,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80008,11 +79905,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -80048,11 +79940,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80079,11 +79966,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -80119,11 +80001,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80150,11 +80027,6 @@ class acalcvm_nan_data_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -80210,11 +80082,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80241,11 +80108,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -80281,11 +80143,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80312,11 +80169,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -80352,11 +80204,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80383,11 +80230,6 @@ class acalcvm_nan_data_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -80443,11 +80285,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80474,11 +80311,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -80514,11 +80346,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80545,11 +80372,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -80585,11 +80407,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -80616,11 +80433,6 @@ class acalcvm_nan_data_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -80938,7 +80750,6 @@ class acalcvm_nan_data_math_acos_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_acosh_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -81165,7 +80976,6 @@ class acalcvm_nan_data_math_asin_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_asinh_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -82383,7 +82193,6 @@ class acalcvm_nan_data_math_atan2_4_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_atanh_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -83733,7 +83542,6 @@ class acalcvm_nan_data_math_degrees_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_erf_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -83906,7 +83714,6 @@ class acalcvm_nan_data_math_erf_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_erfc_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -84217,7 +84024,6 @@ class acalcvm_nan_data_math_exp_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_expm1_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -84660,10 +84466,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -84690,10 +84492,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -84730,10 +84528,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -84760,10 +84554,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -84800,10 +84590,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -84830,10 +84616,6 @@ class acalcvm_nan_data_math_fmod_0_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -84890,10 +84672,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -84920,10 +84698,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -84960,10 +84734,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -84990,10 +84760,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -85030,10 +84796,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85060,10 +84822,6 @@ class acalcvm_nan_data_math_fmod_1_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -85120,10 +84878,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85150,10 +84904,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -85190,10 +84940,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85220,10 +84966,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -85260,10 +85002,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85290,10 +85028,6 @@ class acalcvm_nan_data_math_fmod_2_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -85350,10 +85084,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85380,10 +85110,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( 2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -85420,10 +85146,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85450,10 +85172,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( 2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -85490,10 +85208,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -85522,10 +85236,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This is the actual test.
 		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
@@ -85550,7 +85260,6 @@ class acalcvm_nan_data_math_fmod_3_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_gamma_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -87187,7 +86896,6 @@ class acalcvm_nan_data_math_ldexp_4_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_lgamma_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -87572,7 +87280,6 @@ class acalcvm_nan_data_math_log10_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_log1p_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -87725,11 +87432,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -87756,11 +87458,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -87796,11 +87493,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -87827,11 +87519,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -87867,11 +87554,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -87898,11 +87580,6 @@ class acalcvm_nan_data_math_pow_0_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -87958,11 +87635,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -87989,11 +87661,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -88029,11 +87696,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -88060,11 +87722,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -88100,11 +87757,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -88131,11 +87783,6 @@ class acalcvm_nan_data_math_pow_1_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -88191,11 +87838,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -88222,11 +87864,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -88262,11 +87899,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -88293,11 +87925,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -88333,11 +87960,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -88364,11 +87986,6 @@ class acalcvm_nan_data_math_pow_2_f(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -89176,7 +88793,6 @@ class acalcvm_nan_data_math_tanh_0_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_trunc_0_f(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -93916,11 +93532,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -93947,11 +93558,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -93987,11 +93593,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94018,11 +93619,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -94058,11 +93654,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94089,11 +93680,6 @@ class acalcvm_nan_data_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -94149,11 +93735,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94180,11 +93761,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -94220,11 +93796,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94251,11 +93822,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -94291,11 +93857,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94322,11 +93883,6 @@ class acalcvm_nan_data_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -94382,11 +93938,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94413,11 +93964,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -94453,11 +93999,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94484,11 +94025,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -94524,11 +94060,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -94555,11 +94086,6 @@ class acalcvm_nan_data_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -94877,7 +94403,6 @@ class acalcvm_nan_data_math_acos_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_acosh_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -95104,7 +94629,6 @@ class acalcvm_nan_data_math_asin_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_asinh_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -96322,7 +95846,6 @@ class acalcvm_nan_data_math_atan2_4_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_atanh_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -97672,7 +97195,6 @@ class acalcvm_nan_data_math_degrees_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_erf_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -97845,7 +97367,6 @@ class acalcvm_nan_data_math_erf_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_erfc_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -98156,7 +97677,6 @@ class acalcvm_nan_data_math_exp_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_expm1_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -98599,10 +98119,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98629,10 +98145,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -98669,10 +98181,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98699,10 +98207,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -98739,10 +98243,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98769,10 +98269,6 @@ class acalcvm_nan_data_math_fmod_0_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat(-2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -98829,10 +98325,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98859,10 +98351,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -98899,10 +98387,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98929,10 +98413,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -98969,10 +98449,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -98999,10 +98475,6 @@ class acalcvm_nan_data_math_fmod_1_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat( -1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -99059,10 +98531,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99089,10 +98557,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -99129,10 +98593,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99159,10 +98619,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -99199,10 +98655,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99229,10 +98681,6 @@ class acalcvm_nan_data_math_fmod_2_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.dataninf), itertools.repeat( 1.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.dataninf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.dataninf)
 
 
@@ -99289,10 +98737,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datanan)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99319,10 +98763,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datanan), itertools.repeat( 2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datanan)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datanan)
 
 
@@ -99359,10 +98799,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.datainf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99389,10 +98825,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			expected = [math.fmod(x, y) for x,y in zip(list(self.datainf), itertools.repeat( 2.0))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.datainf)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.datainf)
 
 
@@ -99429,10 +98861,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -99461,10 +98889,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.dataninf)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This is the actual test.
 		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
@@ -99489,7 +98913,6 @@ class acalcvm_nan_data_math_fmod_3_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_gamma_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -101126,7 +100549,6 @@ class acalcvm_nan_data_math_ldexp_4_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_lgamma_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -101511,7 +100933,6 @@ class acalcvm_nan_data_math_log10_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_log1p_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -101664,11 +101085,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -101695,11 +101111,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -101735,11 +101146,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -101766,11 +101172,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -101806,11 +101207,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -101837,11 +101233,6 @@ class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and (0.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -101897,11 +101288,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -101928,11 +101314,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -101968,11 +101349,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -101999,11 +101375,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -102039,11 +101410,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -102070,11 +101436,6 @@ class acalcvm_nan_data_math_pow_1_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 1.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -102130,11 +101491,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -102161,11 +101517,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datanan)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('nan' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datanan)
 
 
 		# This is the actual test.
@@ -102201,11 +101552,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -102232,11 +101578,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.datainf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('inf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.datainf)
 
 
 		# This is the actual test.
@@ -102272,11 +101613,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -102303,11 +101639,6 @@ class acalcvm_nan_data_math_pow_2_d(unittest.TestCase):
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.dataninf)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('ninf' == 'nan') and
-				(('math.pow' in ('pow', 'math.pow')) and ( 2.0 == 0.0))):
-			expected = [float('nan')] * len(self.dataninf)
 
 
 		# This is the actual test.
@@ -103115,7 +102446,6 @@ class acalcvm_nan_data_math_tanh_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 class acalcvm_nan_data_math_trunc_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -103198,604 +102528,6 @@ class acalcvm_nan_data_math_trunc_0_d(unittest.TestCase):
 		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
 		eqnd.comp('math.trunc(x)', 'x', [])
 		eqnd.execute([], disovfl=True)
-
-##############################################################################
-
-##############################################################################
-class acalcvm_platform_f(unittest.TestCase):
-	"""Test for function platform function.
-	"""
-	# Template name: platform_template
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The unit test code is auto-generated by a script, so we evaluate
-		# the array type code to decide in each instance whether to use
-		# an exact or approximate compare of the results. The following array 
-		# type code is inserted by the script.
-		self.TypeCode = 'f'
-		self.ismsvc = platform.python_compiler().startswith('MSC')
-
-
-	########################################################
-	def test_platform_op_math_acosh_acalcvm(self):
-		"""Test acalcvm math_acosh for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.acosh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_asinh_acalcvm(self):
-		"""Test acalcvm math_asinh for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.asinh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_atanh_acalcvm(self):
-		"""Test acalcvm math_atanh for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.atanh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_erf_acalcvm(self):
-		"""Test acalcvm math_erf for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.erf(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_erfc_acalcvm(self):
-		"""Test acalcvm math_erfc for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.erfc(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_expm1_acalcvm(self):
-		"""Test acalcvm math_expm1 for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.expm1(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_gamma_acalcvm(self):
-		"""Test acalcvm math_gamma for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.gamma(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_lgamma_acalcvm(self):
-		"""Test acalcvm math_lgamma for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.lgamma(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_log1p_acalcvm(self):
-		"""Test acalcvm math_log1p for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.log1p(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_trunc_acalcvm(self):
-		"""Test acalcvm math_trunc for platform support - Array code f.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('f', [0.0,2.4,4.8,7.2,9.6,12.0,14.4,16.8,19.2,21.6])
-		dataout = array.array('f', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.trunc(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-##############################################################################
-
-##############################################################################
-class acalcvm_platform_d(unittest.TestCase):
-	"""Test for function platform function.
-	"""
-	# Template name: platform_template
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The unit test code is auto-generated by a script, so we evaluate
-		# the array type code to decide in each instance whether to use
-		# an exact or approximate compare of the results. The following array 
-		# type code is inserted by the script.
-		self.TypeCode = 'd'
-		self.ismsvc = platform.python_compiler().startswith('MSC')
-
-
-	########################################################
-	def test_platform_op_math_acosh_acalcvm(self):
-		"""Test acalcvm math_acosh for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.acosh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_asinh_acalcvm(self):
-		"""Test acalcvm math_asinh for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.asinh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_atanh_acalcvm(self):
-		"""Test acalcvm math_atanh for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.atanh(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_erf_acalcvm(self):
-		"""Test acalcvm math_erf for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.erf(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_erfc_acalcvm(self):
-		"""Test acalcvm math_erfc for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.erfc(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_expm1_acalcvm(self):
-		"""Test acalcvm math_expm1 for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.expm1(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_gamma_acalcvm(self):
-		"""Test acalcvm math_gamma for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.gamma(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_lgamma_acalcvm(self):
-		"""Test acalcvm math_lgamma for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.lgamma(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_log1p_acalcvm(self):
-		"""Test acalcvm math_log1p for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.log1p(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
-
-
-	########################################################
-	def test_platform_op_math_trunc_acalcvm(self):
-		"""Test acalcvm math_trunc for platform support - Array code d.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('d', [0.0,2.4,4.8,7.2,9.6,12.0,14.4,16.8,19.2,21.6])
-		dataout = array.array('d', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('math.trunc(x)', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
-
 
 ##############################################################################
 
@@ -105885,6 +104617,10 @@ class acalcvm_mathconst_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\n\n')
+		f.write('acalcvm\n\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################

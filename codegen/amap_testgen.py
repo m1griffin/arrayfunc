@@ -66,22 +66,13 @@ def InvertPy(typecode, val):
 bytesconverterdata = 'data = bytes(data)'
 bytesconverterdataout = 'dataout = bytes(dataout)'
 
-# ==============================================================================
-
-# With some platforms (Windows), the compiler does not support all functions.
-# This means we cannot test for them.
-PlatformClassSkip = """@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
-"""
-
-# This version is used for individual tests, as opposed to the entire class.
-PlatformTestSkip = '\t' + PlatformClassSkip
 
 # ==============================================================================
 
 # The basic class template for testing each array type for operator function.
 type_template = '''
 ##############################################################################
-%(skiplonglong)sclass amap_operator_%(typelabel)s(unittest.TestCase):
+class amap_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -224,7 +215,7 @@ test_template = '''
 # This template is for operators which do not use a second parameter.
 test_template_noparams = '''
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amap(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amap(self):
 		"""Test amap %(opcodename)s  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -238,7 +229,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amap_ov(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amap_ov(self):
 		"""Test amap %(opcodename)s with overflow checking disabled  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -252,7 +243,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amap_lim(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amap_lim(self):
 		"""Test amap %(opcodename)s with array limit  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -269,7 +260,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amap_ov_lim(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amap_ov_lim(self):
 		"""Test amap %(opcodename)s with overflow checking disabled and array limit - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -287,7 +278,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amapi(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amapi(self):
 		"""Test amapi %(opcodename)s  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -299,7 +290,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amapi_ov(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amapi_ov(self):
 		"""Test amapi %(opcodename)s with overflow checking disabled  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -311,7 +302,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amapi_lim(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amapi_lim(self):
 		"""Test amapi %(opcodename)s with array limit  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -326,7 +317,7 @@ test_template_noparams = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(opcodename)s_%(testcount)s_amapi_ov_lim(self):
+	def test_operator_%(opcodename)s_%(testcount)s_amapi_ov_lim(self):
 		"""Test amapi %(opcodename)s with overflow checking disabled and array limit  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -351,7 +342,7 @@ test_template_noparams = '''
 # The basic class template for testing each array type for integer overflow.
 intoverflow_type_template = '''
 ##############################################################################
-%(skiplonglong)sclass amap_intoverflow_%(typelabel)s(unittest.TestCase):
+class amap_intoverflow_%(typelabel)s(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
 
@@ -509,7 +500,7 @@ amapi_almost_template = "for dataoutitem, expecteditem in zip(list(data), expect
 # The basic class template for testing each array type for floating point overflow.
 floatoverflow_type_template = '''
 ##############################################################################
-%(skiplonglong)sclass amap_floatoverflow_%(typelabel)s(unittest.TestCase):
+class amap_floatoverflow_%(typelabel)s(unittest.TestCase):
 	"""Test for floating point overflow operator function.
 	"""
 
@@ -581,7 +572,7 @@ floatoverflow_template_noparam = '''
 # The basic class template for testing each floating point library item for math errors.
 floaterror_class_template = '''
 ##############################################################################
-%(skiplonglong)sclass amap_floaterror_%(typelabel)s(unittest.TestCase):
+class amap_floaterror_%(typelabel)s(unittest.TestCase):
 	"""Test for floating point overflow operator function.
 	"""
 
@@ -603,7 +594,7 @@ floaterror_class_template = '''
 # Math functions which take one parameter.
 floaterror_template = '''
 	########################################################
-%(skipplatform)s	def test_floaterror_%(opcodename)s_amap(self):
+	def test_floaterror_%(opcodename)s_amap(self):
 		"""Test amap floating point error in %(opcodename)s  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', range(%(test_float_err_x)s))
@@ -613,7 +604,7 @@ floaterror_template = '''
 			arrayfunc.amap(arrayfunc.aops.%(opcodename)s, data, dataout)
 
 	########################################################
-%(skipplatform)s	def test_floaterror_%(opcodename)s_amapi(self):
+	def test_floaterror_%(opcodename)s_amapi(self):
 		"""Test amapi floating point error in %(opcodename)s  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', range(%(test_float_err_x)s))
@@ -654,7 +645,7 @@ floaterror_template_2params = '''
 # The basic template for testing parameters.
 param_template = '''
 ##############################################################################
-%(skiplonglong)sclass amap_parameter_%(typelabel)s(unittest.TestCase):
+class amap_parameter_%(typelabel)s(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
 
@@ -978,7 +969,7 @@ param_template = '''
 # The template used to generate the tests for nan, inf, -inf in parameters.
 nan_param_template = '''
 ##############################################################################
-%(skipplatform)sclass amap_nan_param_%(opcodename)s_%(typelabel)s(unittest.TestCase):
+class amap_nan_param_%(opcodename)s_%(typelabel)s(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in parameters.
 	"""
 
@@ -1170,7 +1161,7 @@ nan_param_template = '''
 # The template used to start off the tests for nan, inf, -inf in data arrays.
 nan_data_header_template = '''
 ##############################################################################
-%(skipplatform)sclass amap_nan_data_%(opcodename)s_%(seq)s_%(typelabel)s(unittest.TestCase):
+class amap_nan_data_%(opcodename)s_%(seq)s_%(typelabel)s(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
 
@@ -1499,12 +1490,6 @@ nan_data_powerror_template = '''
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-			((('%(opcodename)s' in ('af_pow', 'math_pow')) and (%(yparamdata)s == 0.0)) or
-				(('%(opcodename)s' in ('af_pow_r', 'math_pow_r')) and (%(yparamdata)s == 1.0)))):
-				expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.amap(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataout, %(yparamdata)s)
@@ -1528,12 +1513,6 @@ nan_data_powerror_template = '''
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-			((('%(opcodename)s' in ('af_pow', 'math_pow')) and (%(yparamdata)s == 0.0)) or
-				(('%(opcodename)s' in ('af_pow_r', 'math_pow_r')) and (%(yparamdata)s == 1.0)))):
-				expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.amapi(arrayfunc.aops.%(opcodename)s, self.dataok, %(yparamdata)s)
@@ -1556,12 +1535,6 @@ nan_data_powerror_template = '''
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-			((('%(opcodename)s' in ('af_pow', 'math_pow')) and (%(yparamdata)s == 0.0)) or
-				(('%(opcodename)s' in ('af_pow_r', 'math_pow_r')) and (%(yparamdata)s == 1.0)))):
-				expected = [float('nan')] * len(self.data%(testarray)s)
 
 
 		# This is the actual test.
@@ -1592,12 +1565,6 @@ nan_data_powerror_template = '''
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-			((('%(opcodename)s' in ('af_pow', 'math_pow')) and (%(yparamdata)s == 0.0)) or
-				(('%(opcodename)s' in ('af_pow_r', 'math_pow_r')) and (%(yparamdata)s == 1.0)))):
-				expected = [float('nan')] * len(self.data%(testarray)s)
 
 
 		# This is the actual test.
@@ -1636,10 +1603,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.amap(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataout, %(yparamdata)s)
@@ -1663,10 +1626,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.amapi(arrayfunc.aops.%(opcodename)s, self.dataok, %(yparamdata)s)
@@ -1688,10 +1647,6 @@ nan_data_fmoderror_param_template = '''
 			expected = [%(pyequ)s for x,y in zip(list(self.data%(testarray)s), itertools.repeat(%(yparamdata)s))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
 
@@ -1722,10 +1677,6 @@ nan_data_fmoderror_param_template = '''
 			expected = [%(pyequ)s for x,y in zip(list(self.data%(testarray)s), itertools.repeat(%(yparamdata)s))]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
 
@@ -2155,7 +2106,11 @@ classend = """##################################################################
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('amap\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -2276,12 +2231,6 @@ def makeoptests(csvdata, arraycode, arraylabel):
 			testrec['bytesconverterdata'] = ''
 			testrec['bytesconverterdataout'] = ''
 
-
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if rec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformTestSkip
-		else:
-			testrec['skipplatform'] = ''
 
 
 		# Generate a test for each test data element.
@@ -2405,12 +2354,6 @@ def makefloaterrortestset(csvdata, arraycode):
 		testrec['typelabel'] = arraycode
 		testrec.update(instrdata)
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if testrec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformTestSkip
-		else:
-			testrec['skipplatform'] = ''
-
 
 		template = test_templates[testrec['test_float_err_template']]
 		recset.append(template % testrec)
@@ -2439,12 +2382,6 @@ def makenanparamtestset(csvdata, arraycode):
 		testrec['typelabel'] = arraycode
 		testrec.update(instrdata)
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if testrec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformClassSkip
-		else:
-			testrec['skipplatform'] = ''
-
 
 		recset.append(nan_param_template % testrec)
 
@@ -2470,11 +2407,6 @@ def makenandatatests(csvdata, arraycode):
 		testrec['typelabel'] = arraycode
 		testrec.update(instrdata)
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if testrec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformClassSkip
-		else:
-			testrec['skipplatform'] = ''
 
 		# The equation for calculating the expected results.
 		testrec['pyequ'] = testrec['py_equation'] % {'op' : testrec['pyoperator'], 'typeconvert' : ''}

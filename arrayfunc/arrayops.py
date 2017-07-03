@@ -2,91 +2,91 @@
 Python Equivalent Operators and Functions
 -----------------------------------------
 
-================= ======================
+=============== ======================
 Name               Equivalent to        
-================= ======================
-af_add             x + y                
-af_div             x / y                
-af_div_r           y / x                
-af_floordiv        x // y               
-af_floordiv_r      y // x               
-af_mod             x % y                
-af_mod_r           y % x                
-af_mult            x * y                
-af_neg             -x                   
-af_pow             x**y                 
-af_pow_r           y**x                 
-af_sub             x - y                
-af_sub_r           y - x                
-af_and             x & y                
-af_or              x | y                
-af_xor             x ^ y                
-af_invert          ~x                   
-af_eq              x == y               
-af_gt              x > y                
-af_gte             x >= y               
-af_lt              x < y                
-af_lte             x <= y               
-af_ne              x != y               
-af_lshift          x << y               
-af_lshift_r        y << x               
-af_rshift          x >> y               
-af_rshift_r        y >> x               
-af_abs             abs(x)               
-math_acos          math.acos(x)         
-math_acosh         math.acosh(x)        
-math_asin          math.asin(x)         
-math_asinh         math.asinh(x)        
-math_atan          math.atan(x)         
-math_atan2         math.atan2(x, y)     
-math_atan2_r       math.atan2(y, x)     
-math_atanh         math.atanh(x)        
-math_ceil          math.ceil(x)         
-math_copysign      math.copysign(x, y)  
-math_cos           math.cos(x)          
-math_cosh          math.cosh(x)         
-math_degrees       math.degrees(x)      
-math_erf           math.erf(x)          
-math_erfc          math.erfc(x)         
-math_exp           math.exp(x)          
-math_expm1         math.expm1(x)        
-math_fabs          math.fabs(x)         
-math_factorial     math.factorial(x)    
-math_floor         math.floor(x)        
-math_fmod          math.fmod(x, y)      
-math_fmod_r        math.fmod(y, x)      
-math_gamma         math.gamma(x)        
-math_hypot         math.hypot(x, y)     
-math_hypot_r       math.hypot(y, x)     
-math_isinf         math.isinf(x)        
-math_isnan         math.isnan(x)        
-math_ldexp         math.ldexp(x, y)     
-math_lgamma        math.lgamma(x)       
-math_log           math.log(x)          
-math_log10         math.log10(x)        
-math_log1p         math.log1p(x)        
-math_pow           math.pow(x, y)       
-math_pow_r         math.pow(y, x)       
-math_radians       math.radians(x)      
-math_sin           math.sin(x)          
-math_sinh          math.sinh(x)         
-math_sqrt          math.sqrt(x)         
-math_tan           math.tan(x)          
-math_tanh          math.tanh(x)         
-math_trunc         math.truc(x)         
-================= ======================
+=============== ======================
+af_add           x + y
+af_div           x / y
+af_div_r         y / x
+af_floordiv      x // y
+af_floordiv_r    y // x
+af_mod           x % y
+af_mod_r         y % x
+af_mult          x * y
+af_neg           -x
+af_pow           x**y
+af_pow_r         y**x
+af_sub           x - y
+af_sub_r         y - x
+af_and           x & y
+af_or            x | y
+af_xor           x ^ y
+af_invert        ~x
+af_eq            x == y
+af_gt            x > y
+af_gte           x >= y
+af_lt            x < y
+af_lte           x <= y
+af_ne            x != y
+af_lshift        x << y
+af_lshift_r      y << x
+af_rshift        x >> y
+af_rshift_r      y >> x
+af_abs           abs(x)
+math_acos        math.acos(x)
+math_acosh       math.acosh(x)
+math_asin        math.asin(x)
+math_asinh       math.asinh(x)
+math_atan        math.atan(x)
+math_atan2       math.atan2(x, y)
+math_atan2_r     math.atan2(y, x)
+math_atanh       math.atanh(x)
+math_ceil        math.ceil(x)
+math_copysign    math.copysign(x, y)
+math_cos         math.cos(x)
+math_cosh        math.cosh(x)
+math_degrees     math.degrees(x)
+math_erf         math.erf(x)
+math_erfc        math.erfc(x)
+math_exp         math.exp(x)
+math_expm1       math.expm1(x)
+math_fabs        math.fabs(x)
+math_factorial   math.factorial(x)
+math_floor       math.floor(x)
+math_fmod        math.fmod(x, y)
+math_fmod_r      math.fmod(y, x)
+math_gamma       math.gamma(x)
+math_hypot       math.hypot(x, y)
+math_hypot_r     math.hypot(y, x)
+math_isinf       math.isinf(x)
+math_isnan       math.isnan(x)
+math_ldexp       math.ldexp(x, y)
+math_lgamma      math.lgamma(x)
+math_log         math.log(x)
+math_log10       math.log10(x)
+math_log1p       math.log1p(x)
+math_pow         math.pow(x, y)
+math_pow_r       math.pow(y, x)
+math_radians     math.radians(x)
+math_sin         math.sin(x)
+math_sinh        math.sinh(x)
+math_sqrt        math.sqrt(x)
+math_tan         math.tan(x)
+math_tanh        math.tanh(x)
+math_trunc       math.trunc(x)
+=============== ======================
 
 Additional Operators
 --------------------
 
-================= ======================
+=============== ======================
 Name               Equivalent to        
-================= ======================
-aops_subst_gt      x > y                
-aops_subst_gte     x >= y               
-aops_subst_lt      x < y                
-aops_subst_lte     x <= y               
-================= ======================
+=============== ======================
+aops_subst_gt    x > y
+aops_subst_gte   x >= y
+aops_subst_lt    x < y
+aops_subst_lte   x <= y
+=============== ======================
 """
 
 import collections

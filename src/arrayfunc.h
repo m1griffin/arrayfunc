@@ -109,15 +109,6 @@
 
 /*--------------------------------------------------------------------------- */
 
-// This is for MSVC only to work around the limitations of Microsoft's compiler.
-// MS VS 2010 is only up to the older C89 standard.
-#ifdef _MSC_VER
-#define uint8_t unsigned char
-#define isfinite _finite
-#endif
-
-/*--------------------------------------------------------------------------- */
-
 // The data arrays. Each element represents a different data type.
 union dataarrays {
 	uint8_t *buf;
@@ -194,8 +185,8 @@ Code	Type						x86-32	x-86-64	ARM-32
 'I' 	unsigned int 		int 	4		4		4
 'l' 	signed long 		int 	4		8		4
 'L' 	unsigned long 		int 	4		8		4
-'q'		signed long long	int 	N/8		8		???
-'Q'		unsigned long long	int 	N/8		8		???
+'q'		signed long long	int 	8		8		???
+'Q'		unsigned long long	int 	8		8		???
 'f' 	float 				float 	4		4		4
 'd' 	double 				float 	8		8		8
 

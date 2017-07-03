@@ -292,7 +292,7 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -305,11 +305,11 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -322,7 +322,7 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -391,114 +391,114 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_abs
 	case OP_AF_ABS: {
@@ -517,7 +517,7 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -530,39 +530,39 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -698,7 +698,7 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -711,11 +711,11 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -728,7 +728,7 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -766,117 +766,117 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -889,39 +889,39 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -1180,7 +1180,7 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1193,11 +1193,11 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1210,7 +1210,7 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -1279,114 +1279,114 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_abs
 	case OP_AF_ABS: {
@@ -1405,7 +1405,7 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1418,39 +1418,39 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -1586,7 +1586,7 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1599,11 +1599,11 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1616,7 +1616,7 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -1654,117 +1654,117 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -1777,39 +1777,39 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -2068,7 +2068,7 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2081,11 +2081,11 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2098,7 +2098,7 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -2167,114 +2167,114 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_abs
 	case OP_AF_ABS: {
@@ -2293,7 +2293,7 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2306,39 +2306,39 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -2474,7 +2474,7 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2487,11 +2487,11 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2504,7 +2504,7 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -2542,117 +2542,117 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2665,39 +2665,39 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -2956,7 +2956,7 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2969,11 +2969,11 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -2986,7 +2986,7 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -3055,114 +3055,114 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_abs
 	case OP_AF_ABS: {
@@ -3181,7 +3181,7 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3194,39 +3194,39 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -3362,7 +3362,7 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3375,11 +3375,11 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3392,7 +3392,7 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -3430,117 +3430,117 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3553,39 +3553,39 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -3844,7 +3844,7 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3857,11 +3857,11 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -3874,7 +3874,7 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -3943,114 +3943,114 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_abs
 	case OP_AF_ABS: {
@@ -4069,7 +4069,7 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4082,39 +4082,39 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -4250,7 +4250,7 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4263,11 +4263,11 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4280,7 +4280,7 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
@@ -4318,117 +4318,117 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 	}
 	// af_and
 	case OP_AF_AND: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] & param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_or
 	case OP_AF_OR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] | param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_xor
 	case OP_AF_XOR: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] ^ param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_invert
-	case OP_AF_INVERT: { 
+	case OP_AF_INVERT: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] == param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gt
 	case OP_AF_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_gte
 	case OP_AF_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lt
 	case OP_AF_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lte
 	case OP_AF_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_ne
 	case OP_AF_NE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] != param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift
 	case OP_AF_LSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] << param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_lshift_r
 	case OP_AF_LSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 << data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift
 	case OP_AF_RSHIFT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >> param1;
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_rshift_r
 	case OP_AF_RSHIFT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = param1 >> data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_factorial
-	case OP_MATH_FACTORIAL: { 
+	case OP_MATH_FACTORIAL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4441,39 +4441,39 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
 				if (errflag != 0) return ARR_ERR_OVFL;
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -4506,7 +4506,7 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 
 	// af_add
 	case OP_AF_ADD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4519,11 +4519,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_div
 	case OP_AF_DIV: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4536,11 +4536,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_div_r
 	case OP_AF_DIV_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4553,11 +4553,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_floordiv
 	case OP_AF_FLOORDIV: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4570,11 +4570,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_floordiv_r
 	case OP_AF_FLOORDIV_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4587,11 +4587,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mod
 	case OP_AF_MOD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4604,11 +4604,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mod_r
 	case OP_AF_MOD_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4621,11 +4621,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mult
 	case OP_AF_MULT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4638,10 +4638,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_neg
-	case OP_AF_NEG: { 
+	case OP_AF_NEG: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4654,11 +4654,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4671,11 +4671,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4688,11 +4688,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4705,11 +4705,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub_r
 	case OP_AF_SUB_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4722,7 +4722,7 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
@@ -4773,14 +4773,14 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 		return ARR_NO_ERR;
 	}
 	// af_abs
-	case OP_AF_ABS: { 
+	case OP_AF_ABS: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= 0.0 ? data[x] : -data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_acos
-	case OP_MATH_ACOS: { 
+	case OP_MATH_ACOS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4793,15 +4793,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_acosh
-	case OP_MATH_ACOSH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ACOSH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4814,12 +4809,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_asin
-	case OP_MATH_ASIN: { 
+	case OP_MATH_ASIN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4832,15 +4825,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_asinh
-	case OP_MATH_ASINH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ASINH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4853,12 +4841,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_atan
-	case OP_MATH_ATAN: { 
+	case OP_MATH_ATAN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4871,11 +4857,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atan2
 	case OP_MATH_ATAN2: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4888,11 +4874,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atan2_r
 	case OP_MATH_ATAN2_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4905,15 +4891,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atanh
-	case OP_MATH_ATANH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ATANH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4926,12 +4907,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_ceil
-	case OP_MATH_CEIL: { 
+	case OP_MATH_CEIL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4944,11 +4923,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_copysign
 	case OP_MATH_COPYSIGN: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4961,10 +4940,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_cos
-	case OP_MATH_COS: { 
+	case OP_MATH_COS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4977,10 +4956,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_cosh
-	case OP_MATH_COSH: { 
+	case OP_MATH_COSH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -4993,10 +4972,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_degrees
-	case OP_MATH_DEGREES: { 
+	case OP_MATH_DEGREES: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5009,15 +4988,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_erf
-	case OP_MATH_ERF: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ERF: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5030,17 +5004,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_erfc
-	case OP_MATH_ERFC: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ERFC: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5053,12 +5020,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_exp
-	case OP_MATH_EXP: { 
+	case OP_MATH_EXP: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5071,15 +5036,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_expm1
-	case OP_MATH_EXPM1: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_EXPM1: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5092,12 +5052,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_fabs
-	case OP_MATH_FABS: { 
+	case OP_MATH_FABS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5110,10 +5068,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_floor
-	case OP_MATH_FLOOR: { 
+	case OP_MATH_FLOOR: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5126,11 +5084,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_fmod
 	case OP_MATH_FMOD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5143,11 +5101,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_fmod_r
 	case OP_MATH_FMOD_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5160,15 +5118,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_gamma
-	case OP_MATH_GAMMA: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_GAMMA: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5181,13 +5134,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_hypot
 	case OP_MATH_HYPOT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5200,11 +5151,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_hypot_r
 	case OP_MATH_HYPOT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5217,35 +5168,21 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_isinf
-	case OP_MATH_ISINF: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ISINF: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = (float) !(isfinite(data[x]) || isnan(data[x]));
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_isnan
-	case OP_MATH_ISNAN: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ISNAN: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = (float) isnan(data[x]);
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_ldexp
 	case OP_MATH_LDEXP: {
@@ -5269,12 +5206,7 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 		return ARR_NO_ERR;
 	}
 	// math_lgamma
-	case OP_MATH_LGAMMA: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_LGAMMA: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5287,12 +5219,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_log
-	case OP_MATH_LOG: { 
+	case OP_MATH_LOG: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5305,10 +5235,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_log10
-	case OP_MATH_LOG10: { 
+	case OP_MATH_LOG10: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5321,15 +5251,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_log1p
-	case OP_MATH_LOG1P: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_LOG1P: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5342,13 +5267,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_pow
 	case OP_MATH_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5361,11 +5284,11 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_pow_r
 	case OP_MATH_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5378,10 +5301,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_radians
-	case OP_MATH_RADIANS: { 
+	case OP_MATH_RADIANS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5394,10 +5317,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sin
-	case OP_MATH_SIN: { 
+	case OP_MATH_SIN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5410,10 +5333,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sinh
-	case OP_MATH_SINH: { 
+	case OP_MATH_SINH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5426,10 +5349,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sqrt
-	case OP_MATH_SQRT: { 
+	case OP_MATH_SQRT: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5442,10 +5365,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_tan
-	case OP_MATH_TAN: { 
+	case OP_MATH_TAN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5458,10 +5381,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_tanh
-	case OP_MATH_TANH: { 
+	case OP_MATH_TANH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5474,15 +5397,10 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_trunc
-	case OP_MATH_TRUNC: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_TRUNC: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5495,41 +5413,39 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}
@@ -5562,7 +5478,7 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 
 	// af_add
 	case OP_AF_ADD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5575,11 +5491,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_div
 	case OP_AF_DIV: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5592,11 +5508,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_div_r
 	case OP_AF_DIV_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5609,11 +5525,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_floordiv
 	case OP_AF_FLOORDIV: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5626,11 +5542,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_floordiv_r
 	case OP_AF_FLOORDIV_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5643,11 +5559,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mod
 	case OP_AF_MOD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5660,11 +5576,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mod_r
 	case OP_AF_MOD_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5677,11 +5593,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_mult
 	case OP_AF_MULT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5694,10 +5610,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_neg
-	case OP_AF_NEG: { 
+	case OP_AF_NEG: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5710,11 +5626,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow
 	case OP_AF_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5727,11 +5643,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_pow_r
 	case OP_AF_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5744,11 +5660,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub
 	case OP_AF_SUB: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5761,11 +5677,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_sub_r
 	case OP_AF_SUB_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5778,7 +5694,7 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// af_eq
 	case OP_AF_EQ: {
@@ -5829,14 +5745,14 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 		return ARR_NO_ERR;
 	}
 	// af_abs
-	case OP_AF_ABS: { 
+	case OP_AF_ABS: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= 0.0 ? data[x] : -data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_acos
-	case OP_MATH_ACOS: { 
+	case OP_MATH_ACOS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5849,15 +5765,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_acosh
-	case OP_MATH_ACOSH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ACOSH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5870,12 +5781,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_asin
-	case OP_MATH_ASIN: { 
+	case OP_MATH_ASIN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5888,15 +5797,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_asinh
-	case OP_MATH_ASINH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ASINH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5909,12 +5813,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_atan
-	case OP_MATH_ATAN: { 
+	case OP_MATH_ATAN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5927,11 +5829,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atan2
 	case OP_MATH_ATAN2: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5944,11 +5846,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atan2_r
 	case OP_MATH_ATAN2_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5961,15 +5863,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_atanh
-	case OP_MATH_ATANH: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ATANH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -5982,12 +5879,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_ceil
-	case OP_MATH_CEIL: { 
+	case OP_MATH_CEIL: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6000,11 +5895,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_copysign
 	case OP_MATH_COPYSIGN: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6017,10 +5912,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_cos
-	case OP_MATH_COS: { 
+	case OP_MATH_COS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6033,10 +5928,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_cosh
-	case OP_MATH_COSH: { 
+	case OP_MATH_COSH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6049,10 +5944,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_degrees
-	case OP_MATH_DEGREES: { 
+	case OP_MATH_DEGREES: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6065,15 +5960,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_erf
-	case OP_MATH_ERF: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ERF: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6086,17 +5976,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_erfc
-	case OP_MATH_ERFC: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ERFC: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6109,12 +5992,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_exp
-	case OP_MATH_EXP: { 
+	case OP_MATH_EXP: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6127,15 +6008,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_expm1
-	case OP_MATH_EXPM1: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_EXPM1: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6148,12 +6024,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_fabs
-	case OP_MATH_FABS: { 
+	case OP_MATH_FABS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6166,10 +6040,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_floor
-	case OP_MATH_FLOOR: { 
+	case OP_MATH_FLOOR: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6182,11 +6056,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_fmod
 	case OP_MATH_FMOD: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6199,11 +6073,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_fmod_r
 	case OP_MATH_FMOD_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6216,15 +6090,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_gamma
-	case OP_MATH_GAMMA: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_GAMMA: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6237,13 +6106,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_hypot
 	case OP_MATH_HYPOT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6256,11 +6123,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_hypot_r
 	case OP_MATH_HYPOT_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6273,35 +6140,21 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_isinf
-	case OP_MATH_ISINF: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ISINF: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = (double) !(isfinite(data[x]) || isnan(data[x]));
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_isnan
-	case OP_MATH_ISNAN: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_ISNAN: {
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = (double) isnan(data[x]);
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_ldexp
 	case OP_MATH_LDEXP: {
@@ -6325,12 +6178,7 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 		return ARR_NO_ERR;
 	}
 	// math_lgamma
-	case OP_MATH_LGAMMA: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_LGAMMA: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6343,12 +6191,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_log
-	case OP_MATH_LOG: { 
+	case OP_MATH_LOG: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6361,10 +6207,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_log10
-	case OP_MATH_LOG10: { 
+	case OP_MATH_LOG10: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6377,15 +6223,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_log1p
-	case OP_MATH_LOG1P: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_LOG1P: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6398,13 +6239,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// math_pow
 	case OP_MATH_POW: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6417,11 +6256,11 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_pow_r
 	case OP_MATH_POW_R: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6434,10 +6273,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_radians
-	case OP_MATH_RADIANS: { 
+	case OP_MATH_RADIANS: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6450,10 +6289,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sin
-	case OP_MATH_SIN: { 
+	case OP_MATH_SIN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6466,10 +6305,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sinh
-	case OP_MATH_SINH: { 
+	case OP_MATH_SINH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6482,10 +6321,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_sqrt
-	case OP_MATH_SQRT: { 
+	case OP_MATH_SQRT: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6498,10 +6337,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_tan
-	case OP_MATH_TAN: { 
+	case OP_MATH_TAN: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6514,10 +6353,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_tanh
-	case OP_MATH_TANH: { 
+	case OP_MATH_TANH: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6530,15 +6369,10 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// math_trunc
-	case OP_MATH_TRUNC: { 
-		// This op is not supported by MSVC 2010.
-		#ifdef _MSC_VER
-			return ARR_ERR_PLATFORM;
-		#else
-
+	case OP_MATH_TRUNC: {
 		// Overflow checking disabled.
 		if (disableovfl) {
 			for(x = 0; x < arraylen; x++) {
@@ -6551,41 +6385,39 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
-		return ARR_NO_ERR; 
-		#endif
-
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gt
 	case OP_AOPS_SUBST_GT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] > param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_gte
 	case OP_AOPS_SUBST_GTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] >= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lt
 	case OP_AOPS_SUBST_LT: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] < param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 	// aops_subst_lte
 	case OP_AOPS_SUBST_LTE: {
-		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;} 
+		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = data[x] <= param1 ? param1 : data[x];
 		}
-		return ARR_NO_ERR; 
+		return ARR_NO_ERR;
 	}
 
 	}

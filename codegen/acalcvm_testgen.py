@@ -36,7 +36,7 @@ import codegen_common
 # The basic class template for testing each array type for operator function.
 type_template = '''
 ##############################################################################
-%(skiplonglong)sclass acalcvm_operator_%(typelabel)s(unittest.TestCase):
+class acalcvm_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -97,21 +97,6 @@ bytesconverterdataself = 'self.data = bytes(self.data)'
 bytesconverterdataoutself = 'self.dataout = bytes(self.dataout)'
 
 
-
-# ==============================================================================
-
-# With some platforms (Windows), the compiler does not support all functions.
-# This means we cannot test for them.
-PlatformClassSkip = """@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
-"""
-
-# This version is used for individual tests, as opposed to the entire class.
-PlatformTestSkip = '\t' + PlatformClassSkip
-
-# ==============================================================================
-
-# ==============================================================================
-
 # ==============================================================================
 
 
@@ -120,7 +105,7 @@ PlatformTestSkip = '\t' + PlatformClassSkip
 # This covers acalcvm with overflow checking on and off.
 test_template_1op = '''
 	########################################################
-%(skipplatform)s	def test_operator_%(oplabel)s_%(testcount)s_acalcvm(self):
+	def test_operator_%(oplabel)s_%(testcount)s_acalcvm(self):
 		"""Test acalcvm %(oplabel)s  - Array code %(typelabel)s.
 		"""
 		# Template name: test_template_1op
@@ -139,7 +124,7 @@ test_template_1op = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_ov(self):
+	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_ov(self):
 		"""Test acalcvm %(oplabel)s with overflow checking disabled  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -157,7 +142,7 @@ test_template_1op = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_lim(self):
+	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_lim(self):
 		"""Test acalcvm %(oplabel)s with array limit  - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -177,7 +162,7 @@ test_template_1op = '''
 
 
 	########################################################
-%(skipplatform)s	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_ov_lim(self):
+	def test_operator_%(oplabel)s_%(testcount)s_acalcvm_ov_lim(self):
 		"""Test acalcvm %(oplabel)s with overflow checking disabled and array limit - Array code %(typelabel)s.
 		"""
 		data = array.array('%(typecode)s', [%(test_op_x)s])
@@ -497,7 +482,7 @@ almost_template = "for dataoutitem, expecteditem in zip(list(dataout), expected)
 # The basic class template for testing each array type for integer overflow.
 intoverflow_type_template = '''
 ##############################################################################
-%(skiplonglong)sclass acalcvm_intoverflow_%(typelabel)s(unittest.TestCase):
+class acalcvm_intoverflow_%(typelabel)s(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
 
@@ -728,7 +713,7 @@ floatoverflow_template_2ops = '''
 # The basic class template for testing each floating point library item for math errors.
 floaterror_class_template = '''
 ##############################################################################
-%(skiplonglong)sclass acalcvm_floaterror_%(typelabel)s(unittest.TestCase):
+class acalcvm_floaterror_%(typelabel)s(unittest.TestCase):
 	"""Test for floating point overflow operator function.
 	"""
 
@@ -750,7 +735,7 @@ floaterror_class_template = '''
 # Math functions which take one parameter.
 floaterror_template_1ops = '''
 	########################################################
-%(skipplatform)s	def test_floaterror_%(oplabel)s_acalcvm(self):
+	def test_floaterror_%(oplabel)s_acalcvm(self):
 		"""Test acalcvm floating point error in %(opcodename)s  - Array code %(typelabel)s.
 		"""
 		# Template name: floaterror_template_1ops
@@ -884,7 +869,7 @@ class acalcvm_ovfl_param_%(typelabel)s(unittest.TestCase):
 # The template used to start off the tests for nan, inf, -inf in data arrays.
 nan_data_header_template = '''
 ##############################################################################
-%(skipplatform)sclass acalcvm_nan_data_%(oplabel)s_%(seq)s_%(typelabel)s(unittest.TestCase):
+class acalcvm_nan_data_%(oplabel)s_%(seq)s_%(typelabel)s(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
 
@@ -1190,11 +1175,6 @@ nan_data_powerror_template = '''
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-				(('%(opcodename)s' in ('pow', 'math.pow')) and (%(yparamdata)s == 0.0))):
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -1221,11 +1201,6 @@ nan_data_powerror_template = '''
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.data%(testarray)s)
-
-		# MSVC sometimes give different results from Python or GCC.
-		if (platform.python_compiler().startswith('MSC') and ('%(testarray)s' == 'nan') and
-				(('%(opcodename)s' in ('pow', 'math.pow')) and (%(yparamdata)s == 0.0))):
-			expected = [float('nan')] * len(self.data%(testarray)s)
 
 
 		# This is the actual test.
@@ -1329,10 +1304,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This version is expected to pass.
 		eqnd = arrayfunc.acalc.calc(self.dataok, self.dataout)
@@ -1361,10 +1332,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.data%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.data%(testarray)s)
-
 
 		# This is the actual test.
 		eqnd = arrayfunc.acalc.calc(self.data%(testarray)s, self.dataout)
@@ -1384,61 +1351,6 @@ nan_data_fmoderror_param_template = '''
 			else:
 				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
-
-
-'''
-
-# ==============================================================================
-
-# The basic class template for testing each array type for operator function.
-platform_template = '''
-##############################################################################
-class acalcvm_platform_%(typelabel)s(unittest.TestCase):
-	"""Test for function platform function.
-	"""
-	# Template name: platform_template
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The unit test code is auto-generated by a script, so we evaluate
-		# the array type code to decide in each instance whether to use
-		# an exact or approximate compare of the results. The following array 
-		# type code is inserted by the script.
-		self.TypeCode = '%(typecode)s'
-		self.ismsvc = platform.python_compiler().startswith('MSC')
-
-'''
-
-
-# The basic template for testing platform support.
-test_template_platform_has = '''
-	########################################################
-	def test_platform_op_%(oplabel)s_acalcvm(self):
-		"""Test acalcvm %(oplabel)s for platform support - Array code %(typelabel)s.
-		"""
-		# Template name: test_template_platform_has
-
-		data = array.array('%(typecode)s', [%(test_platform_x)s])
-		dataout = array.array('%(typecode)s', [0]*len(data))
-
-		eqnd = arrayfunc.acalc.calc(data, dataout)
-		# If the function lacks compiler support, then tell the compiler to 
-		# remove those operations from its list of unsupported ops.
-		if self.ismsvc:
-			eqnd._UnsupportedCodes = []
-
-		eqnd.comp('%(pyop)s', 'x', [])
-
-		# The response depends upon the platform the C compiler used. 
-		# MSVC 2010 does not support some math functions. The test is simply
-		# whether or not an exception is raised.
-		if self.ismsvc:
-			with self.assertRaises(ValueError):
-				eqnd.execute([])
-		else:
-			eqnd.execute([])
 
 
 '''
@@ -1695,8 +1607,6 @@ test_templates = {'test_template_2ops' : test_template_2ops,
 				'nan_data_noerror_template' : nan_data_noerror_template,
 				'nan_data_fmoderror_param_template' : nan_data_fmoderror_param_template,
 				'int_template_ovfl_param' : int_template_ovfl_param,
-				'test_template_platform_has' : test_template_platform_has,
-
 }
 
 # ==============================================================================
@@ -1710,7 +1620,11 @@ classend = """##################################################################
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('acalcvm\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -1791,12 +1705,6 @@ def makeoptests(csvdata, arraycode, arraylabel):
 			testrec['bytesconverterdataout'] = ''
 
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if rec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformTestSkip
-		else:
-			testrec['skipplatform'] = ''
-
 
 		# Generate a test for each test data element.
 		testcount = 0
@@ -1813,53 +1721,6 @@ def makeoptests(csvdata, arraycode, arraylabel):
 
 # ==============================================================================
 
-
-# ==============================================================================
-
-def makeplatformtests(csvdata, arraycode, arraylabel):
-	"""Make a set of tests to check platform compiler support. MSVC 2010 does 
-	not support some required math operations, and so some math functions are 
-	not supported when compiler for and run on an MS Windows platform. This test
-	checks to see that these functions pass on GCC compatible platforms, but
-	cause an exception on MS Windows. 
-	"""
-
-	# We expect floating point arrays only. Also, we need to filter out everything
-	# except functions which MSVC does not support.
-	if arraycode in codegen_common.floatarrays:
-		opdata = [x for x in csvdata if x['test_platform_has'] != '']
-
-	else:
-		print('Wrong or unknow array code %s' % arraycode)
-		typecode = arraycode
-
-
-	# Create the records.
-	testresults = []
-	for rec in opdata:
-		# Avoid changing the original record.
-		testrec = {}
-		testrec['typecode'] = arraycode
-		testrec['typelabel'] = arraylabel
-		# Sanitize math function names which are used in test method names.
-		testrec['oplabel'] = rec['opcodename'].replace('.', '_')
-
-		testrec.update(rec)
-
-		test_op_x = rec['test_platform_x']
-		testtemplate = test_templates[rec['test_platform_has']]
-
-		testrec['pyop'] = rec['opcodedocs']
-
-		# Generate a test for each test data element.
-		testresults.append(testtemplate % testrec)
-
-
-	return ''.join(testresults)
-
-
-
-# ==============================================================================
 
 # ==============================================================================
 
@@ -1978,12 +1839,6 @@ def makefloaterrortestset(csvdata, arraycode):
 		testrec['pyop'] = instrdata['opcodedocs']
 
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if instrdata['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformTestSkip
-		else:
-			testrec['skipplatform'] = ''
-
 		testrec['test_float_err_x'] = instrdata['test_float_err_x']
 		testrec['test_float_err_y'] = instrdata['test_float_err_y']
 
@@ -2021,12 +1876,6 @@ def makenandatatests(csvdata, arraycode):
 
 		testrec['pyop'] = instrdata['opcodedocs']
 
-
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if instrdata['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformClassSkip
-		else:
-			testrec['skipplatform'] = ''
 
 		testrec['opcodename'] = instrdata['opcodename']
 
@@ -2154,14 +2003,6 @@ with open('test_acalcvm.py', 'w') as f:
 		f.write(''.join(makenandatatests(csvdata, arraycode)))
 
 
-	####################################################################
-
-	# Output the generated code for platform support. The MSVC 2010 compiler
-	# does not support all math functions
-	for arraycode in codegen_common.floatarrays:
-		f.write(platform_template % codegen_common.arraytypeclass[arraycode])
-		f.write(''.join(makeplatformtests(csvdata, arraycode, arraycode)))
-		f.write(classend)
 
 	####################################################################
 

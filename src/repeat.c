@@ -229,6 +229,7 @@ void repeat_double(Py_ssize_t arraylen, double *data, double fillvalue) {
 }
 /*--------------------------------------------------------------------------- */
 
+
 /*--------------------------------------------------------------------------- */
 
 /* Parse the Python arguments to objects, and then extract the object parameters

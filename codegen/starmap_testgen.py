@@ -42,20 +42,10 @@ bytesconverterdataout = 'dataout = bytes(dataout)'
 
 # ==============================================================================
 
-# With some platforms (Windows), the compiler does not support all functions.
-# This means we cannot test for them.
-PlatformClassSkip = """@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
-"""
-
-# This version is used for individual tests, as opposed to the entire class.
-PlatformTestSkip = '\t' + PlatformClassSkip
-
-# ==============================================================================
-
 # The basic class template for testing each array type for operator function.
 type_template = '''
 ##############################################################################
-%(skiplonglong)sclass starmap_operator_%(typelabel)s(unittest.TestCase):
+class starmap_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -225,7 +215,7 @@ test_template = '''
 # The basic template for testing parameters.
 param_template = '''
 ##############################################################################
-%(skiplonglong)sclass starmap_parameter_%(typelabel)s(unittest.TestCase):
+class starmap_parameter_%(typelabel)s(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
 
@@ -506,7 +496,7 @@ param_template = '''
 # The basic class template for testing each array type for overflow.
 intoverflow_type_template = '''
 ##############################################################################
-%(skiplonglong)sclass starmap_intoverflow_%(typelabel)s(unittest.TestCase):
+class starmap_intoverflow_%(typelabel)s(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
 
@@ -621,7 +611,7 @@ floatoverflow_template_stnd = '''
 # The basic class template for testing each floating point library item for math errors.
 floaterror_class_template = '''
 ##############################################################################
-%(skiplonglong)sclass starmap_floaterror_%(typelabel)s(unittest.TestCase):
+class starmap_floaterror_%(typelabel)s(unittest.TestCase):
 	"""Test for floating point overflow operator function.
 	"""
 
@@ -674,7 +664,7 @@ floaterror_template_2params = '''
 # The template used to generate the tests for nan, inf, -inf in parameters.
 nan_param_template = '''
 ##############################################################################
-%(skipplatform)sclass starmap_nan_param_%(opcodename)s_%(typelabel)s(unittest.TestCase):
+class starmap_nan_param_%(opcodename)s_%(typelabel)s(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in parameters.
 	"""
 
@@ -815,7 +805,7 @@ nan_param_template = '''
 # The template used to start off the tests for nan, inf, -inf in data arrays.
 nan_data_header_template = '''
 ##############################################################################
-%(skipplatform)sclass starmap_nan_data_%(opcodename)s_%(seq)s_%(typelabel)s(unittest.TestCase):
+class starmap_nan_data_%(opcodename)s_%(seq)s_%(typelabel)s(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
 
@@ -1392,12 +1382,6 @@ nan_data_powerror_template = '''
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.%(testarray)s)
 
-		# MSVC sometimes give different results from Python or GCC. It always expects NaN as a result.
-		if platform.python_compiler().startswith('MSC') and ('%(opcodename)s' in ('af_pow', 'math_pow', 'af_pow_r', 'math_pow_r')):
-			if 'datanan' in ('%(testarray)s', '%(testarray2)s'):
-				expected = [float('nan')] * len(self.%(testarray)s)
-
-
 
 		# This version is expected to pass.
 		arrayfunc.starmap(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataok2, self.dataout)
@@ -1423,11 +1407,6 @@ nan_data_powerror_template = '''
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.%(testarray)s)
 
-		# MSVC sometimes give different results from Python or GCC. It always expects NaN as a result.
-		if platform.python_compiler().startswith('MSC') and ('%(opcodename)s' in ('af_pow', 'math_pow', 'af_pow_r', 'math_pow_r')):
-			if 'datanan' in ('%(testarray)s', '%(testarray2)s'):
-				expected = [float('nan')] * len(self.%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.starmapi(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataok2)
@@ -1452,11 +1431,6 @@ nan_data_powerror_template = '''
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.%(testarray)s)
-
-		# MSVC sometimes give different results from Python or GCC. It always expects NaN as a result.
-		if platform.python_compiler().startswith('MSC') and ('%(opcodename)s' in ('af_pow', 'math_pow', 'af_pow_r', 'math_pow_r')):
-			if 'datanan' in ('%(testarray)s', '%(testarray2)s'):
-				expected = [float('nan')] * len(self.%(testarray)s)
 
 
 		# This is the actual test.
@@ -1487,11 +1461,6 @@ nan_data_powerror_template = '''
 		except:
 			# pow(0.0, -inf) is a special case.
 			expected = [float('inf')] * len(self.%(testarray)s)
-
-		# MSVC sometimes give different results from Python or GCC. It always expects NaN as a result.
-		if platform.python_compiler().startswith('MSC') and ('%(opcodename)s' in ('af_pow', 'math_pow', 'af_pow_r', 'math_pow_r')):
-			if 'datanan' in ('%(testarray)s', '%(testarray2)s'):
-				expected = [float('nan')] * len(self.%(testarray)s)
 
 
 		# This is the actual test.
@@ -1529,10 +1498,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.starmap(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataok2, self.dataout)
@@ -1557,10 +1522,6 @@ nan_data_fmoderror_param_template = '''
 			# All error conditions expect NaN.
 			expected = [float('nan')] * len(self.%(testarray)s)
 
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
-			expected = [float('nan')] * len(self.%(testarray)s)
-
 
 		# This version is expected to pass.
 		arrayfunc.starmapi(arrayfunc.aops.%(opcodename)s, self.dataok, self.dataok2)
@@ -1583,10 +1544,6 @@ nan_data_fmoderror_param_template = '''
 			expected = [%(pyequ)s for x,y in zip(self.%(testarray)s, self.%(testarray2)s)]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.%(testarray)s)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.%(testarray)s)
 
 
@@ -1617,10 +1574,6 @@ nan_data_fmoderror_param_template = '''
 			expected = [%(pyequ)s for x,y in zip(self.%(testarray)s, self.%(testarray2)s)]
 		except:
 			# All error conditions expect NaN.
-			expected = [float('nan')] * len(self.%(testarray)s)
-
-		# MSVC sometimes gives different results from Python or GCC.
-		if platform.python_compiler().startswith('MSC'):
 			expected = [float('nan')] * len(self.%(testarray)s)
 
 
@@ -1750,7 +1703,11 @@ classend = """##################################################################
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('starmap\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """
@@ -2024,12 +1981,6 @@ def makenanparamtestset(csvdata, arraycode):
 		testrec['typelabel'] = arraycode
 		testrec.update(instrdata)
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if testrec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformClassSkip
-		else:
-			testrec['skipplatform'] = ''
-
 
 		recset.append(nan_param_template % testrec)
 
@@ -2056,11 +2007,6 @@ def makenandatatests(csvdata, arraycode):
 		testrec['typelabel'] = arraycode
 		testrec.update(instrdata)
 
-		# Add in the test skip if this instruction is not supported on all platforms.
-		if testrec['msvs_has'] == '0':
-			testrec['skipplatform'] = PlatformClassSkip
-		else:
-			testrec['skipplatform'] = ''
 
 		# The equation for calculating the expected results.
 		testrec['pyequ'] = testrec['py_equation'] % {'op' : testrec['pyoperator'], 'typeconvert' : ''}

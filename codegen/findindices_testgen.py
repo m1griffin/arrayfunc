@@ -34,11 +34,11 @@ import codegen_common
 
 intparams = {'overflowinc' : '+ 1', 'overflowdec' : '- 1', 
 	'typeconvert' : 'int', 'invalidtypeconvert' : 'float',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 floatparams = {'overflowinc' : '* 1.1', 'overflowdec' : '* 1.1', 
 	'typeconvert' : 'float', 'invalidtypeconvert' : 'int',
-	'skipminoverflow' : '', 'skipmaxoverflow' : '', 'skiplonglong' : ''}
+	'skipminoverflow' : '', 'skipmaxoverflow' : ''}
 
 testdata = {
 	'b' : intparams,
@@ -59,10 +59,6 @@ testdata = {
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
 
-# Patch in the cases for 'q' and 'Q' arrays.
-testdata['q']['skiplonglong'] = codegen_common.LongLongTestSkipq
-testdata['Q']['skiplonglong'] = codegen_common.LongLongTestSkipQ
-
 
 # This is used to insert code to convert the test data to bytes type. 
 bytesconverter = 'data = bytes(data)'
@@ -73,7 +69,7 @@ bytesconverter = 'data = bytes(data)'
 # The template used to generate the tests.
 template = '''
 ##############################################################################
-%(skiplonglong)sclass findindices_operator_%(typelabel)s(unittest.TestCase):
+class findindices_operator_%(typelabel)s(unittest.TestCase):
 	"""Test for basic operator function.
 	"""
 
@@ -694,7 +690,11 @@ classend = """
 endtemplate = """
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\\n\\n')
+		f.write('findindices\\n\\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
 """

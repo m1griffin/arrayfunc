@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     23-May-2014.
-# Ver:      06-Mar-2016.
+# Ver:      26-Jun-2017.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -4247,8 +4247,6 @@ class amap_intoverflow_L(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class amap_intoverflow_q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -5027,8 +5025,6 @@ class amap_intoverflow_q(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class amap_intoverflow_Q(unittest.TestCase):
 	"""Test for integer overflow operator function.
 	"""
@@ -6250,7 +6246,6 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_amap(self):
 		"""Test amap floating point error in math_acosh  - Array code f.
 		"""
@@ -6261,7 +6256,6 @@ class amap_floaterror_f(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_acosh, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_amapi(self):
 		"""Test amapi floating point error in math_acosh  - Array code f.
 		"""
@@ -6292,7 +6286,6 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_amap(self):
 		"""Test amap floating point error in math_atanh  - Array code f.
 		"""
@@ -6303,7 +6296,6 @@ class amap_floaterror_f(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_atanh, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_amapi(self):
 		"""Test amapi floating point error in math_atanh  - Array code f.
 		"""
@@ -6354,7 +6346,6 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_amap(self):
 		"""Test amap floating point error in math_gamma  - Array code f.
 		"""
@@ -6365,7 +6356,6 @@ class amap_floaterror_f(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_gamma, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_amapi(self):
 		"""Test amapi floating point error in math_gamma  - Array code f.
 		"""
@@ -6376,7 +6366,6 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_amap(self):
 		"""Test amap floating point error in math_lgamma  - Array code f.
 		"""
@@ -6387,7 +6376,6 @@ class amap_floaterror_f(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_lgamma, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_amapi(self):
 		"""Test amapi floating point error in math_lgamma  - Array code f.
 		"""
@@ -6438,7 +6426,6 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_amap(self):
 		"""Test amap floating point error in math_log1p  - Array code f.
 		"""
@@ -6449,7 +6436,6 @@ class amap_floaterror_f(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_log1p, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_amapi(self):
 		"""Test amapi floating point error in math_log1p  - Array code f.
 		"""
@@ -6560,7 +6546,6 @@ class amap_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_amap(self):
 		"""Test amap floating point error in math_acosh  - Array code d.
 		"""
@@ -6571,7 +6556,6 @@ class amap_floaterror_d(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_acosh, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_acosh_amapi(self):
 		"""Test amapi floating point error in math_acosh  - Array code d.
 		"""
@@ -6602,7 +6586,6 @@ class amap_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_amap(self):
 		"""Test amap floating point error in math_atanh  - Array code d.
 		"""
@@ -6613,7 +6596,6 @@ class amap_floaterror_d(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_atanh, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_atanh_amapi(self):
 		"""Test amapi floating point error in math_atanh  - Array code d.
 		"""
@@ -6664,7 +6646,6 @@ class amap_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_amap(self):
 		"""Test amap floating point error in math_gamma  - Array code d.
 		"""
@@ -6675,7 +6656,6 @@ class amap_floaterror_d(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_gamma, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_gamma_amapi(self):
 		"""Test amapi floating point error in math_gamma  - Array code d.
 		"""
@@ -6686,7 +6666,6 @@ class amap_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_amap(self):
 		"""Test amap floating point error in math_lgamma  - Array code d.
 		"""
@@ -6697,7 +6676,6 @@ class amap_floaterror_d(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_lgamma, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_lgamma_amapi(self):
 		"""Test amapi floating point error in math_lgamma  - Array code d.
 		"""
@@ -6748,7 +6726,6 @@ class amap_floaterror_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_amap(self):
 		"""Test amap floating point error in math_log1p  - Array code d.
 		"""
@@ -6759,7 +6736,6 @@ class amap_floaterror_d(unittest.TestCase):
 			arrayfunc.amap(arrayfunc.aops.math_log1p, data, dataout)
 
 	########################################################
-	@unittest.skipIf(platform.python_compiler().startswith('MSC'), 'Skip test if not supported by the platform C compiler.')
 	def test_floaterror_math_log1p_amapi(self):
 		"""Test amapi floating point error in math_log1p  - Array code d.
 		"""
@@ -9375,8 +9351,6 @@ class amap_parameter_L(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class amap_parameter_q(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
@@ -9695,8 +9669,6 @@ class amap_parameter_q(unittest.TestCase):
 
 
 ##############################################################################
-# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('Q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 class amap_parameter_Q(unittest.TestCase):
 	"""Test for correct parameters.
 	"""
@@ -22938,6 +22910,10 @@ class amap_nan_param_aops_subst_lte_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-    unittest.main()
+	with open('arrayfunc_unittest.txt', 'a') as f:
+		f.write('\n\n')
+		f.write('amap\n\n')
+		trun = unittest.TextTestRunner(f)
+		unittest.main(testRunner=trun)
 
 ##############################################################################
