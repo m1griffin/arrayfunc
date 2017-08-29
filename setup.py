@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import platform
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
 
 # This is a list of the files and all the dependencies.
@@ -60,10 +60,10 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '2.0.0',
+	version = '3.0.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
-	url = 'https://github.com/arrayfunc/arrayfunc',
+	url = 'https://github.com/m1griffin/arrayfunc',
 	author = 'M Griffin',
 	author_email = 'm12.griffin@gmail.com',
 	license = 'Apache License V2.0',

@@ -1,1 +1,2 @@
 include COPYRIGHT LICENSE README.rst
+include src/*.h

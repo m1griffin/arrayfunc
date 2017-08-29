@@ -5,10 +5,10 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 2.0.0 for 2017-06-30
+:Version: 3.0.0 for 2017-08-27
 :Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache 2.0 License.
-:Language: Python 3.4 or later
+:Language: Python 3.5 or later
 
 ---------------------------------------------------------------------
 
@@ -170,6 +170,27 @@ MS Windows 10      64 bit    MS Visual Studio C 2015     3.6
 
 ---------------------------------------------------------------------
 
+Installation
+============
+
+Please note that this is a Python 3 package. To install using Pip, you will 
+need (with Debian package in brackets):
+
+* The appropriate C compiler and header files (gcc and build-essential).
+* The Python3 development headers (python3-dev).
+* Pip3 together with the corresponding Setuptools (python3-pip).
+
+example::
+
+	# Install from PyPI.
+	pip3 install arrayfunc
+	# Install from a local copy of the source package (Linux).
+	pip3 install --no-index --find-links=. arrayfunc
+	# Windows seems to use "pip" instead of "pip3" for some reason.
+	pip install arrayfunc
+
+---------------------------------------------------------------------
+
 Release History
 ===============
 
@@ -181,3 +202,5 @@ Release History
           to 64 bit. Added SIMD support for some functions which provided a 
           significant performance for those affected. Updated supported versions
           of Debian and FreeBSD to current releases.
+* 2.1.1 - Fixed missing header files in PyPI package. No functional changes.
+* 3.0.0 - Changed package format to "Wheel" files. No functional changes.

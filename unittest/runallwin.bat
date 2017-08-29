@@ -14,7 +14,7 @@ SET failcount=0
 
 FOR /R %%A IN (test_*.py) DO CALL :pytest %%A
 
-IF failcount EQU 0 GOTO :DONE
+IF %failcount% EQU 0 GOTO :DONE
 ECHO Testing failed with %failcount% errors.
 GOTO:EOF
 

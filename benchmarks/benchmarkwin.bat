@@ -14,7 +14,7 @@ benchacalc.py
 
 REM ============================================================================
 
-echo "Testing other funcsions benchmarks."
+echo "Testing other functions benchmarks."
 
 REM This one does not get automatically regenerated.
 benchfuncs.py
