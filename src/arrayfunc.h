@@ -92,19 +92,20 @@
 #define OP_MATH_LOG 58
 #define OP_MATH_LOG10 59
 #define OP_MATH_LOG1P 60
-#define OP_MATH_POW 61
-#define OP_MATH_POW_R 62
-#define OP_MATH_RADIANS 63
-#define OP_MATH_SIN 64
-#define OP_MATH_SINH 65
-#define OP_MATH_SQRT 66
-#define OP_MATH_TAN 67
-#define OP_MATH_TANH 68
-#define OP_MATH_TRUNC 69
-#define OP_AOPS_SUBST_GT 70
-#define OP_AOPS_SUBST_GTE 71
-#define OP_AOPS_SUBST_LT 72
-#define OP_AOPS_SUBST_LTE 73
+#define OP_MATH_LOG2 61
+#define OP_MATH_POW 62
+#define OP_MATH_POW_R 63
+#define OP_MATH_RADIANS 64
+#define OP_MATH_SIN 65
+#define OP_MATH_SINH 66
+#define OP_MATH_SQRT 67
+#define OP_MATH_TAN 68
+#define OP_MATH_TANH 69
+#define OP_MATH_TRUNC 70
+#define OP_AOPS_SUBST_GT 71
+#define OP_AOPS_SUBST_GTE 72
+#define OP_AOPS_SUBST_LT 73
+#define OP_AOPS_SUBST_LTE 74
 
 
 /*--------------------------------------------------------------------------- */
@@ -195,7 +196,6 @@ value to account for the limited resolution (precision) of floating point
 numbers.
 double precision (double) = 52 bits of precision.
 single precision (float) = 23 bits of precision.
-Long long does not exist on some platforms.
 */
 
 
@@ -214,8 +214,6 @@ Long long does not exist on some platforms.
 #define INT_MIN_GUARD_F ((sizeof(signed int) == 4) ? INT_MIN + 0xff : INT_MIN)
 #define UINT_MAX_GUARD_F ((sizeof(unsigned int) == 4) ? UINT_MAX - 0x1ff : UINT_MAX)
 
-
-// Long long does not exist on all platforms.
 
 // Single precision (float) to long long integers. A single has 24 bits of precision.
 #define LLONG_MAX_GUARD_F (LLONG_MAX - 0xffffffffff)

@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -751,38 +751,72 @@ def CreateFunction(csvdata, arraycode):
 
 
 
-############################################################
+# ==============================================================================
+
+outputlist = []
+
+funcname = 'acalcvm'
+filename = funcname + '_common'
+
+maindescription = 'Common code for acalc.'
+
+# The original date of the platform independent C code.
+ccodedate = '24-Dec-2015'
+
+
+# ==============================================================================
+
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
 csvdata = codegen_common.ReadCSVData('arraycalc.csv')
 
-with open('acalcvm_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		# Only use error flags for integer arrays.
-		if funtypes in codegen_common.intarrays:
-			errflagcode = '	char errflag = 0;\n'
-		else:
-			errflagcode = ''
+# ==============================================================================
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	# Only use error flags for integer arrays.
+	if funtypes in codegen_common.intarrays:
+		errflagcode = '	char errflag = 0;\n'
+	else:
+		errflagcode = ''
 
 
-		# Temporary variables used for integer arrays.
-		if funtypes in codegen_common.signedint:
-			ovtmp = ovtmp_signed_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
-		else:
-			ovtmp = ''
+	# Temporary variables used for integer arrays.
+	if funtypes in codegen_common.signedint:
+		ovtmp = ovtmp_signed_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
+	else:
+		ovtmp = ''
 
 
-		# Create the function declaration for an array type.
-		f.write(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
-				'arrayvartype' : codegen_common.arraytypes[funtypes], 
-				'errflag' : errflagcode, 'ovtmp' : ovtmp})
-		# Create the C code for the function.
-		f.write(CreateFunction(csvdata, funtypes))
-		# Close off the end of the function.
-		f.write(functionclosetemplate)
+	# Create the function declaration for an array type.
+	outputlist.append(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
+			'arrayvartype' : codegen_common.arraytypes[funtypes], 
+			'errflag' : errflagcode, 'ovtmp' : ovtmp})
+	# Create the C code for the function.
+	outputlist.append(CreateFunction(csvdata, funtypes))
+	# Close off the end of the function.
+	outputlist.append(functionclosetemplate)
 
 
-############################################################
+# ==============================================================================
 
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['limits', 'math', 'arithcalcs', 'acalcvm_ops'])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, 'exequation')
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
 

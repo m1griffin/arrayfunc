@@ -169,35 +169,101 @@ simdvalues = {
 'd' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v2df', 'simdstoreattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd', 'simdop' : '__builtin_ia32_minpd', 'simdstore' : '__builtin_ia32_storeupd'},
 }
 
+
+# ==============================================================================
+
+outputlist = []
+
+funcname = 'amin'
+filename = funcname + '_common'
+
+simdfilename = 'amin_simd_x86'
+
+maindescription = 'Find the minimum value in an array.'
+
+# The original date of the platform independent C code.
+ccodedate = '04-May-2014'
+
+# The original date of the SIMD C code.
+simdcodedate = '01-May-2017'
+
+
 # ==============================================================================
 
 # This outputs the non-SIMD version.
-with open('amin_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+	datavals = {'arraytype' : arraytype, 
+		'funcmodifier' : arraytype.replace(' ', '_'),
+		'arraycode' : funtypes}
+
+	if simdvalues[funtypes]['hassimd']:
+		template = simdtemplate
+		datavals.update(simdvalues[funtypes])
+	else:
+		template = nosimdtemplate
+
+	outputlist.append(template % datavals)
+
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['simdmacromsg'])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
+
+
+outputlist = []
+
+# This outputs the SIMD version.
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	if simdvalues[funtypes]['hassimd']:
 		arraytype = codegen_common.arraytypes[funtypes]
 		datavals = {'arraytype' : arraytype, 
 			'funcmodifier' : arraytype.replace(' ', '_'),
 			'arraycode' : funtypes}
+		datavals.update(simdvalues[funtypes])
 
-		if simdvalues[funtypes]['hassimd']:
-			template = simdtemplate
-			datavals.update(simdvalues[funtypes])
-		else:
-			template = nosimdtemplate
-
-		f.write(template % datavals)
+		outputlist.append(template_simdsupport % datavals)
 
 
 # This outputs the SIMD version.
-with open('amin_simd_x86.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		if simdvalues[funtypes]['hassimd']:
-			arraytype = codegen_common.arraytypes[funtypes]
-			datavals = {'arraytype' : arraytype, 
-				'funcmodifier' : arraytype.replace(' ', '_'),
-				'arraycode' : funtypes}
-			datavals.update(simdvalues[funtypes])
+codegen_common.OutputSourceCode(simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', [])
 
-			f.write(template_simdsupport % datavals)
+
+# ==============================================================================
+
+# Output the .h header file.
+
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+# Write out the file.
+
+codegen_common.OutputCHeader(simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
+
+# ==============================================================================
+

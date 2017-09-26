@@ -4,7 +4,8 @@
 // Purpose:  Find the minimum value in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     04-May-2017
+// Date:     01-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -24,6 +25,7 @@
 //
 //------------------------------------------------------------------------------
 
+
 signed char amin_signed_char_simd(Py_ssize_t arraylen, signed char *data);
 unsigned char amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data);
 signed short amin_signed_short_simd(Py_ssize_t arraylen, signed short *data);
@@ -32,3 +34,5 @@ signed int amin_signed_int_simd(Py_ssize_t arraylen, signed int *data);
 unsigned int amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data);
 float amin_float_simd(Py_ssize_t arraylen, float *data);
 double amin_double_simd(Py_ssize_t arraylen, double *data);
+
+

@@ -5,7 +5,7 @@
 # Purpose:  Benchmark functions for miscellaneous functions.
 # Language: Python 3.4
 # Date:     16-Sep-2014.
-# Ver:      26-Jun-2017.
+# Ver:      04-Sep-2017.
 #
 ###############################################################################
 #
@@ -47,13 +47,13 @@ ARRAYSIZE = 1000000
 # Asum must be all false, and asumov added to stand in its place. Asumov is
 # asum with overflow checking disabled.
 SIMDFuncs = {
-	'aall': {'B': False, 'f': True, 'Q': False, 'b': True, 'I': False, 'h': True, 'q': False, 'l': False, 'H': False, 'L': False, 'i': True, 'd': True},
-	'aany': {'B': False, 'f': True, 'Q': False, 'b': True, 'I': False, 'h': True, 'q': False, 'l': False, 'H': False, 'L': False, 'i': True, 'd': True}, 
-	'amin': {'B': True, 'f': True, 'Q': False, 'b': True, 'I': True, 'h': True, 'q': False, 'l': False, 'H': True, 'L': False, 'i': True, 'd': True}, 
-	'amax': {'B': True, 'f': True, 'Q': False, 'b': True, 'I': True, 'h': True, 'q': False, 'l': False, 'H': True, 'L': False, 'i': True, 'd': True}, 
-	'asum': {'B': False, 'f': False, 'Q': False, 'b': False, 'I': False, 'h': False, 'q': False, 'l': False, 'H': False, 'L': False, 'i': False, 'd': False}, 
-	'asumov': {'B': False, 'f': True, 'Q': False, 'b': False, 'I': False, 'h': False, 'q': False, 'l': False, 'H': False, 'L': False, 'i': False, 'd': True}, 
-	'findindex': {'B': False, 'f': True, 'Q': False, 'b': True, 'I': False, 'h': True, 'q': False, 'l': False, 'H': False, 'L': False, 'i': True, 'd': True}, 
+	'amax': {'q': False, 'd': True, 'l': False, 'i': True, 'I': True, 'L': False, 'H': True, 'b': True, 'h': True, 'f': True, 'Q': False, 'B': True}, 
+	'aany': {'q': False, 'd': True, 'l': False, 'i': True, 'I': False, 'L': False, 'H': False, 'b': True, 'h': True, 'f': True, 'Q': False, 'B': False}, 
+	'asum': {'q': False, 'd': False, 'l': False, 'i': False, 'I': False, 'L': False, 'H': False, 'b': False, 'h': False, 'f': False, 'Q': False, 'B': False}, 
+	'asumov': {'q': False, 'd': True, 'l': False, 'i': False, 'I': False, 'L': False, 'H': False, 'b': False, 'h': False, 'f': True, 'Q': False, 'B': False}, 
+	'amin': {'q': False, 'd': True, 'l': False, 'i': True, 'I': True, 'L': False, 'H': True, 'b': True, 'h': True, 'f': True, 'Q': False, 'B': True}, 
+	'aall': {'q': False, 'd': True, 'l': False, 'i': True, 'I': False, 'L': False, 'H': False, 'b': True, 'h': True, 'f': True, 'Q': False, 'B': False}, 
+	'findindex': {'q': False, 'd': True, 'l': False, 'i': True, 'I': False, 'L': False, 'H': False, 'b': True, 'h': True, 'f': True, 'Q': False, 'B': False}
 	}
 
 ##############################################################################
@@ -66,14 +66,14 @@ calibrationdata = {
 'aall' : (12, 121, 1449),
 'aany' : (24, 237, 3030),
 'afilter' : (1, 114),
-'amax' : (5, 165, 1587),
+'amax' : (5, 165, 2439),
 'amin' : (5, 162, 1587),
 'asum' : (11, 168, 175),
 'compress' : (3, 69),
 'count' : (1, 161),
 'cycle' : (2, 104),
 'dropwhile' : (1, 115),
-'findindex' : (6, 110, 1075),
+'findindex' : (6, 110, 1389),
 'findindices' : (3, 114),
 'repeat' : (5, 178),
 'takewhile' : (1, 240)

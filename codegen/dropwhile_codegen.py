@@ -78,22 +78,56 @@ op_template = """		// %(opcodename)s
 
 # ==============================================================================
 
+outputlist = []
+
+funcname = 'dropwhile'
+filename = funcname + '_common'
+
+maindescription = 'Copy values from an array, starting from where a condition fails to the end.'
+
+# The original date of the platform independent C code.
+ccodedate = '10-May-2014'
+
+
+# ==============================================================================
+
 # Read in the op codes.
 oplist = codegen_common.ReadCSVData('arrayfunc.csv')
 
 # Filter out
 compops = [x for x in oplist if x['compare_ops'] != '']
 
-with open('dropwhile_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
-		f.write(template_start % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_')})
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+	outputlist.append(template_start % {'arraytype' : arraytype, 
+		'funcmodifier' : arraytype.replace(' ', '_')})
 
-		for ops in compops:
-			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
-			testop.update(ops)
-			f.write(op_template % testop)
+	for ops in compops:
+		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
+		testop.update(ops)
+		outputlist.append(op_template % testop)
 
-		f.write(template_end)
+	outputlist.append(template_end)
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, [])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================

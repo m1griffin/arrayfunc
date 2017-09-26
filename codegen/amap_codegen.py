@@ -40,7 +40,7 @@ func_template = '''
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_%(funcnamemodifier)s(signed int opcode, Py_ssize_t arraylen, %(arrayvartype)s *data, %(arrayvartype)s *dataout, %(arrayvartype)s param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_%(funcnamemodifier)s(signed int opcode, Py_ssize_t arraylen, %(arrayvartype)s *data, %(arrayvartype)s *dataout, %(arrayvartype)s param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -788,41 +788,75 @@ def CreateFunction(csvdata, arraycode):
 
 
 
-############################################################
+# ==============================================================================
+
+outputlist = []
+
+funcname = 'amap'
+filename = funcname + '_common'
+
+maindescription = 'Common code for amap and amapi.'
+
+# The original date of the platform independent C code.
+ccodedate = '09-Apr-2014'
+
+
+# ==============================================================================
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
 csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
-with open('amap_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		# Only use error flags for integer arrays.
-		if funtypes in codegen_common.intarrays:
-			errflagcode = '	char errflag = 0;\n'
-		else:
-			errflagcode = ''
-
-		# Temporary variables used for integer arrays.
-		if funtypes in codegen_common.signedint:
-			ovtmp = ovtmp_signed_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
-		elif funtypes in codegen_common.unsignedint:
-			ovtmp = ovtmp_unsigned_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
-		elif funtypes in codegen_common.floatarrays:
-			ovtmp = intparamtmp_template
-		else:
-			ovtmp = ''
+# ==============================================================================
 
 
-		# Create the function declaration for an array type.
-		f.write(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
-				'arrayvartype' : codegen_common.arraytypes[funtypes], 
-				'errflag' : errflagcode, 'ovtmp' : ovtmp})
-		# Create the C code for the function.
-		f.write(CreateFunction(csvdata, funtypes))
-		# Close off the end of the function.
-		f.write(functionclosetemplate)
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	# Only use error flags for integer arrays.
+	if funtypes in codegen_common.intarrays:
+		errflagcode = '	char errflag = 0;\n'
+	else:
+		errflagcode = ''
+
+	# Temporary variables used for integer arrays.
+	if funtypes in codegen_common.signedint:
+		ovtmp = ovtmp_signed_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
+	elif funtypes in codegen_common.unsignedint:
+		ovtmp = ovtmp_unsigned_template % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
+	elif funtypes in codegen_common.floatarrays:
+		ovtmp = intparamtmp_template
+	else:
+		ovtmp = ''
 
 
-############################################################
+	# Create the function declaration for an array type.
+	outputlist.append(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
+			'arrayvartype' : codegen_common.arraytypes[funtypes], 
+			'errflag' : errflagcode, 'ovtmp' : ovtmp})
+	# Create the C code for the function.
+	outputlist.append(CreateFunction(csvdata, funtypes))
+	# Close off the end of the function.
+	outputlist.append(functionclosetemplate)
 
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['limits', 'math', 'arithcalcs'])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
 

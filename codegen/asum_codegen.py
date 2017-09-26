@@ -238,51 +238,110 @@ sumtype = {'b' : 'signed long', 'B' : 'unsigned long',
 	'q' : 'signed long long', 'Q' : 'unsigned long long', 
 	'f' : 'float', 'd' : 'double'}
 
+
+# ==============================================================================
+
+outputlist = []
+
+funcname = 'asum'
+filename = funcname + '_common'
+
+simdfilename = 'asum_simd_x86'
+
+maindescription = 'Sum all the values in an array.'
+
+# The original date of the platform independent C code.
+ccodedate = '15-May-2014'
+
+# The original date of the SIMD C code.
+simdcodedate = '05-May-2017'
+
+
 # ==============================================================================
 
 
-with open('asum_code.txt', 'w') as f:
-	# Output the generated code for integer types.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
+# Output the generated code for integer types.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
 
-		datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
-			'arraytype' : arraytype,
-			'sumtype' : sumtype[funtypes],
-			'arraycode' : funtypes}
-
-
-		# The type of overflow check we do depends on the array type.
-		if funtypes in codegen_common.signedint:
-			codetemplate = template_basic
-		elif funtypes in codegen_common.unsignedint:
-			codetemplate = template_basic_u
-		elif funtypes in codegen_common.floatarrays:
-			codetemplate = simdtemplate
-			datavals.update(simdvalues[funtypes])
+	datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
+		'arraytype' : arraytype,
+		'sumtype' : sumtype[funtypes],
+		'arraycode' : funtypes}
 
 
-		# Basic template start.
-		f.write(codetemplate % datavals)
-
-
-
-with open('asum_simd_x86.txt', 'w') as f:
-	# Output the generated code for floating point types.
-	for funtypes in codegen_common.floatarrays:
-		arraytype = codegen_common.arraytypes[funtypes]
-
-		datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
-			'arraytype' : arraytype,
-			'sumtype' : sumtype[funtypes],
-			'arraycode' : funtypes}
-
-		# Use the SIMD values.
+	# The type of overflow check we do depends on the array type.
+	if funtypes in codegen_common.signedint:
+		codetemplate = template_basic
+	elif funtypes in codegen_common.unsignedint:
+		codetemplate = template_basic_u
+	elif funtypes in codegen_common.floatarrays:
+		codetemplate = simdtemplate
 		datavals.update(simdvalues[funtypes])
 
-		# Use the SIMD template.
-		f.write(simdsupport % datavals)
 
+	# Basic template start.
+	outputlist.append(codetemplate % datavals)
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['simdmacromsg'])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
+
+
+outputlist = []
+
+# Output the generated code for floating point types.
+for funtypes in codegen_common.floatarrays:
+	arraytype = codegen_common.arraytypes[funtypes]
+
+	datavals = {'funcmodifier' : arraytype.replace(' ', '_'), 
+		'arraytype' : arraytype,
+		'sumtype' : sumtype[funtypes],
+		'arraycode' : funtypes}
+
+	# Use the SIMD values.
+	datavals.update(simdvalues[funtypes])
+
+	# Use the SIMD template.
+	outputlist.append(simdsupport % datavals)
+
+
+# This outputs the SIMD version.
+codegen_common.OutputSourceCode(simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', [])
+
+# ==============================================================================
+
+# Output the .h header file.
+
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+# Write out the file.
+
+codegen_common.OutputCHeader(simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
 
 # ==============================================================================
 

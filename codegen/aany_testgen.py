@@ -820,20 +820,6 @@ class aany_nanparam_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('aany\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_aany', '20-May-2014', 'aany')
 
@@ -928,6 +914,6 @@ with open('test_aany.py', 'w') as f:
 		datarec['typelabel'] = funtypes
 		f.write(nanparam_template % datarec)
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'aany')
 
 

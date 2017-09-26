@@ -256,14 +256,15 @@ _OpCodes = {
 	'math.log' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 37, True, 0]),
 	'math.log10' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 38, True, 0]),
 	'math.log1p' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 39, True, 0]),
-	'math.pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 40, True, -1]),
-	'math.radians' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 41, True, 0]),
-	'math.sin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 42, True, 0]),
-	'math.sinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 43, True, 0]),
-	'math.sqrt' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 44, True, 0]),
-	'math.tan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 45, True, 0]),
-	'math.tanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 46, True, 0]),
-	'math.trunc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 47, True, 0]),
+	'math.log2' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 40, True, 0]),
+	'math.pow' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 41, True, -1]),
+	'math.radians' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 42, True, 0]),
+	'math.sin' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 43, True, 0]),
+	'math.sinh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 44, True, 0]),
+	'math.sqrt' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 45, True, 0]),
+	'math.tan' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 46, True, 0]),
+	'math.tanh' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 47, True, 0]),
+	'math.trunc' : collections.namedtuple('opcodes', ['intval', 'signedonly', 'floatval', 'mathlib', 'stack'])._make([None, False, 48, True, 0]),
 	}
 
 

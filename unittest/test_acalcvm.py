@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     28-Jan-2016.
-# Ver:      26-Jun-2017.
+# Ver:      12-Sep-2017.
 #
 ###############################################################################
 #
@@ -33,6 +33,7 @@ import itertools
 import math
 import operator
 import platform
+import sys
 
 import unittest
 
@@ -53451,6 +53452,136 @@ class acalcvm_operator_f(unittest.TestCase):
 
 
 	########################################################
+	def test_operator_math_log2_1_acalcvm(self):
+		"""Test acalcvm math_log2  - Array code f.
+		"""
+		# Template name: test_template_1op
+		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('f', [0]*len(data))
+		
+
+		expected = [math.log2(x) for x in list(data)]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=False)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_ov(self):
+		"""Test acalcvm math_log2 with overflow checking disabled  - Array code f.
+		"""
+		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('f', [0]*len(data))
+		
+
+		expected = [math.log2(x) for x in list(data)]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_lim(self):
+		"""Test acalcvm math_log2 with array limit  - Array code f.
+		"""
+		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('f', [0]*len(data))
+		
+		limited = len(data) // 2
+
+		pydataout = [math.log2(x) for x in list(data)]
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_ov_lim(self):
+		"""Test acalcvm math_log2 with overflow checking disabled and array limit - Array code f.
+		"""
+		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('f', [0]*len(data))
+		
+		limited = len(data) // 2
+
+		pydataout = [math.log2(x) for x in list(data)]
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+
+	########################################################
 	def test_operator_math_pow_1_acalcvm(self):
 		"""Test acalcvm math_pow  - Array code f.
 		"""
@@ -65168,6 +65299,136 @@ class acalcvm_operator_d(unittest.TestCase):
 
 
 	########################################################
+	def test_operator_math_log2_1_acalcvm(self):
+		"""Test acalcvm math_log2  - Array code d.
+		"""
+		# Template name: test_template_1op
+		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('d', [0]*len(data))
+		
+
+		expected = [math.log2(x) for x in list(data)]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=False)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_ov(self):
+		"""Test acalcvm math_log2 with overflow checking disabled  - Array code d.
+		"""
+		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('d', [0]*len(data))
+		
+
+		expected = [math.log2(x) for x in list(data)]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_lim(self):
+		"""Test acalcvm math_log2 with array limit  - Array code d.
+		"""
+		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('d', [0]*len(data))
+		
+		limited = len(data) // 2
+
+		pydataout = [math.log2(x) for x in list(data)]
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_operator_math_log2_1_acalcvm_ov_lim(self):
+		"""Test acalcvm math_log2 with overflow checking disabled and array limit - Array code d.
+		"""
+		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		
+		dataout = array.array('d', [0]*len(data))
+		
+		limited = len(data) // 2
+
+		pydataout = [math.log2(x) for x in list(data)]
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(list(dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+
+	########################################################
 	def test_operator_math_pow_1_acalcvm(self):
 		"""Test acalcvm math_pow  - Array code d.
 		"""
@@ -74049,6 +74310,21 @@ class acalcvm_floaterror_f(unittest.TestCase):
 
 
 	########################################################
+	def test_floaterror_math_log2_acalcvm(self):
+		"""Test acalcvm floating point error in math.log2  - Array code f.
+		"""
+		# Template name: floaterror_template_1ops
+		data = array.array('f', range(-10,10))
+		dataout = array.array('f', [0]*len(data))
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+
+		with self.assertRaises(OverflowError):
+			eqnd.execute([])
+
+
+	########################################################
 	def test_floaterror_math_pow_acalcvm(self):
 		"""Test acalcvm floating point error in math.pow  - Array code f.
 		"""
@@ -74243,6 +74519,21 @@ class acalcvm_floaterror_d(unittest.TestCase):
 
 		eqnd = arrayfunc.acalc.calc(data, dataout)
 		eqnd.comp('math.log1p(x)', 'x', [])
+
+		with self.assertRaises(OverflowError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_floaterror_math_log2_acalcvm(self):
+		"""Test acalcvm floating point error in math.log2  - Array code d.
+		"""
+		# Template name: floaterror_template_1ops
+		data = array.array('d', range(-10,10))
+		dataout = array.array('d', [0]*len(data))
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
 
 		with self.assertRaises(OverflowError):
 			eqnd.execute([])
@@ -87397,6 +87688,128 @@ class acalcvm_nan_data_math_log1p_0_f(unittest.TestCase):
 		# This is the actual test.
 		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
 		eqnd.comp('math.log1p(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+##############################################################################
+
+##############################################################################
+class acalcvm_nan_data_math_log2_0_f(unittest.TestCase):
+	"""Test floating point arrays for nan, inf, -inf in data.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('f', [1.0] * 10)
+		self.dataok = array.array('f', [1.0] * 10)
+
+		self.dataout = array.array('f', itertools.repeat(0.0, 10))
+
+		self.datainf = array.array('f', [float('inf')] * 10)
+		self.datanan = array.array('f', [float('nan')] * 10)
+		self.dataninf = array.array('f', [float('-inf')] * 10)
+
+
+	########################################################
+	def test_nan_math_log2_acalcvm(self):
+		"""Test acalcvm for data of nan with overflow checking on and single parameter functions  - Array code f.
+		"""
+		# Template name: nan_data_errorchecked_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datanan, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_nan_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of nan with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datanan, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_inf_math_log2_acalcvm(self):
+		"""Test acalcvm for data of inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		# Template name: nan_data_errorchecked_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datainf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_inf_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datainf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_ninf_math_log2_acalcvm(self):
+		"""Test acalcvm for data of -inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		# Template name: nan_data_error_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_ninf_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of -inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
 		eqnd.execute([], disovfl=True)
 
 ##############################################################################
@@ -101055,6 +101468,128 @@ class acalcvm_nan_data_math_log1p_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
+class acalcvm_nan_data_math_log2_0_d(unittest.TestCase):
+	"""Test floating point arrays for nan, inf, -inf in data.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('d', [1.0] * 10)
+		self.dataok = array.array('d', [1.0] * 10)
+
+		self.dataout = array.array('d', itertools.repeat(0.0, 10))
+
+		self.datainf = array.array('d', [float('inf')] * 10)
+		self.datanan = array.array('d', [float('nan')] * 10)
+		self.dataninf = array.array('d', [float('-inf')] * 10)
+
+
+	########################################################
+	def test_nan_math_log2_acalcvm(self):
+		"""Test acalcvm for data of nan with overflow checking on and single parameter functions  - Array code d.
+		"""
+		# Template name: nan_data_errorchecked_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datanan, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_nan_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of nan with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datanan, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_inf_math_log2_acalcvm(self):
+		"""Test acalcvm for data of inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		# Template name: nan_data_errorchecked_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datainf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_inf_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.datainf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_ninf_math_log2_acalcvm(self):
+		"""Test acalcvm for data of -inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		# Template name: nan_data_error_noparam_template
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		with self.assertRaises(ArithmeticError):
+			eqnd.execute([])
+
+
+	########################################################
+	def test_ninf_math_log2_ov_acalcvm(self):
+		"""Test acalcvm for data of -inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# This is the actual test.
+		eqnd = arrayfunc.acalc.calc(self.dataninf, self.dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+		eqnd.execute([], disovfl=True)
+
+##############################################################################
+
+##############################################################################
 class acalcvm_nan_data_math_pow_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -104617,10 +105152,20 @@ class acalcvm_mathconst_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\n\n')
-		f.write('acalcvm\n\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('acalcvm\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
 
 ##############################################################################

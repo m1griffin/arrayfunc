@@ -25,6 +25,7 @@
 
 # ==============================================================================
 
+import itertools
 
 import codegen_common
 
@@ -298,10 +299,83 @@ oplist = codegen_common.ReadCSVData('arrayfunc.csv')
 # Filter out the compare operations.
 compops = [x for x in oplist if x['compare_ops'] != '']
 
+# ==============================================================================
+
+outputlist = []
+
+funcname = 'aall'
+filename = funcname + '_common'
+
+simdfilename = 'aall_simd_x86'
+
+maindescription = 'Returns True if all elements in an array meet the selected criteria.'
+
+# The original date of the platform independent C code.
+ccodedate = '08-May-2014'
+
+# The original date of the SIMD C code.
+simdcodedate = '01-May-2017'
+
+
+# ==============================================================================
 # This outputs the non-SIMD version.
-with open('aall_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+
+	datavals = {'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'arraycode' : funtypes}
+
+
+	if simdvalues[funtypes]['hassimd']:
+		start_temp = template_start_simd
+		datavals.update(simdvalues[funtypes])
+	else:
+		start_temp = template_start
+
+
+	# Start of function definition.
+	outputlist.append(start_temp % datavals)
+
+	# Each comparison operation.
+	for ops in compops:
+		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
+		testop.update(ops)
+		outputlist.append(op_template % testop)
+
+	outputlist.append(template_end)
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['simdmacromsg'])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+
+# ==============================================================================
+
+# This outputs the SIMD version.
+
+outputlist = []
+
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	if simdvalues[funtypes]['hassimd']:
 		arraytype = codegen_common.arraytypes[funtypes]
 
 		datavals = {'arraytype' : arraytype, 
@@ -309,48 +383,41 @@ with open('aall_code.txt', 'w') as f:
 					'arraycode' : funtypes}
 
 
-		if simdvalues[funtypes]['hassimd']:
-			start_temp = template_start_simd
-			datavals.update(simdvalues[funtypes])
-		else:
-			start_temp = template_start
-
-
 		# Start of function definition.
-		f.write(start_temp % datavals)
+		datavals.update(simdvalues[funtypes])
+		outputlist.append(template_start_simdsupport % datavals)
+
 
 		# Each comparison operation.
 		for ops in compops:
 			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 			testop.update(ops)
-			f.write(op_template % testop)
+			testop.update(simdvalues[funtypes])
+			opsymb = ops['compare_ops']
+			testop.update({'simd_op' : simdops[funtypes][opsymb], 'simd_comp' : simdcomp[funtypes][opsymb]})
+			outputlist.append(op_simd_template % testop)
 
-		f.write(template_end)
+		outputlist.append(template_end_simd)
+
+
 
 # This outputs the SIMD version.
-with open('aall_x86_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		if simdvalues[funtypes]['hassimd']:
-			arraytype = codegen_common.arraytypes[funtypes]
+codegen_common.OutputSourceCode(simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', [])
 
-			datavals = {'arraytype' : arraytype, 
-						'funcmodifier' : arraytype.replace(' ', '_'),
-						'arraycode' : funtypes}
+# ==============================================================================
 
+# Output the .h header file.
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
 
-			# Start of function definition.
-			datavals.update(simdvalues[funtypes])
-			f.write(template_start_simdsupport % datavals)
+# Write out the file.
+codegen_common.OutputCHeader(simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
 
+# ==============================================================================
 
-			# Each comparison operation.
-			for ops in compops:
-				testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
-				testop.update(ops)
-				testop.update(simdvalues[funtypes])
-				opsymb = ops['compare_ops']
-				testop.update({'simd_op' : simdops[funtypes][opsymb], 'simd_comp' : simdcomp[funtypes][opsymb]})
-				f.write(op_simd_template % testop)
-
-			f.write(template_end_simd)

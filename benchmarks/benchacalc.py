@@ -5,7 +5,7 @@
 # Purpose:  Benchmark functions for acalc.
 # Language: Python 3.4
 # Date:     05-Feb-2016.
-# Ver:      27-Jun-2017.
+# Ver:      05-Sep-2017.
 #
 ###############################################################################
 #
@@ -112,6 +112,7 @@ calibrationdata = {
 'math_log' : (3, 39),
 'math_log10' : (3, 32),
 'math_log1p' : (4, 33),
+'math_log2' : (4, 44),
 'math_pow' : (4, 58),
 'math_radians' : (5, 155),
 'math_sin' : (4, 54),
@@ -10205,6 +10206,107 @@ class benchmark_math_log1p:
 ##############################################################################
 
 ##############################################################################
+class benchmark_math_log2:
+	"""Test for basic operator function.
+	"""
+
+	########################################################
+	def __init__(self):
+		"""Initialise.
+		"""
+		self.TestResults = {}
+		self.pyitercounts = calibrationdata['math_log2'][0]
+		self.afitercounts = calibrationdata['math_log2'][1]
+
+
+	########################################################
+	def RunTests(self):
+		"""Run all the tests.
+		"""
+
+		self.TestFuncs = [self.Benchmark_f, self.Benchmark_d]
+		for testfunc in self.TestFuncs:
+			testfunc()
+
+
+	########################################################
+	def Benchmark_f(self):
+		"""Measure execution time.
+		"""
+		TypeCode = 'f'
+		InvertMask = allinvertmasks['f']
+
+		data = array.array('f', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		arraylength = len(data)
+		dataout = array.array('f', itertools.repeat(0, arraylength))
+
+		# Time for python.
+		starttime = time.perf_counter()
+		for x in range(self.pyitercounts):
+			for i in range(arraylength):
+				dataout[i] = math.log2(data[i])
+		endtime = time.perf_counter()
+
+		pythontime = (endtime - starttime) / self.pyitercounts
+
+		data = array.array('f', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		dataout = array.array('f', itertools.repeat(0, arraylength))
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+
+		# Time for acalc.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			eqnd.execute([])
+		endtime = time.perf_counter()
+
+		acalctime = (endtime - starttime) / self.afitercounts
+
+
+		self.TestResults['f'] = (pythontime, acalctime, pythontime / acalctime)
+
+
+	########################################################
+	def Benchmark_d(self):
+		"""Measure execution time.
+		"""
+		TypeCode = 'd'
+		InvertMask = allinvertmasks['d']
+
+		data = array.array('d', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		arraylength = len(data)
+		dataout = array.array('d', itertools.repeat(0, arraylength))
+
+		# Time for python.
+		starttime = time.perf_counter()
+		for x in range(self.pyitercounts):
+			for i in range(arraylength):
+				dataout[i] = math.log2(data[i])
+		endtime = time.perf_counter()
+
+		pythontime = (endtime - starttime) / self.pyitercounts
+
+		data = array.array('d', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		dataout = array.array('d', itertools.repeat(0, arraylength))
+
+		eqnd = arrayfunc.acalc.calc(data, dataout)
+		eqnd.comp('math.log2(x)', 'x', [])
+
+		# Time for acalc.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			eqnd.execute([])
+		endtime = time.perf_counter()
+
+		acalctime = (endtime - starttime) / self.afitercounts
+
+
+		self.TestResults['d'] = (pythontime, acalctime, pythontime / acalctime)
+
+##############################################################################
+
+##############################################################################
 class benchmark_math_pow:
 	"""Test for basic operator function.
 	"""
@@ -11013,7 +11115,7 @@ class benchmark_math_trunc:
 ##############################################################################
 
 
-BenchClasses = [(benchmark_add, 'add'), (benchmark_sub, 'sub'), (benchmark_mult, 'mult'), (benchmark_div, 'div'), (benchmark_floordiv, 'floordiv'), (benchmark_mod, 'mod'), (benchmark_uadd, 'uadd'), (benchmark_usub, 'usub'), (benchmark_pow, 'pow'), (benchmark_bitand, 'bitand'), (benchmark_bitor, 'bitor'), (benchmark_bitxor, 'bitxor'), (benchmark_invert, 'invert'), (benchmark_lshift, 'lshift'), (benchmark_rshift, 'rshift'), (benchmark_abs, 'abs'), (benchmark_math_acos, 'math_acos'), (benchmark_math_acosh, 'math_acosh'), (benchmark_math_asin, 'math_asin'), (benchmark_math_asinh, 'math_asinh'), (benchmark_math_atan, 'math_atan'), (benchmark_math_atan2, 'math_atan2'), (benchmark_math_atanh, 'math_atanh'), (benchmark_math_ceil, 'math_ceil'), (benchmark_math_copysign, 'math_copysign'), (benchmark_math_cos, 'math_cos'), (benchmark_math_cosh, 'math_cosh'), (benchmark_math_degrees, 'math_degrees'), (benchmark_math_erf, 'math_erf'), (benchmark_math_erfc, 'math_erfc'), (benchmark_math_exp, 'math_exp'), (benchmark_math_expm1, 'math_expm1'), (benchmark_math_fabs, 'math_fabs'), (benchmark_math_factorial, 'math_factorial'), (benchmark_math_floor, 'math_floor'), (benchmark_math_fmod, 'math_fmod'), (benchmark_math_gamma, 'math_gamma'), (benchmark_math_hypot, 'math_hypot'), (benchmark_math_ldexp, 'math_ldexp'), (benchmark_math_lgamma, 'math_lgamma'), (benchmark_math_log, 'math_log'), (benchmark_math_log10, 'math_log10'), (benchmark_math_log1p, 'math_log1p'), (benchmark_math_pow, 'math_pow'), (benchmark_math_radians, 'math_radians'), (benchmark_math_sin, 'math_sin'), (benchmark_math_sinh, 'math_sinh'), (benchmark_math_sqrt, 'math_sqrt'), (benchmark_math_tan, 'math_tan'), (benchmark_math_tanh, 'math_tanh'), (benchmark_math_trunc, 'math_trunc')]
+BenchClasses = [(benchmark_add, 'add'), (benchmark_sub, 'sub'), (benchmark_mult, 'mult'), (benchmark_div, 'div'), (benchmark_floordiv, 'floordiv'), (benchmark_mod, 'mod'), (benchmark_uadd, 'uadd'), (benchmark_usub, 'usub'), (benchmark_pow, 'pow'), (benchmark_bitand, 'bitand'), (benchmark_bitor, 'bitor'), (benchmark_bitxor, 'bitxor'), (benchmark_invert, 'invert'), (benchmark_lshift, 'lshift'), (benchmark_rshift, 'rshift'), (benchmark_abs, 'abs'), (benchmark_math_acos, 'math_acos'), (benchmark_math_acosh, 'math_acosh'), (benchmark_math_asin, 'math_asin'), (benchmark_math_asinh, 'math_asinh'), (benchmark_math_atan, 'math_atan'), (benchmark_math_atan2, 'math_atan2'), (benchmark_math_atanh, 'math_atanh'), (benchmark_math_ceil, 'math_ceil'), (benchmark_math_copysign, 'math_copysign'), (benchmark_math_cos, 'math_cos'), (benchmark_math_cosh, 'math_cosh'), (benchmark_math_degrees, 'math_degrees'), (benchmark_math_erf, 'math_erf'), (benchmark_math_erfc, 'math_erfc'), (benchmark_math_exp, 'math_exp'), (benchmark_math_expm1, 'math_expm1'), (benchmark_math_fabs, 'math_fabs'), (benchmark_math_factorial, 'math_factorial'), (benchmark_math_floor, 'math_floor'), (benchmark_math_fmod, 'math_fmod'), (benchmark_math_gamma, 'math_gamma'), (benchmark_math_hypot, 'math_hypot'), (benchmark_math_ldexp, 'math_ldexp'), (benchmark_math_lgamma, 'math_lgamma'), (benchmark_math_log, 'math_log'), (benchmark_math_log10, 'math_log10'), (benchmark_math_log1p, 'math_log1p'), (benchmark_math_log2, 'math_log2'), (benchmark_math_pow, 'math_pow'), (benchmark_math_radians, 'math_radians'), (benchmark_math_sin, 'math_sin'), (benchmark_math_sinh, 'math_sinh'), (benchmark_math_sqrt, 'math_sqrt'), (benchmark_math_tan, 'math_tan'), (benchmark_math_tanh, 'math_tanh'), (benchmark_math_trunc, 'math_trunc')]
 arraycodes = ['b', 'B', 'h', 'H', 'i', 'I', 'l', 'L', 'q', 'Q', 'f', 'd']
 
 TestLabels = [y for x,y in BenchClasses]

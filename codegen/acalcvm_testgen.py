@@ -1617,19 +1617,6 @@ classend = """##################################################################
 """
 
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('acalcvm\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-
 # ==============================================================================
 
 def makeoptests(csvdata, arraycode, arraylabel):
@@ -2028,5 +2015,5 @@ with open('test_acalcvm.py', 'w') as f:
 	####################################################################
 
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'acalcvm')
 

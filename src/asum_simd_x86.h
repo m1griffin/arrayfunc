@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
-// Module:   asum.c
-// Purpose:  Find the maximum value in an array.
+// Module:   asum_simd_x86.h
+// Purpose:  Sum all the values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -24,5 +25,8 @@
 //
 //------------------------------------------------------------------------------
 
+
 float asum_float_simd(Py_ssize_t arraylen, float *data);
 double asum_double_simd(Py_ssize_t arraylen, double *data);
+
+

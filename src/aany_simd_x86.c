@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   aany_simd_x86.c
-// Purpose:  Returns True if any element in an array meets the selected criteria.
+// Purpose:  Returns True if any elements in an array meet the selected criteria.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     03-May-2017
+// Date:     01-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -33,14 +34,12 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "simddefs.h"
 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
 
 // Auto generated code goes below.
-
 
 /*--------------------------------------------------------------------------- */
 /* For array code: b

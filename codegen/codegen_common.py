@@ -6,7 +6,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@
 import datetime
 import csv
 import itertools
+import re
 
 # ==============================================================================
 
@@ -49,21 +50,6 @@ arraytypes = {'b' : 'signed char', 'B' : 'unsigned char',
 	'f' : 'float', 'd' : 'double'}
 
 
-
-# ==============================================================================
-
-# Some architectures do not support 'q' or 'Q' array types. 
-LongLongTestSkip = """# Cannot test if 'q' or 'Q' arrays are not supported in this architecture.
-@unittest.skipIf('%(typecode)s' not in array.typecodes, 'Skip test if array type not supported on this platform.')
-"""
-# For 'q' arrays.
-LongLongTestSkipq = LongLongTestSkip % {'typecode' : 'q'}
-# For 'Q' arrays.
-LongLongTestSkipQ = LongLongTestSkip % {'typecode' : 'Q'}
-
-# This adds an indent to skip specific tests rather than classes.
-# For 'q' and 'Q' arrays.
-FuncLongLongTestSkip = "@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')"
 
 # ==============================================================================
 
@@ -111,19 +97,19 @@ maxvalue = {
 # ==============================================================================
 
 arraytypeclass = {
-	'b' : {'typecode' : 'b', 'typelabel' : 'b', 'typeconvert' : 'int', 'skiplonglong' : ''},
-	'B' : {'typecode' : 'B', 'typelabel' : 'B', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'h' : {'typecode' : 'h', 'typelabel' : 'h', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'H' : {'typecode' : 'H', 'typelabel' : 'H', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'i' : {'typecode' : 'i', 'typelabel' : 'i', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'I' : {'typecode' : 'I', 'typelabel' : 'I', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'l' : {'typecode' : 'l', 'typelabel' : 'l', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'L' : {'typecode' : 'L', 'typelabel' : 'L', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
-	'q' : {'typecode' : 'q', 'typelabel' : 'q', 'typeconvert' : 'int', 'skiplonglong' : LongLongTestSkipq}, 
-	'Q' : {'typecode' : 'Q', 'typelabel' : 'Q', 'typeconvert' : 'int', 'skiplonglong' : LongLongTestSkipQ}, 
-	'f' : {'typecode' : 'f', 'typelabel' : 'f', 'typeconvert' : 'float', 'skiplonglong' : ''}, 
-	'd' : {'typecode' : 'd', 'typelabel' : 'd', 'typeconvert' : 'float', 'skiplonglong' : ''},
-	'bytes' : {'typecode' : 'B', 'typelabel' : 'bytes', 'typeconvert' : 'int', 'skiplonglong' : ''}, 
+	'b' : {'typecode' : 'b', 'typelabel' : 'b', 'typeconvert' : 'int'},
+	'B' : {'typecode' : 'B', 'typelabel' : 'B', 'typeconvert' : 'int'}, 
+	'h' : {'typecode' : 'h', 'typelabel' : 'h', 'typeconvert' : 'int'}, 
+	'H' : {'typecode' : 'H', 'typelabel' : 'H', 'typeconvert' : 'int'}, 
+	'i' : {'typecode' : 'i', 'typelabel' : 'i', 'typeconvert' : 'int'}, 
+	'I' : {'typecode' : 'I', 'typelabel' : 'I', 'typeconvert' : 'int'}, 
+	'l' : {'typecode' : 'l', 'typelabel' : 'l', 'typeconvert' : 'int'}, 
+	'L' : {'typecode' : 'L', 'typelabel' : 'L', 'typeconvert' : 'int'}, 
+	'q' : {'typecode' : 'q', 'typelabel' : 'q', 'typeconvert' : 'int'}, 
+	'Q' : {'typecode' : 'Q', 'typelabel' : 'Q', 'typeconvert' : 'int'}, 
+	'f' : {'typecode' : 'f', 'typelabel' : 'f', 'typeconvert' : 'float'}, 
+	'd' : {'typecode' : 'd', 'typelabel' : 'd', 'typeconvert' : 'float'},
+	'bytes' : {'typecode' : 'B', 'typelabel' : 'bytes', 'typeconvert' : 'int'}, 
 }
 
 # ==============================================================================
@@ -260,3 +246,245 @@ def FormatHeaderData(testfilename, startdate, funcname):
 
 # ==============================================================================
 
+# This is added to the end of each unit test.
+testendtemplate = """
+##############################################################################
+if __name__ == '__main__':
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('%s\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
+
+##############################################################################
+"""
+
+# ==============================================================================
+
+# This is used to auto-generate the copyright header for the C source code.
+CHeaderTemplate = '''\
+//------------------------------------------------------------------------------
+// Project:  arrayfunc
+// Module:   %(cfilename)s
+// Purpose:  %(purpose1)s
+//           %(purpose2)s
+// Language: C
+// Date:     %(startdate)s
+// Ver:      %(verdate)s.
+//
+//------------------------------------------------------------------------------
+//
+//   Copyright 2014 - %(cpyear)s    Michael Griffin    <m12.griffin@gmail.com>
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+//
+//------------------------------------------------------------------------------
+'''
+
+# These are the standard includes. There is one string substitution format
+# String to allow extra dependencies to be included.
+CIncludes = '''
+/*--------------------------------------------------------------------------- */
+// This must be defined before "Python.h" in order for the pointers in the
+// argument parsing functions to work properly. 
+#define PY_SSIZE_T_CLEAN
+
+#include "Python.h"
+%s
+#include "arrayfunc.h"
+#include "arrayerrs.h"
+'''
+
+# This must be added if the function has an SIMD implementation.
+CSIMDdefMsg = '''
+#include "simddefs.h"
+'''
+
+# This is required to actually include the SIMD implementation. Note the 
+# string substitution required.
+CSIMDMacroMsg = '''
+#ifdef AF_HASSIMD
+#include "%(funcname)s_simd_x86.h"
+#endif
+'''
+
+# This closes off the header and adds a message that everything after is auto
+# generated code.
+CHeaderEnd = '''
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+
+// Auto generated code goes below.
+'''
+
+
+# ==============================================================================
+
+# Format and return the data for the copyright header files.
+def FormatCCodeHeaderData(cfilename, purpose1, purpose2, startdate):
+	"""Format and return the dictionary data used in the C source copyright header. 
+	Parameters: cfilename = The file name to go in the header.
+		purpose1 = First line of description.
+		purpose2 = Second line of description.
+		startdate = The date the file was started on.
+	Returns: <dict>
+	"""
+	codedate = datetime.date.today()
+	codedatestamp = codedate.strftime('%d-%b-%Y')
+	codeyear = codedate.year
+
+	return {'cfilename' : cfilename, 
+		'purpose1' : purpose1,
+		'purpose2' : purpose2,
+		'startdate' : startdate, 
+		'verdate' : codedatestamp, 
+		'cpyear' : codeyear}
+
+
+# ==============================================================================
+
+# These are the possible extra C headers to be added to the source code.
+_COutputHeaderOptions = {
+	'limits' : '#include <limits.h>', 
+	'float' : '#include <float.h>', 
+	'math' : '#include <math.h>', 
+	'arithcalcs' : '#include "arithcalcs.h"', 
+	'simddefs' : '#include "simddefs.h"', 
+	'simdmacromsg' : '#ifdef AF_HASSIMD\n#include "%(funcname)s_simd_x86.h"\n#endif',
+	'acalcvm_ops' : '#include "acalcvm_ops.h"'
+	}
+
+
+# This can be added as a description to the platform independent source files.
+PlatformIndependentDescr = 'Common platform independent code.'
+
+# This can be added as a description to SIMD source files.
+SIMDDescription = 'This file provides an SIMD version of the functions.'
+
+
+def OutputSourceCode(filename, outputlist, purpose1, purpose2, startdate, funcname, 
+			extraheaders): 
+	"""Write out the C source code to a file, including copyright header and other info.
+	Parameters: filename = The name to use for the file. 
+		outputlist = The list of text strings which makes up the source code.
+		purpose1 = The first line of the copyright header 'purpose' description.
+		purpose2 = The second line of the 'purpose' description.
+		startdate = The date the original file was started.
+		funcname = The name of the function to be used in CSIMDMacroMsg. This is
+			may be left blank for SIMD source. 
+		extraheaders = A list of strings defining which extra C headers 
+			(e.g. #include <float.h>) to include in the source code.
+	"""
+	with open(filename, 'w') as f:
+		# Output the copyright header.
+		f.write(CHeaderTemplate % FormatCCodeHeaderData(filename, 
+				purpose1, purpose2, startdate))
+
+		if extraheaders:
+			extrincl = '\n' + '\n'.join([_COutputHeaderOptions[x] for x in extraheaders]) + '\n'
+			cincludextra = extrincl % {'funcname' : funcname}
+		else:
+			cincludextra = ''
+
+		f.write(CIncludes % cincludextra)
+
+		f.write(CHeaderEnd)
+
+		# Output the C source code.
+		for x in outputlist:
+			f.write(x)
+
+
+# ==============================================================================
+
+
+def OutputCHeader(filename, headedefs, purpose1, purpose2, startdate): 
+	"""Write out the C source code to a file for .h files, including copyright 
+		header and other info.
+	Parameters: filename = The name to use for the file. 
+		headedefs = The list of text strings which makes up the source code.
+		purpose1 = The first line of the copyright header 'purpose' description.
+		purpose2 = The second line of the 'purpose' description.
+		startdate = The date the original file was started.
+	"""
+	with open(filename, 'w') as f:
+		f.write(CHeaderTemplate % FormatCCodeHeaderData(filename, 
+			purpose1, purpose2, startdate))
+		f.write('\n\n')
+		for x in headedefs:
+			f.write(x)
+		f.write('\n\n')
+
+# ==============================================================================
+
+def GenCHeaderText(outputlist, funcname):
+	"""Output the .h header file for the platform independent C source code. 
+		This works by searching through the C code looking for anything that 
+		looks like an appropriate C function.
+	Parameters: outputlist = The list of blocks of text containing the C 
+			function source code. 
+		funcname = The name of the function (e.g. amax, or aany). This is used
+			to search for the source code function name.
+		Returns: A list of strings containing the C header definitions.
+	"""
+	textblock = '\n'.join(outputlist)
+
+	# Create the regex pattren by combining the basic pattern with all possible
+	# C data types as return types. We're basically looking for somethinge
+	# like 'Py_ssize_t compress_.*?{' and all possible variations.
+	ctnames = ['Py_ssize_t', 'void'] + list(arraytypes.values())
+	pattern = '|'.join([x +  (' %s_.*?{' % funcname) for x in ctnames])
+
+	# Perform the regex match. The flags=re.DOTALL causes the match to ignore
+	# newline characters.
+	headertext = re.findall(pattern, textblock, flags=re.DOTALL)
+	headerblock = '\n'.join(headertext)
+	# Replace the '{' character at the end of all the matches with a ';'.
+	return re.sub(' {', ';', headerblock, flags=re.DOTALL)
+
+
+
+# ==============================================================================
+
+
+def GenSIMDCHeaderText(outputlist, funcname):
+	"""Output the .h header file for the SIMD C source code. 
+		This works by searching through the C code looking for anything that 
+		looks like an appropriate C function.
+	Parameters: outputlist = The list of blocks of text containing the C 
+			function source code. 
+		funcname = The name of the function (e.g. amax, or aany). This is used
+			to search for the source code function name.
+		Returns: A list of strings containing the C header definitions.
+	"""
+	# Split the blocks of text into separate list elements so we can search them.
+	# We need to flatten the list, otherwise we will have lists of lists.
+	splitoutput = itertools.chain.from_iterable([x.splitlines() for x in outputlist])
+
+	# Find the list elements which include the function defintions. While we're
+	# at it, strip off the trailing ' {' and replace it with a ';'.
+	return [x.rstrip(' {') + ';\n' for x in splitoutput if (' ' + funcname + '_' in x)]
+
+
+# ==============================================================================

@@ -2,12 +2,14 @@
 // Project:  arrayfunc
 // Module:   starmap_common.c
 // Purpose:  Common code for starmap and starmapi.
+//           Common platform independent code.
 // Language: C
-// Date:     02-Jun-2014.
+// Date:     02-Jun-2014
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,16 +32,18 @@
 
 #include "Python.h"
 
-#include <math.h>
 #include <limits.h>
-
+#include <math.h>
 #include "arithcalcs.h"
+
 #include "arrayfunc.h"
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
 
-// Auto-generated code goes below.
+/*--------------------------------------------------------------------------- */
+
+// Auto generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.

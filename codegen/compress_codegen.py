@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -78,15 +78,49 @@ endcomment = """/*--------------------------------------------------------------
 
 # ==============================================================================
 
+outputlist = []
+
+funcname = 'compress'
+filename = funcname + '_common'
+
+maindescription = 'Copy values from an array, using a selector array to filter values.'
+
+# The original date of the platform independent C code.
+ccodedate = '10-May-2014'
 
 
-with open('compress_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
-		f.write(template % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_')})
+# ==============================================================================
 
-	f.write(endcomment)
 
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+	outputlist.append(template % {'arraytype' : arraytype, 
+		'funcmodifier' : arraytype.replace(' ', '_')})
+
+outputlist.append(endcomment)
+
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, [])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
 

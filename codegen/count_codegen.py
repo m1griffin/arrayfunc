@@ -66,10 +66,44 @@ void count_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytyp
 
 # ==============================================================================
 
-with open('count_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
-		f.write(template % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_')})
+outputlist = []
 
+funcname = 'count'
+filename = funcname + '_common'
+
+maindescription = 'Fill an array with a series of values.'
+
+# The original date of the platform independent C code.
+ccodedate = '04-May-2014'
+
+
+# ==============================================================================
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+	outputlist.append(template % {'arraytype' : arraytype, 
+		'funcmodifier' : arraytype.replace(' ', '_')})
+
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, [])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================

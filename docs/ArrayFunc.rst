@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 2.0.0 for 2017-06-21
+:Version: 2.0.1 for 2017-09-04
 :Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.4 or later
@@ -1057,8 +1057,8 @@ Python standard documentation for the standard math library.
 
 
 =============== ====================== ===== ===== === ===== =========
-Name             Equivalent to          b h   B H   f   OV    Compare
-                                        i l   I L   d         Ops    
+Name             Equivalent to          b h   B H   f   OV     Compare
+                                        i l   I L   d          Ops    
 =============== ====================== ===== ===== === ===== =========
 af_add           x + y                   X     X    X    X             
 af_div           x / y                   X     X    X    X             
@@ -1120,6 +1120,7 @@ math_lgamma      math.lgamma(x)                     X
 math_log         math.log(x)                        X                  
 math_log10       math.log10(x)                      X                  
 math_log1p       math.log1p(x)                      X                  
+math_log2        math.log2(x)                       X                  
 math_pow         math.pow(x, y)                     X                  
 math_pow_r       math.pow(y, x)                     X                  
 math_radians     math.radians(x)                    X                  
@@ -1129,11 +1130,8 @@ math_sqrt        math.sqrt(x)                       X
 math_tan         math.tan(x)                        X                  
 math_tanh        math.tanh(x)                       X                  
 math_trunc       math.trunc(x)                      X                  
-aops_subst_gt    x > y                   X     X    X                  
-aops_subst_gte   x >= y                  X     X    X                  
-aops_subst_lt    x < y                   X     X    X                  
-aops_subst_lte   x <= y                  X     X    X                  
 =============== ====================== ===== ===== === ===== =========
+
 
 
 
@@ -1222,6 +1220,7 @@ math.lgamma      math.lgamma(x)                     X
 math.log         math.log(x)                        X          
 math.log10       math.log10(x)                      X          
 math.log1p       math.log1p(x)                      X          
+math.log2        math.log2(x)                       X          
 math.pow         math.pow(x, y)                     X          
 math.radians     math.radians(x)                    X          
 math.sin         math.sin(x)                        X          
@@ -1578,79 +1577,80 @@ Amap
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
       function     b     B     h     H     i     I     l     L     q     Q     f     d
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        af_add   162   140   164   144   149   126    97    86   128    85   135    93
-        af_div    78    66    80    77    80    70    84    70    81    69   214   225
-      af_div_r    72    80    81    85    85    74    87    74    83    75   145   127
-   af_floordiv    22    32    19    39    35    31    40    30    37    29   108   100
- af_floordiv_r    38    38    38    39    40    32    37    32    40    32    88    85
-        af_mod    29    37    26    41    40    31    40    29    38    30    45    46
-      af_mod_r    35    32    39    37    38    28    40    28    36    28    32    33
-       af_mult   101   136    99   118    93   129    85    74    82    68   134   107
-        af_neg   147         146         157         104         122         119    87
-        af_pow    61    60    56    54    38    33    21    20    21    19    20    21
-      af_pow_r    48    53    47    47    35    35    20    18    20    18   2.8   4.9
-        af_sub   152   163   152   157   145   119   113    85    93    90   104    98
-      af_sub_r   168   152   159   165   147   127    92    83   109    84   119   100
-        af_and   259   182   207   185   163   199   117   107   122    90            
-         af_or   150   258   191   267   181   120   119    93   116   100            
-        af_xor   314   208   170   296   251   122   142    93   116    87            
-     af_invert   201   336   225   210   282   261   153   134   148   135            
-         af_eq   219   236   155   170   128   108   107    77   100    80   160   127
-         af_gt   158   151   138   137   172   113   100    79   103    77   243   140
-        af_gte   167   169   178   169   138   129   103    80   119    81   227   149
-         af_lt   148   141   145   150   159   101    99    75   109    80   216   149
-        af_lte   197   207   176   182   152   128   100    82   121    88   220   166
-         af_ne   162   151   149   155   165   109   107    81   110    89   196   162
-     af_lshift   200   225   165   170   230   201   142   113   114    99            
-   af_lshift_r   212   253   196   185   244   170   124   112   123    96            
-     af_rshift   218   190   191   189   189   164   129    90   145   106            
-   af_rshift_r   212   158   227   190   200   156   119    98   130    97            
-        af_abs   107         110         130          96         102          99    86
-     math_acos                                                                17    14
-    math_acosh                                                               8.0   7.5
-     math_asin                                                                18    15
-    math_asinh                                                               8.7   8.9
-     math_atan                                                                17    14
-    math_atan2                                                                10   9.4
-  math_atan2_r                                                                13   8.2
-    math_atanh                                                               8.4   9.4
-     math_ceil                                                               122   131
- math_copysign                                                               214   189
+        af_add   162   146   150   145   155   122    96    77   102    69   137    88
+        af_div    77    64    77    78    71    67    78    66    80    65   180   200
+      af_div_r    66    77    72    79    80    74    79    74    81    71   138   116
+   af_floordiv    37    35    25    40    35    30    37    29    38    29   107    83
+ af_floordiv_r    27    39    29    38    38    32    39    31    37    32    76    80
+        af_mod    28    38    25    41    39    30    36    29    38    28    51    47
+      af_mod_r    36    31    37    36    35    28    36    28    37    28    33    32
+       af_mult   109   139   103   154    95    97    82    68    84    67   112   102
+        af_neg   166         161         147         105         115         103    85
+        af_pow    55    63    56    52    38    33    20    19    21    18    18    18
+      af_pow_r    49    53    46    47    35    31    20    18    20    18   2.7   4.4
+        af_sub   163   153   159   149   161   116    94    82   109    83   119   106
+      af_sub_r   151   139   152   152   145   121   100    82   111    88   126   106
+        af_and   190   220   161   255   240   134   135    87   120   100            
+         af_or   222   192   177   174   221   198   123    90   114    83            
+        af_xor   217   248   292   212   203   190   117    93   137   109            
+     af_invert   326   222   277   285   232   159   150   116   185   155            
+         af_eq   155   174   172   169   138   119   109    88   120    85   160   126
+         af_gt   176   194   135   141   147   119   107    82   102    80   236   150
+        af_gte   173   152   162   171   131   117   104    81   110    84   223   163
+         af_lt   182   167   138   133   160   112   116    75   106    90   217   154
+        af_lte   164   159   178   151   146   132   108    89    93    76   225   156
+         af_ne   226   222   148   129   154   118   115    80   153    77   206   163
+     af_lshift   178   170   211   224   172   150   114    95   140   103            
+   af_lshift_r   165   169   183   259   157   152   122   104   136   122            
+     af_rshift   168   265   190   262   242   153   153   119   137   104            
+   af_rshift_r   208   258   177   245   231   190   122    90   113   101            
+        af_abs   114         114         128         103          97         264   125
+     math_acos                                                                16    14
+    math_acosh                                                               8.2   7.3
+     math_asin                                                                18    16
+    math_asinh                                                               7.8   8.0
+     math_atan                                                                16    15
+    math_atan2                                                                11    10
+  math_atan2_r                                                                13   8.5
+    math_atanh                                                               8.2   9.6
+     math_ceil                                                               113   103
+ math_copysign                                                               248   196
       math_cos                                                                24    11
-     math_cosh                                                                12   9.2
-  math_degrees                                                               169   119
+     math_cosh                                                                12   9.6
+  math_degrees                                                               179   125
       math_erf                                                                17    16
-     math_erfc                                                               9.8   8.5
-      math_exp                                                                15    12
-    math_expm1                                                               8.2   8.7
-     math_fabs                                                               258   141
-math_factorial    82    81    73    70    78    84    84    69    76    66            
-    math_floor                                                               117   104
-     math_fmod                                                                15    15
-   math_fmod_r                                                                51    43
-    math_gamma                                                               1.5   1.6
-    math_hypot                                                                29    16
+     math_erfc                                                               9.6   8.7
+      math_exp                                                                18    11
+    math_expm1                                                               8.1   8.5
+     math_fabs                                                               221   140
+math_factorial    80    81    71    71    87    66    70    58    87    80            
+    math_floor                                                               134   108
+     math_fmod                                                                15    14
+   math_fmod_r                                                                52    52
+    math_gamma                                                               1.5   1.7
+    math_hypot                                                                30    19
   math_hypot_r                                                                30    18
-    math_isinf                                                               114   103
-    math_isnan                                                               260   173
-    math_ldexp                                                                65    66
-   math_lgamma                                                               8.9   6.4
-      math_log                                                                20    13
-    math_log10                                                                11   8.7
-    math_log1p                                                               9.2    11
-      math_pow                                                                34    35
-    math_pow_r                                                               4.1   7.0
-  math_radians                                                               150   138
-      math_sin                                                                20    10
-     math_sinh                                                               6.5   6.7
-     math_sqrt                                                                72    55
-      math_tan                                                               8.2   6.6
-     math_tanh                                                               6.3   6.9
-    math_trunc                                                                78    77
- aops_subst_gt   202   216   189   184   214   139   122    97   120   103   278   124
-aops_subst_gte   183   212   210   205   190   170   121   100   128   122   182   125
- aops_subst_lt   196   198   229   205   169   161   117   105   123   103   162   151
-aops_subst_lte   207   222   181   233   191   152   138   104   126   108   165   129
+    math_isinf                                                               115   107
+    math_isnan                                                               263   157
+    math_ldexp                                                                61    61
+   math_lgamma                                                               9.0   7.2
+      math_log                                                                18    13
+    math_log10                                                                12   8.9
+    math_log1p                                                               8.9    10
+     math_log2                                                                15    14
+      math_pow                                                                30    34
+    math_pow_r                                                               4.6   7.4
+  math_radians                                                               168   133
+      math_sin                                                                21    11
+     math_sinh                                                               6.6   6.4
+     math_sqrt                                                                80    56
+      math_tan                                                               8.0   7.5
+     math_tanh                                                               6.9   7.0
+    math_trunc                                                                86    78
+ aops_subst_gt   198   194   234   172   169   142   123    98   119    97   181   159
+aops_subst_gte   198   211   209   177   165   177   130   107   138   103   195   134
+ aops_subst_lt   203   242   179   203   206   176   132   105   128   113   269   137
+aops_subst_lte   200   237   184   175   192   171   132   100   141    99   203   135
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -1658,7 +1658,7 @@ aops_subst_lte   207   222   181   233   191   152   138   104   126   108   165
 Stat         Value
 =========== ========
 Average:    108
-Maximum:    336
+Maximum:    326
 Minimum:    1.5
 Array size: 100000
 =========== ========
@@ -1671,66 +1671,67 @@ ACalc
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
       function     b     B     h     H     i     I     l     L     q     Q     f     d
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-           add    21    21    23    22    24    18    24    17    22    18    28    30
-           sub    21    21    25    25    24    18    22    20    22    19    27    26
-          mult    11    13   8.2    13   5.3   7.2   3.4   4.4   3.2   4.5    26    27
-           div    44    40    35    41    44    38    41    28    39    31    50    50
-      floordiv    19    18    19    20    19    17    17    12    14    12    43    45
-           mod    17    18    14    20    19    16    19    11    18    12    21    22
-          uadd    53    46    65    58    62    41    54    39    53    39    32    35
-          usub    31          35          34          33          32          32    33
-           pow    35    33    32    31    27    24    17    14    16    15    15    14
-        bitand    31    30    35    33    31    28    33    26    30    27            
-         bitor    29    29    33    32    30    27    33    25    30    26            
-        bitxor    32    35    37    36    34    27    36    25    33    25            
-        invert    55    48    61    57    60    45    56    50    61    52            
-        lshift    33    29    31    32    31    27    32    26    30    26            
-        rshift    30    29    31    33    31    26    31    24    29    25            
-           abs    39    57    39    67    36    57    38    54    37    52    46    51
-     math_acos                                                                13    12
-    math_acosh                                                               7.0   6.5
-     math_asin                                                                14    12
-    math_asinh                                                               7.3   7.8
-     math_atan                                                                13    12
-    math_atan2                                                               8.7   8.2
-    math_atanh                                                               7.3   8.2
-     math_ceil                                                                71    70
- math_copysign                                                                49    50
-      math_cos                                                                18   9.8
-     math_cosh                                                                11   8.3
-  math_degrees                                                                48    53
-      math_erf                                                                14    14
-     math_erfc                                                               9.2   8.1
-      math_exp                                                                14   9.5
-    math_expm1                                                               7.4   8.0
-     math_fabs                                                                63    63
-math_factorial    35    33    39    40    39    40    39    31    42    35            
-    math_floor                                                                74    64
-     math_fmod                                                                13    12
-    math_gamma                                                               1.3   1.5
-    math_hypot                                                                20    13
-    math_ldexp                                                                34    35
-   math_lgamma                                                               8.1   6.2
-      math_log                                                                16    11
-    math_log10                                                               9.7   8.5
-    math_log1p                                                               8.5   9.4
-      math_pow                                                                22    25
-  math_radians                                                                53    55
-      math_sin                                                                16   9.3
-     math_sinh                                                               5.8   5.6
-     math_sqrt                                                                40    34
-      math_tan                                                               7.2   6.0
-     math_tanh                                                               5.7   6.3
-    math_trunc                                                                47    48
+           add    22    21    22    23    24    18    22    17    24    19    28    28
+           sub    23    23    22    24    25    19    22    18    23    18    29    27
+          mult    11    14   8.0    13   5.3   7.1   3.2   4.5   3.2   4.5    29    28
+           div    40    40    32    37    39    35    38    27    39    26    57    52
+      floordiv    20    19    20    19    21    16    13    12    16    12    43    43
+           mod    18    19    14    19    19    16    18    12    20    12    22    21
+          uadd    61    48    58    57    56    45    49    37    51    39    35    35
+          usub    36          34          34          32          34          34    32
+           pow    37    33    32    32    27    24    17    15    17    15    14    13
+        bitand    35    30    31    30    33    26    31    26    34    26            
+         bitor    33    31    32    30    32    25    30    25    34    24            
+        bitxor    36    34    35    36    35    25    34    27    36    26            
+        invert    61    52    60    57    62    51    56    47    64    54            
+        lshift    32    31    31    31    33    26    31    28    31    26            
+        rshift    31    30    29    31    32    25    30    25    36    25            
+           abs    37    59    37    66    36    58    35    51    37    54    45    45
+     math_acos                                                                15    15
+    math_acosh                                                               8.7   7.8
+     math_asin                                                                16    15
+    math_asinh                                                               7.9   8.7
+     math_atan                                                                16    15
+    math_atan2                                                                11    10
+    math_atanh                                                               8.7   8.9
+     math_ceil                                                                73    79
+ math_copysign                                                                66    60
+      math_cos                                                                20    11
+     math_cosh                                                                12   9.8
+  math_degrees                                                                54    59
+      math_erf                                                                16    16
+     math_erfc                                                               9.6   8.7
+      math_exp                                                                17    11
+    math_expm1                                                               8.4   9.3
+     math_fabs                                                                69    81
+math_factorial    40    43    40    46    42    34    40    38    41    38            
+    math_floor                                                                73    69
+     math_fmod                                                                15    15
+    math_gamma                                                               1.6   1.9
+    math_hypot                                                                24    18
+    math_ldexp                                                                39    39
+   math_lgamma                                                               9.9   7.0
+      math_log                                                                18    13
+    math_log10                                                                11   9.9
+    math_log1p                                                               9.9    11
+     math_log2                                                                14    13
+      math_pow                                                                27    26
+  math_radians                                                                58    59
+      math_sin                                                                19    11
+     math_sinh                                                               6.4   5.5
+     math_sqrt                                                                45    38
+      math_tan                                                               8.8   7.0
+     math_tanh                                                               6.7   7.0
+    math_trunc                                                                56    51
 ============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    28
-Maximum:    74
-Minimum:    1.3
+Average:    29
+Maximum:    81
+Minimum:    1.6
 Array size: 100000
 =========== ========
 
@@ -1748,30 +1749,30 @@ Arrayfunc faster than Python factor.
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
    function     b     B     h     H     i     I     l     L     q     Q     f     d
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-       aall   9.5   9.8   7.6   7.6   8.0   9.2   6.0   6.2   6.3   6.7    14   9.2
-       aany   7.7   9.9    10   6.0   7.7   7.5   6.1   6.3   6.1   6.2    11   9.8
-    afilter   279   217   254   247   174   125   104    77   112    83   190   107
-       amax    36    30    23    23    19    21    14    13    14    14    38    28
-       amin    24    24    34    32    21    21    14    14    14    14    47    28
-       asum   7.0   9.8   8.8   9.8   6.9   9.4   6.6   7.1   6.4   7.0    11    10
-     asumov    14    16    14    17    12    14   7.5   8.5   7.4   7.9    11    11
-   compress    41    41    40    38    41    21    33    16    32    16    28    32
-      count   261   221   245   253   132    93    75    52    74    53   129   114
-      cycle   116   121   109   132   111    65    71    43    75    43    44    47
-  dropwhile   108   108   106   104   103    75    66    48    65    49   104    69
-  findindex    13    16    16    12    19    15    11    11    11    11    26    20
-findindices    39    31    37    38    34    29    23    26    23    25    40    34
-     repeat   143   122   124   128    93    23    52    15    53    15   141    78
-  takewhile   214   208   206   221   186   122   106    80   103    76   196   110
+       aall    10   9.8   8.9   7.7    10   9.9   6.6   5.9   6.1   6.3    13   9.4
+       aany   7.7  10.0    10   6.0   7.5   7.4   6.2   6.3   6.2   6.3    11   8.7
+    afilter   265   206   242   239   165   121   106    75   104    77   199   109
+       amax    32    29    21    23    20    20    14    14    14    14    36    27
+       amin    24    24    30    34    21    21    14    14    14    14    48    25
+       asum   6.6    11   6.9    10   7.5    10   6.7   7.1   7.3   7.1    11    10
+     asumov    13    18    14    16    12    14   7.5   8.6   7.9   8.0    11    11
+   compress    42    42    41    35    41    21    34    16    30    17    28    32
+      count   241   243   236   299   138    87    69    50    75    51   114   105
+      cycle   112   118   101   106    89    61    60    44    72    43    39    40
+  dropwhile   107   102   104   103   100    70    65    46    66    47   104    66
+  findindex    13    16    16    12    18    15    11    11    11    11    27    20
+findindices    39    31    38    36    35    29    26    27    26    26    41    36
+     repeat   128   146   122   141    88    24    52    14    52    15   135    80
+  takewhile   222   223   213   224   205   129   109    81   109    84   205   110
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    58
-Maximum:    279
-Minimum:    6.0
+Average:    57
+Maximum:    299
+Minimum:    5.9
 Array size: 1000000
 =========== ========
 
@@ -1781,18 +1782,18 @@ Arrayfunc with SIMD faster than Python factor.
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
    function     b     B     h     H     i     I     l     L     q     Q     f     d
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-       aall    88          33          14                                  21    12
-       aany   129          63          19                                  29    12
+       aall    89          32          14                                  21    11
+       aany   120          60          20                                  29    10
     afilter                                                                        
-       amax   571   459   126   129    40    41                            69    34
-       amin   311   306    98   100    35    35                            57    33
+       amax   527   501   117   114    40    40                            66    33
+       amin   335   345    96    96    34    35                            57    30
        asum                                                                        
      asumov                                                                32    14
    compress                                                                        
       count                                                                        
       cycle                                                                        
   dropwhile                                                                        
-  findindex   245          80          28                                  52    27
+  findindex   246          74          28                                  54    27
 findindices                                                                        
      repeat                                                                        
   takewhile                                                                        
@@ -1803,8 +1804,8 @@ findindices
 Stat         Value
 =========== ========
 Average:    101
-Maximum:    571
-Minimum:    11.6
+Maximum:    527
+Minimum:    10.4
 Array size: 1000000
 =========== ========
 
@@ -1816,18 +1817,18 @@ SIMD is not supported for all array types, so some types will not show a speed u
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
    function     b     B     h     H     i     I     l     L     q     Q     f     d
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-       aall   9.2         4.3         1.8                                 1.5   1.3
-       aany    17         6.2         2.4                                 2.6   1.2
+       aall   8.8         3.7         1.4                                 1.5   1.2
+       aany    16         5.9         2.6                                 2.6   1.2
     afilter                                                                        
-       amax    16    16   5.4   5.5   2.1   2.0                           1.8   1.2
-       amin    13    13   2.9   3.2   1.7   1.7                           1.2   1.2
+       amax    16    17   5.5   5.1   2.0   2.0                           1.8   1.2
+       amin    14    15   3.2   2.8   1.7   1.7                           1.2   1.2
        asum                                                                        
      asumov                                                               2.8   1.3
    compress                                                                        
       count                                                                        
       cycle                                                                        
   dropwhile                                                                        
-  findindex    19         5.1         1.5                                 2.0   1.3
+  findindex    19         4.7         1.5                                 2.0   1.3
 findindices                                                                        
      repeat                                                                        
   takewhile                                                                        

@@ -25,7 +25,7 @@ EXIT /B
 REM Subroutine pytest =============================================
 :pytest
 echo "Testing: " %1
-%1
+%1 -l
 IF ERRORLEVEL 1 SET /A failcount += 1
 
 EXIT /B

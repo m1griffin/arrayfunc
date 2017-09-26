@@ -307,68 +307,135 @@ simdvalues = {
 
 # ==============================================================================
 
+outputlist = []
+
+funcname = 'findindex'
+filename = funcname + '_common'
+
+simdfilename = 'findindex_simd_x86'
+
+maindescription = 'Returns the index of the first value in an array to meet the specified criteria.'
+
+# The original date of the platform independent C code.
+ccodedate = '10-May-2014'
+
+# The original date of the SIMD C code.
+simdcodedate = '10-May-2017'
+
+
+# ==============================================================================
+
 # Read in the op codes.
 oplist = codegen_common.ReadCSVData('arrayfunc.csv')
 
 # Filter out the compare operations.
 compops = [x for x in oplist if x['compare_ops'] != '']
 
-with open('findindex_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
+# ==============================================================================
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+
+	datavals = {'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'arraycode' : funtypes}
+
+
+	if simdvalues[funtypes]['hassimd']:
+		start_temp = template_start_simd
+		datavals.update(simdvalues[funtypes])
+	else:
+		start_temp = template_start
+
+
+	# Start of function definition.
+	outputlist.append(start_temp % datavals)
+
+
+	# Write the non-SIMD code.
+	# Each comparison operation.
+	for ops in compops:
+		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
+		testop.update(ops)
+		outputlist.append(op_template % testop)
+
+	outputlist.append(template_end)
+
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['simdmacromsg'])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
+
+# This outputs the SIMD version.
+outputlist = []
+
+# SIMD version.
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	if simdvalues[funtypes]['hassimd']:
 		arraytype = codegen_common.arraytypes[funtypes]
 
 		datavals = {'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
 					'arraycode' : funtypes}
 
-
-		if simdvalues[funtypes]['hassimd']:
-			start_temp = template_start_simd
-			datavals.update(simdvalues[funtypes])
-		else:
-			start_temp = template_start
-
+		datavals.update(simdvalues[funtypes])
 
 		# Start of function definition.
-		f.write(start_temp % datavals)
+		outputlist.append(template_start_simd_support % datavals)
 
 
-		# Write the non-SIMD code.
 		# Each comparison operation.
 		for ops in compops:
 			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 			testop.update(ops)
-			f.write(op_template % testop)
-
-		f.write(template_end)
-
-
-
-with open('findindex_simd_x86.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		if simdvalues[funtypes]['hassimd']:
-			arraytype = codegen_common.arraytypes[funtypes]
-
-			datavals = {'arraytype' : arraytype, 
-						'funcmodifier' : arraytype.replace(' ', '_'),
-						'arraycode' : funtypes}
-
-			datavals.update(simdvalues[funtypes])
-
-			# Start of function definition.
-			f.write(template_start_simd_support % datavals)
+			testop.update(simdvalues[funtypes])
+			opsymb = ops['compare_ops']
+			testop.update({'simd_op' : simdops[funtypes][opsymb], 'simd_comp' : simdcomp[funtypes][opsymb]})
+			outputlist.append(op_simd_template % testop)
 
 
-			# Each comparison operation.
-			for ops in compops:
-				testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
-				testop.update(ops)
-				testop.update(simdvalues[funtypes])
-				opsymb = ops['compare_ops']
-				testop.update({'simd_op' : simdops[funtypes][opsymb], 'simd_comp' : simdcomp[funtypes][opsymb]})
-				f.write(op_simd_template % testop)
+		outputlist.append(template_end_simd)
 
+# ==============================================================================
 
-			f.write(template_end_simd)
+# This outputs the SIMD version.
+codegen_common.OutputSourceCode(simdfilename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate,
+	'', [])
+
+# ==============================================================================
+
+# Output the .h header file.
+headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(simdfilename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.SIMDDescription, 
+	simdcodedate)
+
+# ==============================================================================

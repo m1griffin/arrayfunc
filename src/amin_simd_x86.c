@@ -4,7 +4,8 @@
 // Purpose:  Find the minimum value in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     04-May-2017
+// Date:     01-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -31,19 +32,14 @@
 
 #include "Python.h"
 
-#include <limits.h>
-#include <float.h>
-
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "simddefs.h"
 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
 
-// Auto-generated code goes below.
-
+// Auto generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* For array code: b

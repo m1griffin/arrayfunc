@@ -191,66 +191,105 @@ copyloopnocheck = """
 
 # ==============================================================================
 
+outputlist = []
 
-with open('convert_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
+funcname = 'convert'
+filename = funcname + '_common'
 
+maindescription = 'Convert arrays between data types.'
 
-		f.write(template_start % {'arraytype' : arraytype, 
-			'funcmodifier' : arraytype.replace(' ', '_')})
-
-		# Create the individual cases.
-		for arraycode in codegen_common.arraycodes:
-
-			# Get the appropriate limit value depending on the source and destination
-			# array types. This has to be done differently from most array
-			# functions because of the need to avoid integer overflow when
-			# converting from floating point.
-			if (funtypes in codegen_common.floatarrays) and (arraycode in codegen_common.maxguardvalue[funtypes]):
-				maxvalue = codegen_common.maxguardvalue[funtypes][arraycode]
-				minvalue = codegen_common.minguardvalue[funtypes][arraycode]
-				if arraycode == 'Q':
-					codetype = copyloop_float
-				else:
-					codetype = copyloop_floatint
-			# All other conversion cases, where loss of resolution is not a problem.
-			else: 
-				maxvalue = codegen_common.maxvalue[arraycode]
-				minvalue = codegen_common.minvalue[arraycode]
-
-				# Select the type of template to use.
-				# Both array types are the same.
-				if arraycode == funtypes:
-					codetype = copyloopsame
-				# Convert double to float. This requires passing NaN and inf through.
-				elif (funtypes == 'd') and (arraycode == 'f'):
-					codetype = copyloop_doubletofloat
-				# Float to integer. We have to do special checks for this because of NaN and inf.
-				elif (funtypes in codegen_common.floatarrays) and (arraycode in codegen_common.intarrays):
-					codetype = copyloop_floatint
-				# No checking required because we know we cannot overflow.
-				elif arraycode in convertsafe[funtypes]:
-					codetype = copyloopnocheck
-
-				# Source is signed and output is unsigned integer.
-				elif (funtypes in codegen_common.signedint) and (arraycode in codegen_common.unsignedint):
-					codetype = copyloop_signedint_to_unsigned
-
-				# Unsigned integers.
-				elif funtypes in codegen_common.unsignedint:
-					codetype = copyloop_unsigned
-				# Signed integers.
-				else:
-					codetype = copyloop_signed
+# The original date of the platform independent C code.
+ccodedate = '08-May-2014'
 
 
-			testop = {'arraytype' : codegen_common.arraytypes[arraycode],
-				'arraycode' : arraycode,
-				'maxvalue' : maxvalue,
-				'minvalue' : minvalue}
+# ==============================================================================
 
-			f.write(codetype % testop)
 
-		f.write(template_end)
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+
+
+	outputlist.append(template_start % {'arraytype' : arraytype, 
+		'funcmodifier' : arraytype.replace(' ', '_')})
+
+	# Create the individual cases.
+	for arraycode in codegen_common.arraycodes:
+
+		# Get the appropriate limit value depending on the source and destination
+		# array types. This has to be done differently from most array
+		# functions because of the need to avoid integer overflow when
+		# converting from floating point.
+		if (funtypes in codegen_common.floatarrays) and (arraycode in codegen_common.maxguardvalue[funtypes]):
+			maxvalue = codegen_common.maxguardvalue[funtypes][arraycode]
+			minvalue = codegen_common.minguardvalue[funtypes][arraycode]
+			if arraycode == 'Q':
+				codetype = copyloop_float
+			else:
+				codetype = copyloop_floatint
+		# All other conversion cases, where loss of resolution is not a problem.
+		else: 
+			maxvalue = codegen_common.maxvalue[arraycode]
+			minvalue = codegen_common.minvalue[arraycode]
+
+			# Select the type of template to use.
+			# Both array types are the same.
+			if arraycode == funtypes:
+				codetype = copyloopsame
+			# Convert double to float. This requires passing NaN and inf through.
+			elif (funtypes == 'd') and (arraycode == 'f'):
+				codetype = copyloop_doubletofloat
+			# Float to integer. We have to do special checks for this because of NaN and inf.
+			elif (funtypes in codegen_common.floatarrays) and (arraycode in codegen_common.intarrays):
+				codetype = copyloop_floatint
+			# No checking required because we know we cannot overflow.
+			elif arraycode in convertsafe[funtypes]:
+				codetype = copyloopnocheck
+
+			# Source is signed and output is unsigned integer.
+			elif (funtypes in codegen_common.signedint) and (arraycode in codegen_common.unsignedint):
+				codetype = copyloop_signedint_to_unsigned
+
+			# Unsigned integers.
+			elif funtypes in codegen_common.unsignedint:
+				codetype = copyloop_unsigned
+			# Signed integers.
+			else:
+				codetype = copyloop_signed
+
+
+		testop = {'arraytype' : codegen_common.arraytypes[arraycode],
+			'arraycode' : arraycode,
+			'maxvalue' : maxvalue,
+			'minvalue' : minvalue}
+
+		outputlist.append(codetype % testop)
+
+	outputlist.append(template_end)
+
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['float'])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
+
+
+

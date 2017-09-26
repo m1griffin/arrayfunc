@@ -324,20 +324,6 @@ endclass = """
 
 """
 
-# ==============================================================================
-
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('count\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
 
 # ==============================================================================
 
@@ -370,5 +356,5 @@ with open('test_count.py', 'w') as f:
 	f.write(op_template % testvalues)
 
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'count')
 

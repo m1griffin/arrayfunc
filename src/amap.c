@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -438,62 +438,62 @@ static PyObject *py_amap(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(itemcode) {
 		// signed char
 		case 'b' : {
-			resultcode = map_signed_char(opcode, arraylength, data.b, dataout.b, param1py.b, paramcount, disableovfl);
+			resultcode = amap_signed_char(opcode, arraylength, data.b, dataout.b, param1py.b, paramcount, disableovfl);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultcode = map_unsigned_char(opcode, arraylength, data.B, dataout.B, param1py.B, paramcount, disableovfl);
+			resultcode = amap_unsigned_char(opcode, arraylength, data.B, dataout.B, param1py.B, paramcount, disableovfl);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultcode = map_signed_short(opcode, arraylength, data.h, dataout.h, param1py.h, paramcount, disableovfl);
+			resultcode = amap_signed_short(opcode, arraylength, data.h, dataout.h, param1py.h, paramcount, disableovfl);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultcode = map_unsigned_short(opcode, arraylength, data.H, dataout.H, param1py.H, paramcount, disableovfl);
+			resultcode = amap_unsigned_short(opcode, arraylength, data.H, dataout.H, param1py.H, paramcount, disableovfl);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultcode = map_signed_int(opcode, arraylength, data.i, dataout.i, param1py.i, paramcount, disableovfl);
+			resultcode = amap_signed_int(opcode, arraylength, data.i, dataout.i, param1py.i, paramcount, disableovfl);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultcode = map_unsigned_int(opcode, arraylength, data.I, dataout.I, param1py.I, paramcount, disableovfl);
+			resultcode = amap_unsigned_int(opcode, arraylength, data.I, dataout.I, param1py.I, paramcount, disableovfl);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultcode = map_signed_long(opcode, arraylength, data.l, dataout.l, param1py.l, paramcount, disableovfl);
+			resultcode = amap_signed_long(opcode, arraylength, data.l, dataout.l, param1py.l, paramcount, disableovfl);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultcode = map_unsigned_long(opcode, arraylength, data.L, dataout.L, param1py.L, paramcount, disableovfl);
+			resultcode = amap_unsigned_long(opcode, arraylength, data.L, dataout.L, param1py.L, paramcount, disableovfl);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultcode = map_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q, paramcount, disableovfl);
+			resultcode = amap_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q, paramcount, disableovfl);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultcode = map_unsigned_long_long(opcode, arraylength, data.Q, dataout.Q, param1py.Q, paramcount, disableovfl);
+			resultcode = amap_unsigned_long_long(opcode, arraylength, data.Q, dataout.Q, param1py.Q, paramcount, disableovfl);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultcode = map_float(opcode, arraylength, data.f, dataout.f, (float) param1py.f, paramcount, disableovfl);
+			resultcode = amap_float(opcode, arraylength, data.f, dataout.f, (float) param1py.f, paramcount, disableovfl);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = map_double(opcode, arraylength, data.d, dataout.d, param1py.d, paramcount, disableovfl);
+			resultcode = amap_double(opcode, arraylength, data.d, dataout.d, param1py.d, paramcount, disableovfl);
 			break;
 		}
 		// We don't know this code.

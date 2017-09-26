@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
-// Module:   findindex.c
+// Module:   findindex_simd_x86.c
 // Purpose:  Returns the index of the first value in an array to meet the specified criteria.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     10-May-2014
+// Date:     10-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -33,11 +34,12 @@
 
 #include "arrayfunc.h"
 #include "arrayerrs.h"
-#include "simddefs.h"
 
 /*--------------------------------------------------------------------------- */
 
-// Auto-generated code goes below.
+/*--------------------------------------------------------------------------- */
+
+// Auto generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* For array code: b

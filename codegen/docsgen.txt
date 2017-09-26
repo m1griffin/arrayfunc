@@ -1,0 +1,258 @@
+Documents the op codes for amap and starmap.
+
+=============== ====================== ===== ===== === ===== =========
+Name             Equivalent to          b h   B H   f   OV     Compare
+                                        i l   I L   d          Ops    
+=============== ====================== ===== ===== === ===== =========
+af_add           x + y                   X     X    X    X             
+af_div           x / y                   X     X    X    X             
+af_div_r         y / x                   X     X    X    X             
+af_floordiv      x // y                  X     X    X    X             
+af_floordiv_r    y // x                  X     X    X    X             
+af_mod           x % y                   X     X    X    X             
+af_mod_r         y % x                   X     X    X    X             
+af_mult          x * y                   X     X    X    X             
+af_neg           -x                      X          X    X             
+af_pow           x**y                    X     X    X    X             
+af_pow_r         y**x                    X     X    X    X             
+af_sub           x - y                   X     X    X    X             
+af_sub_r         y - x                   X     X    X    X             
+af_and           x & y                   X     X                       
+af_or            x | y                   X     X                       
+af_xor           x ^ y                   X     X                       
+af_invert        ~x                      X     X                       
+af_eq            x == y                  X     X    X           X      
+af_gt            x > y                   X     X    X           X      
+af_gte           x >= y                  X     X    X           X      
+af_lt            x < y                   X     X    X           X      
+af_lte           x <= y                  X     X    X           X      
+af_ne            x != y                  X     X    X           X      
+af_lshift        x << y                  X     X                       
+af_lshift_r      y << x                  X     X                       
+af_rshift        x >> y                  X     X                       
+af_rshift_r      y >> x                  X     X                       
+af_abs           abs(x)                  X          X    X             
+math_acos        math.acos(x)                       X                  
+math_acosh       math.acosh(x)                      X                  
+math_asin        math.asin(x)                       X                  
+math_asinh       math.asinh(x)                      X                  
+math_atan        math.atan(x)                       X                  
+math_atan2       math.atan2(x, y)                   X                  
+math_atan2_r     math.atan2(y, x)                   X                  
+math_atanh       math.atanh(x)                      X                  
+math_ceil        math.ceil(x)                       X                  
+math_copysign    math.copysign(x, y)                X                  
+math_cos         math.cos(x)                        X                  
+math_cosh        math.cosh(x)                       X                  
+math_degrees     math.degrees(x)                    X                  
+math_erf         math.erf(x)                        X                  
+math_erfc        math.erfc(x)                       X                  
+math_exp         math.exp(x)                        X                  
+math_expm1       math.expm1(x)                      X                  
+math_fabs        math.fabs(x)                       X                  
+math_factorial   math.factorial(x)       X     X         X             
+math_floor       math.floor(x)                      X                  
+math_fmod        math.fmod(x, y)                    X                  
+math_fmod_r      math.fmod(y, x)                    X                  
+math_gamma       math.gamma(x)                      X                  
+math_hypot       math.hypot(x, y)                   X                  
+math_hypot_r     math.hypot(y, x)                   X                  
+math_isinf       math.isinf(x)                      X                  
+math_isnan       math.isnan(x)                      X                  
+math_ldexp       math.ldexp(x, y)                   X                  
+math_lgamma      math.lgamma(x)                     X                  
+math_log         math.log(x)                        X                  
+math_log10       math.log10(x)                      X                  
+math_log1p       math.log1p(x)                      X                  
+math_log2        math.log2(x)                       X                  
+math_pow         math.pow(x, y)                     X                  
+math_pow_r       math.pow(y, x)                     X                  
+math_radians     math.radians(x)                    X                  
+math_sin         math.sin(x)                        X                  
+math_sinh        math.sinh(x)                       X                  
+math_sqrt        math.sqrt(x)                       X                  
+math_tan         math.tan(x)                        X                  
+math_tanh        math.tanh(x)                       X                  
+math_trunc       math.trunc(x)                      X                  
+aops_subst_gt    x > y                   X     X    X                  
+aops_subst_gte   x >= y                  X     X    X                  
+aops_subst_lt    x < y                   X     X    X                  
+aops_subst_lte   x <= y                  X     X    X                  
+=============== ====================== ===== ===== === ===== =========
+
+
+
+af_add           x + y
+af_div           x / y
+af_div_r         y / x
+af_floordiv      x // y
+af_floordiv_r    y // x
+af_mod           x % y
+af_mod_r         y % x
+af_mult          x * y
+af_neg           -x
+af_pow           x**y
+af_pow_r         y**x
+af_sub           x - y
+af_sub_r         y - x
+af_and           x & y
+af_or            x | y
+af_xor           x ^ y
+af_invert        ~x
+af_eq            x == y
+af_gt            x > y
+af_gte           x >= y
+af_lt            x < y
+af_lte           x <= y
+af_ne            x != y
+af_lshift        x << y
+af_lshift_r      y << x
+af_rshift        x >> y
+af_rshift_r      y >> x
+af_abs           abs(x)
+math_acos        math.acos(x)
+math_acosh       math.acosh(x)
+math_asin        math.asin(x)
+math_asinh       math.asinh(x)
+math_atan        math.atan(x)
+math_atan2       math.atan2(x, y)
+math_atan2_r     math.atan2(y, x)
+math_atanh       math.atanh(x)
+math_ceil        math.ceil(x)
+math_copysign    math.copysign(x, y)
+math_cos         math.cos(x)
+math_cosh        math.cosh(x)
+math_degrees     math.degrees(x)
+math_erf         math.erf(x)
+math_erfc        math.erfc(x)
+math_exp         math.exp(x)
+math_expm1       math.expm1(x)
+math_fabs        math.fabs(x)
+math_factorial   math.factorial(x)
+math_floor       math.floor(x)
+math_fmod        math.fmod(x, y)
+math_fmod_r      math.fmod(y, x)
+math_gamma       math.gamma(x)
+math_hypot       math.hypot(x, y)
+math_hypot_r     math.hypot(y, x)
+math_isinf       math.isinf(x)
+math_isnan       math.isnan(x)
+math_ldexp       math.ldexp(x, y)
+math_lgamma      math.lgamma(x)
+math_log         math.log(x)
+math_log10       math.log10(x)
+math_log1p       math.log1p(x)
+math_log2        math.log2(x)
+math_pow         math.pow(x, y)
+math_pow_r       math.pow(y, x)
+math_radians     math.radians(x)
+math_sin         math.sin(x)
+math_sinh        math.sinh(x)
+math_sqrt        math.sqrt(x)
+math_tan         math.tan(x)
+math_tanh        math.tanh(x)
+math_trunc       math.trunc(x)
+aops_subst_gt    x > y
+aops_subst_gte   x >= y
+aops_subst_lt    x < y
+aops_subst_lte   x <= y
+
+
+
+
+Documents the op codes for ACalc.
+
+=============== ====================== ===== ===== === =====
+Name             Equivalent to          b h   B H   f   OV 
+                                        i l   I L   d      
+=============== ====================== ===== ===== === =====
+af_add           x + y                   X     X    X    X     
+af_div           x / y                   X     X    X    X     
+af_div_r         y / x                   X     X    X    X     
+af_floordiv      x // y                  X     X    X    X     
+af_floordiv_r    y // x                  X     X    X    X     
+af_mod           x % y                   X     X    X    X     
+af_mod_r         y % x                   X     X    X    X     
+af_mult          x * y                   X     X    X    X     
+af_neg           -x                      X          X    X     
+af_pow           x**y                    X     X    X    X     
+af_pow_r         y**x                    X     X    X    X     
+af_sub           x - y                   X     X    X    X     
+af_sub_r         y - x                   X     X    X    X     
+af_and           x & y                   X     X               
+af_or            x | y                   X     X               
+af_xor           x ^ y                   X     X               
+af_invert        ~x                      X     X               
+af_eq            x == y                  X     X    X          
+af_gt            x > y                   X     X    X          
+af_gte           x >= y                  X     X    X          
+af_lt            x < y                   X     X    X          
+af_lte           x <= y                  X     X    X          
+af_ne            x != y                  X     X    X          
+af_lshift        x << y                  X     X               
+af_lshift_r      y << x                  X     X               
+af_rshift        x >> y                  X     X               
+af_rshift_r      y >> x                  X     X               
+af_abs           abs(x)                  X          X    X     
+math_acos        math.acos(x)                       X          
+math_acosh       math.acosh(x)                      X          
+math_asin        math.asin(x)                       X          
+math_asinh       math.asinh(x)                      X          
+math_atan        math.atan(x)                       X          
+math_atan2       math.atan2(x, y)                   X          
+math_atan2_r     math.atan2(y, x)                   X          
+math_atanh       math.atanh(x)                      X          
+math_ceil        math.ceil(x)                       X          
+math_copysign    math.copysign(x, y)                X          
+math_cos         math.cos(x)                        X          
+math_cosh        math.cosh(x)                       X          
+math_degrees     math.degrees(x)                    X          
+math_erf         math.erf(x)                        X          
+math_erfc        math.erfc(x)                       X          
+math_exp         math.exp(x)                        X          
+math_expm1       math.expm1(x)                      X          
+math_fabs        math.fabs(x)                       X          
+math_factorial   math.factorial(x)       X     X         X     
+math_floor       math.floor(x)                      X          
+math_fmod        math.fmod(x, y)                    X          
+math_fmod_r      math.fmod(y, x)                    X          
+math_gamma       math.gamma(x)                      X          
+math_hypot       math.hypot(x, y)                   X          
+math_hypot_r     math.hypot(y, x)                   X          
+math_isinf       math.isinf(x)                      X          
+math_isnan       math.isnan(x)                      X          
+math_ldexp       math.ldexp(x, y)                   X          
+math_lgamma      math.lgamma(x)                     X          
+math_log         math.log(x)                        X          
+math_log10       math.log10(x)                      X          
+math_log1p       math.log1p(x)                      X          
+math_log2        math.log2(x)                       X          
+math_pow         math.pow(x, y)                     X          
+math_pow_r       math.pow(y, x)                     X          
+math_radians     math.radians(x)                    X          
+math_sin         math.sin(x)                        X          
+math_sinh        math.sinh(x)                       X          
+math_sqrt        math.sqrt(x)                       X          
+math_tan         math.tan(x)                        X          
+math_tanh        math.tanh(x)                       X          
+math_trunc       math.trunc(x)                      X          
+aops_subst_gt    x > y                   X     X    X          
+aops_subst_gte   x >= y                  X     X    X          
+aops_subst_lt    x < y                   X     X    X          
+aops_subst_lte   x <= y                  X     X    X          
+=============== ====================== ===== ===== === =====
+
+
+
+Documents which functions have SIMD support.
+
+=========== === === === === === === === === === === === ===
+  function   b   B   h   H   i   I   l   L   q   Q   f   d
+=========== === === === === === === === === === === === ===
+      aall   X       X       X                       X   X
+      aany   X       X       X                       X   X
+      amax   X   X   X   X   X   X                   X   X
+      amin   X   X   X   X   X   X                   X   X
+      asum                                           X   X
+ findindex   X       X       X                       X   X
+=========== === === === === === === === === === === === ===

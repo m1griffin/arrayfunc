@@ -79,16 +79,56 @@ oplist = codegen_common.ReadCSVData('arrayfunc.csv')
 # Filter out
 compops = [x for x in oplist if x['compare_ops'] != '']
 
-with open('afilter_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		arraytype = codegen_common.arraytypes[funtypes]
-		f.write(template_start % {'arraytype' : arraytype, 
-				'funcmodifier' : arraytype.replace(' ', '_')})
+# ==============================================================================
 
-		for ops in compops:
-			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
-			testop.update(ops)
-			f.write(op_template % testop)
+outputlist = []
 
-		f.write(template_end)
+funcname = 'afilter'
+filename = funcname + '_common'
+
+maindescription = 'Filter based on a test condition.'
+
+# The original date of the platform independent C code.
+ccodedate = '09-May-2014'
+
+
+# ==============================================================================
+
+
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	arraytype = codegen_common.arraytypes[funtypes]
+	outputlist.append(template_start % {'arraytype' : arraytype, 
+			'funcmodifier' : arraytype.replace(' ', '_')})
+
+	for ops in compops:
+		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
+		testop.update(ops)
+		outputlist.append(op_template % testop)
+
+	outputlist.append(template_end)
+
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, [])
+
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
+

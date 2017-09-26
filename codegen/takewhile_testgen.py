@@ -582,20 +582,6 @@ classend = """
 
 # ==============================================================================
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('takewhile\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_takewhile', '18-Jun-2014', 'takewhile')
 
@@ -634,6 +620,6 @@ with open('test_takewhile.py', 'w') as f:
 		f.write(nan_template % {'typelabel' : funtypes, 'typecode' : funtypes})
 
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'takewhile')
 
 

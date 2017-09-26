@@ -65,6 +65,7 @@ math_lgamma      math.lgamma(x)
 math_log         math.log(x)
 math_log10       math.log10(x)
 math_log1p       math.log1p(x)
+math_log2        math.log2(x)
 math_pow         math.pow(x, y)
 math_pow_r       math.pow(y, x)
 math_radians     math.radians(x)
@@ -106,9 +107,9 @@ aops = collections.namedtuple('aops', [
 'math_fabs', 'math_factorial', 'math_floor', 'math_fmod', 'math_fmod_r', 
 'math_gamma', 'math_hypot', 'math_hypot_r', 'math_isinf', 'math_isnan', 
 'math_ldexp', 'math_lgamma', 'math_log', 'math_log10', 'math_log1p', 
-'math_pow', 'math_pow_r', 'math_radians', 'math_sin', 'math_sinh', 
-'math_sqrt', 'math_tan', 'math_tanh', 'math_trunc', 'aops_subst_gt', 
-'aops_subst_gte', 'aops_subst_lt', 'aops_subst_lte', ])._make([
+'math_log2', 'math_pow', 'math_pow_r', 'math_radians', 'math_sin', 
+'math_sinh', 'math_sqrt', 'math_tan', 'math_tanh', 'math_trunc', 
+'aops_subst_gt', 'aops_subst_gte', 'aops_subst_lt', 'aops_subst_lte', ])._make([
 1, 2, 3, 4, 5, 
 6, 7, 8, 9, 10, 
 11, 12, 13, 14, 15, 
@@ -123,4 +124,4 @@ aops = collections.namedtuple('aops', [
 56, 57, 58, 59, 60, 
 61, 62, 63, 64, 65, 
 66, 67, 68, 69, 70, 
-71, 72, 73, ])
+71, 72, 73, 74, ])

@@ -409,7 +409,6 @@ class convert_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	%(funclonglongtestskip)s
 	def test_convert_09(self):
 		"""Test convert in array code  %(typelabel)s - Convert to array code q.
 		"""
@@ -432,7 +431,6 @@ class convert_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	%(funclonglongtestskip)s
 	def test_convert_10(self):
 		"""Test convert in array code  %(typelabel)s - Convert to array code Q.
 		"""
@@ -803,20 +801,6 @@ class convert_nan_float(unittest.TestCase):
 
 # ==============================================================================
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('convert\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_convert', '22-Jun-2014', 'convert')
 
@@ -834,7 +818,6 @@ with open('test_convert.py', 'w') as f:
 		datarec['typelabel'] = funtypes
 		datarec['bytesconverterdata'] = ''
 		datarec['bytesconverterdataout'] = ''
-		datarec['funclonglongtestskip'] = codegen_common.FuncLongLongTestSkip
 		f.write(template % datarec)
 
 
@@ -843,7 +826,6 @@ with open('test_convert.py', 'w') as f:
 	datarec['typelabel'] = 'bytes'
 	datarec['bytesconverterdata'] = bytesconverterdata
 	datarec['bytesconverterdataout'] = bytesconverterdataout
-	datarec['funclonglongtestskip'] = codegen_common.FuncLongLongTestSkip
 	f.write(template % datarec)
 
 
@@ -862,6 +844,6 @@ with open('test_convert.py', 'w') as f:
 
 
 	# This starts the tests.
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'convert')
 
 

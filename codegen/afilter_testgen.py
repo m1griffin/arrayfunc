@@ -637,20 +637,6 @@ class afilter_nanparam_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('afilter\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_afilter', '23-May-2014', 'afilter')
 
@@ -711,6 +697,6 @@ with open('test_afilter.py', 'w') as f:
 		f.write(nanparam_template % datarec)
 
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'afilter')
 
 

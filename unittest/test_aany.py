@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     20-May-2014.
-# Ver:      26-Jun-2017.
+# Ver:      12-Sep-2017.
 #
 ###############################################################################
 #
@@ -33,6 +33,7 @@ import itertools
 import math
 import operator
 import platform
+import sys
 
 import unittest
 
@@ -11916,10 +11917,20 @@ class aany_nanparam_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\n\n')
-		f.write('aany\n\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('aany\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
 
 ##############################################################################

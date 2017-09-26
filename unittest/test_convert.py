@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     22-Jun-2014.
-# Ver:      26-Jun-2017.
+# Ver:      12-Sep-2017.
 #
 ###############################################################################
 #
@@ -33,6 +33,7 @@ import itertools
 import math
 import operator
 import platform
+import sys
 
 import unittest
 
@@ -409,7 +410,6 @@ class convert_b(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  b - Convert to array code q.
 		"""
@@ -432,7 +432,6 @@ class convert_b(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  b - Convert to array code Q.
 		"""
@@ -870,7 +869,6 @@ class convert_B(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  B - Convert to array code q.
 		"""
@@ -893,7 +891,6 @@ class convert_B(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  B - Convert to array code Q.
 		"""
@@ -1331,7 +1328,6 @@ class convert_h(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  h - Convert to array code q.
 		"""
@@ -1354,7 +1350,6 @@ class convert_h(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  h - Convert to array code Q.
 		"""
@@ -1792,7 +1787,6 @@ class convert_H(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  H - Convert to array code q.
 		"""
@@ -1815,7 +1809,6 @@ class convert_H(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  H - Convert to array code Q.
 		"""
@@ -2253,7 +2246,6 @@ class convert_i(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  i - Convert to array code q.
 		"""
@@ -2276,7 +2268,6 @@ class convert_i(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  i - Convert to array code Q.
 		"""
@@ -2714,7 +2705,6 @@ class convert_I(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  I - Convert to array code q.
 		"""
@@ -2737,7 +2727,6 @@ class convert_I(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  I - Convert to array code Q.
 		"""
@@ -3175,7 +3164,6 @@ class convert_l(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  l - Convert to array code q.
 		"""
@@ -3198,7 +3186,6 @@ class convert_l(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  l - Convert to array code Q.
 		"""
@@ -3636,7 +3623,6 @@ class convert_L(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  L - Convert to array code q.
 		"""
@@ -3659,7 +3645,6 @@ class convert_L(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  L - Convert to array code Q.
 		"""
@@ -4097,7 +4082,6 @@ class convert_q(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  q - Convert to array code q.
 		"""
@@ -4120,7 +4104,6 @@ class convert_q(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  q - Convert to array code Q.
 		"""
@@ -4558,7 +4541,6 @@ class convert_Q(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  Q - Convert to array code q.
 		"""
@@ -4581,7 +4563,6 @@ class convert_Q(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  Q - Convert to array code Q.
 		"""
@@ -5019,7 +5000,6 @@ class convert_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  f - Convert to array code q.
 		"""
@@ -5042,7 +5022,6 @@ class convert_f(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  f - Convert to array code Q.
 		"""
@@ -5480,7 +5459,6 @@ class convert_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  d - Convert to array code q.
 		"""
@@ -5503,7 +5481,6 @@ class convert_d(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  d - Convert to array code Q.
 		"""
@@ -5941,7 +5918,6 @@ class convert_bytes(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_09(self):
 		"""Test convert in array code  bytes - Convert to array code q.
 		"""
@@ -5964,7 +5940,6 @@ class convert_bytes(unittest.TestCase):
 
 
 	########################################################
-	@unittest.skipIf('q' not in array.typecodes, 'Skip test if array type not supported on this platform.')
 	def test_convert_10(self):
 		"""Test convert in array code  bytes - Convert to array code Q.
 		"""
@@ -7082,10 +7057,20 @@ class convert_nan_float(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\n\n')
-		f.write('convert\n\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('convert\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
 
 ##############################################################################

@@ -691,37 +691,71 @@ def CreateFunction(csvdata, arraycode):
 	return ''.join(codeoutput)
 
 
+
 # ==============================================================================
 
-############################################################
+outputlist = []
+
+funcname = 'starmap'
+filename = funcname + '_common'
+
+maindescription = 'Common code for starmap and starmapi.'
+
+# The original date of the platform independent C code.
+ccodedate = '02-Jun-2014'
+
+
+# ==============================================================================
 
 # Read in the data from the CSV spreadsheet which holds the configuration.
 csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
+# ==============================================================================
 
-with open('starmap_code.txt', 'w') as f:
-	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
-		# Only use error flags for integer arrays.
-		if funtypes in codegen_common.intarrays:
-			errflagcode = '	char errflag = 0;\n'
-		else:
-			errflagcode = ''
+# Output the generated code.
+for funtypes in codegen_common.arraycodes:
+	# Only use error flags for integer arrays.
+	if funtypes in codegen_common.intarrays:
+		errflagcode = '	char errflag = 0;\n'
+	else:
+		errflagcode = ''
 
-		# Temporary variables used for integer arrays.
-		if funtypes in codegen_common.signedint:
-			tmpvars = tmpvardeclaration % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
-		else:
-			tmpvars = ''
-			
-		# Create the function declaration for an array type.
-		f.write(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
-				'arrayvartype' : codegen_common.arraytypes[funtypes], 
-				'errflag' : errflagcode, 'tmpvars' : tmpvars})
-		# Create the C code for the function.
-		f.write(CreateFunction(csvdata, funtypes))
-		# Close off the end of the function.
-		f.write(functionclosetemplate)
+	# Temporary variables used for integer arrays.
+	if funtypes in codegen_common.signedint:
+		tmpvars = tmpvardeclaration % {'arrayvartype' : codegen_common.arraytypes[funtypes]}
+	else:
+		tmpvars = ''
+		
+	# Create the function declaration for an array type.
+	outputlist.append(func_template % {'funcnamemodifier' : codegen_common.arraytypes[funtypes].replace(' ', '_'), 
+			'arrayvartype' : codegen_common.arraytypes[funtypes], 
+			'errflag' : errflagcode, 'tmpvars' : tmpvars})
+	# Create the C code for the function.
+	outputlist.append(CreateFunction(csvdata, funtypes))
+	# Close off the end of the function.
+	outputlist.append(functionclosetemplate)
 
+
+# ==============================================================================
+
+# Write out the actual code.
+codegen_common.OutputSourceCode(filename + '.c', outputlist, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate, 
+	funcname, ['limits', 'math', 'arithcalcs'])
+
+# ==============================================================================
+
+# Output the .h header file. 
+headedefs = codegen_common.GenCHeaderText(outputlist, funcname)
+
+# Write out the file.
+codegen_common.OutputCHeader(filename + '.h', headedefs, 
+	maindescription, 
+	codegen_common.PlatformIndependentDescr, 
+	ccodedate)
+
+# ==============================================================================
 
 

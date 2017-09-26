@@ -1479,21 +1479,6 @@ class acalcccomp_calc_comp__CompileToByteCode_%(typelabel)s(unittest.TestCase):
 # ==============================================================================
 
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('acalc\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_acalc', '12-Jan-2016', 'acalc')
 
@@ -1741,5 +1726,5 @@ with open('test_acalc.py', 'w') as f:
 	####################################################################
 
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'acalc')
 

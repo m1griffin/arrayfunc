@@ -2,12 +2,14 @@
 // Project:  arrayfunc
 // Module:   starmap_common.h
 // Purpose:  Common code for starmap and starmapi.
+//           Common platform independent code.
 // Language: C
-// Date:     11-May-2014.
+// Date:     02-Jun-2014
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -23,14 +25,6 @@
 //
 //------------------------------------------------------------------------------
 
-/*--------------------------------------------------------------------------- */
-// This must be defined before "Python.h" in order for the pointers in the
-// argument parsing functions to work properly. 
-#define PY_SSIZE_T_CLEAN
-
-#include "Python.h"
-
-/*--------------------------------------------------------------------------- */
 
 signed int starmap_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char *data2, signed char *dataout, unsigned int disableovfl);
 signed int starmap_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, unsigned char *data2, unsigned char *dataout, unsigned int disableovfl);
@@ -45,4 +39,3 @@ signed int starmap_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, un
 signed int starmap_float(signed int opcode, Py_ssize_t arraylen, float *data, float *data2, float *dataout, unsigned int disableovfl);
 signed int starmap_double(signed int opcode, Py_ssize_t arraylen, double *data, double *data2, double *dataout, unsigned int disableovfl);
 
-/*--------------------------------------------------------------------------- */

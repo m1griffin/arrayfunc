@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     23-May-2014.
-# Ver:      26-Jun-2017.
+# Ver:      12-Sep-2017.
 #
 ###############################################################################
 #
@@ -33,6 +33,7 @@ import itertools
 import math
 import operator
 import platform
+import sys
 
 import unittest
 
@@ -41015,6 +41016,193 @@ class amap_nan_data_math_log1p_0_f(unittest.TestCase):
 		"""
 		# This is the actual test.
 		arrayfunc.amapi(arrayfunc.aops.math_log1p, self.dataninf, disovfl=True)
+
+
+##############################################################################
+
+##############################################################################
+class amap_nan_data_math_log2_0_f(unittest.TestCase):
+	"""Test floating point arrays for nan, inf, -inf in data.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('f', [1.0] * 10)
+		self.dataok = array.array('f', [1.0] * 10)
+
+		self.dataout = array.array('f', itertools.repeat(0.0, 10))
+
+		self.datainf = array.array('f', [float('inf')] * 10)
+		self.datanan = array.array('f', [float('nan')] * 10)
+		self.dataninf = array.array('f', [float('-inf')] * 10)
+
+
+	########################################################
+	def test_nan_math_log2_amap(self):
+		"""Test amap for data of nan with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.datanan, self.dataout)
+
+
+	########################################################
+	def test_nan_math_log2_amapi(self):
+		"""Test amapi for data of nan with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.datanan)
+
+
+	########################################################
+	def test_nan_math_log2_ov_amap(self):
+		"""Test amap for data of nan with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.datanan, self.dataout, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+	########################################################
+	def test_nan_math_log2_ov_amapi(self):
+		"""Test amapi for data of nan with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.datanan, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datanan), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_inf_math_log2_amap(self):
+		"""Test amap for data of inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.datainf, self.dataout)
+
+
+	########################################################
+	def test_inf_math_log2_amapi(self):
+		"""Test amapi for data of inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.datainf)
+
+
+	########################################################
+	def test_inf_math_log2_ov_amap(self):
+		"""Test amap for data of inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.datainf, self.dataout, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+	########################################################
+	def test_inf_math_log2_ov_amapi(self):
+		"""Test amapi for data of inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.datainf, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datainf), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_ninf_math_log2_amap(self):
+		"""Test amap for data of -inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.dataninf, self.dataout)
+
+
+	########################################################
+	def test_ninf_math_log2_amapi(self):
+		"""Test amapi for data of -inf with overflow checking on and single parameter functions  - Array code f.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.dataninf)
+
+
+	########################################################
+	def test_ninf_math_log2_ov_amap(self):
+		"""Test amap for data of -inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.dataninf, self.dataout, disovfl=True)
+
+
+	########################################################
+	def test_ninf_math_log2_ov_amapi(self):
+		"""Test amapi for data of -inf with overflow checking off and single parameter functions  - Array code f.
+		"""
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.dataninf, disovfl=True)
 
 
 ##############################################################################
@@ -92524,6 +92712,193 @@ class amap_nan_data_math_log1p_0_d(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
+class amap_nan_data_math_log2_0_d(unittest.TestCase):
+	"""Test floating point arrays for nan, inf, -inf in data.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('d', [1.0] * 10)
+		self.dataok = array.array('d', [1.0] * 10)
+
+		self.dataout = array.array('d', itertools.repeat(0.0, 10))
+
+		self.datainf = array.array('d', [float('inf')] * 10)
+		self.datanan = array.array('d', [float('nan')] * 10)
+		self.dataninf = array.array('d', [float('-inf')] * 10)
+
+
+	########################################################
+	def test_nan_math_log2_amap(self):
+		"""Test amap for data of nan with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.datanan, self.dataout)
+
+
+	########################################################
+	def test_nan_math_log2_amapi(self):
+		"""Test amapi for data of nan with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.datanan)
+
+
+	########################################################
+	def test_nan_math_log2_ov_amap(self):
+		"""Test amap for data of nan with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.datanan, self.dataout, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+	########################################################
+	def test_nan_math_log2_ov_amapi(self):
+		"""Test amapi for data of nan with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datanan]
+
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.datanan, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datanan), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_inf_math_log2_amap(self):
+		"""Test amap for data of inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.datainf, self.dataout)
+
+
+	########################################################
+	def test_inf_math_log2_amapi(self):
+		"""Test amapi for data of inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.datainf)
+
+
+	########################################################
+	def test_inf_math_log2_ov_amap(self):
+		"""Test amap for data of inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.datainf, self.dataout, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+	########################################################
+	def test_inf_math_log2_ov_amapi(self):
+		"""Test amapi for data of inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# Calculate the expected result.
+		expected = [math.log2(x) for x in self.datainf]
+
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.datainf, disovfl=True)
+
+		for dataoutitem, expecteditem in zip(list(self.datainf), expected):
+			# NaN cannot be compared using normal means.
+			if math.isnan(expecteditem):
+				self.assertTrue(math.isnan(dataoutitem))
+			elif math.isnan(dataoutitem):
+				self.assertTrue(math.isnan(expecteditem))
+			# Inf or -inf can be compared using an exact match.
+			elif (not math.isfinite(dataoutitem)) or (not math.isfinite(expecteditem)):
+				self.assertEqual(dataoutitem, expecteditem)
+			# Anything else can be compared normally.
+			else:
+				deltaval = min((abs(expecteditem), abs(dataoutitem))) / 100.0
+				self.assertAlmostEqual(dataoutitem, expecteditem, delta=deltaval)
+
+
+
+	########################################################
+	def test_ninf_math_log2_amap(self):
+		"""Test amap for data of -inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, self.dataninf, self.dataout)
+
+
+	########################################################
+	def test_ninf_math_log2_amapi(self):
+		"""Test amapi for data of -inf with overflow checking on and single parameter functions  - Array code d.
+		"""
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, self.dataninf)
+
+
+	########################################################
+	def test_ninf_math_log2_ov_amap(self):
+		"""Test amap for data of -inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# This is the actual test.
+		arrayfunc.amap(arrayfunc.aops.math_log2, self.dataninf, self.dataout, disovfl=True)
+
+
+	########################################################
+	def test_ninf_math_log2_ov_amapi(self):
+		"""Test amapi for data of -inf with overflow checking off and single parameter functions  - Array code d.
+		"""
+		# This is the actual test.
+		arrayfunc.amapi(arrayfunc.aops.math_log2, self.dataninf, disovfl=True)
+
+
+##############################################################################
+
+##############################################################################
 class amap_nan_data_math_pow_0_d(unittest.TestCase):
 	"""Test floating point arrays for nan, inf, -inf in data.
 	"""
@@ -103056,10 +103431,20 @@ class amap_nan_data_aops_subst_lte_4_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\n\n')
-		f.write('amap\n\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('amap\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
 
 ##############################################################################

@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     23-May-2014.
-# Ver:      26-Jun-2017.
+# Ver:      12-Sep-2017.
 #
 ###############################################################################
 #
@@ -33,6 +33,7 @@ import itertools
 import math
 import operator
 import platform
+import sys
 
 import unittest
 
@@ -6446,6 +6447,26 @@ class amap_floaterror_f(unittest.TestCase):
 
 
 	########################################################
+	def test_floaterror_math_log2_amap(self):
+		"""Test amap floating point error in math_log2  - Array code f.
+		"""
+		data = array.array('f', range(-10,10))
+		dataout = array.array('f', [0]*len(data))
+
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, data, dataout)
+
+	########################################################
+	def test_floaterror_math_log2_amapi(self):
+		"""Test amapi floating point error in math_log2  - Array code f.
+		"""
+		data = array.array('f', range(-10,10))
+
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, data)
+
+
+	########################################################
 	def test_floaterror_math_pow_amap(self):
 		"""Test amap floating point error in math_pow  - Array code f.
 		"""
@@ -6743,6 +6764,26 @@ class amap_floaterror_d(unittest.TestCase):
 
 		with self.assertRaises(ArithmeticError):
 			arrayfunc.amapi(arrayfunc.aops.math_log1p, data)
+
+
+	########################################################
+	def test_floaterror_math_log2_amap(self):
+		"""Test amap floating point error in math_log2  - Array code d.
+		"""
+		data = array.array('d', range(-10,10))
+		dataout = array.array('d', [0]*len(data))
+
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amap(arrayfunc.aops.math_log2, data, dataout)
+
+	########################################################
+	def test_floaterror_math_log2_amapi(self):
+		"""Test amapi floating point error in math_log2  - Array code d.
+		"""
+		data = array.array('d', range(-10,10))
+
+		with self.assertRaises(ArithmeticError):
+			arrayfunc.amapi(arrayfunc.aops.math_log2, data)
 
 
 	########################################################
@@ -22910,10 +22951,20 @@ class amap_nan_param_aops_subst_lte_d(unittest.TestCase):
 
 ##############################################################################
 if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\n\n')
-		f.write('amap\n\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
+
+	# Check to see if the log file option has been selected. This is an option
+	# which we have added in order to decide where to output the results.
+	if '-l' in sys.argv:
+		# Remove the option from the argument list so that "unittest" does 
+		# not complain about unknown options.
+		sys.argv.remove('-l')
+
+		with open('arrayfunc_unittest.txt', 'a') as f:
+			f.write('\n\n')
+			f.write('amap\n\n')
+			trun = unittest.TextTestRunner(f)
+			unittest.main(testRunner=trun)
+	else:
+		unittest.main()
 
 ##############################################################################

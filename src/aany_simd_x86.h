@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   aany_simd_x86.h
-// Purpose:  Returns True if any element in an array meets the selected criteria.
+// Purpose:  Returns True if any elements in an array meet the selected criteria.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     02-May-2017
+// Date:     01-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -24,8 +25,11 @@
 //
 //------------------------------------------------------------------------------
 
+
 signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1);
 signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1);
 signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1);
 signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, float param1);
 signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data, double param1);
+
+

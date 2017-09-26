@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@
 #include "arrayfunc.h"
 #include "arrayerrs.h"
 
+#include "acalcvm_ops.h"
 #include "acalcvm_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -72,13 +73,13 @@ static char *kwlist[] = {"code", "varoffset", "vars", "const", "vmstack", "data"
 // op code so we don't overflow the look-up table when checking.
 
 signed int intstackcodes[] = {0, 1, 1, 1, -1, -1, -1, -1, -1, -1, 0, 0, -1, -1, -1, -1, 0, -1, -1, 0, 0};
-signed int floatstackcodes[] = {0, 1, 1, 1, -1, -1, -1, -1, -1, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1, -1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0};
+signed int floatstackcodes[] = {0, 1, 1, 1, -1, -1, -1, -1, -1, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, -1, -1, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0};
 
 // We need the maximum op code value so we can check if there is an invalid
 // op code so we don't overflow the look-up table when checking.
 
 #define OPCODEMAXINT 20
-#define OPCODEMAXFLOAT 47
+#define OPCODEMAXFLOAT 48
 
 /*--------------------------------------------------------------------------- */
 

@@ -17,7 +17,7 @@ do
 	CMD="./"$utest
 	echo "Testing: " $CMD
 	# Run the test.
-	$CMD
+	$CMD -l
 	result=$?
 	# Speak a failure message, and count up how many failures.
 	if [ "$result" -ne 0 ]

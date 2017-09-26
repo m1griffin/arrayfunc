@@ -5,7 +5,7 @@
 # Purpose:  Benchmark functions for amap and amapi.
 # Language: Python 3.4
 # Date:     17-Sep-2014.
-# Ver:      27-Jun-2017.
+# Ver:      05-Sep-2017.
 #
 ###############################################################################
 #
@@ -128,6 +128,7 @@ calibrationdata = {
 'math_log' : (3, 48),
 'math_log10' : (3, 35),
 'math_log1p' : (4, 37),
+'math_log2' : (4, 52),
 'math_pow' : (3, 80),
 'math_pow_r' : (3, 18),
 'math_radians' : (6, 326),
@@ -15014,6 +15015,101 @@ class benchmark_math_log1p:
 ##############################################################################
 
 ##############################################################################
+class benchmark_math_log2:
+	"""Test for basic operator function.
+	"""
+
+	########################################################
+	def __init__(self):
+		"""Initialise.
+		"""
+		self.TestResults = {}
+		self.pyitercounts = calibrationdata['math_log2'][0]
+		self.afitercounts = calibrationdata['math_log2'][1]
+
+
+	########################################################
+	def RunTests(self):
+		"""Run all the tests.
+		"""
+
+		self.TestFuncs = [self.Benchmark_f, self.Benchmark_d]
+		for testfunc in self.TestFuncs:
+			testfunc()
+
+
+	########################################################
+	def Benchmark_f(self):
+		"""Measure execution time.
+		"""
+		TypeCode = 'f'
+		InvertMask = allinvertmasks['f']
+
+		data = array.array('f', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		arraylength = len(data)
+		dataout = array.array('f', itertools.repeat(0, arraylength))
+
+		# Time for python.
+		starttime = time.perf_counter()
+		for x in range(self.pyitercounts):
+			for i in range(arraylength):
+				dataout[i] = math.log2(data[i])
+		endtime = time.perf_counter()
+
+		pythontime = (endtime - starttime) / self.pyitercounts
+
+		data = array.array('f', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		dataout = array.array('f', itertools.repeat(0, arraylength))
+
+		# Time for amap.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.amap(arrayfunc.aops.math_log2, data, dataout )
+		endtime = time.perf_counter()
+
+		amaptime = (endtime - starttime) / self.afitercounts
+
+
+		self.TestResults['f'] = (pythontime, amaptime, pythontime / amaptime)
+
+
+	########################################################
+	def Benchmark_d(self):
+		"""Measure execution time.
+		"""
+		TypeCode = 'd'
+		InvertMask = allinvertmasks['d']
+
+		data = array.array('d', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		arraylength = len(data)
+		dataout = array.array('d', itertools.repeat(0, arraylength))
+
+		# Time for python.
+		starttime = time.perf_counter()
+		for x in range(self.pyitercounts):
+			for i in range(arraylength):
+				dataout[i] = math.log2(data[i])
+		endtime = time.perf_counter()
+
+		pythontime = (endtime - starttime) / self.pyitercounts
+
+		data = array.array('d', (x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), itertools.repeat(0, ARRAYSIZE))))
+		dataout = array.array('d', itertools.repeat(0, arraylength))
+
+		# Time for amap.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.amap(arrayfunc.aops.math_log2, data, dataout )
+		endtime = time.perf_counter()
+
+		amaptime = (endtime - starttime) / self.afitercounts
+
+
+		self.TestResults['d'] = (pythontime, amaptime, pythontime / amaptime)
+
+##############################################################################
+
+##############################################################################
 class benchmark_math_pow:
 	"""Test for basic operator function.
 	"""
@@ -17649,7 +17745,7 @@ class benchmark_aops_subst_lte:
 ##############################################################################
 
 
-BenchClasses = [(benchmark_af_add, 'af_add'), (benchmark_af_div, 'af_div'), (benchmark_af_div_r, 'af_div_r'), (benchmark_af_floordiv, 'af_floordiv'), (benchmark_af_floordiv_r, 'af_floordiv_r'), (benchmark_af_mod, 'af_mod'), (benchmark_af_mod_r, 'af_mod_r'), (benchmark_af_mult, 'af_mult'), (benchmark_af_neg, 'af_neg'), (benchmark_af_pow, 'af_pow'), (benchmark_af_pow_r, 'af_pow_r'), (benchmark_af_sub, 'af_sub'), (benchmark_af_sub_r, 'af_sub_r'), (benchmark_af_and, 'af_and'), (benchmark_af_or, 'af_or'), (benchmark_af_xor, 'af_xor'), (benchmark_af_invert, 'af_invert'), (benchmark_af_eq, 'af_eq'), (benchmark_af_gt, 'af_gt'), (benchmark_af_gte, 'af_gte'), (benchmark_af_lt, 'af_lt'), (benchmark_af_lte, 'af_lte'), (benchmark_af_ne, 'af_ne'), (benchmark_af_lshift, 'af_lshift'), (benchmark_af_lshift_r, 'af_lshift_r'), (benchmark_af_rshift, 'af_rshift'), (benchmark_af_rshift_r, 'af_rshift_r'), (benchmark_af_abs, 'af_abs'), (benchmark_math_acos, 'math_acos'), (benchmark_math_acosh, 'math_acosh'), (benchmark_math_asin, 'math_asin'), (benchmark_math_asinh, 'math_asinh'), (benchmark_math_atan, 'math_atan'), (benchmark_math_atan2, 'math_atan2'), (benchmark_math_atan2_r, 'math_atan2_r'), (benchmark_math_atanh, 'math_atanh'), (benchmark_math_ceil, 'math_ceil'), (benchmark_math_copysign, 'math_copysign'), (benchmark_math_cos, 'math_cos'), (benchmark_math_cosh, 'math_cosh'), (benchmark_math_degrees, 'math_degrees'), (benchmark_math_erf, 'math_erf'), (benchmark_math_erfc, 'math_erfc'), (benchmark_math_exp, 'math_exp'), (benchmark_math_expm1, 'math_expm1'), (benchmark_math_fabs, 'math_fabs'), (benchmark_math_factorial, 'math_factorial'), (benchmark_math_floor, 'math_floor'), (benchmark_math_fmod, 'math_fmod'), (benchmark_math_fmod_r, 'math_fmod_r'), (benchmark_math_gamma, 'math_gamma'), (benchmark_math_hypot, 'math_hypot'), (benchmark_math_hypot_r, 'math_hypot_r'), (benchmark_math_isinf, 'math_isinf'), (benchmark_math_isnan, 'math_isnan'), (benchmark_math_ldexp, 'math_ldexp'), (benchmark_math_lgamma, 'math_lgamma'), (benchmark_math_log, 'math_log'), (benchmark_math_log10, 'math_log10'), (benchmark_math_log1p, 'math_log1p'), (benchmark_math_pow, 'math_pow'), (benchmark_math_pow_r, 'math_pow_r'), (benchmark_math_radians, 'math_radians'), (benchmark_math_sin, 'math_sin'), (benchmark_math_sinh, 'math_sinh'), (benchmark_math_sqrt, 'math_sqrt'), (benchmark_math_tan, 'math_tan'), (benchmark_math_tanh, 'math_tanh'), (benchmark_math_trunc, 'math_trunc'), (benchmark_aops_subst_gt, 'aops_subst_gt'), (benchmark_aops_subst_gte, 'aops_subst_gte'), (benchmark_aops_subst_lt, 'aops_subst_lt'), (benchmark_aops_subst_lte, 'aops_subst_lte')]
+BenchClasses = [(benchmark_af_add, 'af_add'), (benchmark_af_div, 'af_div'), (benchmark_af_div_r, 'af_div_r'), (benchmark_af_floordiv, 'af_floordiv'), (benchmark_af_floordiv_r, 'af_floordiv_r'), (benchmark_af_mod, 'af_mod'), (benchmark_af_mod_r, 'af_mod_r'), (benchmark_af_mult, 'af_mult'), (benchmark_af_neg, 'af_neg'), (benchmark_af_pow, 'af_pow'), (benchmark_af_pow_r, 'af_pow_r'), (benchmark_af_sub, 'af_sub'), (benchmark_af_sub_r, 'af_sub_r'), (benchmark_af_and, 'af_and'), (benchmark_af_or, 'af_or'), (benchmark_af_xor, 'af_xor'), (benchmark_af_invert, 'af_invert'), (benchmark_af_eq, 'af_eq'), (benchmark_af_gt, 'af_gt'), (benchmark_af_gte, 'af_gte'), (benchmark_af_lt, 'af_lt'), (benchmark_af_lte, 'af_lte'), (benchmark_af_ne, 'af_ne'), (benchmark_af_lshift, 'af_lshift'), (benchmark_af_lshift_r, 'af_lshift_r'), (benchmark_af_rshift, 'af_rshift'), (benchmark_af_rshift_r, 'af_rshift_r'), (benchmark_af_abs, 'af_abs'), (benchmark_math_acos, 'math_acos'), (benchmark_math_acosh, 'math_acosh'), (benchmark_math_asin, 'math_asin'), (benchmark_math_asinh, 'math_asinh'), (benchmark_math_atan, 'math_atan'), (benchmark_math_atan2, 'math_atan2'), (benchmark_math_atan2_r, 'math_atan2_r'), (benchmark_math_atanh, 'math_atanh'), (benchmark_math_ceil, 'math_ceil'), (benchmark_math_copysign, 'math_copysign'), (benchmark_math_cos, 'math_cos'), (benchmark_math_cosh, 'math_cosh'), (benchmark_math_degrees, 'math_degrees'), (benchmark_math_erf, 'math_erf'), (benchmark_math_erfc, 'math_erfc'), (benchmark_math_exp, 'math_exp'), (benchmark_math_expm1, 'math_expm1'), (benchmark_math_fabs, 'math_fabs'), (benchmark_math_factorial, 'math_factorial'), (benchmark_math_floor, 'math_floor'), (benchmark_math_fmod, 'math_fmod'), (benchmark_math_fmod_r, 'math_fmod_r'), (benchmark_math_gamma, 'math_gamma'), (benchmark_math_hypot, 'math_hypot'), (benchmark_math_hypot_r, 'math_hypot_r'), (benchmark_math_isinf, 'math_isinf'), (benchmark_math_isnan, 'math_isnan'), (benchmark_math_ldexp, 'math_ldexp'), (benchmark_math_lgamma, 'math_lgamma'), (benchmark_math_log, 'math_log'), (benchmark_math_log10, 'math_log10'), (benchmark_math_log1p, 'math_log1p'), (benchmark_math_log2, 'math_log2'), (benchmark_math_pow, 'math_pow'), (benchmark_math_pow_r, 'math_pow_r'), (benchmark_math_radians, 'math_radians'), (benchmark_math_sin, 'math_sin'), (benchmark_math_sinh, 'math_sinh'), (benchmark_math_sqrt, 'math_sqrt'), (benchmark_math_tan, 'math_tan'), (benchmark_math_tanh, 'math_tanh'), (benchmark_math_trunc, 'math_trunc'), (benchmark_aops_subst_gt, 'aops_subst_gt'), (benchmark_aops_subst_gte, 'aops_subst_gte'), (benchmark_aops_subst_lt, 'aops_subst_lt'), (benchmark_aops_subst_lte, 'aops_subst_lte')]
 arraycodes = ['b', 'B', 'h', 'H', 'i', 'I', 'l', 'L', 'q', 'Q', 'f', 'd']
 
 TestLabels = [y for x,y in BenchClasses]

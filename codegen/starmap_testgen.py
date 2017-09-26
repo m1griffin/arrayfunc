@@ -1700,19 +1700,6 @@ starmapi_almost_template = """for dataoutitem, expecteditem in zip(list(data), e
 classend = """##############################################################################
 """
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('starmap\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-
 # ==============================================================================
 
 
@@ -2139,7 +2126,7 @@ with open(FormatFileName(1), 'w') as f:
 	for arraycode, arraylabel in zip(testarraycodes, testarraylabels):
 		f.write(type_template % codegen_common.arraytypeclass[arraylabel])
 		f.write(''.join(makeoptests(csvdata, arraycode, arraylabel)))
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'starmap')
 
 
 
@@ -2165,7 +2152,7 @@ with open(FormatFileName(2), 'w') as f:
 	for arraycode in codegen_common.floatarrays:
 		f.write(''.join(makenanparamtestset(csvdata, arraycode)))
 
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'starmap')
 
 
 # Tests involving NaN, inf, and -inf.
@@ -2176,7 +2163,7 @@ with open(FormatFileName(3), 'w') as f:
 	# Test for nan, inf, -inf in data.
 	for arraycode in codegen_common.floatarrays:
 		f.write(''.join(makenandatatests(csvdata, arraycode)))
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'starmap')
 
 
 

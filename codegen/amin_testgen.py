@@ -343,20 +343,6 @@ testclose = '''
 
 # ==============================================================================
 
-endtemplate = """
-##############################################################################
-if __name__ == '__main__':
-	with open('arrayfunc_unittest.txt', 'a') as f:
-		f.write('\\n\\n')
-		f.write('amin\\n\\n')
-		trun = unittest.TextTestRunner(f)
-		unittest.main(testRunner=trun)
-
-##############################################################################
-"""
-
-# ==============================================================================
-
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('test_amin', '11-Jun-2014', 'amin')
 
@@ -414,6 +400,6 @@ with open('test_amin.py', 'w') as f:
 		f.write(testclose)
 
 	# End of the tests.
-	f.write(endtemplate)
+	f.write(codegen_common.testendtemplate % 'amin')
 
 

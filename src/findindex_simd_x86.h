@@ -1,10 +1,11 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
-// Module:   findindex.c
+// Module:   findindex_simd_x86.h
 // Purpose:  Returns the index of the first value in an array to meet the specified criteria.
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     10-May-2017
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
@@ -24,8 +25,11 @@
 //
 //------------------------------------------------------------------------------
 
+
 Py_ssize_t findindex_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1);
 Py_ssize_t findindex_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1);
 Py_ssize_t findindex_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1);
 Py_ssize_t findindex_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, float param1);
 Py_ssize_t findindex_double_simd(signed int opcode, Py_ssize_t arraylen, double *data, double param1);
+
+

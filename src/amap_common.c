@@ -2,12 +2,14 @@
 // Project:  arrayfunc
 // Module:   amap_common.c
 // Purpose:  Common code for amap and amapi.
+//           Common platform independent code.
 // Language: C
 // Date:     09-Apr-2014
+// Ver:      24-Sep-2017.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,19 +32,18 @@
 
 #include "Python.h"
 
-#include <math.h>
 #include <limits.h>
-
+#include <math.h>
 #include "arithcalcs.h"
-#include "arrayerrs.h"
+
 #include "arrayfunc.h"
+#include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
 
-
 /*--------------------------------------------------------------------------- */
 
-// The auto-generated code goes below.
+// Auto generated code goes below.
 
 /*--------------------------------------------------------------------------- */
 /* opcode = The operator or function code to select what to execute.
@@ -53,7 +54,7 @@
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -582,7 +583,7 @@ signed int map_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -941,7 +942,7 @@ signed int map_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned ch
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1470,7 +1471,7 @@ signed int map_signed_short(signed int opcode, Py_ssize_t arraylen, signed short
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1829,7 +1830,7 @@ signed int map_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned s
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2358,7 +2359,7 @@ signed int map_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *da
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2717,7 +2718,7 @@ signed int map_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -3246,7 +3247,7 @@ signed int map_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -3605,7 +3606,7 @@ signed int map_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned lo
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -4134,7 +4135,7 @@ signed int map_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed l
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -4493,7 +4494,7 @@ signed int map_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsign
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float *dataout, float param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_float(signed int opcode, Py_ssize_t arraylen, float *data, float *dataout, float param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -4775,7 +4776,7 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 	// af_abs
 	case OP_AF_ABS: {
 		for(x = 0; x < arraylen; x++) {
-			dataout[x] = data[x] >= 0.0 ? data[x] : -data[x];
+			dataout[x] = fabsf(data[x]);
 		}
 		return ARR_NO_ERR;
 	}
@@ -5269,6 +5270,22 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
 		}
 		return ARR_NO_ERR;
 	}
+	// math_log2
+	case OP_MATH_LOG2: {
+		// Overflow checking disabled.
+		if (disableovfl) {
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = log2f(data[x]);
+			}
+		} else {
+		// Overflow checking enabled.
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = log2f(data[x]);
+				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+		return ARR_NO_ERR;
+	}
 	// math_pow
 	case OP_MATH_POW: {
 		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
@@ -5465,7 +5482,7 @@ signed int map_float(signed int opcode, Py_ssize_t arraylen, float *data, float 
    paramcount = The number of valid parameters (normally 0 or 1).
    disableovfl = If true, disable arithmetic overflow checking (default is false).
 */
-signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, double *dataout, double param1, unsigned int paramcount, unsigned int disableovfl) {
+signed int amap_double(signed int opcode, Py_ssize_t arraylen, double *data, double *dataout, double param1, unsigned int paramcount, unsigned int disableovfl) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -5747,7 +5764,7 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 	// af_abs
 	case OP_AF_ABS: {
 		for(x = 0; x < arraylen; x++) {
-			dataout[x] = data[x] >= 0.0 ? data[x] : -data[x];
+			dataout[x] = fabs(data[x]);
 		}
 		return ARR_NO_ERR;
 	}
@@ -6241,6 +6258,22 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 		}
 		return ARR_NO_ERR;
 	}
+	// math_log2
+	case OP_MATH_LOG2: {
+		// Overflow checking disabled.
+		if (disableovfl) {
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = log2(data[x]);
+			}
+		} else {
+		// Overflow checking enabled.
+			for(x = 0; x < arraylen; x++) {
+				dataout[x] = log2(data[x]);
+				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
+			}
+		}
+		return ARR_NO_ERR;
+	}
 	// math_pow
 	case OP_MATH_POW: {
 		if (paramcount < 1) {return ARR_ERR_PARAMMISSING;}
@@ -6425,4 +6458,5 @@ signed int map_double(signed int opcode, Py_ssize_t arraylen, double *data, doub
 	return ARR_ERR_INVALIDOP;
 }
 /*--------------------------------------------------------------------------- */
+
 
