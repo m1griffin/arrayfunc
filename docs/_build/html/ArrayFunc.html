@@ -1,0 +1,5836 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ArrayFunc &mdash; ArrayFunc 1.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ArrayFunc 1.1.0 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to ArrayFunc’s documentation!" href="index.html" /> 
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ArrayFunc’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ArrayFunc 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="arrayfunc">
+<h1><a class="toc-backref" href="#id4">ArrayFunc</a><a class="headerlink" href="#arrayfunc" title="Permalink to this headline">¶</a></h1>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Michael Griffin</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">3.1.0 for 2017-10-12</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2017</td>
+</tr>
+<tr class="field-even field"><th class="field-name">License:</th><td class="field-body">This document may be distributed under the Apache License V2.0.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Language:</th><td class="field-body">Python 3.5 or later</td>
+</tr>
+</tbody>
+</table>
+<div class="contents topic" id="table-of-contents">
+<p class="topic-title first">Table of Contents</p>
+<ul class="simple">
+<li><a class="reference internal" href="#arrayfunc" id="id4">ArrayFunc</a><ul>
+<li><a class="reference internal" href="#introduction" id="id5">Introduction</a></li>
+<li><a class="reference internal" href="#functions" id="id6">Functions</a><ul>
+<li><a class="reference internal" href="#summary" id="id7">Summary</a><ul>
+<li><a class="reference internal" href="#filling-arrays" id="id8">Filling Arrays</a></li>
+<li><a class="reference internal" href="#filtering-arrays" id="id9">Filtering Arrays</a></li>
+<li><a class="reference internal" href="#examining-and-searching-arrays" id="id10">Examining and Searching Arrays</a></li>
+<li><a class="reference internal" href="#operating-on-arrays" id="id11">Operating on Arrays</a></li>
+<li><a class="reference internal" href="#data-conversion" id="id12">Data Conversion</a></li>
+<li><a class="reference internal" href="#array-limit-attributes" id="id13">Array Limit Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#details" id="id14">Details</a><ul>
+<li><a class="reference internal" href="#count" id="id15">count</a></li>
+<li><a class="reference internal" href="#cycle" id="id16">cycle</a></li>
+<li><a class="reference internal" href="#repeat" id="id17">repeat</a></li>
+<li><a class="reference internal" href="#afilter" id="id18">afilter</a></li>
+<li><a class="reference internal" href="#compress" id="id19">compress</a></li>
+<li><a class="reference internal" href="#dropwhile" id="id20">dropwhile</a></li>
+<li><a class="reference internal" href="#takewhile" id="id21">takewhile</a></li>
+<li><a class="reference internal" href="#aany" id="id22">aany</a></li>
+<li><a class="reference internal" href="#aall" id="id23">aall</a></li>
+<li><a class="reference internal" href="#amax" id="id24">amax</a></li>
+<li><a class="reference internal" href="#amin" id="id25">amin</a></li>
+<li><a class="reference internal" href="#findindex" id="id26">findindex</a></li>
+<li><a class="reference internal" href="#findindices" id="id27">findindices</a></li>
+<li><a class="reference internal" href="#amap" id="id28">amap</a></li>
+<li><a class="reference internal" href="#amapi" id="id29">amapi</a></li>
+<li><a class="reference internal" href="#starmap" id="id30">starmap</a></li>
+<li><a class="reference internal" href="#starmapi" id="id31">starmapi</a></li>
+<li><a class="reference internal" href="#asum" id="id32">asum</a></li>
+<li><a class="reference internal" href="#convert" id="id33">convert</a></li>
+<li><a class="reference internal" href="#arraylimits-attributes" id="id34">arraylimits attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#acalc" id="id35">ACalc</a><ul>
+<li><a class="reference internal" href="#description" id="id36">Description</a></li>
+<li><a class="reference internal" href="#initialisation" id="id37">Initialisation</a></li>
+<li><a class="reference internal" href="#compiling" id="id38">Compiling</a></li>
+<li><a class="reference internal" href="#executing" id="id39">Executing</a></li>
+<li><a class="reference internal" href="#complete-example" id="id40">Complete Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option-flags-and-parameters" id="id41">Option Flags and Parameters</a><ul>
+<li><a class="reference internal" href="#arithmetic-overflow-control" id="id42">Arithmetic Overflow Control</a></li>
+<li><a class="reference internal" href="#using-only-part-of-an-array" id="id43">Using Only Part of an Array</a></li>
+<li><a class="reference internal" href="#simd-control" id="id44">SIMD Control</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-types" id="id45">Data Types</a><ul>
+<li><a class="reference internal" href="#array-types" id="id46">Array Types</a></li>
+<li><a class="reference internal" href="#bytes-type" id="id47">Bytes Type</a></li>
+<li><a class="reference internal" href="#numeric-parameter-types" id="id48">Numeric Parameter Types</a></li>
+<li><a class="reference internal" href="#maximum-array-size" id="id49">Maximum Array Size</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operators" id="id50">Operators</a><ul>
+<li><a class="reference internal" href="#python-equivalent-operators-and-functions" id="id51">Python Equivalent Operators and Functions</a></li>
+<li><a class="reference internal" href="#additional-operators" id="id52">Additional Operators</a></li>
+<li><a class="reference internal" href="#acalc-operators-and-functions" id="id53">ACalc Operators and Functions</a></li>
+<li><a class="reference internal" href="#notes-on-operators-and-functions" id="id54">Notes on Operators and Functions</a></li>
+<li><a class="reference internal" href="#acalc-math-constants" id="id55">ACalc Math Constants</a></li>
+<li><a class="reference internal" href="#platform-compiler-support" id="id56">Platform Compiler Support</a></li>
+<li><a class="reference internal" href="#integer-overflow-checking" id="id57">Integer Overflow Checking</a><ul>
+<li><a class="reference internal" href="#overflow-categories" id="id58">Overflow Categories</a></li>
+<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks" id="id59">Disabling Integer Division by Zero Checks</a></li>
+<li><a class="reference internal" href="#floating-point-nan-and-infinity" id="id60">Floating Point NaN and Infinity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exceptions" id="id61">Exceptions</a><ul>
+<li><a class="reference internal" href="#exceptions-general" id="id62">Exceptions - General</a></li>
+<li><a class="reference internal" href="#exceptions-acalc" id="id63">Exceptions - ACalc</a><ul>
+<li><a class="reference internal" href="#id1" id="id64">Initialisation</a></li>
+<li><a class="reference internal" href="#compile" id="id65">Compile</a></li>
+<li><a class="reference internal" href="#run-time" id="id66">Run Time</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simd-support" id="id67">SIMD Support</a><ul>
+<li><a class="reference internal" href="#general" id="id68">General</a></li>
+<li><a class="reference internal" href="#platform-support" id="id69">Platform Support</a></li>
+<li><a class="reference internal" href="#data-type-support" id="id70">Data Type Support</a></li>
+<li><a class="reference internal" href="#simd-support-attributes" id="id71">SIMD Support Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance" id="id72">Performance</a><ul>
+<li><a class="reference internal" href="#id2" id="id73">Amap</a></li>
+<li><a class="reference internal" href="#id3" id="id74">ACalc</a></li>
+<li><a class="reference internal" href="#other-functions" id="id75">Other Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<hr class="docutils" />
+<div class="section" id="introduction">
+<h2><a class="toc-backref" href="#id5">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>The ArrayFunc module provides high speed array processing functions for use with
+the standard Python array module. These functions are patterned after the
+functions in the standard Python Itertools module together with some additional
+ones from other sources.</p>
+<p>The purpose of these functions is to perform mathematical calculations on arrays
+significantly faster than using native Python.</p>
+</div>
+<hr class="docutils" />
+<div class="section" id="functions">
+<h2><a class="toc-backref" href="#id6">Functions</a><a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="summary">
+<h3><a class="toc-backref" href="#id7">Summary</a><a class="headerlink" href="#summary" title="Permalink to this headline">¶</a></h3>
+<p>The functions fall into several categories.</p>
+<div class="section" id="filling-arrays">
+<h4><a class="toc-backref" href="#id8">Filling Arrays</a><a class="headerlink" href="#filling-arrays" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>count</td>
+<td>Fill an array with evenly spaced values using a start and step
+values.</td>
+</tr>
+<tr class="row-odd"><td>cycle</td>
+<td>Fill an array with evenly spaced values using a start, stop, and step
+values, and repeat until the array is filled.</td>
+</tr>
+<tr class="row-even"><td>repeat</td>
+<td>Fill an array with a specified value.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="filtering-arrays">
+<h4><a class="toc-backref" href="#id9">Filtering Arrays</a><a class="headerlink" href="#filtering-arrays" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>afilter</td>
+<td>Select values from an array based on a boolean criteria.</td>
+</tr>
+<tr class="row-odd"><td>compress</td>
+<td>Select values from an array based on another array of boolean
+values.</td>
+</tr>
+<tr class="row-even"><td>dropwhile</td>
+<td>Select values from an array starting from where a selected
+criteria fails and proceding to the end.</td>
+</tr>
+<tr class="row-odd"><td>takewhile</td>
+<td>Like dropwhile, but starts from the beginning and stops when the
+criteria fails.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="examining-and-searching-arrays">
+<h4><a class="toc-backref" href="#id10">Examining and Searching Arrays</a><a class="headerlink" href="#examining-and-searching-arrays" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aany</td>
+<td>Returns True if any element in an array meets the selected
+criteria.</td>
+</tr>
+<tr class="row-odd"><td>aall</td>
+<td>Returns True if all element in an array meet the selected
+criteria.</td>
+</tr>
+<tr class="row-even"><td>amax</td>
+<td>Returns the maximum value in the array.</td>
+</tr>
+<tr class="row-odd"><td>amin</td>
+<td>Returns the minimum value in the array.</td>
+</tr>
+<tr class="row-even"><td>findindex</td>
+<td>Returns the index of the first value in an array to meet the
+specified criteria.</td>
+</tr>
+<tr class="row-odd"><td>findindices</td>
+<td>Searches an array for the array indices which meet the specified
+criteria and writes the results to a second array. Also returns
+the number of matches found.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="operating-on-arrays">
+<h4><a class="toc-backref" href="#id11">Operating on Arrays</a><a class="headerlink" href="#operating-on-arrays" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>amap</td>
+<td>Apply an operator to each element of an array, together with an
+optional second parameter (for operators taking two parameters).
+The results are written to a second array.</td>
+</tr>
+<tr class="row-odd"><td>amapi</td>
+<td>Like amap, but the results are written in place to the input
+array.</td>
+</tr>
+<tr class="row-even"><td>starmap</td>
+<td>Like amap, but where a second array acts as the second
+parameter. The results are written to an output array.</td>
+</tr>
+<tr class="row-odd"><td>starmapi</td>
+<td>Like starmap, but the results are written in place to the first
+input array.</td>
+</tr>
+<tr class="row-even"><td>asum</td>
+<td>Calculate the arithmetic sum of an array.</td>
+</tr>
+<tr class="row-odd"><td>acalc</td>
+<td>Calculate arbitrary equations over an array.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="data-conversion">
+<h4><a class="toc-backref" href="#id12">Data Conversion</a><a class="headerlink" href="#data-conversion" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>convert</td>
+<td>Convert arrays between data types. The data will be converted into
+the form required by the output array.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="array-limit-attributes">
+<h4><a class="toc-backref" href="#id13">Array Limit Attributes</a><a class="headerlink" href="#array-limit-attributes" title="Permalink to this headline">¶</a></h4>
+<p>In addition to functions, a set of attributes are provided representing the
+platform specific maximum and minimum numerical values for each array type.
+These attributes are part of the &#8220;arraylimits&#8221; module.</p>
+</div>
+</div>
+<div class="section" id="details">
+<h3><a class="toc-backref" href="#id14">Details</a><a class="headerlink" href="#details" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="count">
+<h4><a class="toc-backref" href="#id15">count</a><a class="headerlink" href="#count" title="Permalink to this headline">¶</a></h4>
+<p>Fill an array with evenly spaced values using a start and step values. The
+function continues until the end of the array. The function does not check for
+integer overflow.</p>
+<p>count(dataarray, start, step)</p>
+<ul class="simple">
+<li>dataarray - The output array.</li>
+<li>start - The numeric value to start from.</li>
+<li>step - The value to increment by when creating each element. This parameter
+is optional. If it is omitted, a value of 1 is assumed. A negative step value
+will cause the function to count down.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>dataarray = array.array(&#39;i&#39;, [0]*10)
+arrayfunc.count(dataarray, 0, 5)
+==&gt; array(&#39;i&#39;, [0, 5, 10, 15, 20, 25, 30, 35, 40, 45])
+arrayfunc.count(dataarray, 99)
+==&gt; array(&#39;i&#39;, [99, 100, 101, 102, 103, 104, 105, 106, 107, 108])
+arrayfunc.count(dataarray, 29, -8)
+==&gt; array(&#39;i&#39;, [29, 21, 13, 5, -3, -11, -19, -27, -35, -43])
+dataarray = array.array(&#39;b&#39;, [0]*10)
+arrayfunc.count(dataarray, 52, 10)
+==&gt; array(&#39;b&#39;, [52, 62, 72, 82, 92, 102, 112, 122, -124, -114])
+</pre></div>
+</div>
+</div>
+<div class="section" id="cycle">
+<h4><a class="toc-backref" href="#id16">cycle</a><a class="headerlink" href="#cycle" title="Permalink to this headline">¶</a></h4>
+<p>Fill an array with evenly spaced values using a start, stop, and step values,
+and repeat until the array is filled.</p>
+<p>cycle(dataarray, start, stop, step)</p>
+<ul class="simple">
+<li>dataarray - The output array.</li>
+<li>start - The numeric value to start from.</li>
+<li>stop - The value at which to stop incrementing. If stop is less than start,
+cycle will count down.</li>
+<li>step - The value to increment by when creating each element. This parameter
+is optional. If it is omitted, a value of 1 is assumed. The sign is ignored
+and the absolute value used when incrementing.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>dataarray = array.array(&#39;i&#39;, [0]*100)
+arrayfunc.cycle(dataarray, 0, 25, 5)
+==&gt; array(&#39;i&#39;, [0, 5, 10, 15, 20, 25, 0, 5, ... , 10, 15])
+arrayfunc.cycle(dataarray, 5, 30)
+==&gt; array(&#39;i&#39;, [5, 6, 7, 8, 9, 10, ... 28, 29, 30, 5, ... , 24, 25, 26])
+dataarray = array.array(&#39;i&#39;, [0]*10)
+arrayfunc.cycle(dataarray, 10, 5, 1)
+==&gt; array(&#39;i&#39;, [10, 9, 8, 7, 6, 5, 10, 9, 8, 7])
+arrayfunc.cycle(dataarray, -2, 3, 1)
+==&gt; array(&#39;i&#39;, [-2, -1, 0, 1, 2, 3, -2, -1, 0, 1])
+</pre></div>
+</div>
+</div>
+<div class="section" id="repeat">
+<h4><a class="toc-backref" href="#id17">repeat</a><a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h4>
+<p>Fill an array with a specified value.</p>
+<p>repeat(dataarray, value)</p>
+<ul class="simple">
+<li>dataarray - The output array.</li>
+<li>value - The value to use to fill the array.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>dataarray = array.array(&#39;i&#39;, [0]*100)
+arrayfunc.repeat(dataarray, 99)
+==&gt; array(&#39;i&#39;, [99, 99, 99, 99, ... , 99, 99])
+</pre></div>
+</div>
+</div>
+<div class="section" id="afilter">
+<h4><a class="toc-backref" href="#id18">afilter</a><a class="headerlink" href="#afilter" title="Permalink to this headline">¶</a></h4>
+<p>Select values from an array based on a boolean criteria.</p>
+<p>x = afilter(op, inparray, outparray, rparam)</p>
+<p>x = afilter(op, inparray, outparray, rparam, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be filtered.</li>
+<li>outparray - The output array.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>x - An integer count of the number of items filtered into outparray.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;i&#39;, [0]*6)
+x = arrayfunc.afilter(arrayfunc.aops.af_gt, inparray, outparray, 10)
+==&gt; array(&#39;i&#39;, [33, 54, 0, 0, 0, 0])
+==&gt; x equals 2
+x = arrayfunc.afilter(arrayfunc.aops.af_gt, inparray, outparray, 10, maxlen=4)
+==&gt; array(&#39;i&#39;, [33, 0, 0, 0, 0, 0])
+==&gt; x equals 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="compress">
+<h4><a class="toc-backref" href="#id19">compress</a><a class="headerlink" href="#compress" title="Permalink to this headline">¶</a></h4>
+<p>Select values from an array based on another array of integers values. The
+selector array is interpreted as a set of boolean values, where any value other
+than <em>0</em> causes the value in the input array to be selected and copied to the
+output array, while a value of <em>0</em> causes the value to be ignored.</p>
+<p>The input, selector, and output arrays need not be of the same length. The copy
+operation will be terminated when the end of the input or output array is
+reached. The selector array will be cycled through repeatedly as many times as
+necessary until the end of the input or output array is reached.</p>
+<p>x = compress(inparray, outparray, selectorarray)</p>
+<p>x = compress(inparray, outparray, selectorarray, maxlen=500)</p>
+<ul class="simple">
+<li>inparray - The input data array to be filtered.</li>
+<li>outparray - The output array.</li>
+<li>selectorarray - The selector array.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>x - An integer count of the number of items filtered into outparray.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;i&#39;, [0]*6)
+selectorarray = array.array(&#39;i&#39;, [0, 1, 0, 1])
+x = arrayfunc.compress(inparray, outparray, selectorarray)
+==&gt; array(&#39;i&#39;, [2, 33, -6, 0, 0, 0])
+==&gt; x equals 3
+x = arrayfunc.compress(inparray, outparray, selectorarray, maxlen=4)
+==&gt; array(&#39;i&#39;, [2, 33, 0, 0, 0, 0])
+==&gt; x equals 2
+</pre></div>
+</div>
+</div>
+<div class="section" id="dropwhile">
+<h4><a class="toc-backref" href="#id20">dropwhile</a><a class="headerlink" href="#dropwhile" title="Permalink to this headline">¶</a></h4>
+<p>Select values from an array starting from where a selected criteria fails and
+proceeding to the end.</p>
+<p>x = dropwhile(op, inparray, outparray, rparam)</p>
+<p>x = dropwhile(op, inparray, outparray, rparam, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be filtered.</li>
+<li>outparray - The output array.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>x - An integer count of the number of items filtered into outparray.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;i&#39;, [0]*6)
+x = arrayfunc.dropwhile(arrayfunc.aops.af_lt, inparray, outparray, 10)
+==&gt; array(&#39;i&#39;, [33, 54, 0, 0, 0, 0])
+==&gt; x equals 3
+x = arrayfunc.dropwhile(arrayfunc.aops.af_lt, inparray, outparray, 10, maxlen=5)
+==&gt; array(&#39;i&#39;, [33, 54, 0, 0, 0, 0])
+==&gt; x equals 2
+</pre></div>
+</div>
+</div>
+<div class="section" id="takewhile">
+<h4><a class="toc-backref" href="#id21">takewhile</a><a class="headerlink" href="#takewhile" title="Permalink to this headline">¶</a></h4>
+<p>Like dropwhile, but starts from the beginning and stops when the criteria fails.</p>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;i&#39;, [0]*6)
+x = arrayfunc.takewhile(arrayfunc.aops.af_lt, inparray, outparray, 10)
+==&gt; array(&#39;i&#39;, [1, 2, 5, 0, 0, 0])
+==&gt; x equals 3
+x = arrayfunc.takewhile(arrayfunc.aops.af_lt, inparray, outparray, 10, maxlen=2)
+==&gt; array(&#39;i&#39;, [1, 2, 0, 0, 0, 0])
+==&gt; x equals 2
+</pre></div>
+</div>
+</div>
+<div class="section" id="aany">
+<h4><a class="toc-backref" href="#id22">aany</a><a class="headerlink" href="#aany" title="Permalink to this headline">¶</a></h4>
+<p>Returns True if any element in an array meets the selected criteria.</p>
+<p>x = aany(op, inparray, rparam)</p>
+<p>x = aany(op, inparray, rparam, maxlen=500, nosimd=True)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled.</li>
+<li>x - The boolean result.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+x = arrayfunc.aany(arrayfunc.aops.af_eq, inparray, 5)
+==&gt; x equals True
+x = arrayfunc.aany(arrayfunc.aops.af_eq, inparray, 54, maxlen=5)
+==&gt; x equals True
+x = arrayfunc.aany(arrayfunc.aops.af_eq, inparray, -6, maxlen=5)
+==&gt; x equals False
+</pre></div>
+</div>
+</div>
+<div class="section" id="aall">
+<h4><a class="toc-backref" href="#id23">aall</a><a class="headerlink" href="#aall" title="Permalink to this headline">¶</a></h4>
+<p>Returns True if all elements in an array meet the selected criteria.</p>
+<p>x = aall(op, inparray, rparam)</p>
+<p>x = aall(op, inparray, rparam, maxlen=500, nosimd=True)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled.</li>
+<li>x - The boolean result.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+x = arrayfunc.aall(arrayfunc.aops.af_lt, inparray, 66)
+==&gt; x equals True
+x = arrayfunc.aall(arrayfunc.aops.af_lt, inparray, 66, maxlen=5)
+==&gt; x equals True
+inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 66])
+x = arrayfunc.aall(arrayfunc.aops.af_lt, inparray, 66)
+==&gt; x equals False
+x = arrayfunc.aall(arrayfunc.aops.af_lt, inparray, 66, maxlen=5)
+==&gt; x equals True
+</pre></div>
+</div>
+</div>
+<div class="section" id="amax">
+<h4><a class="toc-backref" href="#id24">amax</a><a class="headerlink" href="#amax" title="Permalink to this headline">¶</a></h4>
+<p>Returns the maximum value in the array.</p>
+<p>x = amax(inparray)</p>
+<p>x = amax(inparray, maxlen=500)</p>
+<p>x = amax(inparray, maxlen=500, nosimd=True)</p>
+<ul class="simple">
+<li>inparray - The input data array to be examined.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled.</li>
+<li>x - The maximum value.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+x = arrayfunc.amax(inparray)
+==&gt; x equals 54
+x = arrayfunc.amax(inparray, maxlen=3)
+==&gt; x equals 5
+</pre></div>
+</div>
+</div>
+<div class="section" id="amin">
+<h4><a class="toc-backref" href="#id25">amin</a><a class="headerlink" href="#amin" title="Permalink to this headline">¶</a></h4>
+<p>Returns the minimum value in the array.</p>
+<p>x = amin(inparray)</p>
+<p>x = amin(inparray, maxlen=500)</p>
+<p>x = amin(inparray, maxlen=500, nosimd=True)</p>
+<ul class="simple">
+<li>inparray - The input data array to be examined.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled.</li>
+<li>x - The minimum value.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+x = arrayfunc.amin(inparray)
+==&gt; x equals -6
+x = arrayfunc.amin(inparray, maxlen=3)
+==&gt; x equals 1
+</pre></div>
+</div>
+</div>
+<div class="section" id="findindex">
+<h4><a class="toc-backref" href="#id26">findindex</a><a class="headerlink" href="#findindex" title="Permalink to this headline">¶</a></h4>
+<p>Returns the index of the first value in an array to meet the specified criteria.</p>
+<p>x = findindex(op, inparray, rparam)</p>
+<p>x = findindex(op, inparray, rparam, maxlen=500, nosimd=True)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled.</li>
+<li>x - The resulting index. This will be negative if no match was found.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+x = arrayfunc.findindex(arrayfunc.aops.af_eq, inparray, 54)
+==&gt; x equals 4
+x = arrayfunc.findindex(arrayfunc.aops.af_eq, inparray, 54, maxlen=4)
+==&gt; x equals -1  (not found)
+</pre></div>
+</div>
+</div>
+<div class="section" id="findindices">
+<h4><a class="toc-backref" href="#id27">findindices</a><a class="headerlink" href="#findindices" title="Permalink to this headline">¶</a></h4>
+<p>Searches an array for the array indices which meet the specified criteria and
+writes the results to a second array. Also returns the number of matches found.</p>
+<p>x = findindices(op, inparray, outparray, rparam)</p>
+<p>x = findindices(op, inparray, outparray, rparam, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>outparray - The output array. This must be an integer array of array type &#8216;q&#8217;
+(signed long long).</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>x - An integer indicating the number of matches found.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;q&#39;, [0]*6)
+x = arrayfunc.findindices(arrayfunc.aops.af_lt, inparray, outparray, 5)
+==&gt; (&#39;i&#39;, [0, 1, 5, 0, 0, 0])
+==&gt; x equals 3
+x = arrayfunc.findindices(arrayfunc.aops.af_lt, inparray, outparray, 5, maxlen=4)
+==&gt; array(&#39;q&#39;, [0, 1, 0, 0, 0, 0])
+==&gt; x equals 2
+</pre></div>
+</div>
+</div>
+<div class="section" id="amap">
+<h4><a class="toc-backref" href="#id28">amap</a><a class="headerlink" href="#amap" title="Permalink to this headline">¶</a></h4>
+<p>Apply an operator to each element of an array, together with an optional second
+parameter (for operators taking two parameters). The results are written to a
+second array.</p>
+<p>amap(op, inparray, outparray, rparam)</p>
+<p>amap(op, inparray, outparray, rparam, disovfl=True)</p>
+<p>amap(op, inparray, outparray, rparam, disovfl=True, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>outparray - The output array.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;. This is an optional
+parameter.</li>
+<li>disovfl - If this keyword parameter is True, integer overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;i&#39;, [0]*6)
+arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5, disovfl=True)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5, disovfl=False)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+inparray = array.array(&#39;i&#39;, [1, 2, 3, 4, 5, 6])
+arrayfunc.amap(arrayfunc.aops.math_factorial, inparray, outparray)
+==&gt; (&#39;i&#39;, [1, 2, 6, 24, 120, 720])
+outparray = array.array(&#39;i&#39;, [0]*6)
+arrayfunc.amap(arrayfunc.aops.math_factorial, inparray, outparray, maxlen=5)
+==&gt; array(&#39;i&#39;, [1, 2, 6, 24, 120, 0])
+</pre></div>
+</div>
+</div>
+<div class="section" id="amapi">
+<h4><a class="toc-backref" href="#id29">amapi</a><a class="headerlink" href="#amapi" title="Permalink to this headline">¶</a></h4>
+<p>Like amap, but the results are written in place to the input array.</p>
+<p>amapi(op, inparray, rparam)</p>
+<p>amapi(op, inparray, rparam, disovfl=True)</p>
+<p>amapi(op, inparray, rparam, disovfl=True, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray - The input data array to be examined.</li>
+<li>rparam - The &#8216;y&#8217; parameter to be applied to &#8216;op&#8217;. This is an optional
+parameter.</li>
+<li>disovfl - If this keyword parameter is True, integer overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=True)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=False)
+==&gt; (&#39;i&#39;, [6, 7, 10, 38, 59, -1])
+inparray = array.array(&#39;i&#39;, [1, 2, 3, 4, 5, 6])
+arrayfunc.amapi(arrayfunc.aops.math_factorial, inparray)
+==&gt; (&#39;i&#39;, [1, 2, 6, 24, 120, 720])
+inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=False, maxlen=5)
+==&gt; array(&#39;i&#39;, [6, 7, 10, 38, 59, -6])
+</pre></div>
+</div>
+</div>
+<div class="section" id="starmap">
+<h4><a class="toc-backref" href="#id30">starmap</a><a class="headerlink" href="#starmap" title="Permalink to this headline">¶</a></h4>
+<p>Like amap, but where a second array acts as the second parameter. The results
+are written to an output array. All valid operators and math functions must
+take a second parameter (for single parameter operators or math functions, use
+amap).</p>
+<p>starmap(op, inparray1, inparray2, outparray)</p>
+<p>starmap(op, inparray1, inparray2, outparray, disovfl=True)</p>
+<p>starmap(op, inparray1, inparray2, outparray, disovfl=True, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray1 - The first input data array to be examined.</li>
+<li>inparray2 - The second input data array to be examined.</li>
+<li>outparray - The output array.</li>
+<li>disovfl - If this keyword parameter is True, integer overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray1 = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 6])
+inparray2 = array.array(&#39;i&#39;, [1, 2, 5, -88, -5, 2])
+outparray = array.array(&#39;i&#39;, [0]*6)
+arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 8])
+arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray, disovfl=True)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 8])
+outparray = array.array(&#39;i&#39;, [0]*6)
+arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray, maxlen=5)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 0])
+</pre></div>
+</div>
+</div>
+<div class="section" id="starmapi">
+<h4><a class="toc-backref" href="#id31">starmapi</a><a class="headerlink" href="#starmapi" title="Permalink to this headline">¶</a></h4>
+<p>Like starmap, but the results are written in place to the first input array.</p>
+<p>starmapi(op, inparray1, inparray2)</p>
+<p>starmapi(op, inparray1, inparray2, disovfl=True)</p>
+<p>starmapi(op, inparray1, inparray2, disovfl=True, maxlen=500)</p>
+<ul class="simple">
+<li>op - The arithmetic comparison operation.</li>
+<li>inparray1 - The first input data array to be examined.</li>
+<li>inparray2 - The second input data array to be examined.</li>
+<li>disovfl - If this keyword parameter is True, integer overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray1 = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 6])
+inparray2 = array.array(&#39;i&#39;, [1, 2, 5, -88, -5, 2])
+arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 8])
+inparray1 = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 6])
+arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2, disovfl=True)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 8])
+inparray1 = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 6])
+arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2, disovfl=True, maxlen=5)
+==&gt; array(&#39;i&#39;, [2, 4, 10, -55, 49, 6])
+</pre></div>
+</div>
+</div>
+<div class="section" id="asum">
+<h4><a class="toc-backref" href="#id32">asum</a><a class="headerlink" href="#asum" title="Permalink to this headline">¶</a></h4>
+<p>Calculate the arithmetic sum of an array.</p>
+<p>For integer arrays, the intermediate sum is accumulated in the largest
+corresponding integer size. Signed integers are accumulated in the equivalent
+to an &#8216;l&#8217; array type, and unsigned integers are accumulated in the equivalent
+to an &#8216;L&#8217; array type. This means that integer arrays using smaller integer word
+sizes cannot overflow unless extremenly large arrays are used (and may be
+impossible due to limits on array indices in the array module).</p>
+<p>asum(inparray)</p>
+<p>asum(inparray, disovfl=True, maxlen=5, nosimd=True)</p>
+<ul class="simple">
+<li>inparray - The array to be summed.</li>
+<li>disovfl - If this keyword parameter is True, integer overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+<li>nosimd - If true, use of SIMD is disabled. SIMD will only be enabled if
+overflow checking is also disabled.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, 6])
+arrayfunc.asum(inparray)
+==&gt; 101
+inparray = array.array(&#39;i&#39;, [1, 2, 5, -88, -5, 2])
+arrayfunc.asum(inparray, disovfl=True)
+==&gt; -83
+inparray = array.array(&#39;i&#39;, [1, 2, 5, -88, -5, 2])
+arrayfunc.asum(inparray, maxlen=5)
+==&gt; -85
+</pre></div>
+</div>
+</div>
+<div class="section" id="convert">
+<h4><a class="toc-backref" href="#id33">convert</a><a class="headerlink" href="#convert" title="Permalink to this headline">¶</a></h4>
+<p>Convert arrays between data types. The data will be converted into the form
+required by the output array. If any values in the input array are outside the
+range of the output array type, an exception will be raised. When floating point
+values are converted to integers, the value will be truncated.</p>
+<p>convert(inparray, outparray)</p>
+<p>convert(inparray, outparray, maxlen=500)</p>
+<ul class="simple">
+<li>inparray - The input data array to be examined.</li>
+<li>outparray - The output array.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>inparray = array.array(&#39;i&#39;, [1, 2, 5, 33, 54, -6])
+outparray = array.array(&#39;d&#39;, [0.0]*6)
+arrayfunc.convert(inparray, outparray)
+==&gt; (&#39;d&#39;, [1.0, 2.0, 5.0, 33.0, 54.0, -6.0])
+inparray = array.array(&#39;d&#39;, [5.7654]*10)
+outparray = array.array(&#39;h&#39;, [0]*10)
+arrayfunc.convert(inparray, outparray)
+==&gt; array(&#39;h&#39;, [5, 5, 5, 5, 5, 5, 5, 5, 5, 5])
+inparray = array.array(&#39;d&#39;, [5.7654]*10)
+outparray = array.array(&#39;h&#39;, [0]*10)
+arrayfunc.convert(inparray, outparray, maxlen=5)
+==&gt; array(&#39;h&#39;, [5, 5, 5, 5, 5, 0, 0, 0, 0, 0])
+</pre></div>
+</div>
+</div>
+<div class="section" id="arraylimits-attributes">
+<h4><a class="toc-backref" href="#id34">arraylimits attributes</a><a class="headerlink" href="#arraylimits-attributes" title="Permalink to this headline">¶</a></h4>
+<p>A set of attributes are provided representing the platform specific maximum
+and minimum numerical values for each array type. These attributes are part of
+the &#8220;arraylimits&#8221; module.</p>
+<p>Array integer sizes may differ on 32 versus 64 bit versions, plus other
+platform characteristics may also produce differences.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="28%" />
+<col width="14%" />
+<col width="37%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Array Type Code</th>
+<th class="head">Description</th>
+<th class="head">Min Value</th>
+<th class="head">Max Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>b</td>
+<td>signed char</td>
+<td>b_min</td>
+<td>b_max</td>
+</tr>
+<tr class="row-odd"><td>B</td>
+<td>unsigned char</td>
+<td>B_min</td>
+<td>B_max</td>
+</tr>
+<tr class="row-even"><td>h</td>
+<td>signed short</td>
+<td>h_min</td>
+<td>h_max</td>
+</tr>
+<tr class="row-odd"><td>H</td>
+<td>unsigned short</td>
+<td>H_min</td>
+<td>H_max</td>
+</tr>
+<tr class="row-even"><td>i</td>
+<td>signed int</td>
+<td>i_min</td>
+<td>i_max</td>
+</tr>
+<tr class="row-odd"><td>I</td>
+<td>unsigned int</td>
+<td>I_min</td>
+<td>I_max</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>signed long</td>
+<td>l_min</td>
+<td>l_max</td>
+</tr>
+<tr class="row-odd"><td>L</td>
+<td>unsigned long</td>
+<td>L_min</td>
+<td>L_max</td>
+</tr>
+<tr class="row-even"><td>q</td>
+<td>signed long long</td>
+<td>q_min</td>
+<td>q_max</td>
+</tr>
+<tr class="row-odd"><td>Q</td>
+<td>unsigned long long</td>
+<td>Q_min</td>
+<td>Q_max</td>
+</tr>
+<tr class="row-even"><td>f</td>
+<td>float</td>
+<td>f_min</td>
+<td>f_max</td>
+</tr>
+<tr class="row-odd"><td>d</td>
+<td>double</td>
+<td>d_min</td>
+<td>d_max</td>
+</tr>
+<tr class="row-even"><td>bytes</td>
+<td>Python bytes type</td>
+<td>bytes_min</td>
+<td>bytes_max</td>
+</tr>
+</tbody>
+</table>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>import arrayfunc
+from arrayfunc import arraylimits
+
+arrayfunc.arraylimits.b_min
+==&gt; -128
+arrayfunc.arraylimits.b_max
+==&gt; 127
+arrayfunc.arraylimits.f_min
+==&gt; -3.4028234663852886e+38
+arrayfunc.arraylimits.f_max
+==&gt; 3.4028234663852886e+38
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="acalc">
+<h3><a class="toc-backref" href="#id35">ACalc</a><a class="headerlink" href="#acalc" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="description">
+<h4><a class="toc-backref" href="#id36">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h4>
+<p>Calculate arbitrary equations over an array.</p>
+<p>ACalc solves complex equations (expressions) over an array. It accepts a valid
+Python mathematical expression as a string, compiles it, and executes it. The
+expression can include constants, variables, and the same functions as defined
+in the &#8220;math&#8221; module.</p>
+<p>ACalc consists of a class &#8220;calc&#8221; with two methods, &#8220;comp&#8221; (compile) and
+&#8220;execute&#8221;.</p>
+<p>For simple calculations, amap will normally be much, much faster than acalc.
+However, acalc is useful for equations requiring multiple terms, as it can solve
+them in a single operation whereas amap (or amapi) would require multiple
+function calls (once for each term).</p>
+</div>
+<div class="section" id="initialisation">
+<h4><a class="toc-backref" href="#id37">Initialisation</a><a class="headerlink" href="#initialisation" title="Permalink to this headline">¶</a></h4>
+<p>The &#8220;calc&#8221; class is initialised with the input and output arrays. The input and
+output arrays must be of the same array type. The array type determines the data
+type of the calculation. That is, an integer array will result in integer math,
+and a floating point array will result in floating point math.</p>
+<p>The first parameter is the input array, and the second parameter is the output
+array. These arrays remain associated with the equation object.</p>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="n">dataout</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">eqnd</span> <span class="o">=</span> <span class="n">acalc</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dataout</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling">
+<h4><a class="toc-backref" href="#id38">Compiling</a><a class="headerlink" href="#compiling" title="Permalink to this headline">¶</a></h4>
+<p>The compile method accepts three positional parameters. These are:</p>
+<ul class="simple">
+<li>Equation - This is the equation as a string.</li>
+<li>Array variable - This defines which variable in the equation represents the
+current array index value. This must be a string which follows the same rules
+as valid Python variable names.</li>
+<li>Other variables - This is a sequence of strings, with each element
+corresponding to a variable in the equation. The sequence can be a list or
+a tuple.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">comp</span><span class="p">(</span><span class="s1">&#39;x + y - z + 5&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">comp</span><span class="p">(</span><span class="s1">&#39;-x&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">[])</span>
+</pre></div>
+</div>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">comp</span><span class="p">(</span><span class="s1">&#39;abs(x) + y - (z &lt;&lt; 2)&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="executing">
+<h4><a class="toc-backref" href="#id39">Executing</a><a class="headerlink" href="#executing" title="Permalink to this headline">¶</a></h4>
+<p>Once an equation is compiled, it can be executed. A compiled equation can be
+executed multiple times with different parameter values without recompiling it.</p>
+<p>The execute method accepts one positional parameter which represents the
+additional variables and two keyword parameters which are used to control the
+execution of the equation.</p>
+<ul class="simple">
+<li>Variable values - This is a list or tuple of of numeric values which
+corresponds to the additional (non-array) variables in the equation. The
+order and number of elements must match the sequence of additional variables
+defined in the compile step.</li>
+<li>disovfl - If this keyword parameter is True, overflow checking will be
+disabled. This is an optional parameter.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid positive
+integer. If a zero or negative length, or a value which is greater than the
+actual length of the array is specified, this parameter is ignored.</li>
+</ul>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">disovfl</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">eqnd</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">disovfl</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="complete-example">
+<h4><a class="toc-backref" href="#id40">Complete Example</a><a class="headerlink" href="#complete-example" title="Permalink to this headline">¶</a></h4>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">from</span> <span class="nn">arraycalc</span> <span class="kn">import</span> <span class="n">acalc</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+<span class="n">dataout</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+<span class="n">eqnd</span> <span class="o">=</span> <span class="n">acalc</span><span class="o">.</span><span class="n">calc</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">dataout</span><span class="p">)</span>
+<span class="n">eqnd</span><span class="o">.</span><span class="n">comp</span><span class="p">(</span><span class="s1">&#39;x + y - z + 5&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="s1">&#39;z&#39;</span><span class="p">])</span>
+<span class="n">eqnd</span><span class="o">.</span><span class="n">execute</span><span class="p">([</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">dataout</span><span class="p">)</span>
+<span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">23</span><span class="p">,</span> <span class="o">-</span><span class="mi">22</span><span class="p">,</span> <span class="o">-</span><span class="mi">21</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">19</span><span class="p">,</span> <span class="o">-</span><span class="mi">18</span><span class="p">,</span> <span class="o">-</span><span class="mi">17</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">14</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="option-flags-and-parameters">
+<h3><a class="toc-backref" href="#id41">Option Flags and Parameters</a><a class="headerlink" href="#option-flags-and-parameters" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="arithmetic-overflow-control">
+<h4><a class="toc-backref" href="#id42">Arithmetic Overflow Control</a><a class="headerlink" href="#arithmetic-overflow-control" title="Permalink to this headline">¶</a></h4>
+<p>Many functions allow integer overflow detection to be turned off if desired.
+See the list of operators for which operators this applies to.</p>
+<p>Integer overflow is when a number becomes too large to fit within the specified
+word size for that array data type. For example, an unsigned char has a range
+of 0 to 255. When a calculation overflows, it &#8220;wraps around&#8221; one or more times
+and produces an arithmetically invalid result.</p>
+<p>If it is known in advance that overflow cannot occur (due to the size of the
+numbers), or if overflow is a desired side effect, then overflow checking may
+be disabled via the &#8220;disovfl&#8221; parameter. Setting &#8220;disovfl&#8221; to true will
+<em>disable</em> overflow checking, while setting it to false will <em>enable</em> overflow
+checking. Checking is enabled by default, including when the &#8220;disovfl&#8221;
+parameter is not specified.</p>
+<p>Disabling overflow checking can significantly increase the speed of calculation,
+with the amount of improvement depending on the type of calculation being
+performed and the data type used.</p>
+</div>
+<div class="section" id="using-only-part-of-an-array">
+<h4><a class="toc-backref" href="#id43">Using Only Part of an Array</a><a class="headerlink" href="#using-only-part-of-an-array" title="Permalink to this headline">¶</a></h4>
+<p>The array math functions only use existing arrays that the user provides and do
+not create new arrays or resize existing ones. The reason for this is that when
+very large arrays are being used, continually allocating and de-allocating
+arrays can take too much time, plus this may result in problems controlling how
+much memory is used.</p>
+<p>Since the filter functions (or other data sources) may not use all of an output
+array, and the result may vary depending on the data, most functions provide an
+optional keyword parameter which limits the functions to part of the array. The
+&#8220;maxlen&#8221; parameter specifies the maximum number of array elements to use,
+starting from the beginning of the array.</p>
+<p>For example, specifying a &#8220;maxlen&#8221; of 10 for a 20 element array will limit a
+function to using only the first 10 array elements and ignoring the rest of the
+array.</p>
+<p>If the array length limit value is zero, negative, or greater than the actual
+size of the array, the length limit will be ignored and the entire array used.
+The default is to use the entire array.</p>
+</div>
+<div class="section" id="simd-control">
+<h4><a class="toc-backref" href="#id44">SIMD Control</a><a class="headerlink" href="#simd-control" title="Permalink to this headline">¶</a></h4>
+<p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
+multiple operations to take place in parallel. Some, but not all, functions will
+make use of these instructions to speed up execution.</p>
+<p>Those functions which do support SIMD features will automatically make use of
+them by default unless this feature is disabled. There is normally no reason
+to disable SIMD, but should there be hardware related problems the function can
+be forced to fall back to conventional execution mode.</p>
+<p>If the optional parameter &#8220;nosimd&#8221; is set to true (&#8220;nosimd=True&#8221;), SIMD
+execution will be disabled. The default is &#8220;False&#8221;.</p>
+<p>To repeat, there is normally no reason to wish to disable SIMD.</p>
+<p>See the documentation section on SIMD support has more detail.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="data-types">
+<h2><a class="toc-backref" href="#id45">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="array-types">
+<h3><a class="toc-backref" href="#id46">Array Types</a><a class="headerlink" href="#array-types" title="Permalink to this headline">¶</a></h3>
+<p>The following array types from the Python standard library are supported.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Array Type Code</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>b</td>
+<td>signed char</td>
+</tr>
+<tr class="row-odd"><td>B</td>
+<td>unsigned char</td>
+</tr>
+<tr class="row-even"><td>h</td>
+<td>signed short</td>
+</tr>
+<tr class="row-odd"><td>H</td>
+<td>unsigned short</td>
+</tr>
+<tr class="row-even"><td>i</td>
+<td>signed int</td>
+</tr>
+<tr class="row-odd"><td>I</td>
+<td>unsigned int</td>
+</tr>
+<tr class="row-even"><td>l</td>
+<td>signed long</td>
+</tr>
+<tr class="row-odd"><td>L</td>
+<td>unsigned long</td>
+</tr>
+<tr class="row-even"><td>q</td>
+<td>signed long long</td>
+</tr>
+<tr class="row-odd"><td>Q</td>
+<td>unsigned long long</td>
+</tr>
+<tr class="row-even"><td>f</td>
+<td>float</td>
+</tr>
+<tr class="row-odd"><td>d</td>
+<td>double</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="bytes-type">
+<h3><a class="toc-backref" href="#id47">Bytes Type</a><a class="headerlink" href="#bytes-type" title="Permalink to this headline">¶</a></h3>
+<p>The &#8216;bytes&#8217; array type is also supported, and is treated the same as an unsigned
+char (array type &#8216;B&#8217;). To conduct operations on a Python &#8216;bytes&#8217; string, simply
+pass the bytes string in place of an array. Any integer operations which are
+valid for an unsigned char array will be valid for a bytes string.</p>
+</div>
+<div class="section" id="numeric-parameter-types">
+<h3><a class="toc-backref" href="#id48">Numeric Parameter Types</a><a class="headerlink" href="#numeric-parameter-types" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Python Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>integer</td>
+<td>Integral values such as 0, 1, 100, -99, etc.</td>
+</tr>
+<tr class="row-odd"><td>floating point</td>
+<td>Real numbers such as 0.0, 1.93, 3.1417, -5693.0, etc.</td>
+</tr>
+</tbody>
+</table>
+<p>The numeric type must be compatible with the array type code.</p>
+<p>The &#8216;L&#8217; and &#8216;Q&#8217; type parameters cannot be checked for integer overflow due to a
+mismatch between Python and &#8216;C&#8217; language numeric limits.</p>
+</div>
+<div class="section" id="maximum-array-size">
+<h3><a class="toc-backref" href="#id49">Maximum Array Size</a><a class="headerlink" href="#maximum-array-size" title="Permalink to this headline">¶</a></h3>
+<p>Arrays are limited to no more than the number of elements defined by the Python
+C API constant Py_ssize_t. The size of this will depend on your platform
+characteristics. However, it will normally allow for arrays larger than can be
+contained in memory for most computers.</p>
+<p>When creating very large arrays, it is recommended to consider using
+itertools.repeat as an initializer or to use array.extend or array.append
+to add to an array rather than using a list as an intializer. Lists use much
+more memory than arrays (even for the same data type), and it is easy to
+run out of memory if you are not careful when creating very large arrays from
+lists.</p>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="operators">
+<h2><a class="toc-backref" href="#id50">Operators</a><a class="headerlink" href="#operators" title="Permalink to this headline">¶</a></h2>
+<p>The following lists the operators available, together with the types of arrays
+they are compamtible with.</p>
+<p>Some operators are checked for integer overflow or underflow. These are
+indicated by the &#8220;OV&#8221; column. An overflow or underflow will generate an error.</p>
+<p>In the following, the values in the input data array are represented by &#8216;x&#8217;. The
+second input array or numerical parameter is represented by &#8216;y&#8217;. Some operators
+come in two forms, where the second allows the &#8216;x&#8217; and &#8216;y&#8217; parameters to be
+exchanged in cases where this may produce a different result.</p>
+<p>The operator categories are used to indicate which functions support which
+operators.</p>
+<div class="section" id="python-equivalent-operators-and-functions">
+<h3><a class="toc-backref" href="#id51">Python Equivalent Operators and Functions</a><a class="headerlink" href="#python-equivalent-operators-and-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following operators and functions are equivalent to ones found in the
+Python standard library. For explanations of the math functions, see the
+Python standard documentation for the standard math library.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="34%" />
+<col width="8%" />
+<col width="8%" />
+<col width="5%" />
+<col width="8%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Equivalent to</th>
+<th class="head">b h
+i l</th>
+<th class="head">B H
+I L</th>
+<th class="head">f
+d</th>
+<th class="head">OV</th>
+<th class="head">Compare
+Ops</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>af_add</td>
+<td>x + y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_div</td>
+<td>x / y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_div_r</td>
+<td>y / x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_floordiv</td>
+<td>x // y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_floordiv_r</td>
+<td>y // x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_mod</td>
+<td>x % y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_mod_r</td>
+<td>y % x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_mult</td>
+<td>x * y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_neg</td>
+<td>-x</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_pow</td>
+<td>x**y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_pow_r</td>
+<td>y**x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_sub</td>
+<td>x - y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_sub_r</td>
+<td>y - x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_and</td>
+<td>x &amp; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_or</td>
+<td>x | y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_xor</td>
+<td>x ^ y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_invert</td>
+<td>~x</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_eq</td>
+<td>x == y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>af_gt</td>
+<td>x &gt; y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>af_gte</td>
+<td>x &gt;= y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>af_lt</td>
+<td>x &lt; y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>af_lte</td>
+<td>x &lt;= y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>af_ne</td>
+<td>x != y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>af_lshift</td>
+<td>x &lt;&lt; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_lshift_r</td>
+<td>y &lt;&lt; x</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_rshift</td>
+<td>x &gt;&gt; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_rshift_r</td>
+<td>y &gt;&gt; x</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_abs</td>
+<td>abs(x)</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_acos</td>
+<td>math.acos(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_acosh</td>
+<td>math.acosh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_asin</td>
+<td>math.asin(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_asinh</td>
+<td>math.asinh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_atan</td>
+<td>math.atan(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_atan2</td>
+<td>math.atan2(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_atan2_r</td>
+<td>math.atan2(y, x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_atanh</td>
+<td>math.atanh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_ceil</td>
+<td>math.ceil(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_copysign</td>
+<td>math.copysign(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_cos</td>
+<td>math.cos(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_cosh</td>
+<td>math.cosh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_degrees</td>
+<td>math.degrees(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_erf</td>
+<td>math.erf(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_erfc</td>
+<td>math.erfc(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_exp</td>
+<td>math.exp(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_expm1</td>
+<td>math.expm1(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_fabs</td>
+<td>math.fabs(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_factorial</td>
+<td>math.factorial(x)</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_floor</td>
+<td>math.floor(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_fmod</td>
+<td>math.fmod(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_fmod_r</td>
+<td>math.fmod(y, x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_gamma</td>
+<td>math.gamma(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_hypot</td>
+<td>math.hypot(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_hypot_r</td>
+<td>math.hypot(y, x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_isinf</td>
+<td>math.isinf(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_isnan</td>
+<td>math.isnan(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_ldexp</td>
+<td>math.ldexp(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_lgamma</td>
+<td>math.lgamma(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_log</td>
+<td>math.log(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_log10</td>
+<td>math.log10(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_log1p</td>
+<td>math.log1p(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_log2</td>
+<td>math.log2(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_pow</td>
+<td>math.pow(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_pow_r</td>
+<td>math.pow(y, x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_radians</td>
+<td>math.radians(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_sin</td>
+<td>math.sin(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_sinh</td>
+<td>math.sinh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_sqrt</td>
+<td>math.sqrt(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_tan</td>
+<td>math.tan(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_tanh</td>
+<td>math.tanh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_trunc</td>
+<td>math.trunc(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="additional-operators">
+<h3><a class="toc-backref" href="#id52">Additional Operators</a><a class="headerlink" href="#additional-operators" title="Permalink to this headline">¶</a></h3>
+<p>The arrayfuncs module includes operators which are not found in the Python
+standard library. These are the &#8220;substitute&#8221; operators. Substitute operators
+compare the contents of each array element to the parameter (which must be
+included in the call). If the comparison evaluates to true, the array contents
+at that index are replaced by (substituted with) the parameter. If the
+comparison fails, the contents of the input array are used.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="32%" />
+<col width="7%" />
+<col width="7%" />
+<col width="4%" />
+<col width="7%" />
+<col width="13%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Equivalent to</th>
+<th class="head">b h
+i l</th>
+<th class="head">B H
+I L</th>
+<th class="head">f
+d</th>
+<th class="head">OV</th>
+<th class="head">Compare
+Ops</th>
+<th class="head">Win</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aops_subst_gt</td>
+<td>x &gt; y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>aops_subst_gte</td>
+<td>x &gt;= y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>aops_subst_lt</td>
+<td>x &lt; y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>aops_subst_lte</td>
+<td>x &lt;= y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+</tbody>
+</table>
+<p>For example, and array [1, 2, 3, 4, -2] is evaluated using the &#8220;aops_subst_gt&#8221;
+and a parameter of 3. The resulting output is [1, 2, 3, 3, -2]. The effect has
+been to limit the maximum value to no more than 3.</p>
+</div>
+<div class="section" id="acalc-operators-and-functions">
+<h3><a class="toc-backref" href="#id53">ACalc Operators and Functions</a><a class="headerlink" href="#acalc-operators-and-functions" title="Permalink to this headline">¶</a></h3>
+<p>The following operators and functions are equivalent to ones found in the
+Python standard library. ACalc uses the representation in the &#8220;equivalent to&#8221;
+column to actually specify the equations. The &#8220;name&#8221; column is only for
+reference purposes.</p>
+<p>For explanations of the math functions, see the Python standard documentation
+for the standard math library.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="40%" />
+<col width="9%" />
+<col width="9%" />
+<col width="5%" />
+<col width="9%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Name</th>
+<th class="head">Equivalent to</th>
+<th class="head">b h
+i l</th>
+<th class="head">B H
+I L</th>
+<th class="head">f
+d</th>
+<th class="head">OV</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>add</td>
+<td>x + y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>sub</td>
+<td>x - y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>mult</td>
+<td>x * y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>div</td>
+<td>x / y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>floordiv</td>
+<td>x // y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>mod</td>
+<td>x % y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>uadd</td>
+<td>+x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>usub</td>
+<td>-x</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>pow</td>
+<td>x**y</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>bitand</td>
+<td>x &amp; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>bitor</td>
+<td>x | y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>bitxor</td>
+<td>x ^ y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>invert</td>
+<td>~x</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>lshift</td>
+<td>x &lt;&lt; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>rshift</td>
+<td>x &gt;&gt; y</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>abs</td>
+<td>abs(x)</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>math.acos</td>
+<td>math.acos(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.acosh</td>
+<td>math.acosh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.asin</td>
+<td>math.asin(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.asinh</td>
+<td>math.asinh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.atan</td>
+<td>math.atan(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.atan2</td>
+<td>math.atan2(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.atanh</td>
+<td>math.atanh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.ceil</td>
+<td>math.ceil(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.copysign</td>
+<td>math.copysign(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.cos</td>
+<td>math.cos(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.cosh</td>
+<td>math.cosh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.degrees</td>
+<td>math.degrees(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.erf</td>
+<td>math.erf(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.erfc</td>
+<td>math.erfc(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.exp</td>
+<td>math.exp(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.expm1</td>
+<td>math.expm1(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.fabs</td>
+<td>math.fabs(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.factorial</td>
+<td>math.factorial(x)</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>math.floor</td>
+<td>math.floor(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.fmod</td>
+<td>math.fmod(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.gamma</td>
+<td>math.gamma(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.hypot</td>
+<td>math.hypot(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.ldexp</td>
+<td>math.ldexp(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.lgamma</td>
+<td>math.lgamma(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.log</td>
+<td>math.log(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.log10</td>
+<td>math.log10(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.log1p</td>
+<td>math.log1p(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.log2</td>
+<td>math.log2(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.pow</td>
+<td>math.pow(x, y)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.radians</td>
+<td>math.radians(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.sin</td>
+<td>math.sin(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.sinh</td>
+<td>math.sinh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.sqrt</td>
+<td>math.sqrt(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.tan</td>
+<td>math.tan(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math.tanh</td>
+<td>math.tanh(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math.trunc</td>
+<td>math.trunc(x)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="notes-on-operators-and-functions">
+<h3><a class="toc-backref" href="#id54">Notes on Operators and Functions</a><a class="headerlink" href="#notes-on-operators-and-functions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The regular and floor division operators (/, //) all perform division using
+the native division instructions. That is, integer division always results in
+an integer result, and floating point division always results in a floating
+point result.</li>
+<li>The math.gamma function (and the Python math.gamma) functions are equivalent
+to the C library tgamma function. The C library gamma and lgamma functions are
+equivalent to each other.</li>
+<li>The raise to power (x**y) operator will not accept a negative exponent for
+integers, as the result would be a fractional number which is not compatible
+with an integer array.</li>
+</ul>
+</div>
+<div class="section" id="acalc-math-constants">
+<h3><a class="toc-backref" href="#id55">ACalc Math Constants</a><a class="headerlink" href="#acalc-math-constants" title="Permalink to this headline">¶</a></h3>
+<p>ACalc also supports the following math constants as attributes:</p>
+<ul class="simple">
+<li>math.pi</li>
+<li>math.e</li>
+</ul>
+<p>These are indentical to the &#8220;math&#8221; module attributes. This allows these
+mathematical constants to be used in equations. See the Python math module
+documentation for more information on these constants.</p>
+</div>
+<div class="section" id="platform-compiler-support">
+<h3><a class="toc-backref" href="#id56">Platform Compiler Support</a><a class="headerlink" href="#platform-compiler-support" title="Permalink to this headline">¶</a></h3>
+<p>Beginning with version 2.0 of ArrayFunc, versions compiled with the Microsoft
+MSVS compiler now has feature parity with the GCC version. This change is due
+to the Microsoft C compiler now supporting a new enough version of the &#8216;C&#8217;
+standard.</p>
+</div>
+<div class="section" id="integer-overflow-checking">
+<h3><a class="toc-backref" href="#id57">Integer Overflow Checking</a><a class="headerlink" href="#integer-overflow-checking" title="Permalink to this headline">¶</a></h3>
+<p>Overflow checking in integer operators is conducted as follows:</p>
+<div class="section" id="overflow-categories">
+<h4><a class="toc-backref" href="#id58">Overflow Categories</a><a class="headerlink" href="#overflow-categories" title="Permalink to this headline">¶</a></h4>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="16%" />
+<col width="15%" />
+<col width="17%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Operation</th>
+<th class="head">Result out
+of range</th>
+<th class="head">Divide by
+zero</th>
+<th class="head">Negate max.
+negative
+signed int</th>
+<th class="head">Parameter is
+negative</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Addition (+)</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Subtraction (-)</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Modulus (%)</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Multiplication (*)</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Division (/, //)</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Negation (-)</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>Absolute Value</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>Factorial</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>Power (**)</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Negation of the maximum negative signed in (the most negative integer for that
+array type) can be caused by negation, absolute value, division, and modulus
+operations. Since signed integers do not have a symetrical range (e.g. -128 to
+127 for 8 bit sizes) anything which attempts to convert -128 to +128 would cause
+an overflow back to -128.</li>
+<li>The factorial of negative numbers is undefined.</li>
+<li>Powers are not calculated for integers raised to negative powers, as integer
+arrays cannot contain fractional results.</li>
+</ul>
+</div>
+<div class="section" id="disabling-integer-division-by-zero-checks">
+<h4><a class="toc-backref" href="#id59">Disabling Integer Division by Zero Checks</a><a class="headerlink" href="#disabling-integer-division-by-zero-checks" title="Permalink to this headline">¶</a></h4>
+<p>Divison by zero cannot be disabled for integer division or modulus operations.
+Division by zero could cause seg faults (crashes), so this option is ignored for
+these functions.</p>
+</div>
+<div class="section" id="floating-point-nan-and-infinity">
+<h4><a class="toc-backref" href="#id60">Floating Point NaN and Infinity</a><a class="headerlink" href="#floating-point-nan-and-infinity" title="Permalink to this headline">¶</a></h4>
+<p>Floating point numbers include three special values, NaN (Not a Number), and
+negative and positive infinity. Arrayfunc uses the platform C compiler to create
+executable code. Some compilers may produce different results than other
+compilers under certain conditions when operating on NaN and infinity values. In
+addition, the Arrayfunc results may differ from those in native Python on some
+platforms when using NaN and infinity as inputs.</p>
+<p>However, since using NaN and infinity as numeric inputs is not a commmon
+operation, this is unlikely to be a serious problem when writing cross platform
+code in most cases.</p>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="exceptions">
+<h2><a class="toc-backref" href="#id61">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="exceptions-general">
+<h3><a class="toc-backref" href="#id62">Exceptions - General</a><a class="headerlink" href="#exceptions-general" title="Permalink to this headline">¶</a></h3>
+<p>The following exceptions apply to most functions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="38%" />
+<col width="47%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception type</th>
+<th class="head">Text</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ArithmeticError</td>
+<td>arithmetic error in calculation.</td>
+<td>An arithmetic error occured in a calculation.</td>
+</tr>
+<tr class="row-odd"><td>IndexError</td>
+<td>array length error.</td>
+<td>One or more arrays has an invalid length (e.g a
+length of zero).</td>
+</tr>
+<tr class="row-even"><td>IndexError</td>
+<td>input array length error.</td>
+<td>The input array has an invalid length.</td>
+</tr>
+<tr class="row-odd"><td>IndexError</td>
+<td>output length error.</td>
+<td>The output array has an invalid length.</td>
+</tr>
+<tr class="row-even"><td>IndexError</td>
+<td>array length mismatch.</td>
+<td>Two or more arrays which are expected to be of equal
+length are not.</td>
+</tr>
+<tr class="row-odd"><td>OverflowError</td>
+<td>arithmetic overflow in calculation.</td>
+<td>An arithmetic integer overflow ocurred in a
+calculation.</td>
+</tr>
+<tr class="row-even"><td>OverflowError</td>
+<td>arithmetic overflow in parameter.</td>
+<td>The size or range of a non-array parameter was not
+compatible with the array parameters.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>array and parameter type mismatch.</td>
+<td>A non-array parameter data type was not compatible
+with the array parameters.</td>
+</tr>
+<tr class="row-even"><td>TypeError</td>
+<td>array type mismatch.</td>
+<td>An array parameter is not compatible with another
+array parameter. For most functions, both arrays
+must be of the same type.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>unknown array type.</td>
+<td>The array type is unknown.</td>
+</tr>
+<tr class="row-even"><td>TypeError</td>
+<td>array.array or bytes expected.</td>
+<td>A non-array parameter was found where an array
+(or bytes) parameter was expected.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>operator not valid for this function.</td>
+<td>An operator parameter used was not valid for this
+function.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>operator not valid for this platform.</td>
+<td>The operator used is not supported on this platform.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>parameter error.</td>
+<td>An unspecified error occured when parsing the
+parameters.</td>
+</tr>
+<tr class="row-even"><td>TypeError</td>
+<td>parameter missing.</td>
+<td>An expected parameter was missing.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>parameter not valid for this operation.</td>
+<td>A value is not valid for this operation. E.g.
+attempting to perform a factorial on a negative
+number.</td>
+</tr>
+<tr class="row-even"><td>IndexError</td>
+<td>selector length error.</td>
+<td>The selector array length is incorrect.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>conversion not valid for this type.</td>
+<td>The conversion attempted was invalid.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>cannot convert float NaN to integer.</td>
+<td>Cannot convert NaN (Not A Number) floating point
+value in the input array to integer.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>output array type invalid.</td>
+<td>The output array type is invalid.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="exceptions-acalc">
+<h3><a class="toc-backref" href="#id63">Exceptions - ACalc</a><a class="headerlink" href="#exceptions-acalc" title="Permalink to this headline">¶</a></h3>
+<p>ACalc has additional exceptions which are defined here. In addition to these,
+some of the general exceptions also apply.</p>
+<div class="section" id="id1">
+<h4><a class="toc-backref" href="#id64">Initialisation</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>This are the exceptions which can occurr during class initialisation.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="39%" />
+<col width="48%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception type</th>
+<th class="head">Text</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>TypeError</td>
+<td>first parameter must be an array or bytes
+in ACalc init.</td>
+<td>The first parameter is of an incorrect type.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>second parameter must be an array or bytes
+in ACalc init.</td>
+<td>The second parameter is of an incorrect type.</td>
+</tr>
+<tr class="row-even"><td>TypeError</td>
+<td>unknown array type in ACalc init.</td>
+<td>The type of one of the parameters is not recognised.</td>
+</tr>
+<tr class="row-odd"><td>TypeError</td>
+<td>data array type mismatch error in
+ACalc init.</td>
+<td>The parameters are not of the same array type.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="compile">
+<h4><a class="toc-backref" href="#id65">Compile</a><a class="headerlink" href="#compile" title="Permalink to this headline">¶</a></h4>
+<p>These are the exceptions which can occur during the compile phase.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="34%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception type</th>
+<th class="head">Text</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ValueError</td>
+<td>unknown call name in ACalc compile.</td>
+<td>A function call name is not recognised.</td>
+</tr>
+<tr class="row-odd"><td>OverflowError</td>
+<td>equation constant &#8216;x&#8217; is out of
+range for the selected array type
+in ACalc compile.</td>
+<td>The specified constant is not valid for the array
+type selected.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>Invalid operations in ACalc
+compile: &#8216;x&#8217;.</td>
+<td>The specified operators are invalid.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>Unsupported operations in ACalc
+compile: &#8216;x&#8217;</td>
+<td>The specified operators are not supported on the
+current platform. Some platforms do not support all
+features.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>array name used in additional
+parameters in ACalc compile.</td>
+<td>The variable which specifies the array element was
+repeated in the additional parameters list.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>undefined variables in ACalc
+compile: &#8216;x&#8217;.</td>
+<td>A variable was used in the equation which was not
+defined in the parameter list.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>unused variables in ACalc compile:
+&#8216;x&#8217;.</td>
+<td>A variable was defined in the parameter list but was
+not used in the equation.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>duplicate parameter names in
+ACalc compile.</td>
+<td>One or more variable names were repeated in the
+parameter list.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>unbalanced parentheses in ACalc
+compile.</td>
+<td>The left and right parentheses &#8220;(&#8221;, &#8221;)&#8221;, do not match.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>invalid tokens in ACalc compile:
+&#8216;x&#8217;.</td>
+<td>An invalid symbol was present in the equation.</td>
+</tr>
+<tr class="row-even"><td>SyntaxError</td>
+<td>invalid syntax in equation in
+ACalc compile in position &#8216;x&#8217; &#8216;y&#8217;.</td>
+<td>A syntax error was found in the equation.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>unsupported element in equation
+in ACalc compile.</td>
+<td>The equation contains one or more elements which are
+likely valid Python, but are not supported in ACalc.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>unsupported function call in
+equation in ACalc compile.</td>
+<td>An unsupported function call was made.</td>
+</tr>
+<tr class="row-odd"><td>SyntaxError</td>
+<td>parsing error in ACalc compile:
+&#8216;x&#8217;</td>
+<td>An unspecified parsing error occured.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>unknown compile error in ACalc
+compile.</td>
+<td>An unspecified compile error occured.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>stack overflow or underflow
+in ACalc compile.</td>
+<td>The equation was checked before execution, and a
+stack overflow was detected. The equation may be
+too complex.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="run-time">
+<h4><a class="toc-backref" href="#id66">Run Time</a><a class="headerlink" href="#run-time" title="Permalink to this headline">¶</a></h4>
+<p>These are the exceptions which can occur during the execution phase. All errors
+except for the arithmetic overflow errors should have been detected during the
+compile phase. These run-time checks are in addition to the compile checks.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="40%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Exception type</th>
+<th class="head">Text</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ValueError</td>
+<td>ACalc vm stack overflow or
+underflow.</td>
+<td>A stack overflow was detected.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>ACalc vm uknown op code.</td>
+<td>An unknown opcde was detected.</td>
+</tr>
+<tr class="row-even"><td>ValueError</td>
+<td>ACalc vm variable array overflow.</td>
+<td>The variable array index overflowed.</td>
+</tr>
+<tr class="row-odd"><td>ValueError</td>
+<td>ACalc vm operator is invalid for
+array type.</td>
+<td>An operator used was invalid for the
+array type.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="simd-support">
+<h2><a class="toc-backref" href="#id67">SIMD Support</a><a class="headerlink" href="#simd-support" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="general">
+<h3><a class="toc-backref" href="#id68">General</a><a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
+multiple operations to take place in parallel. Some, but not all, functions will
+make use of these instructions to speed up execution.</p>
+<p>Those functions which do support SIMD features will automatically make use of
+them by default unless this feature is disabled. There is normally no reason
+to disable SIMD, but should there be hardware related problems the function can
+be forced to fall back to conventional execution mode.</p>
+</div>
+<div class="section" id="platform-support">
+<h3><a class="toc-backref" href="#id69">Platform Support</a><a class="headerlink" href="#platform-support" title="Permalink to this headline">¶</a></h3>
+<p>SIMD instructions are presently supported only on 64 bit x86 (i.e. AMD64) using
+the GCC compiler. Other compilers or platforms will still run the same functions
+and should produce the same results, but they will not benefit from SIMD
+acceleration.</p>
+<p>However, non-SIMD functions will still be much faster standard Python code. See
+the performance benchmarks to see what the relative speed differences are. With
+wider data types (e.g. double precision floating point) SIMD provides only
+marginal speed ups anyway.</p>
+</div>
+<div class="section" id="data-type-support">
+<h3><a class="toc-backref" href="#id70">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
+<p>The following table shows which array data types are supported by 64 bit x86
+SIMD instructions.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aall</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>aany</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>amax</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>amin</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>asum</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>findindex</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="simd-support-attributes">
+<h3><a class="toc-backref" href="#id71">SIMD Support Attributes</a><a class="headerlink" href="#simd-support-attributes" title="Permalink to this headline">¶</a></h3>
+<p>There is a module which can be used to detect if ArrayFunc is compiled with
+SIMD support and if the current hardware supports the required SIMD level.</p>
+<p>arrayfunc.simdsupport.hassimd</p>
+<p>The attribute &#8220;hassimd&#8221; will be True if the module supports SIMD.</p>
+<p>example:</p>
+<div class="highlight-python"><div class="highlight"><pre>import arrayfunc
+arrayfunc.simdsupport.hassimd
+==&gt; True
+</pre></div>
+</div>
+</div>
+</div>
+<hr class="docutils" />
+<div class="section" id="performance">
+<h2><a class="toc-backref" href="#id72">Performance</a><a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<p>The purpose of the Arrayfunc module is to execute common operations faster than
+native Python. The relative speed will depend upon a number of factors:</p>
+<ul class="simple">
+<li>The function or opcode.</li>
+<li>The data type of the array.</li>
+<li>Function options. Turning overflow checking off will result in faster performance.</li>
+<li>The data in the arrays and the parameters.</li>
+<li>The size of the array.</li>
+</ul>
+<p>The speeds listed below should be used as rough guidelines only. More exact
+results will require application specific testing. The numbers shown are the
+execution time of each function relative to native Python. For example, a value
+of &#8216;50&#8217; means that the corresponding Arrayfunc operation ran 50 times faster
+than the closest native Python equivalent. Overflow checking was on in all
+tests.</p>
+<p>Both relative performance (the speed-up as compared to Python) and absolute
+performance (the actual execution speed of Python and ArrayFunc) will vary
+significantly depending upon the compiler (which is OS platform dependent) and
+whether compiled to 32 or 64 bit. If your precise actual benchmark performance
+results matter, be sure to conduct your testing using the actual OS and compiler
+your final program will be deployed on. The values listed below were measured on
+x86-64 Linux compiled with GCC.</p>
+<p>Note: Some Arrayfunc functions in the &#8220;other functions&#8221; table do not work
+exactly the same way as the built-in or &#8220;itertools&#8221; Python equivalents. This
+means that the benchmark results should be taken as general guidelines rather
+than precise comparisons.</p>
+<div class="section" id="id2">
+<h3><a class="toc-backref" href="#id73">Amap</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>af_add</td>
+<td>162</td>
+<td>146</td>
+<td>150</td>
+<td>145</td>
+<td>155</td>
+<td>122</td>
+<td>96</td>
+<td>77</td>
+<td>102</td>
+<td>69</td>
+<td>137</td>
+<td>88</td>
+</tr>
+<tr class="row-odd"><td>af_div</td>
+<td>77</td>
+<td>64</td>
+<td>77</td>
+<td>78</td>
+<td>71</td>
+<td>67</td>
+<td>78</td>
+<td>66</td>
+<td>80</td>
+<td>65</td>
+<td>180</td>
+<td>200</td>
+</tr>
+<tr class="row-even"><td>af_div_r</td>
+<td>66</td>
+<td>77</td>
+<td>72</td>
+<td>79</td>
+<td>80</td>
+<td>74</td>
+<td>79</td>
+<td>74</td>
+<td>81</td>
+<td>71</td>
+<td>138</td>
+<td>116</td>
+</tr>
+<tr class="row-odd"><td>af_floordiv</td>
+<td>37</td>
+<td>35</td>
+<td>25</td>
+<td>40</td>
+<td>35</td>
+<td>30</td>
+<td>37</td>
+<td>29</td>
+<td>38</td>
+<td>29</td>
+<td>107</td>
+<td>83</td>
+</tr>
+<tr class="row-even"><td>af_floordiv_r</td>
+<td>27</td>
+<td>39</td>
+<td>29</td>
+<td>38</td>
+<td>38</td>
+<td>32</td>
+<td>39</td>
+<td>31</td>
+<td>37</td>
+<td>32</td>
+<td>76</td>
+<td>80</td>
+</tr>
+<tr class="row-odd"><td>af_mod</td>
+<td>28</td>
+<td>38</td>
+<td>25</td>
+<td>41</td>
+<td>39</td>
+<td>30</td>
+<td>36</td>
+<td>29</td>
+<td>38</td>
+<td>28</td>
+<td>51</td>
+<td>47</td>
+</tr>
+<tr class="row-even"><td>af_mod_r</td>
+<td>36</td>
+<td>31</td>
+<td>37</td>
+<td>36</td>
+<td>35</td>
+<td>28</td>
+<td>36</td>
+<td>28</td>
+<td>37</td>
+<td>28</td>
+<td>33</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>af_mult</td>
+<td>109</td>
+<td>139</td>
+<td>103</td>
+<td>154</td>
+<td>95</td>
+<td>97</td>
+<td>82</td>
+<td>68</td>
+<td>84</td>
+<td>67</td>
+<td>112</td>
+<td>102</td>
+</tr>
+<tr class="row-even"><td>af_neg</td>
+<td>166</td>
+<td>&nbsp;</td>
+<td>161</td>
+<td>&nbsp;</td>
+<td>147</td>
+<td>&nbsp;</td>
+<td>105</td>
+<td>&nbsp;</td>
+<td>115</td>
+<td>&nbsp;</td>
+<td>103</td>
+<td>85</td>
+</tr>
+<tr class="row-odd"><td>af_pow</td>
+<td>55</td>
+<td>63</td>
+<td>56</td>
+<td>52</td>
+<td>38</td>
+<td>33</td>
+<td>20</td>
+<td>19</td>
+<td>21</td>
+<td>18</td>
+<td>18</td>
+<td>18</td>
+</tr>
+<tr class="row-even"><td>af_pow_r</td>
+<td>49</td>
+<td>53</td>
+<td>46</td>
+<td>47</td>
+<td>35</td>
+<td>31</td>
+<td>20</td>
+<td>18</td>
+<td>20</td>
+<td>18</td>
+<td>2.7</td>
+<td>4.4</td>
+</tr>
+<tr class="row-odd"><td>af_sub</td>
+<td>163</td>
+<td>153</td>
+<td>159</td>
+<td>149</td>
+<td>161</td>
+<td>116</td>
+<td>94</td>
+<td>82</td>
+<td>109</td>
+<td>83</td>
+<td>119</td>
+<td>106</td>
+</tr>
+<tr class="row-even"><td>af_sub_r</td>
+<td>151</td>
+<td>139</td>
+<td>152</td>
+<td>152</td>
+<td>145</td>
+<td>121</td>
+<td>100</td>
+<td>82</td>
+<td>111</td>
+<td>88</td>
+<td>126</td>
+<td>106</td>
+</tr>
+<tr class="row-odd"><td>af_and</td>
+<td>190</td>
+<td>220</td>
+<td>161</td>
+<td>255</td>
+<td>240</td>
+<td>134</td>
+<td>135</td>
+<td>87</td>
+<td>120</td>
+<td>100</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_or</td>
+<td>222</td>
+<td>192</td>
+<td>177</td>
+<td>174</td>
+<td>221</td>
+<td>198</td>
+<td>123</td>
+<td>90</td>
+<td>114</td>
+<td>83</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_xor</td>
+<td>217</td>
+<td>248</td>
+<td>292</td>
+<td>212</td>
+<td>203</td>
+<td>190</td>
+<td>117</td>
+<td>93</td>
+<td>137</td>
+<td>109</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_invert</td>
+<td>326</td>
+<td>222</td>
+<td>277</td>
+<td>285</td>
+<td>232</td>
+<td>159</td>
+<td>150</td>
+<td>116</td>
+<td>185</td>
+<td>155</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_eq</td>
+<td>155</td>
+<td>174</td>
+<td>172</td>
+<td>169</td>
+<td>138</td>
+<td>119</td>
+<td>109</td>
+<td>88</td>
+<td>120</td>
+<td>85</td>
+<td>160</td>
+<td>126</td>
+</tr>
+<tr class="row-even"><td>af_gt</td>
+<td>176</td>
+<td>194</td>
+<td>135</td>
+<td>141</td>
+<td>147</td>
+<td>119</td>
+<td>107</td>
+<td>82</td>
+<td>102</td>
+<td>80</td>
+<td>236</td>
+<td>150</td>
+</tr>
+<tr class="row-odd"><td>af_gte</td>
+<td>173</td>
+<td>152</td>
+<td>162</td>
+<td>171</td>
+<td>131</td>
+<td>117</td>
+<td>104</td>
+<td>81</td>
+<td>110</td>
+<td>84</td>
+<td>223</td>
+<td>163</td>
+</tr>
+<tr class="row-even"><td>af_lt</td>
+<td>182</td>
+<td>167</td>
+<td>138</td>
+<td>133</td>
+<td>160</td>
+<td>112</td>
+<td>116</td>
+<td>75</td>
+<td>106</td>
+<td>90</td>
+<td>217</td>
+<td>154</td>
+</tr>
+<tr class="row-odd"><td>af_lte</td>
+<td>164</td>
+<td>159</td>
+<td>178</td>
+<td>151</td>
+<td>146</td>
+<td>132</td>
+<td>108</td>
+<td>89</td>
+<td>93</td>
+<td>76</td>
+<td>225</td>
+<td>156</td>
+</tr>
+<tr class="row-even"><td>af_ne</td>
+<td>226</td>
+<td>222</td>
+<td>148</td>
+<td>129</td>
+<td>154</td>
+<td>118</td>
+<td>115</td>
+<td>80</td>
+<td>153</td>
+<td>77</td>
+<td>206</td>
+<td>163</td>
+</tr>
+<tr class="row-odd"><td>af_lshift</td>
+<td>178</td>
+<td>170</td>
+<td>211</td>
+<td>224</td>
+<td>172</td>
+<td>150</td>
+<td>114</td>
+<td>95</td>
+<td>140</td>
+<td>103</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_lshift_r</td>
+<td>165</td>
+<td>169</td>
+<td>183</td>
+<td>259</td>
+<td>157</td>
+<td>152</td>
+<td>122</td>
+<td>104</td>
+<td>136</td>
+<td>122</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_rshift</td>
+<td>168</td>
+<td>265</td>
+<td>190</td>
+<td>262</td>
+<td>242</td>
+<td>153</td>
+<td>153</td>
+<td>119</td>
+<td>137</td>
+<td>104</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>af_rshift_r</td>
+<td>208</td>
+<td>258</td>
+<td>177</td>
+<td>245</td>
+<td>231</td>
+<td>190</td>
+<td>122</td>
+<td>90</td>
+<td>113</td>
+<td>101</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>af_abs</td>
+<td>114</td>
+<td>&nbsp;</td>
+<td>114</td>
+<td>&nbsp;</td>
+<td>128</td>
+<td>&nbsp;</td>
+<td>103</td>
+<td>&nbsp;</td>
+<td>97</td>
+<td>&nbsp;</td>
+<td>264</td>
+<td>125</td>
+</tr>
+<tr class="row-even"><td>math_acos</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>16</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>math_acosh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.2</td>
+<td>7.3</td>
+</tr>
+<tr class="row-even"><td>math_asin</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>18</td>
+<td>16</td>
+</tr>
+<tr class="row-odd"><td>math_asinh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>7.8</td>
+<td>8.0</td>
+</tr>
+<tr class="row-even"><td>math_atan</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>16</td>
+<td>15</td>
+</tr>
+<tr class="row-odd"><td>math_atan2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>11</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>math_atan2_r</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>13</td>
+<td>8.5</td>
+</tr>
+<tr class="row-odd"><td>math_atanh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.2</td>
+<td>9.6</td>
+</tr>
+<tr class="row-even"><td>math_ceil</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>113</td>
+<td>103</td>
+</tr>
+<tr class="row-odd"><td>math_copysign</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>248</td>
+<td>196</td>
+</tr>
+<tr class="row-even"><td>math_cos</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>24</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>math_cosh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>12</td>
+<td>9.6</td>
+</tr>
+<tr class="row-even"><td>math_degrees</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>179</td>
+<td>125</td>
+</tr>
+<tr class="row-odd"><td>math_erf</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>17</td>
+<td>16</td>
+</tr>
+<tr class="row-even"><td>math_erfc</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>9.6</td>
+<td>8.7</td>
+</tr>
+<tr class="row-odd"><td>math_exp</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>18</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>math_expm1</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.1</td>
+<td>8.5</td>
+</tr>
+<tr class="row-odd"><td>math_fabs</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>221</td>
+<td>140</td>
+</tr>
+<tr class="row-even"><td>math_factorial</td>
+<td>80</td>
+<td>81</td>
+<td>71</td>
+<td>71</td>
+<td>87</td>
+<td>66</td>
+<td>70</td>
+<td>58</td>
+<td>87</td>
+<td>80</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>math_floor</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>134</td>
+<td>108</td>
+</tr>
+<tr class="row-even"><td>math_fmod</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>math_fmod_r</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>52</td>
+<td>52</td>
+</tr>
+<tr class="row-even"><td>math_gamma</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1.5</td>
+<td>1.7</td>
+</tr>
+<tr class="row-odd"><td>math_hypot</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>30</td>
+<td>19</td>
+</tr>
+<tr class="row-even"><td>math_hypot_r</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>30</td>
+<td>18</td>
+</tr>
+<tr class="row-odd"><td>math_isinf</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>115</td>
+<td>107</td>
+</tr>
+<tr class="row-even"><td>math_isnan</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>263</td>
+<td>157</td>
+</tr>
+<tr class="row-odd"><td>math_ldexp</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>61</td>
+<td>61</td>
+</tr>
+<tr class="row-even"><td>math_lgamma</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>9.0</td>
+<td>7.2</td>
+</tr>
+<tr class="row-odd"><td>math_log</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>18</td>
+<td>13</td>
+</tr>
+<tr class="row-even"><td>math_log10</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>12</td>
+<td>8.9</td>
+</tr>
+<tr class="row-odd"><td>math_log1p</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.9</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>math_log2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>math_pow</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>30</td>
+<td>34</td>
+</tr>
+<tr class="row-even"><td>math_pow_r</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>4.6</td>
+<td>7.4</td>
+</tr>
+<tr class="row-odd"><td>math_radians</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>168</td>
+<td>133</td>
+</tr>
+<tr class="row-even"><td>math_sin</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>21</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>math_sinh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>6.6</td>
+<td>6.4</td>
+</tr>
+<tr class="row-even"><td>math_sqrt</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>80</td>
+<td>56</td>
+</tr>
+<tr class="row-odd"><td>math_tan</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.0</td>
+<td>7.5</td>
+</tr>
+<tr class="row-even"><td>math_tanh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>6.9</td>
+<td>7.0</td>
+</tr>
+<tr class="row-odd"><td>math_trunc</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>86</td>
+<td>78</td>
+</tr>
+<tr class="row-even"><td>aops_subst_gt</td>
+<td>198</td>
+<td>194</td>
+<td>234</td>
+<td>172</td>
+<td>169</td>
+<td>142</td>
+<td>123</td>
+<td>98</td>
+<td>119</td>
+<td>97</td>
+<td>181</td>
+<td>159</td>
+</tr>
+<tr class="row-odd"><td>aops_subst_gte</td>
+<td>198</td>
+<td>211</td>
+<td>209</td>
+<td>177</td>
+<td>165</td>
+<td>177</td>
+<td>130</td>
+<td>107</td>
+<td>138</td>
+<td>103</td>
+<td>195</td>
+<td>134</td>
+</tr>
+<tr class="row-even"><td>aops_subst_lt</td>
+<td>203</td>
+<td>242</td>
+<td>179</td>
+<td>203</td>
+<td>206</td>
+<td>176</td>
+<td>132</td>
+<td>105</td>
+<td>128</td>
+<td>113</td>
+<td>269</td>
+<td>137</td>
+</tr>
+<tr class="row-odd"><td>aops_subst_lte</td>
+<td>200</td>
+<td>237</td>
+<td>184</td>
+<td>175</td>
+<td>192</td>
+<td>171</td>
+<td>132</td>
+<td>100</td>
+<td>141</td>
+<td>99</td>
+<td>203</td>
+<td>135</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>108</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>326</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>1.5</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>100000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id3">
+<h3><a class="toc-backref" href="#id74">ACalc</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>add</td>
+<td>22</td>
+<td>21</td>
+<td>22</td>
+<td>23</td>
+<td>24</td>
+<td>18</td>
+<td>22</td>
+<td>17</td>
+<td>24</td>
+<td>19</td>
+<td>28</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>sub</td>
+<td>23</td>
+<td>23</td>
+<td>22</td>
+<td>24</td>
+<td>25</td>
+<td>19</td>
+<td>22</td>
+<td>18</td>
+<td>23</td>
+<td>18</td>
+<td>29</td>
+<td>27</td>
+</tr>
+<tr class="row-even"><td>mult</td>
+<td>11</td>
+<td>14</td>
+<td>8.0</td>
+<td>13</td>
+<td>5.3</td>
+<td>7.1</td>
+<td>3.2</td>
+<td>4.5</td>
+<td>3.2</td>
+<td>4.5</td>
+<td>29</td>
+<td>28</td>
+</tr>
+<tr class="row-odd"><td>div</td>
+<td>40</td>
+<td>40</td>
+<td>32</td>
+<td>37</td>
+<td>39</td>
+<td>35</td>
+<td>38</td>
+<td>27</td>
+<td>39</td>
+<td>26</td>
+<td>57</td>
+<td>52</td>
+</tr>
+<tr class="row-even"><td>floordiv</td>
+<td>20</td>
+<td>19</td>
+<td>20</td>
+<td>19</td>
+<td>21</td>
+<td>16</td>
+<td>13</td>
+<td>12</td>
+<td>16</td>
+<td>12</td>
+<td>43</td>
+<td>43</td>
+</tr>
+<tr class="row-odd"><td>mod</td>
+<td>18</td>
+<td>19</td>
+<td>14</td>
+<td>19</td>
+<td>19</td>
+<td>16</td>
+<td>18</td>
+<td>12</td>
+<td>20</td>
+<td>12</td>
+<td>22</td>
+<td>21</td>
+</tr>
+<tr class="row-even"><td>uadd</td>
+<td>61</td>
+<td>48</td>
+<td>58</td>
+<td>57</td>
+<td>56</td>
+<td>45</td>
+<td>49</td>
+<td>37</td>
+<td>51</td>
+<td>39</td>
+<td>35</td>
+<td>35</td>
+</tr>
+<tr class="row-odd"><td>usub</td>
+<td>36</td>
+<td>&nbsp;</td>
+<td>34</td>
+<td>&nbsp;</td>
+<td>34</td>
+<td>&nbsp;</td>
+<td>32</td>
+<td>&nbsp;</td>
+<td>34</td>
+<td>&nbsp;</td>
+<td>34</td>
+<td>32</td>
+</tr>
+<tr class="row-even"><td>pow</td>
+<td>37</td>
+<td>33</td>
+<td>32</td>
+<td>32</td>
+<td>27</td>
+<td>24</td>
+<td>17</td>
+<td>15</td>
+<td>17</td>
+<td>15</td>
+<td>14</td>
+<td>13</td>
+</tr>
+<tr class="row-odd"><td>bitand</td>
+<td>35</td>
+<td>30</td>
+<td>31</td>
+<td>30</td>
+<td>33</td>
+<td>26</td>
+<td>31</td>
+<td>26</td>
+<td>34</td>
+<td>26</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>bitor</td>
+<td>33</td>
+<td>31</td>
+<td>32</td>
+<td>30</td>
+<td>32</td>
+<td>25</td>
+<td>30</td>
+<td>25</td>
+<td>34</td>
+<td>24</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>bitxor</td>
+<td>36</td>
+<td>34</td>
+<td>35</td>
+<td>36</td>
+<td>35</td>
+<td>25</td>
+<td>34</td>
+<td>27</td>
+<td>36</td>
+<td>26</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>invert</td>
+<td>61</td>
+<td>52</td>
+<td>60</td>
+<td>57</td>
+<td>62</td>
+<td>51</td>
+<td>56</td>
+<td>47</td>
+<td>64</td>
+<td>54</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>lshift</td>
+<td>32</td>
+<td>31</td>
+<td>31</td>
+<td>31</td>
+<td>33</td>
+<td>26</td>
+<td>31</td>
+<td>28</td>
+<td>31</td>
+<td>26</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>rshift</td>
+<td>31</td>
+<td>30</td>
+<td>29</td>
+<td>31</td>
+<td>32</td>
+<td>25</td>
+<td>30</td>
+<td>25</td>
+<td>36</td>
+<td>25</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>abs</td>
+<td>37</td>
+<td>59</td>
+<td>37</td>
+<td>66</td>
+<td>36</td>
+<td>58</td>
+<td>35</td>
+<td>51</td>
+<td>37</td>
+<td>54</td>
+<td>45</td>
+<td>45</td>
+</tr>
+<tr class="row-even"><td>math_acos</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15</td>
+<td>15</td>
+</tr>
+<tr class="row-odd"><td>math_acosh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.7</td>
+<td>7.8</td>
+</tr>
+<tr class="row-even"><td>math_asin</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>16</td>
+<td>15</td>
+</tr>
+<tr class="row-odd"><td>math_asinh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>7.9</td>
+<td>8.7</td>
+</tr>
+<tr class="row-even"><td>math_atan</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>16</td>
+<td>15</td>
+</tr>
+<tr class="row-odd"><td>math_atan2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>11</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>math_atanh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.7</td>
+<td>8.9</td>
+</tr>
+<tr class="row-odd"><td>math_ceil</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>73</td>
+<td>79</td>
+</tr>
+<tr class="row-even"><td>math_copysign</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>66</td>
+<td>60</td>
+</tr>
+<tr class="row-odd"><td>math_cos</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>20</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>math_cosh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>12</td>
+<td>9.8</td>
+</tr>
+<tr class="row-odd"><td>math_degrees</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>54</td>
+<td>59</td>
+</tr>
+<tr class="row-even"><td>math_erf</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>16</td>
+<td>16</td>
+</tr>
+<tr class="row-odd"><td>math_erfc</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>9.6</td>
+<td>8.7</td>
+</tr>
+<tr class="row-even"><td>math_exp</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>17</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>math_expm1</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.4</td>
+<td>9.3</td>
+</tr>
+<tr class="row-even"><td>math_fabs</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>69</td>
+<td>81</td>
+</tr>
+<tr class="row-odd"><td>math_factorial</td>
+<td>40</td>
+<td>43</td>
+<td>40</td>
+<td>46</td>
+<td>42</td>
+<td>34</td>
+<td>40</td>
+<td>38</td>
+<td>41</td>
+<td>38</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>math_floor</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>73</td>
+<td>69</td>
+</tr>
+<tr class="row-odd"><td>math_fmod</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>15</td>
+<td>15</td>
+</tr>
+<tr class="row-even"><td>math_gamma</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1.6</td>
+<td>1.9</td>
+</tr>
+<tr class="row-odd"><td>math_hypot</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>24</td>
+<td>18</td>
+</tr>
+<tr class="row-even"><td>math_ldexp</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>39</td>
+<td>39</td>
+</tr>
+<tr class="row-odd"><td>math_lgamma</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>9.9</td>
+<td>7.0</td>
+</tr>
+<tr class="row-even"><td>math_log</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>18</td>
+<td>13</td>
+</tr>
+<tr class="row-odd"><td>math_log10</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>11</td>
+<td>9.9</td>
+</tr>
+<tr class="row-even"><td>math_log1p</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>9.9</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>math_log2</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>14</td>
+<td>13</td>
+</tr>
+<tr class="row-even"><td>math_pow</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>27</td>
+<td>26</td>
+</tr>
+<tr class="row-odd"><td>math_radians</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>58</td>
+<td>59</td>
+</tr>
+<tr class="row-even"><td>math_sin</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>19</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>math_sinh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>6.4</td>
+<td>5.5</td>
+</tr>
+<tr class="row-even"><td>math_sqrt</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>45</td>
+<td>38</td>
+</tr>
+<tr class="row-odd"><td>math_tan</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>8.8</td>
+<td>7.0</td>
+</tr>
+<tr class="row-even"><td>math_tanh</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>6.7</td>
+<td>7.0</td>
+</tr>
+<tr class="row-odd"><td>math_trunc</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>56</td>
+<td>51</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>29</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>81</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>1.6</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>100000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="other-functions">
+<h3><a class="toc-backref" href="#id75">Other Functions</a><a class="headerlink" href="#other-functions" title="Permalink to this headline">¶</a></h3>
+<p>Asumov in the following indicates asum with overflow checking turned off. This
+is required to enable SIMD features.</p>
+<p>Arrayfunc faster than Python factor.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aall</td>
+<td>10</td>
+<td>9.8</td>
+<td>8.9</td>
+<td>7.7</td>
+<td>10</td>
+<td>9.9</td>
+<td>6.6</td>
+<td>5.9</td>
+<td>6.1</td>
+<td>6.3</td>
+<td>13</td>
+<td>9.4</td>
+</tr>
+<tr class="row-odd"><td>aany</td>
+<td>7.7</td>
+<td>10.0</td>
+<td>10</td>
+<td>6.0</td>
+<td>7.5</td>
+<td>7.4</td>
+<td>6.2</td>
+<td>6.3</td>
+<td>6.2</td>
+<td>6.3</td>
+<td>11</td>
+<td>8.7</td>
+</tr>
+<tr class="row-even"><td>afilter</td>
+<td>265</td>
+<td>206</td>
+<td>242</td>
+<td>239</td>
+<td>165</td>
+<td>121</td>
+<td>106</td>
+<td>75</td>
+<td>104</td>
+<td>77</td>
+<td>199</td>
+<td>109</td>
+</tr>
+<tr class="row-odd"><td>amax</td>
+<td>32</td>
+<td>29</td>
+<td>21</td>
+<td>23</td>
+<td>20</td>
+<td>20</td>
+<td>14</td>
+<td>14</td>
+<td>14</td>
+<td>14</td>
+<td>36</td>
+<td>27</td>
+</tr>
+<tr class="row-even"><td>amin</td>
+<td>24</td>
+<td>24</td>
+<td>30</td>
+<td>34</td>
+<td>21</td>
+<td>21</td>
+<td>14</td>
+<td>14</td>
+<td>14</td>
+<td>14</td>
+<td>48</td>
+<td>25</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
+<td>6.6</td>
+<td>11</td>
+<td>6.9</td>
+<td>10</td>
+<td>7.5</td>
+<td>10</td>
+<td>6.7</td>
+<td>7.1</td>
+<td>7.3</td>
+<td>7.1</td>
+<td>11</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>asumov</td>
+<td>13</td>
+<td>18</td>
+<td>14</td>
+<td>16</td>
+<td>12</td>
+<td>14</td>
+<td>7.5</td>
+<td>8.6</td>
+<td>7.9</td>
+<td>8.0</td>
+<td>11</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>compress</td>
+<td>42</td>
+<td>42</td>
+<td>41</td>
+<td>35</td>
+<td>41</td>
+<td>21</td>
+<td>34</td>
+<td>16</td>
+<td>30</td>
+<td>17</td>
+<td>28</td>
+<td>32</td>
+</tr>
+<tr class="row-even"><td>count</td>
+<td>241</td>
+<td>243</td>
+<td>236</td>
+<td>299</td>
+<td>138</td>
+<td>87</td>
+<td>69</td>
+<td>50</td>
+<td>75</td>
+<td>51</td>
+<td>114</td>
+<td>105</td>
+</tr>
+<tr class="row-odd"><td>cycle</td>
+<td>112</td>
+<td>118</td>
+<td>101</td>
+<td>106</td>
+<td>89</td>
+<td>61</td>
+<td>60</td>
+<td>44</td>
+<td>72</td>
+<td>43</td>
+<td>39</td>
+<td>40</td>
+</tr>
+<tr class="row-even"><td>dropwhile</td>
+<td>107</td>
+<td>102</td>
+<td>104</td>
+<td>103</td>
+<td>100</td>
+<td>70</td>
+<td>65</td>
+<td>46</td>
+<td>66</td>
+<td>47</td>
+<td>104</td>
+<td>66</td>
+</tr>
+<tr class="row-odd"><td>findindex</td>
+<td>13</td>
+<td>16</td>
+<td>16</td>
+<td>12</td>
+<td>18</td>
+<td>15</td>
+<td>11</td>
+<td>11</td>
+<td>11</td>
+<td>11</td>
+<td>27</td>
+<td>20</td>
+</tr>
+<tr class="row-even"><td>findindices</td>
+<td>39</td>
+<td>31</td>
+<td>38</td>
+<td>36</td>
+<td>35</td>
+<td>29</td>
+<td>26</td>
+<td>27</td>
+<td>26</td>
+<td>26</td>
+<td>41</td>
+<td>36</td>
+</tr>
+<tr class="row-odd"><td>repeat</td>
+<td>128</td>
+<td>146</td>
+<td>122</td>
+<td>141</td>
+<td>88</td>
+<td>24</td>
+<td>52</td>
+<td>14</td>
+<td>52</td>
+<td>15</td>
+<td>135</td>
+<td>80</td>
+</tr>
+<tr class="row-even"><td>takewhile</td>
+<td>222</td>
+<td>223</td>
+<td>213</td>
+<td>224</td>
+<td>205</td>
+<td>129</td>
+<td>109</td>
+<td>81</td>
+<td>109</td>
+<td>84</td>
+<td>205</td>
+<td>110</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>57</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>299</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>5.9</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>1000000</td>
+</tr>
+</tbody>
+</table>
+<p>Arrayfunc with SIMD faster than Python factor.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aall</td>
+<td>89</td>
+<td>&nbsp;</td>
+<td>32</td>
+<td>&nbsp;</td>
+<td>14</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>21</td>
+<td>11</td>
+</tr>
+<tr class="row-odd"><td>aany</td>
+<td>120</td>
+<td>&nbsp;</td>
+<td>60</td>
+<td>&nbsp;</td>
+<td>20</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>29</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>afilter</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>amax</td>
+<td>527</td>
+<td>501</td>
+<td>117</td>
+<td>114</td>
+<td>40</td>
+<td>40</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>66</td>
+<td>33</td>
+</tr>
+<tr class="row-even"><td>amin</td>
+<td>335</td>
+<td>345</td>
+<td>96</td>
+<td>96</td>
+<td>34</td>
+<td>35</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>57</td>
+<td>30</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>asumov</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>32</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>compress</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>count</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>cycle</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>dropwhile</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>findindex</td>
+<td>246</td>
+<td>&nbsp;</td>
+<td>74</td>
+<td>&nbsp;</td>
+<td>28</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>54</td>
+<td>27</td>
+</tr>
+<tr class="row-even"><td>findindices</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>repeat</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>takewhile</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>101</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>527</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>10.4</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>1000000</td>
+</tr>
+</tbody>
+</table>
+<p>Arrayfunc with SIMD faster than Arrayfunc without SIMD factor.
+SIMD is not supported for all array types, so some types will not show a speed up.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aall</td>
+<td>8.8</td>
+<td>&nbsp;</td>
+<td>3.7</td>
+<td>&nbsp;</td>
+<td>1.4</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1.5</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>aany</td>
+<td>16</td>
+<td>&nbsp;</td>
+<td>5.9</td>
+<td>&nbsp;</td>
+<td>2.6</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>2.6</td>
+<td>1.2</td>
+</tr>
+<tr class="row-even"><td>afilter</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>amax</td>
+<td>16</td>
+<td>17</td>
+<td>5.5</td>
+<td>5.1</td>
+<td>2.0</td>
+<td>2.0</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1.8</td>
+<td>1.2</td>
+</tr>
+<tr class="row-even"><td>amin</td>
+<td>14</td>
+<td>15</td>
+<td>3.2</td>
+<td>2.8</td>
+<td>1.7</td>
+<td>1.7</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>1.2</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>asumov</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>2.8</td>
+<td>1.3</td>
+</tr>
+<tr class="row-odd"><td>compress</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>count</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>cycle</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>dropwhile</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>findindex</td>
+<td>19</td>
+<td>&nbsp;</td>
+<td>4.7</td>
+<td>&nbsp;</td>
+<td>1.5</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>2.0</td>
+<td>1.3</td>
+</tr>
+<tr class="row-even"><td>findindices</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-odd"><td>repeat</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+<tr class="row-even"><td>takewhile</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>5</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>19</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>1000000</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ArrayFunc</a><ul>
+<li><a class="reference internal" href="#introduction">Introduction</a></li>
+<li><a class="reference internal" href="#functions">Functions</a><ul>
+<li><a class="reference internal" href="#summary">Summary</a><ul>
+<li><a class="reference internal" href="#filling-arrays">Filling Arrays</a></li>
+<li><a class="reference internal" href="#filtering-arrays">Filtering Arrays</a></li>
+<li><a class="reference internal" href="#examining-and-searching-arrays">Examining and Searching Arrays</a></li>
+<li><a class="reference internal" href="#operating-on-arrays">Operating on Arrays</a></li>
+<li><a class="reference internal" href="#data-conversion">Data Conversion</a></li>
+<li><a class="reference internal" href="#array-limit-attributes">Array Limit Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#details">Details</a><ul>
+<li><a class="reference internal" href="#count">count</a></li>
+<li><a class="reference internal" href="#cycle">cycle</a></li>
+<li><a class="reference internal" href="#repeat">repeat</a></li>
+<li><a class="reference internal" href="#afilter">afilter</a></li>
+<li><a class="reference internal" href="#compress">compress</a></li>
+<li><a class="reference internal" href="#dropwhile">dropwhile</a></li>
+<li><a class="reference internal" href="#takewhile">takewhile</a></li>
+<li><a class="reference internal" href="#aany">aany</a></li>
+<li><a class="reference internal" href="#aall">aall</a></li>
+<li><a class="reference internal" href="#amax">amax</a></li>
+<li><a class="reference internal" href="#amin">amin</a></li>
+<li><a class="reference internal" href="#findindex">findindex</a></li>
+<li><a class="reference internal" href="#findindices">findindices</a></li>
+<li><a class="reference internal" href="#amap">amap</a></li>
+<li><a class="reference internal" href="#amapi">amapi</a></li>
+<li><a class="reference internal" href="#starmap">starmap</a></li>
+<li><a class="reference internal" href="#starmapi">starmapi</a></li>
+<li><a class="reference internal" href="#asum">asum</a></li>
+<li><a class="reference internal" href="#convert">convert</a></li>
+<li><a class="reference internal" href="#arraylimits-attributes">arraylimits attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#acalc">ACalc</a><ul>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#initialisation">Initialisation</a></li>
+<li><a class="reference internal" href="#compiling">Compiling</a></li>
+<li><a class="reference internal" href="#executing">Executing</a></li>
+<li><a class="reference internal" href="#complete-example">Complete Example</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#option-flags-and-parameters">Option Flags and Parameters</a><ul>
+<li><a class="reference internal" href="#arithmetic-overflow-control">Arithmetic Overflow Control</a></li>
+<li><a class="reference internal" href="#using-only-part-of-an-array">Using Only Part of an Array</a></li>
+<li><a class="reference internal" href="#simd-control">SIMD Control</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-types">Data Types</a><ul>
+<li><a class="reference internal" href="#array-types">Array Types</a></li>
+<li><a class="reference internal" href="#bytes-type">Bytes Type</a></li>
+<li><a class="reference internal" href="#numeric-parameter-types">Numeric Parameter Types</a></li>
+<li><a class="reference internal" href="#maximum-array-size">Maximum Array Size</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operators">Operators</a><ul>
+<li><a class="reference internal" href="#python-equivalent-operators-and-functions">Python Equivalent Operators and Functions</a></li>
+<li><a class="reference internal" href="#additional-operators">Additional Operators</a></li>
+<li><a class="reference internal" href="#acalc-operators-and-functions">ACalc Operators and Functions</a></li>
+<li><a class="reference internal" href="#notes-on-operators-and-functions">Notes on Operators and Functions</a></li>
+<li><a class="reference internal" href="#acalc-math-constants">ACalc Math Constants</a></li>
+<li><a class="reference internal" href="#platform-compiler-support">Platform Compiler Support</a></li>
+<li><a class="reference internal" href="#integer-overflow-checking">Integer Overflow Checking</a><ul>
+<li><a class="reference internal" href="#overflow-categories">Overflow Categories</a></li>
+<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks">Disabling Integer Division by Zero Checks</a></li>
+<li><a class="reference internal" href="#floating-point-nan-and-infinity">Floating Point NaN and Infinity</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#exceptions">Exceptions</a><ul>
+<li><a class="reference internal" href="#exceptions-general">Exceptions - General</a></li>
+<li><a class="reference internal" href="#exceptions-acalc">Exceptions - ACalc</a><ul>
+<li><a class="reference internal" href="#id1">Initialisation</a></li>
+<li><a class="reference internal" href="#compile">Compile</a></li>
+<li><a class="reference internal" href="#run-time">Run Time</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#simd-support">SIMD Support</a><ul>
+<li><a class="reference internal" href="#general">General</a></li>
+<li><a class="reference internal" href="#platform-support">Platform Support</a></li>
+<li><a class="reference internal" href="#data-type-support">Data Type Support</a></li>
+<li><a class="reference internal" href="#simd-support-attributes">SIMD Support Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance">Performance</a><ul>
+<li><a class="reference internal" href="#id2">Amap</a></li>
+<li><a class="reference internal" href="#id3">ACalc</a></li>
+<li><a class="reference internal" href="#other-functions">Other Functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Welcome to ArrayFunc&#8217;s documentation!</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ArrayFunc.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to ArrayFunc’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">ArrayFunc 1.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, M Griffin.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.6.
+    </div>
+  </body>
+</html>
