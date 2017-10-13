@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 3.0.0 for 2017-08-27
+:Version: 3.1.0 for 2017-10-12
 :Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -204,3 +204,4 @@ Release History
           of Debian and FreeBSD to current releases.
 * 2.1.1 - Fixed missing header files in PyPI package. No functional changes.
 * 3.0.0 - Changed package format to "Wheel" files. No functional changes.
+* 3.1.0 - Added log2 to amap, amapi, and acalc.

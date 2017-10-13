@@ -597,7 +597,7 @@ endobj
 << /Outlines 185 0 R /PageLabels 292 0 R /PageMode /UseNone /Pages 257 0 R /Type /Catalog >>
 endobj
 184 0 obj
-<< /Author (Michael Griffin) /CreationDate (D:20170905025559+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20170905025559+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+<< /Author (Michael Griffin) /CreationDate (D:20171012233009+05'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20171012233009+05'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (ArrayFunc) /Trapped /False >>
 endobj
 185 0 obj
@@ -881,7 +881,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (2.0.1 for 2017-09-04) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (3.1.0 for 2017-10-12) Tj T* ET
 Q
 Q
 q
@@ -943,7 +943,7 @@ q
 1 0 0 1 91.03937 3 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Python 3.4 or later) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Python 3.5 or later) Tj T* ET
 Q
 Q
 q
@@ -25197,7 +25197,7 @@ xref
 trailer
 << /ID 
  % ReportLab generated PDF document -- digest (http://www.reportlab.com)
- [(ua+\210\271\224\205\017\243\307\321\013\327\357\325\321) (ua+\210\271\224\205\017\243\307\321\013\327\357\325\321)]
+ [(\024\2542s_\324\227\3748\251\212_\000\314[') (\024\2542s_\324\227\3748\251\212_\000\314[')]
  /Info 184 0 R /Root 183 0 R /Size 327 >>
 startxref
 450459

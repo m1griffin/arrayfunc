@@ -6,10 +6,10 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 2.0.1 for 2017-09-04
+:Version: 3.1.0 for 2017-10-12
 :Copyright: 2014 - 2017
 :License: This document may be distributed under the Apache License V2.0.
-:Language: Python 3.4 or later
+:Language: Python 3.5 or later
 
 
 .. contents:: Table of Contents
