@@ -1,0 +1,455 @@
+//------------------------------------------------------------------------------
+// Project:  arrayfunc
+// Module:   invert.c
+// Purpose:  Calculate the invert of values in an array.
+// Language: C
+// Date:     15-Nov-2017.
+//
+//------------------------------------------------------------------------------
+//
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//
+//   Licensed under the Apache License, Version 2.0 (the "License");
+//   you may not use this file except in compliance with the License.
+//   You may obtain a copy of the License at
+//
+//       http://www.apache.org/licenses/LICENSE-2.0
+//
+//   Unless required by applicable law or agreed to in writing, software
+//   distributed under the License is distributed on an "AS IS" BASIS,
+//   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//   See the License for the specific language governing permissions and
+//   limitations under the License.
+//
+//------------------------------------------------------------------------------
+
+/*--------------------------------------------------------------------------- */
+// This must be defined before "Python.h" in order for the pointers in the
+// argument parsing functions to work properly. 
+#define PY_SSIZE_T_CLEAN
+
+#include "Python.h"
+
+#include <limits.h>
+#include <math.h>
+
+#include "arrayerrs.h"
+#include "arrayparams_base.h"
+#include "arrayparams_1noerr.h"
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hassecondarray = If true, the output goes into the second array.
+*/
+void invert_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, bool hassecondarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	if (hassecondarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+
+/*--------------------------------------------------------------------------- */
+
+/* The wrapper to the underlying C function */
+static PyObject *py_invert(PyObject *self, PyObject *args, PyObject *keywds) {
+
+
+	// This is used to hold the parsed parameters.
+	struct args_params_1noerr arraydata = ARGSINIT_1NOERR;
+
+	// -----------------------------------------------------
+
+
+	// Get the parameters passed from Python.
+	arraydata = getparams_1noerr(self, args, keywds, "invert");
+
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
+		return NULL;
+	}
+
+	// Call the C function.
+	switch(arraydata.arraytype) {
+
+		// signed_char
+		case 'b' : {
+			invert_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.hassecondarray);
+			break;
+		}
+
+		// unsigned_char
+		case 'B' : {
+			invert_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.hassecondarray);
+			break;
+		}
+
+		// signed_short
+		case 'h' : {
+			invert_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.hassecondarray);
+			break;
+		}
+
+		// unsigned_short
+		case 'H' : {
+			invert_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.hassecondarray);
+			break;
+		}
+
+		// signed_int
+		case 'i' : {
+			invert_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.hassecondarray);
+			break;
+		}
+
+		// unsigned_int
+		case 'I' : {
+			invert_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.hassecondarray);
+			break;
+		}
+
+		// signed_long
+		case 'l' : {
+			invert_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.hassecondarray);
+			break;
+		}
+
+		// unsigned_long
+		case 'L' : {
+			invert_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.hassecondarray);
+			break;
+		}
+
+		// signed_long_long
+		case 'q' : {
+			invert_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.hassecondarray);
+			break;
+		}
+
+		// unsigned_long_long
+		case 'Q' : {
+			invert_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.hassecondarray);
+			break;
+		}
+
+		// We don't know this code.
+		default: {
+			releasebuffers_1noerr(arraydata);
+			ErrMsgUnknownArrayType();
+			return NULL;
+			break;
+		}
+	}
+
+	// Release the buffers. 
+	releasebuffers_1noerr(arraydata);
+
+
+	// Everything was successful.
+	Py_RETURN_NONE;
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+
+
+/* The module doc string */
+PyDoc_STRVAR(invert__doc__,
+"invert \n\
+_____________________________ \n\
+\n\
+Calculate invert over the values in an array.  \n\
+\n\
+======================  ============================================== \n\
+Equivalent to:          ~x \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q \n\
+Exceptions raised:       \n\
+======================  ============================================== \n\
+\n\
+Call formats: \n\
+\n\
+    invert(array1) \n\
+    invert(array1, outparray) \n\
+    invert(array1, maxlen=y) \n\
+ \n\
+* array1 - The first input data array to be examined. If no output  \n\
+  array is provided the results will overwrite the input data.  \n\
+* outparray - The output array. This parameter is optional.  \n\
+* maxlen - Limit the length of the array used. This must be a valid  \n\
+  positive integer. If a zero or negative length, or a value which is  \n\
+  greater than the actual length of the array is specified, this  \n\
+  parameter is ignored.  \n\
+");
+
+
+/*--------------------------------------------------------------------------- */
+
+/* A list of all the methods defined by this module. 
+ "invert" is the name seen inside of Python. 
+ "py_invert" is the name of the C function handling the Python call. 
+ "METH_VARGS" tells Python how to call the handler. 
+ The {NULL, NULL} entry indicates the end of the method definitions. */
+static PyMethodDef invert_methods[] = {
+	{"invert",  (PyCFunction)py_invert, METH_VARARGS | METH_KEYWORDS, invert__doc__}, 
+	{NULL, NULL, 0, NULL}
+};
+
+
+static struct PyModuleDef invertmodule = {
+    PyModuleDef_HEAD_INIT,
+    "invert",
+    NULL,
+    -1,
+    invert_methods
+};
+
+PyMODINIT_FUNC PyInit_invert(void)
+{
+    return PyModule_Create(&invertmodule);
+};
+
+/*--------------------------------------------------------------------------- */
+
