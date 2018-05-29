@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -58,10 +58,6 @@ testdata = {
 # Patch in the case for 'I' arrays.
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
-
-
-# This is used to insert code to convert the test data to bytes type. 
-bytesconverter = 'data = bytes(data)'
 
 
 # ==============================================================================
@@ -118,15 +114,6 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		self.ARR_ERR_NOTFOUND = -5
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.data2 = bytes(self.data2)
-			self.data3 = bytes(self.data3)
-			self.dataovfl = bytes(self.dataovfl)
-			self.dataempty = bytes(self.dataempty)
-
-
 
 	########################################################
 	def FindIndices(self, op, data, param, maxlen=0):
@@ -159,7 +146,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter in middle.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.findindices('==', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('==', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -170,7 +157,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter at start.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.findindices('==', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('==', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -181,7 +168,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter at end.
 		"""
 		param = %(typeconvert)s(103)
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.findindices('==', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('==', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -192,7 +179,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(110)
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.findindices('==', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('==', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -204,7 +191,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter in middle.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gt, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -215,7 +202,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter at start.
 		"""
 		param = %(typeconvert)s(96)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gt, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -226,7 +213,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter at end.
 		"""
 		param = %(typeconvert)s(102)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gt, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -237,7 +224,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(110)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gt, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -249,7 +236,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter in middle.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gte, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>=', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>=', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -260,7 +247,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter at start.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gte, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>=', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>=', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -271,7 +258,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter at end.
 		"""
 		param = %(typeconvert)s(103)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gte, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>=', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>=', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -282,7 +269,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(110)
-		result = arrayfunc.findindices(arrayfunc.aops.af_gte, self.data, self.dataout, param)
+		result = arrayfunc.findindices('>=', self.data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('>=', self.data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -294,7 +281,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter in middle.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lt, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -305,7 +292,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter at start.
 		"""
 		param = %(typeconvert)s(104)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lt, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -316,7 +303,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter at end.
 		"""
 		param = %(typeconvert)s(98)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lt, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -327,7 +314,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(96)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lt, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -339,7 +326,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter in middle.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lte, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<=', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<=', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -350,7 +337,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter at start.
 		"""
 		param = %(typeconvert)s(103)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lte, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<=', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<=', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -361,7 +348,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter at end.
 		"""
 		param = %(typeconvert)s(98)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lte, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<=', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<=', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -372,7 +359,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(96)
-		result = arrayfunc.findindices(arrayfunc.aops.af_lte, self.data2, self.dataout2, param)
+		result = arrayfunc.findindices('<=', self.data2, self.dataout2, param)
 		expected, expectedlength = self.FindIndices('<=', self.data2, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -385,7 +372,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(100)
 		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 100, 100, 101, 100, 100, 100, 100]])
-		result = arrayfunc.findindices(arrayfunc.aops.af_ne, data, self.dataout, param)
+		result = arrayfunc.findindices('!=', data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('!=', data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -397,8 +384,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(103)
 		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [101, 100, 100, 100, 100, 100, 100, 100, 100, 100]])
-		%(bytesconverter)s
-		result = arrayfunc.findindices(arrayfunc.aops.af_ne, data, self.dataout, param)
+		result = arrayfunc.findindices('!=', data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('!=', data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -410,8 +396,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(98)
 		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 100, 100, 100, 100, 100, 100, 101]])
-		%(bytesconverter)s
-		result = arrayfunc.findindices(arrayfunc.aops.af_ne, data, self.dataout, param)
+		result = arrayfunc.findindices('!=', data, self.dataout, param)
 		expected, expectedlength = self.FindIndices('!=', data, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -422,7 +407,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test ne  - Array code %(typelabel)s. - Parameter not found.
 		"""
 		param = %(typeconvert)s(100)
-		result = arrayfunc.findindices(arrayfunc.aops.af_ne, self.data3, self.dataout3, param)
+		result = arrayfunc.findindices('!=', self.data3, self.dataout3, param)
 		expected, expectedlength = self.FindIndices('!=', self.data3, param)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout3), expected)
@@ -435,8 +420,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(101)
 		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 101, 101, 101, 100, 101, 100, 101]])
-		%(bytesconverter)s
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, data, self.dataout, param, maxlen=len(self.data)//2)
+		result = arrayfunc.findindices('==', data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, expectedlength = self.FindIndices('==', data, param, maxlen=len(self.data)//2)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -448,8 +432,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(101)
 		data = array.array(self.TypeCode, [%(typeconvert)s(x) for x in [100, 100, 100, 101, 101, 101, 100, 101, 100, 101]])
-		%(bytesconverter)s
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, data, self.dataout, param, maxlen=-1)
+		result = arrayfunc.findindices('==', data, self.dataout, param, maxlen=-1)
 		expected, expectedlength = self.FindIndices('==', data, param, maxlen=-1)
 		self.assertEqual(result, expectedlength)
 		self.assertEqual(list(self.dataout), expected)
@@ -468,7 +451,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq)
+			result = arrayfunc.findindices('==')
 
 
 	########################################################
@@ -476,7 +459,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when two parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data)
+			result = arrayfunc.findindices('==', self.data)
 
 
 	########################################################
@@ -484,7 +467,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when three parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout)
+			result = arrayfunc.findindices('==', self.data, self.dataout)
 
 
 	########################################################
@@ -493,7 +476,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(101)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, param, 3, maxlen=2)
+			result = arrayfunc.findindices('==', self.data, self.dataout, param, 3, maxlen=2)
 
 
 	########################################################
@@ -501,7 +484,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, %(typeconvert)s(100), xx=2)
+			result = arrayfunc.findindices('==', self.data, self.dataout, %(typeconvert)s(100), xx=2)
 
 
 	########################################################
@@ -509,7 +492,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, %(typeconvert)s(100), maxlen='x')
+			result = arrayfunc.findindices('==', self.data, self.dataout, %(typeconvert)s(100), maxlen='x')
 
 
 	########################################################
@@ -517,7 +500,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.findindices(-1, self.data, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.findindices('!', self.data, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -525,7 +508,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices('a', self.data, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.findindices(62, self.data, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -533,7 +516,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array input parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, 99, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.findindices('==', 99, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -541,7 +524,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, 99, %(typeconvert)s(100))
+			result = arrayfunc.findindices('==', self.data, 99, %(typeconvert)s(100))
 
 
 	########################################################
@@ -549,7 +532,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataempty, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.findindices('==', self.dataempty, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -557,7 +540,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataoutempty, %(typeconvert)s(100))
+			result = arrayfunc.findindices('==', self.data, self.dataoutempty, %(typeconvert)s(100))
 
 
 	########################################################
@@ -565,7 +548,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataempty, self.dataoutempty, %(typeconvert)s(100))
+			result = arrayfunc.findindices('==', self.dataempty, self.dataoutempty, %(typeconvert)s(100))
 
 
 	########################################################
@@ -573,7 +556,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, 'e')
+			result = arrayfunc.findindices('==', self.data, self.dataout, 'e')
 
 
 	########################################################
@@ -581,7 +564,7 @@ class findindices_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, %(invalidtypeconvert)s(100.5))
+			result = arrayfunc.findindices('==', self.data, self.dataout, %(invalidtypeconvert)s(100.5))
 
 
 '''
@@ -593,7 +576,7 @@ overflow_template = '''
 		"""Test parameter overflow min  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.MinVal %(overflowdec)s)
+			result = arrayfunc.findindices('==', self.dataovfl, self.dataoutovfl, self.MinVal %(overflowdec)s)
 
 
 	########################################################
@@ -601,15 +584,15 @@ overflow_template = '''
 		"""Test parameter overflow max  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.Maxval %(overflowinc)s)
+			result = arrayfunc.findindices('==', self.dataovfl, self.dataoutovfl, self.Maxval %(overflowinc)s)
 
 
 	########################################################
 	def test_overflow_ok(self):
 		"""Test no overflow. These should not overflow  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.MinVal)
-		result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.Maxval)
+		result = arrayfunc.findindices('==', self.dataovfl, self.dataoutovfl, self.MinVal)
+		result = arrayfunc.findindices('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 '''
 
@@ -634,7 +617,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, float('nan'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, float('nan'))
 
 
 	########################################################
@@ -642,7 +625,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, float('inf'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, float('inf'))
 
 
 	########################################################
@@ -650,7 +633,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, float('-inf'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, float('-inf'))
 
 
 	########################################################
@@ -658,7 +641,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('nan'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, 100.0, maxlen=float('nan'))
 
 
 	########################################################
@@ -666,7 +649,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('inf'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, 100.0, maxlen=float('inf'))
 
 
 	########################################################
@@ -674,7 +657,7 @@ class findindices_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindices(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('-inf'))
+			result = arrayfunc.findindices('==', self.data, self.dataout, 100.0, maxlen=float('-inf'))
 
 
 ##############################################################################
@@ -699,7 +682,6 @@ with open('test_findindices.py', 'w') as f:
 		datarec = testdata[funtypes]
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverter'] = ''
 		f.write(template % datarec)
 
 		# There are some array types we can't test for overflow.
@@ -707,20 +689,11 @@ with open('test_findindices.py', 'w') as f:
 			datarec = testdata[funtypes]
 			datarec['typecode'] = funtypes
 			datarec['typelabel'] = funtypes
-			datarec['bytesconverter'] = ''
 			f.write(overflow_template % datarec)
 
 		# This is just a comment to close off the class.
 		f.write(classend)
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['bytesconverter'] = bytesconverter
-	f.write(template % datarec)
-	f.write(overflow_template % datarec)
 
 
 	# Test for nan, inf, -inf.

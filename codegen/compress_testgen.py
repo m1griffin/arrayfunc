@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -53,11 +53,6 @@ testdata = {
 
 
 
-# This is used to insert code to convert the test data to bytes type. 
-bytesconverterselector = 'selector = bytes(selector)'
-bytesconverterdataout = 'dataout = bytes(dataout)'
-
-
 # This is used for testing for nan, inf, -inf.
 nantestdata = copy.copy(floattestdata)
 nantestdata['initvalin'] = "float('nan')"
@@ -90,13 +85,6 @@ class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 		self.data = array.array(self.TypeCode, itertools.repeat(%(initvalin)s, 512))
 		self.dataout = array.array(self.TypeCode, itertools.repeat(%(initvalout)s, 512))
 		self.selector = array.array(self.TypeCode, itertools.chain.from_iterable(itertools.repeat(%(selector)s, 24)))
-
-
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.dataout = bytes(self.dataout)
-			self.selector = bytes(self.selector)
 
 
 
@@ -175,7 +163,6 @@ class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 		"""Test compress in array code  %(typelabel)s - Test for zero filled selector.
 		"""
 		selector = array.array(self.TypeCode, itertools.chain.from_iterable(itertools.repeat(%(zeros)s, 24)))
-		%(bytesconverterselector)s
 
 		ccount = arrayfunc.compress(self.data, self.dataout, selector)
 
@@ -198,7 +185,6 @@ class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 		"""Test compress in array code  %(typelabel)s - Test for one filled selector.
 		"""
 		selector = array.array(self.TypeCode, itertools.chain.from_iterable(itertools.repeat(%(ones)s, 24)))
-		%(bytesconverterselector)s
 
 		ccount = arrayfunc.compress(self.data, self.dataout, selector)
 
@@ -221,7 +207,6 @@ class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 		"""Test compress in array code  %(typelabel)s - Test for destination array is shorter than source array.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(%(initvalout)s, len(self.data) // 4))
-		%(bytesconverterdataout)s
 
 		ccount = arrayfunc.compress(self.data, dataout, self.selector)
 
@@ -244,7 +229,6 @@ class compress_%(testtype)s_%(typelabel)s(unittest.TestCase):
 		"""Test compress in array code  %(typelabel)s - Test for destination array is longer than source array.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(%(initvalout)s, len(self.data) * 2))
-		%(bytesconverterdataout)s
 
 		ccount = arrayfunc.compress(self.data, dataout, self.selector)
 
@@ -381,22 +365,11 @@ with open('test_compress.py', 'w') as f:
 
 		datarec = {'typecode' : funtypes}
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverterselector'] = ''
-		datarec['bytesconverterdataout'] = ''
 		datarec.update(testdata[funtypes])
 
 		f.write(op_template % datarec)
 
 		f.write(endclass)
-
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['bytesconverterselector'] = bytesconverterselector
-	datarec['bytesconverterdataout'] = bytesconverterdataout
-	f.write(op_template % datarec)
 
 	f.write(endclass)
 
@@ -406,8 +379,6 @@ with open('test_compress.py', 'w') as f:
 		for nantest in nantestseq:
 			datarec = {'typecode' : funtypes}
 			datarec['typelabel'] = funtypes
-			datarec['bytesconverterselector'] = ''
-			datarec['bytesconverterdataout'] = ''
 			datarec.update(nantest)
 
 			f.write(op_template % datarec)

@@ -30,7 +30,7 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
 #include "repeat_common.h"
@@ -64,7 +64,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 
 	PyObject *dataobj, *paramobj;
 	struct args_param argtypes = {' ', ' ', 0};
-	struct arrayparamstypes arr1type = {0, 0, ' '};
+	char arr1type;
 
 
 	/* Import the raw objects. */
@@ -75,18 +75,18 @@ struct args_param parsepyargs_parm(PyObject *args) {
 
 
 	// Test if the second parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
+	arr1type = lookuparraycode(dataobj);
+	if (!arr1type) {
 		argtypes.error = 2;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array1type = arr1type.arraycode;
+		argtypes.array1type = arr1type;
 	}
 
 
 	// Get the parameter type code.
-	argtypes.paramtype = paramtypecode(paramobj->ob_type->tp_name);
+	argtypes.paramtype = paramtypecode(paramobj);
 
 	return argtypes;
 

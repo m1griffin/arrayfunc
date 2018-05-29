@@ -51,6 +51,39 @@ arraytypes = {'b' : 'signed char', 'B' : 'unsigned char',
 
 
 
+
+# Used to look up documentation of array types.
+def FormatDocsArrayTypes(docarraytypes):
+	"""Take the string from the 'arraytypes' column of the math spreadsheet, 
+	and use it to look up a properly formatted version which lists the 
+	actual array type codes.
+	Parameters: docarraytypes (string) - The string from the spreadsheet which
+		contains a combination of 'si', 'ui', and 'f'.
+	Returns: (string) - A string which converts the above to a comma separated
+		series of array code letters.
+	"""
+	# Array types to test.
+	docsplit = set(docarraytypes.split(','))
+
+
+	# All array types supported.
+	if docsplit == {'si', 'ui', 'f'}:
+		return ', '.join(arraycodes)
+	# Only signed array types.
+	elif docsplit == {'si', 'f'}:
+		return ', '.join(signedint + floatarrays)
+	# Only integer arrays.
+	elif docsplit == {'si', 'ui'}:
+		return ', '.join(intarrays)
+	# Only floating point arrays.
+	elif docsplit == {'f'}:
+		return ', '.join(floatarrays)
+	else:
+	# No matching value.
+		raise ValueError
+
+
+
 # ==============================================================================
 
 # Overflow tests for array type 'I'. With some architectures, we cannot check
@@ -109,7 +142,6 @@ arraytypeclass = {
 	'Q' : {'typecode' : 'Q', 'typelabel' : 'Q', 'typeconvert' : 'int'}, 
 	'f' : {'typecode' : 'f', 'typelabel' : 'f', 'typeconvert' : 'float'}, 
 	'd' : {'typecode' : 'd', 'typelabel' : 'd', 'typeconvert' : 'float'},
-	'bytes' : {'typecode' : 'B', 'typelabel' : 'bytes', 'typeconvert' : 'int'}, 
 }
 
 # ==============================================================================
@@ -137,6 +169,16 @@ minguardvalue = {
 }
 
 # ==============================================================================
+
+# These are the compare operations used in some functions.
+CompOps = [
+{'opcodename' : 'AF_EQ', 'compare_ops' : '=='},
+{'opcodename' : 'AF_GT', 'compare_ops' : '>'},
+{'opcodename' : 'AF_GTE', 'compare_ops' : '>='},
+{'opcodename' : 'AF_LT', 'compare_ops' : '<'},
+{'opcodename' : 'AF_LTE', 'compare_ops' : '<='},
+{'opcodename' : 'AF_NE', 'compare_ops' : '!='}
+]
 
 
 def ReadCSVData(filename):
@@ -203,11 +245,14 @@ HeaderTemplate = '''#!/usr/bin/env python3
 """
 
 ##############################################################################
+import sys
+
 import array
 import itertools
 import math
 import operator
 import platform
+import copy
 
 import unittest
 
@@ -259,8 +304,8 @@ if __name__ == '__main__':
 		sys.argv.remove('-l')
 
 		with open('arrayfunc_unittest.txt', 'a') as f:
-			f.write('\n\n')
-			f.write('%s\n\n')
+			f.write('\\n\\n')
+			f.write('%s\\n\\n')
 			trun = unittest.TextTestRunner(f)
 			unittest.main(testRunner=trun)
 	else:
@@ -311,7 +356,6 @@ CIncludes = '''
 
 #include "Python.h"
 %s
-#include "arrayfunc.h"
 #include "arrayerrs.h"
 '''
 
@@ -372,7 +416,11 @@ _COutputHeaderOptions = {
 	'arithcalcs' : '#include "arithcalcs.h"', 
 	'simddefs' : '#include "simddefs.h"', 
 	'simdmacromsg' : '#ifdef AF_HASSIMD\n#include "%(funcname)s_simd_x86.h"\n#endif',
-	'acalcvm_ops' : '#include "acalcvm_ops.h"'
+	'acalcvm_ops' : '#include "acalcvm_ops.h"',
+	'guardbands' : '#include "convguardbands.h"',
+	'arrayfunc' : '#include "arrayfunc.h"',
+	'arrayparams_base' : '#include "arrayparams_base.h"',
+	'arrayops' : '#include "arrayops.h"',
 	}
 
 

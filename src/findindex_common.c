@@ -5,11 +5,11 @@
 //           Common platform independent code.
 // Language: C
 // Date:     10-May-2014
-// Ver:      24-Sep-2017.
+// Ver:      28-May-2018.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -35,8 +35,9 @@
 #ifdef AF_HASSIMD
 #include "findindex_simd_x86.h"
 #endif
+#include "arrayparams_base.h"
+#include "arrayops.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
@@ -68,7 +69,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -77,7 +78,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -86,7 +87,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -95,7 +96,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -104,7 +105,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -113,7 +114,7 @@ Py_ssize_t findindex_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -144,7 +145,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -153,7 +154,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -162,7 +163,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -171,7 +172,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -180,7 +181,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -189,7 +190,7 @@ Py_ssize_t findindex_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -228,7 +229,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -237,7 +238,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -246,7 +247,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -255,7 +256,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -264,7 +265,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -273,7 +274,7 @@ Py_ssize_t findindex_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -304,7 +305,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -313,7 +314,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -322,7 +323,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -331,7 +332,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -340,7 +341,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -349,7 +350,7 @@ Py_ssize_t findindex_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -388,7 +389,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -397,7 +398,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -406,7 +407,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -415,7 +416,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -424,7 +425,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -433,7 +434,7 @@ Py_ssize_t findindex_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -464,7 +465,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -473,7 +474,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -482,7 +483,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -491,7 +492,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -500,7 +501,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -509,7 +510,7 @@ Py_ssize_t findindex_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -540,7 +541,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -549,7 +550,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -558,7 +559,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -567,7 +568,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -576,7 +577,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -585,7 +586,7 @@ Py_ssize_t findindex_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -616,7 +617,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -625,7 +626,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -634,7 +635,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -643,7 +644,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -652,7 +653,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -661,7 +662,7 @@ Py_ssize_t findindex_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -692,7 +693,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -701,7 +702,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -710,7 +711,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -719,7 +720,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -728,7 +729,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -737,7 +738,7 @@ Py_ssize_t findindex_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -768,7 +769,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -777,7 +778,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -786,7 +787,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -795,7 +796,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -804,7 +805,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -813,7 +814,7 @@ Py_ssize_t findindex_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -852,7 +853,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -861,7 +862,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -870,7 +871,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -879,7 +880,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -888,7 +889,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -897,7 +898,7 @@ Py_ssize_t findindex_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -936,7 +937,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -945,7 +946,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -954,7 +955,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -963,7 +964,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -972,7 +973,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -981,7 +982,7 @@ Py_ssize_t findindex_double(signed int opcode, Py_ssize_t arraylen, double *data
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {

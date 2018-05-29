@@ -30,7 +30,7 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
 
@@ -71,9 +71,7 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 	Py_ssize_t arraymaxlen = 0;
 
 	struct args_param argtypes = {' ', ' ', ' ', 0};
-	struct arrayparamstypes arr1type = {0, 0, ' '};
-	struct arrayparamstypes arr2type = {0, 0, ' '};
-	struct arrayparamstypes arr3type = {0, 0, ' '};
+	char arr1type, arr2type, arr3type;
 
 
 	/* Import the raw objects. */
@@ -85,35 +83,35 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 
 
 	// Test if the first parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
+	arr1type = lookuparraycode(dataobj);
+	if (!arr1type) {
 		argtypes.error = 2;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array1type = arr1type.arraycode;
+		argtypes.array1type = arr1type;
 	}
 
 
 	// Test if the second parameter is an array or bytes.
-	arr2type = paramarraytype(dataoutobj);
-	if (!arr2type.isarray) {
+	arr2type = lookuparraycode(dataoutobj);
+	if (!arr2type) {
 		argtypes.error = 3;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array2type = arr2type.arraycode;
+		argtypes.array2type = arr2type;
 	}
 
 
 	// Test if the third parameter is an array or bytes.
-	arr3type = paramarraytype(selectorobj);
-	if (!arr3type.isarray) {
+	arr3type = lookuparraycode(selectorobj);
+	if (!arr3type) {
 		argtypes.error = 3;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array3type = arr3type.arraycode;
+		argtypes.array3type = arr3type;
 	}
 
 

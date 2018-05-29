@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -141,21 +141,11 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		self.dataodd3 = array.array('%(typecode)s', datalistodd3)
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.dataeven = bytes(self.dataeven)
-			self.dataodd = bytes(self.dataodd)
-			self.dataeven2 = bytes(self.dataeven2)
-			self.dataodd2 = bytes(self.dataodd2)
-			self.dataeven3 = bytes(self.dataeven3)
-			self.dataodd3 = bytes(self.dataodd3)
-
-
 	########################################################
 	def test_operator_01_eq(self):
 		"""Test eq  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.dataeven, 101%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('==', self.dataeven, 101%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -163,7 +153,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_02_eq(self):
 		"""Test eq  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.dataeven, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('==', self.dataeven, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -171,7 +161,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_03_eq(self):
 		"""Test eq  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.dataodd, 101%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('==', self.dataodd, 101%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -179,7 +169,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_04_eq(self):
 		"""Test eq  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.dataodd, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('==', self.dataodd, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -188,7 +178,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_05_gt(self):
 		"""Test gt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.dataeven, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>', self.dataeven, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -196,7 +186,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_06_gt(self):
 		"""Test gt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.dataeven, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>', self.dataeven, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -204,7 +194,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_07_gt(self):
 		"""Test gt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.dataodd, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>', self.dataodd, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -212,7 +202,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_08_gt(self):
 		"""Test gt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.dataodd, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>', self.dataodd, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -221,7 +211,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_09_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataeven, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataeven, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -229,7 +219,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_10_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataeven, 101%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataeven, 101%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -237,7 +227,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_11_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataeven, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataeven, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -245,7 +235,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_12_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataodd, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataodd, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -253,7 +243,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_13_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataodd, 101%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataodd, 101%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -261,7 +251,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_14_gte(self):
 		"""Test gte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.dataodd, 102%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('>=', self.dataodd, 102%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -270,7 +260,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_15_lt(self):
 		"""Test lt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.dataeven2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<', self.dataeven2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -278,7 +268,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_16_lt(self):
 		"""Test lt  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.dataeven2, 98%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<', self.dataeven2, 98%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -286,7 +276,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_17_lt(self):
 		"""Test lt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.dataodd2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<', self.dataodd2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -294,7 +284,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_18_lt(self):
 		"""Test lt  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.dataodd2, 98%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<', self.dataodd2, 98%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -303,7 +293,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_19_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataeven2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataeven2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -311,7 +301,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_20_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataeven2, 99%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataeven2, 99%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -319,7 +309,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_21_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataeven2, 98%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataeven2, 98%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -327,7 +317,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_22_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataodd2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataodd2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -335,7 +325,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_23_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataodd2, 99%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataodd2, 99%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -343,7 +333,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_24_lte(self):
 		"""Test lte  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.dataodd2, 98%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('<=', self.dataodd2, 98%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -352,7 +342,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_25_ne(self):
 		"""Test ne  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.dataeven2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('!=', self.dataeven2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -360,7 +350,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_26_ne(self):
 		"""Test ne  - Array code %(typelabel)s. General test even length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.dataeven3, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('!=', self.dataeven3, 100%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -368,7 +358,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_27_ne(self):
 		"""Test ne  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.dataodd2, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('!=', self.dataodd2, 100%(decimal)s %(nosimd)s)
 		self.assertTrue(result)
 
 
@@ -376,7 +366,7 @@ class aany_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	def test_operator_28_ne(self):
 		"""Test ne  - Array code %(typelabel)s. General test odd length array %(simdpresent)s SIMD.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.dataodd3, 100%(decimal)s %(nosimd)s)
+		result = arrayfunc.aany('!=', self.dataodd3, 100%(decimal)s %(nosimd)s)
 		self.assertFalse(result)
 
 
@@ -403,12 +393,6 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		self.dataempty = array.array('%(typecode)s')
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.dataempty = bytes(self.dataempty)
-
-
 	########################################################
 	def test_param_01_no_params(self):
 		"""Test exception when no parameters passed  - Array code %(typelabel)s.
@@ -426,7 +410,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq)
+			result = arrayfunc.aany('==')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -438,7 +422,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when two parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data)
+			result = arrayfunc.aany('==', self.data)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -450,7 +434,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when six parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(testdata)s, 99, 0, 99)
+			result = arrayfunc.aany('==', self.data, %(testdata)s, 99, 0, 99)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -462,7 +446,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(testdata)s, xx=2)
+			result = arrayfunc.aany('==', self.data, %(testdata)s, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -474,7 +458,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid maxlen keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(testdata)s, maxlen='x')
+			result = arrayfunc.aany('==', self.data, %(testdata)s, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -486,7 +470,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.aany(-1, self.data, %(testdata)s)
+			result = arrayfunc.aany('!', self.data, %(testdata)s)
 
 
 	########################################################
@@ -494,7 +478,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany('a', self.data, %(testdata)s)
+			result = arrayfunc.aany(60, self.data, %(testdata)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -506,7 +490,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, 99, %(testdata)s)
+			result = arrayfunc.aany('==', 99, %(testdata)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -518,7 +502,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.dataempty, %(testdata)s)
+			result = arrayfunc.aany('==', self.dataempty, %(testdata)s)
 
 
 	########################################################
@@ -526,9 +510,9 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(paramdata1)s)
+			result = arrayfunc.aany('==', self.data, %(paramdata1)s)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(paramdata2)s)
+			result = arrayfunc.aany('==', self.data, %(paramdata2)s)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
@@ -542,7 +526,7 @@ class aany_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid nosimd keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, %(testdata)s, nosimd='x')
+			result = arrayfunc.aany('==', self.data, %(testdata)s, nosimd='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -570,31 +554,27 @@ class aany_overflow_%(typelabel)s(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-
 
 	########################################################
 %(skipminoverflow)s	def test_overflow_01_min(self):
 		"""Test parameter overflow min  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, self.MinVal %(overflowdec)s)
+			result = arrayfunc.aany('==', self.data, self.MinVal %(overflowdec)s)
 
 	########################################################
 %(skipmaxoverflow)s	def test_overflow_02_max(self):
 		"""Test parameter overflow max  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, self.Maxval %(overflowinc)s)
+			result = arrayfunc.aany('==', self.data, self.Maxval %(overflowinc)s)
 
 	########################################################
 	def test_overflow_03_ok(self):
 		"""Test no overflow. These should not overflow  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, self.MinVal)
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, self.Maxval)
+		result = arrayfunc.aany('==', self.data, self.MinVal)
+		result = arrayfunc.aany('==', self.data, self.Maxval)
 
 ##############################################################################
 
@@ -625,7 +605,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_01_eq(self):
 		"""Test eq with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('==', self.data_nan, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('nan') == %(testval)s)
 
@@ -633,7 +613,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_02_eq(self):
 		"""Test eq with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('==', self.data_inf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('inf') == %(testval)s)
 
@@ -641,7 +621,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_03_eq(self):
 		"""Test eq with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('==', self.data_ninf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(%(testval)s == float('-inf'))
 
@@ -650,7 +630,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_04_gt(self):
 		"""Test gt with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('>', self.data_nan, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('nan') > %(testval)s)
 
@@ -658,7 +638,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_05_gt(self):
 		"""Test gt with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('>', self.data_inf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('inf') > %(testval)s)
 
@@ -666,7 +646,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_06_gt(self):
 		"""Test gt with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gt, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('>', self.data_ninf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('-inf') > %(testval)s)
 
@@ -675,7 +655,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_07_gte(self):
 		"""Test gte with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('>=', self.data_nan, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('nan') >= %(testval)s)
 
@@ -683,7 +663,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_08_gte(self):
 		"""Test gte with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('>=', self.data_inf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('inf') >= %(testval)s)
 
@@ -691,7 +671,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_09_gte(self):
 		"""Test gte with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_gte, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('>=', self.data_ninf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('-inf') >= %(testval)s)
 
@@ -700,7 +680,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_10_lt(self):
 		"""Test lt with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('<', self.data_nan, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('nan') < %(testval)s)
 
@@ -708,7 +688,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_11_lt(self):
 		"""Test lt with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('<', self.data_inf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('inf') < %(testval)s)
 
@@ -716,7 +696,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_12_lt(self):
 		"""Test lt with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lt, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('<', self.data_ninf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('-inf') < %(testval)s)
 
@@ -725,7 +705,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_13_lte(self):
 		"""Test lte with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('<=', self.data_nan, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('nan') <= %(testval)s)
 
@@ -733,7 +713,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_14_lte(self):
 		"""Test lte with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('<=', self.data_inf, %(testval)s)
 		self.assertFalse(result)
 		self.assertFalse(float('inf') <= %(testval)s)
 
@@ -741,7 +721,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_15_lte(self):
 		"""Test lte with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_lte, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('<=', self.data_ninf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('-inf') <= %(testval)s)
 
@@ -750,7 +730,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_16_ne(self):
 		"""Test ne with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.data_nan, %(testval)s)
+		result = arrayfunc.aany('!=', self.data_nan, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('nan') != %(testval)s)
 
@@ -758,7 +738,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_17_ne(self):
 		"""Test ne with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.data_inf, %(testval)s)
+		result = arrayfunc.aany('!=', self.data_inf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('inf') != %(testval)s)
 
@@ -766,7 +746,7 @@ class aany_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_18_ne(self):
 		"""Test ne with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.aany(arrayfunc.aops.af_ne, self.data_ninf, %(testval)s)
+		result = arrayfunc.aany('!=', self.data_ninf, %(testval)s)
 		self.assertTrue(result)
 		self.assertTrue(float('-inf') != %(testval)s)
 
@@ -797,21 +777,21 @@ class aany_nanparam_%(typelabel)s(unittest.TestCase):
 		"""Test parameter nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, float('nan'))
+			result = arrayfunc.aany('==', self.data, float('nan'))
 
 	########################################################
 	def test_nanparam_02_inf(self):
 		"""Test parameter inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, float('inf'))
+			result = arrayfunc.aany('==', self.data, float('inf'))
 
 	########################################################
 	def test_nanparam_03_ninf(self):
 		"""Test parameter negative inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.aany(arrayfunc.aops.af_eq, self.data, float('-inf'))
+			result = arrayfunc.aany('==', self.data, float('-inf'))
 
 
 ##############################################################################
@@ -850,20 +830,6 @@ with open('test_aany.py', 'w') as f:
 		f.write(op_template % datarec)
 
 
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['decimal'] = ''
-	# With SIMD.
-	datarec['simdpresent'] = 'with'
-	datarec['nosimd'] = ''
-	f.write(op_template % datarec)
-	# Without SIMD.
-	datarec['simdpresent'] = 'without'
-	datarec['nosimd'] = ', nosimd=True'
-	f.write(op_template % datarec)
-
 	############################################################################
 
 
@@ -886,13 +852,6 @@ with open('test_aany.py', 'w') as f:
 			f.write(overflow_template % datarec)
 
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	f.write(param_template % datarec)
-	f.write(overflow_template % datarec)
 
 	############################################################################
 

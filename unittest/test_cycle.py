@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     10-Jun-2014.
-# Ver:      12-Sep-2017.
+# Ver:      28-May-2018.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@
 """
 
 ##############################################################################
+import sys
+
 import array
 import itertools
 import math
 import operator
 import platform
-import sys
+import copy
 
 import unittest
 
@@ -64,12 +66,6 @@ class cycle_b(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.b_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'b' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -251,12 +247,6 @@ class cycle_B(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'B' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -407,12 +397,6 @@ class cycle_h(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.h_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'h' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -594,12 +578,6 @@ class cycle_H(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'H' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -750,12 +728,6 @@ class cycle_i(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.i_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'i' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -937,12 +909,6 @@ class cycle_I(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'I' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1093,12 +1059,6 @@ class cycle_l(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.l_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'l' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -1280,12 +1240,6 @@ class cycle_L(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'L' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1436,12 +1390,6 @@ class cycle_q(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.q_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'q' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -1623,12 +1571,6 @@ class cycle_Q(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'Q' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1779,12 +1721,6 @@ class cycle_f(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.f_min
 
 		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'f' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
 
 
 	########################################################
@@ -2058,12 +1994,6 @@ class cycle_d(unittest.TestCase):
 		self.zerodata = array.array(self.TypeCode, [])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'd' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
 	########################################################
 	def PyCycle(self, data, start, stop, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -2313,160 +2243,6 @@ class cycle_d(unittest.TestCase):
 
 
 ##############################################################################
-
-
-
-##############################################################################
-class cycle_bytes(unittest.TestCase):
-	"""Test for basic cycle function.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.TypeCode = 'B'
-
-		self.data = array.array(self.TypeCode, itertools.repeat(0, 512))
-
-		self.MaxVal = arrayfunc.arraylimits.B_max
-		self.MinVal = arrayfunc.arraylimits.B_min
-
-		self.zerodata = array.array(self.TypeCode, [])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'bytes' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-
-
-	########################################################
-	def PyCycle(self, data, start, stop, step):
-		"""This should produce a Python equivalent to count for unit testing.
-		"""
-		seq = []
-		maxval = self.MaxVal
-		minval = self.MinVal
-		val = start
-		step = abs(step)
-
-		if start <= stop:
-			for x in range(len(data)):
-				seq.append(val)
-				val = val + step
-				if (val > maxval) or (val > stop):
-					val = start
-		else:
-			for x in range(len(data)):
-				seq.append(val)
-				val = val - step
-				if (val < minval) or (val < stop):
-					val = start
-
-		return seq
-
-
-
-	########################################################
-	def test_cycle_01(self):
-		"""Test cycle in array code  bytes - start from 0, count up by one, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 0, 100)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 0, 100, 1))
-
-
-	########################################################
-	def test_cycle_02(self):
-		"""Test cycle in array code  bytes - start from 10, count up by one, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 10, 100)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 10, 100, 1))
-
-
-	########################################################
-	def test_cycle_03(self):
-		"""Test cycle in array code  bytes - start from 0, count up by 7, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 0, 100, 7)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 0, 100, 7))
-
-
-	########################################################
-	def test_cycle_04(self):
-		"""Test cycle in array code  bytes - start from 10, count up by 7, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 10, 100, 7)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 10, 100, 7))
-
-
-	########################################################
-	def test_cycle_05(self):
-		"""Test cycle in array code  bytes - start from 10, count down by 1, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 10, 125)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 10, 125, 1))
-
-
-	########################################################
-	def test_cycle_06(self):
-		"""Test cycle in array code  bytes - start from 10, count down by 7, and proceed to end without limit.
-		"""
-		arrayfunc.cycle(self.data, 125, 10, 7)
-		self.assertEqual(list(self.data), self.PyCycle(self.data, 125, 10, 7))
-
-
-	########################################################
-	def test_cycle_07(self):
-		"""Test cycle in array code  bytes - Zero length array.
-		"""
-		with self.assertRaises(IndexError):
-			arrayfunc.cycle(self.zerodata, 0, 100, 100)
-
-
-	########################################################
-	def test_cycle_08(self):
-		"""Test cycle in array code  bytes - Missing start parameter.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.cycle(self.data)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.cycle()
-
-	########################################################
-	def test_cycle_09(self):
-		"""Test cycle in array code  bytes - Too many parameters.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.cycle(self.data, 0, 100, 1, 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.cycle([1, 2, 3, 4], [1, 2, 3, 4])
-
-	########################################################
-	def test_cycle_10(self):
-		"""Test cycle in array code  bytes - Invalid param type for array.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.cycle(1, 0, 100, 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.cycle(99)
-
-	########################################################
-	def test_cycle_11(self):
-		"""Test cycle in array code  bytes - Invalid param type for start.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.cycle(1, 'a', 100, 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.cycle(99)
 
 
 

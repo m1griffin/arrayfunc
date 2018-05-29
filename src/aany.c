@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
+#include "arrayparams_base.h"
 
+#include "arrayops.h"
 #include "aany_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -63,37 +64,36 @@ static char *kwlist[] = {"op", "data", "param", "maxlen", "nosimd", NULL};
 */
 struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 
-	PyObject *dataobj, *param1obj;
+	PyObject *dataobj, *param1obj, *opstr;
 
 	// Number of elements to work on. If zero or less, ignore this parameter.
 	Py_ssize_t arraymaxlen = 0;
 
 	struct args_param argtypes = {' ', ' ', 0};
-	struct arrayparamstypes arrtype = {0, 0, ' '};
-	signed int opcode;
+	char arraycode;
 	unsigned int nosimd = 0;
 
 
 	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iOO|ni:aany", kwlist, 
-			&opcode, &dataobj, &param1obj, &arraymaxlen, &nosimd)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "UOO|ni:aany", kwlist, 
+			&opstr, &dataobj, &param1obj, &arraymaxlen, &nosimd)) {
 		argtypes.error = 1;
 		return argtypes;
 	}
 
-	// Test if the second parameter is an array or bytes.
-	arrtype = paramarraytype(dataobj);
-	if (!arrtype.isarray) {
+	// Test if the second parameter is an array.
+	arraycode = lookuparraycode(dataobj);
+	if (!arraycode) {
 		argtypes.error = 2;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array1type = arrtype.arraycode;
+		argtypes.array1type = arraycode;
 	}
 
 
 	// Get the parameter type codes.
-	argtypes.param1type = paramtypecode(param1obj->ob_type->tp_name);
+	argtypes.param1type = paramtypecode(param1obj);
 
 
 	return argtypes;
@@ -122,6 +122,7 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 	// Codes indicating the type of array and the operation desired.
 	char itemcode;
 	signed int opcode;
+	PyObject *opstr;
 
 	// How long the array is.
 	Py_ssize_t arraylength;
@@ -174,8 +175,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed char
 		case 'b' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:aany", kwlist, 
+					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -191,8 +192,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// unsigned char
 		case 'B' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:aany", kwlist, 
+					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -208,8 +209,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed short
 		case 'h' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*h|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.h, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*h|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.h, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -217,8 +218,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// unsigned short
 		case 'H' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
-					&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:aany", kwlist, 
+					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -234,8 +235,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed int
 		case 'i' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*i|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.i, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*i|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.i, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -247,8 +248,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// same size, then we cannot check for overflow.
 			if (sizeof(signed long) > sizeof(unsigned int)) {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
-						&opcode, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:aany", kwlist, 
+						&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
 					return NULL;
 				}
 				// Check the data range manually.
@@ -261,8 +262,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 				}
 			} else {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*I|ni:aany", kwlist, 
-						&opcode, &datapy, &param1py.I, &arraymaxlen, &nosimd)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*I|ni:aany", kwlist, 
+						&opstr, &datapy, &param1py.I, &arraymaxlen, &nosimd)) {
 					return NULL;
 				}
 			}
@@ -271,8 +272,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed long
 		case 'l' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*l|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.l, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.l, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -282,8 +283,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// The format string and parameter names depend on the expected data types.
 			// We don't have a guaranteed data size larger than unsigned long, so
 			// we can't manually range check it.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*k|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.L, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*k|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.L, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -291,8 +292,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// signed long long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*L|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.q, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*L|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.q, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -302,8 +303,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 			// The format string and parameter names depend on the expected data types.
 			// We don't have a guaranteed data size larger than unsigned long, so
 			// we can't manually range check it.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*K|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.Q, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*K|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.Q, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			break;
@@ -311,8 +312,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*f|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.f, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*f|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.f, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -326,8 +327,8 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		// double
 		case 'd' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*d|ni:aany", kwlist, 
-					&opcode, &datapy, &param1py.d, &arraymaxlen, &nosimd)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*d|ni:aany", kwlist, 
+					&opstr, &datapy, &param1py.d, &arraymaxlen, &nosimd)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -346,6 +347,17 @@ static PyObject *py_aany(PyObject *self, PyObject *args, PyObject *keywds)
 		}
 	}
 
+
+	// Convert the command string to an integer.
+	opcode = opstrdecode(opstr);
+
+	// Check if the command string is valid.
+	if (opcode < 0) {
+		// Release the buffers. 
+		PyBuffer_Release(&datapy);
+		ErrMsgOperatorNotValidforthisFunction();
+		return NULL;
+	}
 
 	// Assign the buffer to a union which lets us get at them as typed data.
 	data.buf = datapy.buf;

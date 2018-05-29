@@ -30,7 +30,7 @@
 #include <limits.h>
 #include <float.h>
 
-#include "arrayfunc.h"
+#include "convguardbands.h"
 
 
 /*--------------------------------------------------------------------------- */

@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
 #include "amin_common.h"
@@ -71,7 +71,6 @@ static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 
 	// The parameter version is available in all possible types.
 	struct paramsvals resultfound;
-	struct arrayparamstypes arr1type = {0, 0, ' '};
 
 	// If true, disable using SIMD.
 	unsigned int nosimd = 0;
@@ -87,14 +86,11 @@ static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 	}
 
 
-	// Test if the parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
-		ErrMsgArrayorBytesExpected();
+	// Test if the parameter is an array.
+	itemcode = lookuparraycode(dataobj);
+	if (!itemcode) {
+		ErrMsgArrayExpected();
 		return NULL;
-	} else {
-		// Get the array code type character.
-		itemcode = arr1type.arraycode;
 	}
 
 

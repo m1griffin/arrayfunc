@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     01-May-2017
-// Ver:      24-Sep-2017.
+// Ver:      28-May-2018.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */

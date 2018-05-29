@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -109,19 +109,6 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		self.dataempty = array.array(self.TypeCode)
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.data2 = bytes(self.data2)
-			self.data3 = bytes(self.data3)
-			self.dataout = bytes(self.dataout)
-			self.dataout2 = bytes(self.dataout2)
-			self.dataout3 = bytes(self.dataout3)
-			self.dataovfl = bytes(self.dataovfl)
-			self.dataoutovfl = bytes(self.dataoutovfl)
-			self.dataempty = bytes(self.dataempty)
-
-
 	########################################################
 	def TakeWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
@@ -150,7 +137,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('==', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('==', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -161,7 +148,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('==', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('==', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -172,7 +159,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(100)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_gt, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('>', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('>', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -183,7 +170,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_gt, self.data2, self.dataout2, param)
+		result = arrayfunc.takewhile('>', self.data2, self.dataout2, param)
 		expected, explength = self.TakeWhile('>', self.data2, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -194,7 +181,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_gte, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('>=', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('>=', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -205,7 +192,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(97)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_gte, self.data2, self.dataout2, param)
+		result = arrayfunc.takewhile('>=', self.data2, self.dataout2, param)
 		expected, explength = self.TakeWhile('>=', self.data2, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -216,7 +203,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(102)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_lt, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('<', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('<', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -227,7 +214,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(104)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_lt, self.data2, self.dataout2, param)
+		result = arrayfunc.takewhile('<', self.data2, self.dataout2, param)
 		expected, explength = self.TakeWhile('<', self.data2, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout2), expected)
@@ -238,7 +225,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(102)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_lte, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('<=', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('<=', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -249,7 +236,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(104)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_lte, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('<=', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('<=', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -260,7 +247,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(110)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_lte, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('<=', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('<=', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -271,7 +258,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test ne  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(99)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_ne, self.data, self.dataout, param)
+		result = arrayfunc.takewhile('!=', self.data, self.dataout, param)
 		expected, explength = self.TakeWhile('!=', self.data, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -282,7 +269,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test ne  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(110)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_ne, self.data3, self.dataout3, param)
+		result = arrayfunc.takewhile('!=', self.data3, self.dataout3, param)
 		expected, explength = self.TakeWhile('!=', self.data3, param)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout3), expected)
@@ -293,7 +280,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test arraly limits  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, param, maxlen=len(self.data)//2)
+		result = arrayfunc.takewhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.TakeWhile('==', self.data, param, maxlen=len(self.data)//2)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -304,7 +291,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test arraly limits  - Array code %(typelabel)s.
 		"""
 		param = %(typeconvert)s(101)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, param, maxlen=-1)
+		result = arrayfunc.takewhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.TakeWhile('==', self.data, param, maxlen=-1)
 		self.assertEqual(result, explength)
 		self.assertEqual(list(self.dataout), expected)
@@ -327,7 +314,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq)
+			result = arrayfunc.takewhile('==')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -339,7 +326,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when two parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data)
+			result = arrayfunc.takewhile('==', self.data)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -351,7 +338,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception when three parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout)
+			result = arrayfunc.takewhile('==', self.data, self.dataout)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -364,7 +351,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""
 		param = %(typeconvert)s(101)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, param, 3, maxlen=2)
+			result = arrayfunc.takewhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -377,7 +364,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, %(typeconvert)s(100), xx=2)
+			result = arrayfunc.takewhile('==', self.data, self.dataout, %(typeconvert)s(100), xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -389,7 +376,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, %(typeconvert)s(100), maxlen='x')
+			result = arrayfunc.takewhile('==', self.data, self.dataout, %(typeconvert)s(100), maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -401,7 +388,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.takewhile(-1, self.data, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.takewhile('!', self.data, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -409,7 +396,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile('a', self.data, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.takewhile(62, self.data, self.dataout, %(typeconvert)s(100))
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -421,7 +408,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array input parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, 99, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.takewhile('==', 99, self.dataout, %(typeconvert)s(100))
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -433,7 +420,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, 99, %(typeconvert)s(100))
+			result = arrayfunc.takewhile('==', self.data, 99, %(typeconvert)s(100))
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -445,7 +432,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.dataempty, self.dataout, %(typeconvert)s(100))
+			result = arrayfunc.takewhile('==', self.dataempty, self.dataout, %(typeconvert)s(100))
 
 
 	########################################################
@@ -453,7 +440,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataempty, %(typeconvert)s(100))
+			result = arrayfunc.takewhile('==', self.data, self.dataempty, %(typeconvert)s(100))
 
 
 	########################################################
@@ -461,7 +448,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, 'e')
+			result = arrayfunc.takewhile('==', self.data, self.dataout, 'e')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -473,7 +460,7 @@ class takewhile_operator_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, %(invalidtypeconvert)s(100.5))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, %(invalidtypeconvert)s(100.5))
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -489,7 +476,7 @@ overflow_template = '''
 		"""Test parameter overflow min  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.MinVal %(overflowdec)s)
+			result = arrayfunc.takewhile('==', self.dataovfl, self.dataoutovfl, self.MinVal %(overflowdec)s)
 
 
 	########################################################
@@ -497,15 +484,15 @@ overflow_template = '''
 		"""Test parameter overflow max  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.Maxval %(overflowinc)s)
+			result = arrayfunc.takewhile('==', self.dataovfl, self.dataoutovfl, self.Maxval %(overflowinc)s)
 
 
 	########################################################
 	def test_overflow_ok(self):
 		"""Test no overflow. These should not overflow  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.MinVal)
-		result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.dataovfl, self.dataoutovfl, self.Maxval)
+		result = arrayfunc.takewhile('==', self.dataovfl, self.dataoutovfl, self.MinVal)
+		result = arrayfunc.takewhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 '''
 
@@ -529,7 +516,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, float('nan'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, float('nan'))
 
 
 	########################################################
@@ -537,7 +524,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, float('inf'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, float('inf'))
 
 
 	########################################################
@@ -545,7 +532,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, float('-inf'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, float('-inf'))
 
 
 	########################################################
@@ -553,7 +540,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('nan'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, 100.0, maxlen=float('nan'))
 
 
 	########################################################
@@ -561,7 +548,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('inf'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, 100.0, maxlen=float('inf'))
 
 
 	########################################################
@@ -569,7 +556,7 @@ class takewhile_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.takewhile(arrayfunc.aops.af_eq, self.data, self.dataout, 100.0, maxlen=float('-inf'))
+			result = arrayfunc.takewhile('==', self.data, self.dataout, 100.0, maxlen=float('-inf'))
 
 
 ##############################################################################
@@ -605,14 +592,6 @@ with open('test_takewhile.py', 'w') as f:
 
 		# This is just a comment to close off the class.
 		f.write(classend)
-
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	f.write(template % datarec)
-	f.write(overflow_template % datarec)
 
 
 	# Test for nan, inf, -inf.

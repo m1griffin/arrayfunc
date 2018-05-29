@@ -6,8 +6,8 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 3.1.0 for 2017-10-12
-:Copyright: 2014 - 2017
+:Version: 4.0.0 for 2018-05-14
+:Copyright: 2014 - 2018
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
 
@@ -29,16 +29,41 @@ significantly faster than using native Python.
 
 ---------------------------------------------------------------------
 
-Functions
-=========
+Important Note for Upgrading to Version 4
+=========================================
 
-Summary
--------
+Version 4 drops support for the amap, amapi, starmap, starmapi, and acalc 
+functions. These have all been replaced by individual functions which perform
+the same calculations but in a more direct way. 
+
+The reason for this change is that it was not possible to support these 
+functions while also providing a simple and consistent call interface. Now each
+function has a call interface tailored specifically for how that function works. 
+This also provides for a more natural mix of array and numeric parameters.
+
+This change will now allow more mathematical functions to be added in future
+without trying to force-fit them into a single call interface.
+
+
+Version 4 also changes the parameter used to select the type of comparison 
+operation for dropwhile, takewhile, aany, aall, findindex, and findindices.
+This change has been necessitated by the removal of amap and related functions.
+These functions however should still work in a compatible manner.
+
+
+Finally, support for the "bytes" type has been dropped.
+
+
+---------------------------------------------------------------------
+
+Function Summary
+================
+
 
 The functions fall into several categories.
 
 Filling Arrays
-______________
+--------------
 
 ========= ======================================================================
 Function    Description
@@ -52,7 +77,7 @@ repeat     Fill an array with a specified value.
 
 
 Filtering Arrays
-________________
+----------------
 
 ============== =================================================================
 Function         Description
@@ -68,7 +93,21 @@ takewhile       Like dropwhile, but starts from the beginning and stops when the
 
 
 Examining and Searching Arrays
-______________________________
+------------------------------
+
+============== =================================================================
+Function         Description
+============== =================================================================
+findindex       Returns the index of the first value in an array to meet the
+                specified criteria.
+findindices     Searches an array for the array indices which meet the specified 
+                criteria and writes the results to a second array. Also returns
+                the number of matches found.
+============== =================================================================
+
+
+Summarising Arrays
+------------------
 
 ============== =================================================================
 Function         Description
@@ -79,36 +118,12 @@ aall            Returns True if all element in an array meet the selected
                 criteria.
 amax            Returns the maximum value in the array.
 amin            Returns the minimum value in the array.
-findindex       Returns the index of the first value in an array to meet the
-                specified criteria.
-findindices     Searches an array for the array indices which meet the specified 
-                criteria and writes the results to a second array. Also returns
-                the number of matches found.
-============== =================================================================
-
-
-Operating on Arrays
-___________________
-
-============== =================================================================
-Function         Description
-============== =================================================================
-amap            Apply an operator to each element of an array, together with an 
-                optional second parameter (for operators taking two parameters).
-                The results are written to a second array.
-amapi           Like amap, but the results are written in place to the input
-                array.
-starmap         Like amap, but where a second array acts as the second 
-                parameter. The results are written to an output array.
-starmapi        Like starmap, but the results are written in place to the first 
-                input array.
 asum            Calculate the arithmetic sum of an array.
-acalc           Calculate arbitrary equations over an array. 
 ============== =================================================================
 
 
 Data Conversion
-_______________
+---------------
 
 ========= ======================================================================
 Function   Description
@@ -117,16 +132,155 @@ convert    Convert arrays between data types. The data will be converted into
            the form required by the output array.
 ========= ======================================================================
 
+
+Mathematical operator functions
+-------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        add x + y
+    truediv x / y
+   floordiv x // y
+        mod x % y
+        mul x * y
+        neg -x
+        pow x**y or math.pow(x, y)
+        sub x - y
+      abs\_ abs(x)
+=========== ===============================================
+
+Comparison operator functions
+-----------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+         eq x == y
+         gt x > y
+         ge x >= y
+         lt x < y
+         le x <= y
+         ne x != y
+=========== ===============================================
+
+Bitwise operator functions
+--------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+      and\_ x & y
+       or\_ x | y
+        xor x ^ y
+     invert ~x
+     lshift x << y
+     rshift x >> y
+=========== ===============================================
+
+Power and logarithmic functions
+-------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        exp math.exp(x)
+      expm1 math.expm1(x)
+        log math.log(x)
+      log10 math.log10(x)
+      log1p math.log1p(x)
+       log2 math.log2(x)
+       sqrt math.sqrt(x)
+=========== ===============================================
+
+Hyperbolic functions
+--------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+      acosh math.acosh(x)
+      asinh math.asinh(x)
+      atanh math.atanh(x)
+       cosh math.cosh(x)
+       sinh math.sinh(x)
+       tanh math.tanh(x)
+=========== ===============================================
+
+Trigonometric functions
+-----------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+       acos math.acos(x)
+       asin math.asin(x)
+       atan math.atan(x)
+      atan2 math.atan2(x, y)
+        cos math.cos(x)
+      hypot math.hypot(x, y)
+        sin math.sin(x)
+        tan math.tan(x)
+=========== ===============================================
+
+Angular conversion
+------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+    degrees math.degrees(x)
+    radians math.radians(x)
+=========== ===============================================
+
+Number-theoretic and representation functions
+---------------------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+       ceil math.ceil(x)
+   copysign math.copysign(x, y)
+       fabs math.fabs(x)
+  factorial math.factorial(x)
+      floor math.floor(x)
+       fmod math.fmod(x, y)
+      isinf math.isinf(x)
+      isnan math.isnan(x)
+      ldexp math.ldexp(x, y)
+      trunc math.trunc(x)
+=========== ===============================================
+
+Special functions
+-----------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        erf math.erf(x)
+       erfc math.erfc(x)
+      gamma math.gamma(x)
+     lgamma math.lgamma(x)
+=========== ===============================================
+
+
+
+
 Array Limit Attributes
-______________________
+----------------------
 
 In addition to functions, a set of attributes are provided representing the 
 platform specific maximum and minimum numerical values for each array type. 
 These attributes are part of the "arraylimits" module.
 
+---------------------------------------------------------------------
 
-Details
--------
+
+Searching and Summarising Arrays.
+=================================
+
+Description
+-----------
 
 count
 _____
@@ -158,7 +312,7 @@ example::
 
 
 cycle
-______
+_____
 
 Fill an array with evenly spaced values using a start, stop, and step values, 
 and repeat until the array is filled.
@@ -500,159 +654,6 @@ example::
 	==> x equals 2
 
 
-amap
-____
-
-Apply an operator to each element of an array, together with an optional second 
-parameter (for operators taking two parameters). The results are written to a 
-second array.
-
-amap(op, inparray, outparray, rparam)
-
-amap(op, inparray, outparray, rparam, disovfl=True)
-
-amap(op, inparray, outparray, rparam, disovfl=True, maxlen=500)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* outparray - The output array.
-* rparam - The 'y' parameter to be applied to 'op'. This is an optional 
-  parameter.
-* disovfl - If this keyword parameter is True, integer overflow checking will be
-  disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('i', [0]*6)
-	arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5, disovfl=True)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	arrayfunc.amap(arrayfunc.aops.af_add, inparray, outparray, 5, disovfl=False)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	inparray = array.array('i', [1, 2, 3, 4, 5, 6])
-	arrayfunc.amap(arrayfunc.aops.math_factorial, inparray, outparray)
-	==> ('i', [1, 2, 6, 24, 120, 720])
-	outparray = array.array('i', [0]*6)
-	arrayfunc.amap(arrayfunc.aops.math_factorial, inparray, outparray, maxlen=5)
-	==> array('i', [1, 2, 6, 24, 120, 0])
-
-amapi
-_____
-
-Like amap, but the results are written in place to the input array.
-
-
-amapi(op, inparray, rparam)
-
-amapi(op, inparray, rparam, disovfl=True)
-
-amapi(op, inparray, rparam, disovfl=True, maxlen=500)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* rparam - The 'y' parameter to be applied to 'op'. This is an optional 
-  parameter.
-* disovfl - If this keyword parameter is True, integer overflow checking will be
-  disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=True)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=False)
-	==> ('i', [6, 7, 10, 38, 59, -1])
-	inparray = array.array('i', [1, 2, 3, 4, 5, 6])
-	arrayfunc.amapi(arrayfunc.aops.math_factorial, inparray)
-	==> ('i', [1, 2, 6, 24, 120, 720])
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	arrayfunc.amapi(arrayfunc.aops.af_add, inparray, 5, disovfl=False, maxlen=5)
-	==> array('i', [6, 7, 10, 38, 59, -6])
-
-
-starmap
-_______
-
-Like amap, but where a second array acts as the second parameter. The results 
-are written to an output array. All valid operators and math functions must 
-take a second parameter (for single parameter operators or math functions, use
-amap).
-
-starmap(op, inparray1, inparray2, outparray)
-
-starmap(op, inparray1, inparray2, outparray, disovfl=True)
-
-starmap(op, inparray1, inparray2, outparray, disovfl=True, maxlen=500)
-
-* op - The arithmetic comparison operation.
-* inparray1 - The first input data array to be examined.
-* inparray2 - The second input data array to be examined.
-* outparray - The output array.
-* disovfl - If this keyword parameter is True, integer overflow checking will be
-  disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-
-example::
-
-	inparray1 = array.array('i', [1, 2, 5, 33, 54, 6])
-	inparray2 = array.array('i', [1, 2, 5, -88, -5, 2])
-	outparray = array.array('i', [0]*6)
-	arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray)
-	==> array('i', [2, 4, 10, -55, 49, 8])
-	arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray, disovfl=True)
-	==> array('i', [2, 4, 10, -55, 49, 8])
-	outparray = array.array('i', [0]*6)
-	arrayfunc.starmap(arrayfunc.aops.af_add, inparray1, inparray2, outparray, maxlen=5)
-	==> array('i', [2, 4, 10, -55, 49, 0])
-
-
-starmapi
-________
-
-Like starmap, but the results are written in place to the first input array.
-
-starmapi(op, inparray1, inparray2)
-
-starmapi(op, inparray1, inparray2, disovfl=True)
-
-starmapi(op, inparray1, inparray2, disovfl=True, maxlen=500)
-
-* op - The arithmetic comparison operation.
-* inparray1 - The first input data array to be examined.
-* inparray2 - The second input data array to be examined.
-* disovfl - If this keyword parameter is True, integer overflow checking will be
-  disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-
-example::
-
-	inparray1 = array.array('i', [1, 2, 5, 33, 54, 6])
-	inparray2 = array.array('i', [1, 2, 5, -88, -5, 2])
-	arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2)
-	==> array('i', [2, 4, 10, -55, 49, 8])
-	inparray1 = array.array('i', [1, 2, 5, 33, 54, 6])
-	arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2, disovfl=True)
-	==> array('i', [2, 4, 10, -55, 49, 8])
-	inparray1 = array.array('i', [1, 2, 5, 33, 54, 6])
-	arrayfunc.starmapi(arrayfunc.aops.af_add, inparray1, inparray2, disovfl=True, maxlen=5)
-	==> array('i', [2, 4, 10, -55, 49, 6])
-
 
 asum
 ____
@@ -726,8 +727,18 @@ example::
 	==> array('h', [5, 5, 5, 5, 5, 0, 0, 0, 0, 0])
 
 
+
+TODO: Write new section on operators for findindex, takewhile, etc.
+-------------------------------------------------------------------
+
+Since the old operators have been eliminated along with amap, starmap, etc.
+this section needs a new description of the flags for gt, lt, eq, etc.
+
+
+
+
 arraylimits attributes
-______________________
+----------------------
 
 A set of attributes are provided representing the platform specific maximum 
 and minimum numerical values for each array type. These attributes are part of 
@@ -752,7 +763,6 @@ q                 signed long long       q_min       q_max
 Q                 unsigned long long     Q_min       Q_max    
 f                 float                  f_min       f_max 
 d                 double                 d_min       d_max  
-bytes             Python bytes type      bytes_min   bytes_max
 ================ =====================  =========== ============================
 
 
@@ -770,131 +780,2003 @@ example::
 	arrayfunc.arraylimits.f_max
 	==> 3.4028234663852886e+38
 
+---------------------------------------------------------------------
 
 
-ACalc
------
+Mathematical Functions
+======================
 
 Description
+-----------
+
+Mathematical functions provide similar functionality to the functions of the 
+same name in the standard library "math" and "operator" modules, but operate 
+over whole arrays instead of on a single value.
+
+Mathematical functions can accept a variety of different combinations of array
+and numerical parameters. Each function will automatically detect the category 
+of parameter and adjust its behaviour accordingly. 
+
+Output can be either into a separate output array, or in-place (into the 
+original array) if no output array is provided.
+
+
+Parameter Forms
+_______________
+
+
+This example will subtract 10 from each element of array 'x', replacing the 
+original data.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ arrayfunc.sub(x, 10)
+
+
+This example will do the same, but place the results into array 'z', leaving the
+original array unchanged.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ z = array.array('b', [0] * len(x))
+ arrayfunc.sub(x, 10, z)
+
+
+This is similar to the first one, but performs the calculation of '10 - x' 
+instead of 'x - 10'.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ arrayfunc.sub(10, x)
+
+
+This example takes each element of array 'x', adds the corresponding element of
+array 'y', and puts the result in array 'z'.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ y = array.array('b', [10,5,55,42,42,0])
+ z = array.array('b', [0] * len(x))
+ arrayfunc.add(x, y, z)
+
+
+Parameter Type Consistency
+__________________________
+
+Unless otherwise noted, all array and numeric parameters must be of the same
+type when calling a mathematical function. That is, you may not mix integer
+and floating point, or different integer sizes in the same calculation. Failing
+to do so will result in an exception being raised.
+
+
+
+Using Less than the Entire Array
+________________________________
+
+If the size of the array is larger than the desired length of the calculation,
+it may be limited to the first part of the array by using the 'maxlen' 
+parameter. In the following example only the first 3 array elements will be
+operated on, with the following ones left unchanged.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ arrayfunc.add(x, 10, maxlen=3)
+
+
+Supressing or Ignoring Math Errors
+__________________________________
+
+Functions can be made to ignore some mathematical errors (e.g. integer 
+overflow) by setting the 'matherrors' keyword parameter to True.::
+
+ x = array.array('b', [20,21,22,23,24,25])
+ arrayfunc.add(x, 235, matherrors=True)
+
+
+However, not all math errors can be supressed, only those which would not 
+otherwise cause a fatal error (e.g. division by zero). 
+
+Ignoring errors may be desirable if the side effect (e.g. the result of an 
+integer overflow) is the intended effect, or for reasons of a minor performance
+improvement in some cases. Note that any such performance improvement will
+vary greatly depending upon the specific function and array type. Benchmark
+your calculation before deciding if this is worth while.
+
+
+Differences with Native Python
+______________________________
+
+
+In many cases the Python 'math' module functions are thin wrappers around the
+underlying C library, as is 'arrayfunc'.
+
+However, in some cases 'arrayfunc' will not produce exactly the same result as
+Python. There are several reasons for this, the primary one being that
+arrayfunc operates on different underlying data types. Specifically, arrayfunc
+uses the platforms native integer and floating point types as exposed by the
+array module. For example, Python integers are of arbitrary size and can never
+overflow (Python simply expands the word size indefinitely), while arrayfunc
+integers will overflow the same as they would with programs written in C.
+
+Think of arrayfunc as exposing C style semantics in a form convenient to use
+in Python. Some convenience which Python provides (e.g. no limit to the size of 
+integers) is traded off for large performance increases.
+
+However, Arrayfunc does implement the mod or '%' operator in a manner which is
+compatible with Python, not 'C'. The C method will produce mathematically
+incorrect answers under some ranges of values (as will some popular 
+spreadsheets which use the C compiler without correction). Python implements
+this in a mathematically correct manner in all cases, and Arrayfunc follows 
+suit.
+
+
+Arrayfunc diverges from Python in the following areas:
+
+* The handling of non-finite floating point values such as 'NaN' (not-a-number) 
+  and +/-Inf in calculations may not always be compatible.
+* The 'floor' function will return a floating point value when floating point
+  arrays are used, rather than an integer. This is necessary to maintain
+  compatibility with the array parameters.
+* Floordiv does not behave the same as '//' when working with infinity. When
+  dividing positive or negative infinity by any number, the arrayfunc version 
+  of floordiv will return +/- infinity, while the Python '//' operator will
+  return 'NaN' (not-a-number) in each case.
+* Binary operations such as shift and invert will operate according to their 
+  native array data types, which may differ from Python's own integer 
+  implementation. This is necessary because the array integer is of fixed size
+  (Python integers can be infinitely large) and has both signed and unsigned
+  types (Python integers are signed only).
+* "Mod" does not behave exactly as "%" does for floating point. X % inf and
+  x % -inf will return nan rather than +/- inf.
+* The type of exception raised when an error is encountered in Python versus
+  arrayfunc may not be the same in all cases.
+
+
+Other Notes
 ___________
 
-Calculate arbitrary equations over an array.
 
-ACalc solves complex equations (expressions) over an array. It accepts a valid
-Python mathematical expression as a string, compiles it, and executes it. The
-expression can include constants, variables, and the same functions as defined
-in the "math" module.
-
-ACalc consists of a class "calc" with two methods, "comp" (compile) and 
-"execute". 
-
-For simple calculations, amap will normally be much, much faster than acalc. 
-However, acalc is useful for equations requiring multiple terms, as it can solve
-them in a single operation whereas amap (or amapi) would require multiple 
-function calls (once for each term).
-
-Initialisation
-______________
-
-The "calc" class is initialised with the input and output arrays. The input and
-output arrays must be of the same array type. The array type determines the data
-type of the calculation. That is, an integer array will result in integer math,
-and a floating point array will result in floating point math.
-
-The first parameter is the input array, and the second parameter is the output
-array. These arrays remain associated with the equation object.
-
-example::
-
-	data = array.array('b', [0,1,2,3,4,5,6,7,8,9])
-	dataout = array.array('b', [0]*len(data))
-	eqnd = acalc.calc(data, dataout)
-
-Compiling
-_________
-
-The compile method accepts three positional parameters. These are:
-
-* Equation - This is the equation as a string.
-* Array variable - This defines which variable in the equation represents the
-  current array index value. This must be a string which follows the same rules
-  as valid Python variable names.
-* Other variables - This is a sequence of strings, with each element 
-  corresponding to a variable in the equation. The sequence can be a list or
-  a tuple.
-
-example::
-
-	eqnd.comp('x + y - z + 5', 'x', ['y', 'z'])
-
-example::
-
-	eqnd.comp('-x', 'x', [])
+* Ldexp only accepts an integer number as the second parameter, not an array.
+* Math.pow is not implemented because it duplicates the operator pow (and the 
+  names would collide in arrayfunc).
 
 
-example::
 
-	eqnd.comp('abs(x) + y - (z << 2)', 'x', ('y', 'z'))
-
-
-Executing
-_________
-
-Once an equation is compiled, it can be executed. A compiled equation can be 
-executed multiple times with different parameter values without recompiling it. 
-
-The execute method accepts one positional parameter which represents the 
-additional variables and two keyword parameters which are used to control the
-execution of the equation.
-
-* Variable values - This is a list or tuple of of numeric values which 
-  corresponds to the additional (non-array) variables in the equation. The
-  order and number of elements must match the sequence of additional variables
-  defined in the compile step. 
-* disovfl - If this keyword parameter is True, overflow checking will be
-  disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
+Mathematical operator functions
+-------------------------------
 
 
-example::
+add
+_____________________________
 
-	eqnd.execute([-25, 3])
+Calculate add over the values in an array. 
 
+======================  ========================================================
+Equivalent to:          x + y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError
+======================  ========================================================
 
-example::
-
-	eqnd.execute([-25, 3], disovfl=True)
-
-
-example::
-
-	eqnd.execute([-25, 3], disovfl=False, maxlen=500)
-
-
-Complete Example
-________________
-
-example::
-
-	import array
-	from arraycalc import acalc
-	data = array.array('b', [0,1,2,3,4,5,6,7,8,9])
-	dataout = array.array('b', [0]*len(data))
-	eqnd = acalc.calc(data, dataout)
-	eqnd.comp('x + y - z + 5', 'x', ['y', 'z'])
-	eqnd.execute([-25, 3])
-	print(dataout)
-	array('b', [-23, -22, -21, -20, -19, -18, -17, -16, -15, -14])
+Call formats::
 
 
+  add(array1, param)
+  add(array1, param, outparray)
+  add(param, array1)
+  add(param, array1, outparray)
+  add(array1, array2)
+  add(array1, array2, outparray)
+  add(array1, param, maxlen=y)
+  add(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+truediv
+_____________________________
+
+Calculate truediv over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x / y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
+======================  ========================================================
+
+Call formats::
+
+
+  truediv(array1, param)
+  truediv(array1, param, outparray)
+  truediv(param, array1)
+  truediv(param, array1, outparray)
+  truediv(array1, array2)
+  truediv(array1, array2, outparray)
+  truediv(array1, param, maxlen=y)
+  truediv(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+floordiv
+_____________________________
+
+Calculate floordiv over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x // y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
+======================  ========================================================
+
+Call formats::
+
+
+  floordiv(array1, param)
+  floordiv(array1, param, outparray)
+  floordiv(param, array1)
+  floordiv(param, array1, outparray)
+  floordiv(array1, array2)
+  floordiv(array1, array2, outparray)
+  floordiv(array1, param, maxlen=y)
+  floordiv(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+mod
+_____________________________
+
+Calculate mod over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x % y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
+======================  ========================================================
+
+Call formats::
+
+
+  mod(array1, param)
+  mod(array1, param, outparray)
+  mod(param, array1)
+  mod(param, array1, outparray)
+  mod(array1, array2)
+  mod(array1, array2, outparray)
+  mod(array1, param, maxlen=y)
+  mod(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+mul
+_____________________________
+
+Calculate mul over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x * y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  mul(array1, param)
+  mul(array1, param, outparray)
+  mul(param, array1)
+  mul(param, array1, outparray)
+  mul(array1, array2)
+  mul(array1, array2, outparray)
+  mul(array1, param, maxlen=y)
+  mul(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+neg
+_____________________________
+
+Calculate neg over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          -x
+Array types supported:  b, h, i, l, q, f, d
+Exceptions raised:      OverflowError, ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    neg(array1)
+    neg(array1, outparray)
+    neg(array1, maxlen=y)
+    neg(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+pow
+_____________________________
+
+Calculate pow over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x**y or math.pow(x, y)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  pow(array1, param)
+  pow(array1, param, outparray)
+  pow(param, array1)
+  pow(param, array1, outparray)
+  pow(array1, array2)
+  pow(array1, array2, outparray)
+  pow(array1, param, maxlen=y)
+  pow(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+sub
+_____________________________
+
+Calculate sub over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x - y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      OverflowError, ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  sub(array1, param)
+  sub(array1, param, outparray)
+  sub(param, array1)
+  sub(param, array1, outparray)
+  sub(array1, array2)
+  sub(array1, array2, outparray)
+  sub(array1, param, maxlen=y)
+  sub(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+abs\_
+_____________________________
+
+Calculate abs\_ over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          abs(x)
+Array types supported:  b, h, i, l, q, f, d
+Exceptions raised:      OverflowError
+======================  ========================================================
+
+Call formats::
+
+
+    abs_(array1)
+    abs_(array1, outparray)
+    abs_(array1, maxlen=y)
+    abs_(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Comparison operator functions
+-----------------------------
+
+
+eq
+_____________________________
+
+Calculate eq over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x == y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = eq(array1, param)
+  result = eq(param, array1)
+  result = eq(array1, array2)
+  result = eq(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+gt
+_____________________________
+
+Calculate gt over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x > y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = gt(array1, param)
+  result = gt(param, array1)
+  result = gt(array1, array2)
+  result = gt(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+ge
+_____________________________
+
+Calculate ge over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x >= y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = ge(array1, param)
+  result = ge(param, array1)
+  result = ge(array1, array2)
+  result = ge(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+lt
+_____________________________
+
+Calculate lt over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x < y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = lt(array1, param)
+  result = lt(param, array1)
+  result = lt(array1, array2)
+  result = lt(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+le
+_____________________________
+
+Calculate le over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x <= y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = le(array1, param)
+  result = le(param, array1)
+  result = le(array1, array2)
+  result = le(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+ne
+_____________________________
+
+Calculate ne over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x != y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  result = ne(array1, param)
+  result = ne(param, array1)
+  result = ne(array1, array2)
+  result = ne(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the comparison
+  operations. If all comparison operations result in true, the return value
+  will be true. If any of them result in false, the return value will be
+  false.
+
+Bitwise operator functions
+--------------------------
+
+
+and\_
+_____________________________
+
+Calculate and\_ over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x & y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  and_(array1, param)
+  and_(array1, param, outparray)
+  and_(param, array1)
+  and_(param, array1, outparray)
+  and_(array1, array2)
+  and_(array1, array2, outparray)
+  and_(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+or\_
+_____________________________
+
+Calculate or\_ over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x | y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  or_(array1, param)
+  or_(array1, param, outparray)
+  or_(param, array1)
+  or_(param, array1, outparray)
+  or_(array1, array2)
+  or_(array1, array2, outparray)
+  or_(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+xor
+_____________________________
+
+Calculate xor over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x ^ y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  xor(array1, param)
+  xor(array1, param, outparray)
+  xor(param, array1)
+  xor(param, array1, outparray)
+  xor(array1, array2)
+  xor(array1, array2, outparray)
+  xor(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+invert
+_____________________________
+
+Calculate invert over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          ~x
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+    invert(array1)
+    invert(array1, outparray)
+    invert(array1, maxlen=y)
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+lshift
+_____________________________
+
+Calculate lshift over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x << y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  lshift(array1, param)
+  lshift(array1, param, outparray)
+  lshift(param, array1)
+  lshift(param, array1, outparray)
+  lshift(array1, array2)
+  lshift(array1, array2, outparray)
+  lshift(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+rshift
+_____________________________
+
+Calculate rshift over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          x >> y
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+  rshift(array1, param)
+  rshift(array1, param, outparray)
+  rshift(param, array1)
+  rshift(param, array1, outparray)
+  rshift(array1, array2)
+  rshift(array1, array2, outparray)
+  rshift(array1, param, maxlen=y)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+
+Power and logarithmic functions
+-------------------------------
+
+
+exp
+_____________________________
+
+Calculate exp over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.exp(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    exp(array1)
+    exp(array1, outparray)
+    exp(array1, maxlen=y)
+    exp(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+expm1
+_____________________________
+
+Calculate expm1 over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.expm1(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    expm1(array1)
+    expm1(array1, outparray)
+    expm1(array1, maxlen=y)
+    expm1(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+log
+_____________________________
+
+Calculate log over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.log(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    log(array1)
+    log(array1, outparray)
+    log(array1, maxlen=y)
+    log(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+log10
+_____________________________
+
+Calculate log10 over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.log10(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    log10(array1)
+    log10(array1, outparray)
+    log10(array1, maxlen=y)
+    log10(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+log1p
+_____________________________
+
+Calculate log1p over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.log1p(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    log1p(array1)
+    log1p(array1, outparray)
+    log1p(array1, maxlen=y)
+    log1p(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+log2
+_____________________________
+
+Calculate log2 over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.log2(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    log2(array1)
+    log2(array1, outparray)
+    log2(array1, maxlen=y)
+    log2(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+sqrt
+_____________________________
+
+Calculate sqrt over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.sqrt(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    sqrt(array1)
+    sqrt(array1, outparray)
+    sqrt(array1, maxlen=y)
+    sqrt(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Hyperbolic functions
+--------------------
+
+
+acosh
+_____________________________
+
+Calculate acosh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.acosh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    acosh(array1)
+    acosh(array1, outparray)
+    acosh(array1, maxlen=y)
+    acosh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+asinh
+_____________________________
+
+Calculate asinh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.asinh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    asinh(array1)
+    asinh(array1, outparray)
+    asinh(array1, maxlen=y)
+    asinh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+atanh
+_____________________________
+
+Calculate atanh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.atanh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    atanh(array1)
+    atanh(array1, outparray)
+    atanh(array1, maxlen=y)
+    atanh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+cosh
+_____________________________
+
+Calculate cosh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.cosh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    cosh(array1)
+    cosh(array1, outparray)
+    cosh(array1, maxlen=y)
+    cosh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+sinh
+_____________________________
+
+Calculate sinh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.sinh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    sinh(array1)
+    sinh(array1, outparray)
+    sinh(array1, maxlen=y)
+    sinh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+tanh
+_____________________________
+
+Calculate tanh over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.tanh(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    tanh(array1)
+    tanh(array1, outparray)
+    tanh(array1, maxlen=y)
+    tanh(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Trigonometric functions
+-----------------------
+
+
+acos
+_____________________________
+
+Calculate acos over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.acos(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    acos(array1)
+    acos(array1, outparray)
+    acos(array1, maxlen=y)
+    acos(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+asin
+_____________________________
+
+Calculate asin over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.asin(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    asin(array1)
+    asin(array1, outparray)
+    asin(array1, maxlen=y)
+    asin(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+atan
+_____________________________
+
+Calculate atan over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.atan(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    atan(array1)
+    atan(array1, outparray)
+    atan(array1, maxlen=y)
+    atan(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+atan2
+_____________________________
+
+Calculate atan2 over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.atan2(x, y)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  atan2(array1, param)
+  atan2(array1, param, outparray)
+  atan2(param, array1)
+  atan2(param, array1, outparray)
+  atan2(array1, array2)
+  atan2(array1, array2, outparray)
+  atan2(array1, param, maxlen=y)
+  atan2(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+cos
+_____________________________
+
+Calculate cos over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.cos(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    cos(array1)
+    cos(array1, outparray)
+    cos(array1, maxlen=y)
+    cos(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+hypot
+_____________________________
+
+Calculate hypot over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.hypot(x, y)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  hypot(array1, param)
+  hypot(array1, param, outparray)
+  hypot(param, array1)
+  hypot(param, array1, outparray)
+  hypot(array1, array2)
+  hypot(array1, array2, outparray)
+  hypot(array1, param, maxlen=y)
+  hypot(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+sin
+_____________________________
+
+Calculate sin over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.sin(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    sin(array1)
+    sin(array1, outparray)
+    sin(array1, maxlen=y)
+    sin(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+tan
+_____________________________
+
+Calculate tan over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.tan(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    tan(array1)
+    tan(array1, outparray)
+    tan(array1, maxlen=y)
+    tan(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Angular conversion
+------------------
+
+
+degrees
+_____________________________
+
+Calculate degrees over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.degrees(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    degrees(array1)
+    degrees(array1, outparray)
+    degrees(array1, maxlen=y)
+    degrees(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+radians
+_____________________________
+
+Calculate radians over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.radians(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    radians(array1)
+    radians(array1, outparray)
+    radians(array1, maxlen=y)
+    radians(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Number-theoretic and representation functions
+---------------------------------------------
+
+
+ceil
+_____________________________
+
+Calculate ceil over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.ceil(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    ceil(array1)
+    ceil(array1, outparray)
+    ceil(array1, maxlen=y)
+    ceil(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+copysign
+_____________________________
+
+Calculate copysign over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.copysign(x, y)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  copysign(array1, param)
+  copysign(array1, param, outparray)
+  copysign(param, array1)
+  copysign(param, array1, outparray)
+  copysign(array1, array2)
+  copysign(array1, array2, outparray)
+  copysign(array1, param, maxlen=y)
+  copysign(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+fabs
+_____________________________
+
+Calculate fabs over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.fabs(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    fabs(array1)
+    fabs(array1, outparray)
+    fabs(array1, maxlen=y)
+    fabs(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+factorial
+_____________________________
+
+Calculate factorial over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.factorial(x)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q
+Exceptions raised:      OverflowError
+======================  ========================================================
+
+Call formats::
+
+
+    factorial(array1)
+    factorial(array1, outparray)
+    factorial(array1, maxlen=y)
+    factorial(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+floor
+_____________________________
+
+Calculate floor over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.floor(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    floor(array1)
+    floor(array1, outparray)
+    floor(array1, maxlen=y)
+    floor(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+fmod
+_____________________________
+
+Calculate fmod over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.fmod(x, y)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+  fmod(array1, param)
+  fmod(array1, param, outparray)
+  fmod(param, array1)
+  fmod(param, array1, outparray)
+  fmod(array1, array2)
+  fmod(array1, array2, outparray)
+  fmod(array1, param, maxlen=y)
+  fmod(array1, param, matherrors=False)
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* param - A non-array numeric parameter. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+isinf
+_____________________________
+
+Calculate isinf over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.isinf(x)
+Array types supported:  f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+    result = isinf(array1)
+    result = isinf(array1, maxlen=y)
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the 
+  comparison operations. If at least one comparison operation results in true, 
+  the return value will be true. If none of them result in true, the return 
+  value will be false.
+
+isnan
+_____________________________
+
+Calculate isnan over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.isnan(x)
+Array types supported:  f, d
+Exceptions raised:      
+======================  ========================================================
+
+Call formats::
+
+
+    result = isnan(array1)
+    result = isnan(array1, maxlen=y)
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* result - A boolean value corresponding to the result of all the 
+  comparison operations. If at least one comparison operation results in true, 
+  the return value will be true. If none of them result in true, the return 
+  value will be false.
+
+ldexp
+_____________________________
+
+Calculate ldexp over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.ldexp(x, y)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    ldexp(array1, exp)
+    ldexp(array1, exp, outparray)
+    ldexp(array1, exp, maxlen=y)
+    ldexp(array1, exp, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* exp - The exponent to apply to the input array. This must be an integer.
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+trunc
+_____________________________
+
+Calculate trunc over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.trunc(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    trunc(array1)
+    trunc(array1, outparray)
+    trunc(array1, maxlen=y)
+    trunc(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Special functions
+-----------------
+
+
+erf
+_____________________________
+
+Calculate erf over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.erf(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    erf(array1)
+    erf(array1, outparray)
+    erf(array1, maxlen=y)
+    erf(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+erfc
+_____________________________
+
+Calculate erfc over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.erfc(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    erfc(array1)
+    erfc(array1, outparray)
+    erfc(array1, maxlen=y)
+    erfc(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+gamma
+_____________________________
+
+Calculate gamma over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.gamma(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    gamma(array1)
+    gamma(array1, outparray)
+    gamma(array1, maxlen=y)
+    gamma(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+lgamma
+_____________________________
+
+Calculate lgamma over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          math.lgamma(x)
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    lgamma(array1)
+    lgamma(array1, outparray)
+    lgamma(array1, maxlen=y)
+    lgamma(array1, matherrors=False))
+ 
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+
+---------------------------------------------------------------------
 
 Option Flags and Parameters
----------------------------
+===========================
 
 Arithmetic Overflow Control
-___________________________
+---------------------------
 
 Many functions allow integer overflow detection to be turned off if desired. 
 See the list of operators for which operators this applies to. 
@@ -917,7 +2799,7 @@ performed and the data type used.
 
 
 Using Only Part of an Array
-___________________________
+---------------------------
 
 The array math functions only use existing arrays that the user provides and do 
 not create new arrays or resize existing ones. The reason for this is that when
@@ -941,7 +2823,7 @@ The default is to use the entire array.
 
 
 SIMD Control
-____________
+------------
 
 SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
 multiple operations to take place in parallel. Some, but not all, functions will
@@ -988,15 +2870,6 @@ d                 double
 ================ ===============================================================
 
 
-Bytes Type
-----------
-
-The 'bytes' array type is also supported, and is treated the same as an unsigned
-char (array type 'B'). To conduct operations on a Python 'bytes' string, simply
-pass the bytes string in place of an array. Any integer operations which are 
-valid for an unsigned char array will be valid for a bytes string.
-
-
 Numeric Parameter Types
 -----------------------
 
@@ -1029,235 +2902,6 @@ run out of memory if you are not careful when creating very large arrays from
 lists.
 
 
----------------------------------------------------------------------
-
-Operators
-=========
-
-The following lists the operators available, together with the types of arrays 
-they are compamtible with. 
-
-Some operators are checked for integer overflow or underflow. These are 
-indicated by the "OV" column. An overflow or underflow will generate an error. 
-
-In the following, the values in the input data array are represented by 'x'. The
-second input array or numerical parameter is represented by 'y'. Some operators 
-come in two forms, where the second allows the 'x' and 'y' parameters to be 
-exchanged in cases where this may produce a different result.
-
-The operator categories are used to indicate which functions support which
-operators.
-
-Python Equivalent Operators and Functions
------------------------------------------
-
-The following operators and functions are equivalent to ones found in the
-Python standard library. For explanations of the math functions, see the 
-Python standard documentation for the standard math library. 
-
-
-=============== ====================== ===== ===== === ===== =========
-Name             Equivalent to          b h   B H   f   OV     Compare
-                                        i l   I L   d          Ops    
-=============== ====================== ===== ===== === ===== =========
-af_add           x + y                   X     X    X    X             
-af_div           x / y                   X     X    X    X             
-af_div_r         y / x                   X     X    X    X             
-af_floordiv      x // y                  X     X    X    X             
-af_floordiv_r    y // x                  X     X    X    X             
-af_mod           x % y                   X     X    X    X             
-af_mod_r         y % x                   X     X    X    X             
-af_mult          x * y                   X     X    X    X             
-af_neg           -x                      X          X    X             
-af_pow           x**y                    X     X    X    X             
-af_pow_r         y**x                    X     X    X    X             
-af_sub           x - y                   X     X    X    X             
-af_sub_r         y - x                   X     X    X    X             
-af_and           x & y                   X     X                       
-af_or            x | y                   X     X                       
-af_xor           x ^ y                   X     X                       
-af_invert        ~x                      X     X                       
-af_eq            x == y                  X     X    X           X      
-af_gt            x > y                   X     X    X           X      
-af_gte           x >= y                  X     X    X           X      
-af_lt            x < y                   X     X    X           X      
-af_lte           x <= y                  X     X    X           X      
-af_ne            x != y                  X     X    X           X      
-af_lshift        x << y                  X     X                       
-af_lshift_r      y << x                  X     X                       
-af_rshift        x >> y                  X     X                       
-af_rshift_r      y >> x                  X     X                       
-af_abs           abs(x)                  X          X    X             
-math_acos        math.acos(x)                       X                  
-math_acosh       math.acosh(x)                      X                  
-math_asin        math.asin(x)                       X                  
-math_asinh       math.asinh(x)                      X                  
-math_atan        math.atan(x)                       X                  
-math_atan2       math.atan2(x, y)                   X                  
-math_atan2_r     math.atan2(y, x)                   X                  
-math_atanh       math.atanh(x)                      X                  
-math_ceil        math.ceil(x)                       X                  
-math_copysign    math.copysign(x, y)                X                  
-math_cos         math.cos(x)                        X                  
-math_cosh        math.cosh(x)                       X                  
-math_degrees     math.degrees(x)                    X                  
-math_erf         math.erf(x)                        X                  
-math_erfc        math.erfc(x)                       X                  
-math_exp         math.exp(x)                        X                  
-math_expm1       math.expm1(x)                      X                  
-math_fabs        math.fabs(x)                       X                  
-math_factorial   math.factorial(x)       X     X         X             
-math_floor       math.floor(x)                      X                  
-math_fmod        math.fmod(x, y)                    X                  
-math_fmod_r      math.fmod(y, x)                    X                  
-math_gamma       math.gamma(x)                      X                  
-math_hypot       math.hypot(x, y)                   X                  
-math_hypot_r     math.hypot(y, x)                   X                  
-math_isinf       math.isinf(x)                      X                  
-math_isnan       math.isnan(x)                      X                  
-math_ldexp       math.ldexp(x, y)                   X                  
-math_lgamma      math.lgamma(x)                     X                  
-math_log         math.log(x)                        X                  
-math_log10       math.log10(x)                      X                  
-math_log1p       math.log1p(x)                      X                  
-math_log2        math.log2(x)                       X                  
-math_pow         math.pow(x, y)                     X                  
-math_pow_r       math.pow(y, x)                     X                  
-math_radians     math.radians(x)                    X                  
-math_sin         math.sin(x)                        X                  
-math_sinh        math.sinh(x)                       X                  
-math_sqrt        math.sqrt(x)                       X                  
-math_tan         math.tan(x)                        X                  
-math_tanh        math.tanh(x)                       X                  
-math_trunc       math.trunc(x)                      X                  
-=============== ====================== ===== ===== === ===== =========
-
-
-
-
-Additional Operators
---------------------
-
-The arrayfuncs module includes operators which are not found in the Python
-standard library. These are the "substitute" operators. Substitute operators
-compare the contents of each array element to the parameter (which must be 
-included in the call). If the comparison evaluates to true, the array contents
-at that index are replaced by (substituted with) the parameter. If the 
-comparison fails, the contents of the input array are used. 
-
-
-=============== ====================== ===== ===== === ===== ========= =====
-Name             Equivalent to          b h   B H   f   OV    Compare   Win
-                                        i l   I L   d         Ops      
-=============== ====================== ===== ===== === ===== ========= =====
-aops_subst_gt    x > y                   X     X    X                    X
-aops_subst_gte   x >= y                  X     X    X                    X
-aops_subst_lt    x < y                   X     X    X                    X
-aops_subst_lte   x <= y                  X     X    X                    X
-=============== ====================== ===== ===== === ===== ========= =====
-
-For example, and array [1, 2, 3, 4, -2] is evaluated using the "aops_subst_gt" 
-and a parameter of 3. The resulting output is [1, 2, 3, 3, -2]. The effect has 
-been to limit the maximum value to no more than 3.
-
-
-
-ACalc Operators and Functions
------------------------------
-
-The following operators and functions are equivalent to ones found in the
-Python standard library. ACalc uses the representation in the "equivalent to"
-column to actually specify the equations. The "name" column is only for 
-reference purposes.
-
-For explanations of the math functions, see the Python standard documentation 
-for the standard math library. 
-
-=============== ====================== ===== ===== === =====
-Name             Equivalent to          b h   B H   f   OV 
-                                        i l   I L   d      
-=============== ====================== ===== ===== === =====
-add              x + y                   X     X    X    X     
-sub              x - y                   X     X    X    X     
-mult             x * y                   X     X    X    X     
-div              x / y                   X     X    X    X     
-floordiv         x // y                  X     X    X    X     
-mod              x % y                   X     X    X    X     
-uadd             +x                      X     X    X          
-usub             -x                      X     X    X    X     
-pow              x**y                    X     X    X    X     
-bitand           x & y                   X     X               
-bitor            x | y                   X     X               
-bitxor           x ^ y                   X     X               
-invert           ~x                      X     X               
-lshift           x << y                  X     X               
-rshift           x >> y                  X     X               
-abs              abs(x)                  X     X    X    X     
-math.acos        math.acos(x)                       X          
-math.acosh       math.acosh(x)                      X          
-math.asin        math.asin(x)                       X          
-math.asinh       math.asinh(x)                      X          
-math.atan        math.atan(x)                       X          
-math.atan2       math.atan2(x, y)                   X          
-math.atanh       math.atanh(x)                      X          
-math.ceil        math.ceil(x)                       X          
-math.copysign    math.copysign(x, y)                X          
-math.cos         math.cos(x)                        X          
-math.cosh        math.cosh(x)                       X          
-math.degrees     math.degrees(x)                    X          
-math.erf         math.erf(x)                        X          
-math.erfc        math.erfc(x)                       X          
-math.exp         math.exp(x)                        X          
-math.expm1       math.expm1(x)                      X          
-math.fabs        math.fabs(x)                       X          
-math.factorial   math.factorial(x)       X     X         X     
-math.floor       math.floor(x)                      X          
-math.fmod        math.fmod(x, y)                    X          
-math.gamma       math.gamma(x)                      X          
-math.hypot       math.hypot(x, y)                   X          
-math.ldexp       math.ldexp(x, y)                   X          
-math.lgamma      math.lgamma(x)                     X          
-math.log         math.log(x)                        X          
-math.log10       math.log10(x)                      X          
-math.log1p       math.log1p(x)                      X          
-math.log2        math.log2(x)                       X          
-math.pow         math.pow(x, y)                     X          
-math.radians     math.radians(x)                    X          
-math.sin         math.sin(x)                        X          
-math.sinh        math.sinh(x)                       X          
-math.sqrt        math.sqrt(x)                       X          
-math.tan         math.tan(x)                        X          
-math.tanh        math.tanh(x)                       X          
-math.trunc       math.trunc(x)                      X          
-=============== ====================== ===== ===== === =====
-
-
-Notes on Operators and Functions
---------------------------------
-
-* The regular and floor division operators (/, //) all perform division using 
-  the native division instructions. That is, integer division always results in 
-  an integer result, and floating point division always results in a floating 
-  point result. 
-* The math.gamma function (and the Python math.gamma) functions are equivalent
-  to the C library tgamma function. The C library gamma and lgamma functions are
-  equivalent to each other. 
-* The raise to power (x**y) operator will not accept a negative exponent for 
-  integers, as the result would be a fractional number which is not compatible 
-  with an integer array.
-
-
-ACalc Math Constants
---------------------
-
-ACalc also supports the following math constants as attributes:
-
-* math.pi
-* math.e
-
-These are indentical to the "math" module attributes. This allows these 
-mathematical constants to be used in equations. See the Python math module
-documentation for more information on these constants.
 
 
 Platform Compiler Support
@@ -1269,12 +2913,12 @@ to the Microsoft C compiler now supporting a new enough version of the 'C'
 standard.
 
 
-Integer Overflow Checking
--------------------------
+Integer Error Checking
+----------------------
 
-Overflow checking in integer operators is conducted as follows:
+Error checking in integer operators is conducted as follows:
 
-Overflow Categories
+Error Categories
 ___________________
 
 
@@ -1337,135 +2981,45 @@ Exceptions - General
 
 The following exceptions apply to most functions.
 
-================ ===========================================  =====================================================
-Exception type   Text                                          Description
-================ ===========================================  =====================================================
-ArithmeticError   arithmetic error in calculation.             An arithmetic error occured in a calculation.
-IndexError        array length error.                          One or more arrays has an invalid length (e.g a 
-                                                               length of zero).
-IndexError        input array length error.                    The input array has an invalid length.
-IndexError        output length error.                         The output array has an invalid length.
-IndexError        array length mismatch.                       Two or more arrays which are expected to be of equal 
-                                                               length are not.
-OverflowError     arithmetic overflow in calculation.          An arithmetic integer overflow ocurred in a 
-                                                               calculation. 
-OverflowError     arithmetic overflow in parameter.            The size or range of a non-array parameter was not
-                                                               compatible with the array parameters.
-TypeError         array and parameter type mismatch.           A non-array parameter data type was not compatible 
-                                                               with the array parameters.
-TypeError         array type mismatch.                         An array parameter is not compatible with another
-                                                               array parameter. For most functions, both arrays 
-                                                               must be of the same type.
-TypeError         unknown array type.                          The array type is unknown.
-TypeError         array.array or bytes expected.               A non-array parameter was found where an array 
-                                                               (or bytes) parameter was expected. 
-ValueError        operator not valid for this function.        An operator parameter used was not valid for this
-                                                               function. 
-ValueError        operator not valid for this platform.        The operator used is not supported on this platform.
-TypeError         parameter error.                             An unspecified error occured when parsing the 
-                                                               parameters.
-TypeError         parameter missing.                           An expected parameter was missing. 
-ValueError        parameter not valid for this operation.      A value is not valid for this operation. E.g.
-                                                               attempting to perform a factorial on a negative 
-                                                               number.
-IndexError        selector length error.                       The selector array length is incorrect.
-ValueError        conversion not valid for this type.          The conversion attempted was invalid.
-ValueError        cannot convert float NaN to integer.         Cannot convert NaN (Not A Number) floating point
-                                                               value in the input array to integer.
-TypeError         output array type invalid.                   The output array type is invalid.
-================ ===========================================  =====================================================
+==================  ===========================================  ======================================================
+Exception type      Text                                           Description
+==================  ===========================================  ======================================================
+ArithmeticError     arithmetic error in calculation.             An arithmetic error occured in a calculation.
+ZeroDivisionError   zero division error in calculation.          A calculation attempted to divide by zero.
+IndexError          array length error.                          One or more arrays has an invalid length (e.g a 
+                                                                 length of zero).
+IndexError          input array length error.                    The input array has an invalid length.
+IndexError          output length error.                         The output array has an invalid length.
+IndexError          array length mismatch.                       Two or more arrays which are expected to be of equal 
+                                                                 length are not.
+OverflowError       arithmetic overflow in calculation.          An arithmetic integer overflow ocurred in a 
+                                                                 calculation. 
+OverflowError       arithmetic overflow in parameter.            The size or range of a non-array parameter was not
+                                                                 compatible with the array parameters.
+TypeError           array and parameter type mismatch.           A non-array parameter data type was not compatible 
+                                                                 with the array parameters.
+TypeError           array type mismatch.                         An array parameter is not compatible with another
+                                                                 array parameter. For most functions, both arrays 
+                                                                 must be of the same type.
+TypeError           unknown array type.                          The array type is unknown.
+TypeError           array.array expected.                        A non-array parameter was found where an array 
+                                                                 parameter was expected. 
+ValueError          operator not valid for this function.        An operator parameter used was not valid for this
+                                                                 function. 
+ValueError          operator not valid for this platform.        The operator used is not supported on this platform.
+TypeError           parameter error.                             An unspecified error occured when parsing the 
+                                                                 parameters.
+TypeError           parameter missing.                           An expected parameter was missing. 
+ValueError          parameter not valid for this operation.      A value is not valid for this operation. E.g.
+                                                                 attempting to perform a factorial on a negative 
+                                                                 number.
+IndexError          selector length error.                       The selector array length is incorrect.
+ValueError          conversion not valid for this type.          The conversion attempted was invalid.
+ValueError          cannot convert float NaN to integer.         Cannot convert NaN (Not A Number) floating point
+                                                                 value in the input array to integer.
+TypeError           output array type invalid.                   The output array type is invalid.
+==================  ===========================================  ======================================================
 
-
-
-
-Exceptions - ACalc
-------------------
-
-ACalc has additional exceptions which are defined here. In addition to these,
-some of the general exceptions also apply.
-
-
-Initialisation
-______________
-
-This are the exceptions which can occurr during class initialisation.
-
-============== ===========================================  =====================================================
-Exception type   Text                                        Description
-============== ===========================================  =====================================================
-TypeError      first parameter must be an array or bytes     The first parameter is of an incorrect type.
-               in ACalc init.
-TypeError      second parameter must be an array or bytes    The second parameter is of an incorrect type.
-               in ACalc init.
-TypeError      unknown array type in ACalc init.             The type of one of the parameters is not recognised.
-TypeError      data array type mismatch error in             The parameters are not of the same array type.
-               ACalc init.
-============== ===========================================  =====================================================
-
-
-Compile
-_______
-
-These are the exceptions which can occur during the compile phase.
-
-================ ====================================  =====================================================
-Exception type     Text                                        Description
-================ ====================================  =====================================================
-ValueError       unknown call name in ACalc compile.   A function call name is not recognised.
-OverflowError    equation constant 'x' is out of       The specified constant is not valid for the array
-                 range for the selected array type     type selected.
-                 in ACalc compile.
-ValueError       Invalid operations in ACalc           The specified operators are invalid.
-                 compile: 'x'.
-ValueError       Unsupported operations in ACalc       The specified operators are not supported on the 
-                 compile: 'x'                          current platform. Some platforms do not support all
-                                                       features.
-ValueError       array name used in additional         The variable which specifies the array element was 
-                 parameters in ACalc compile.          repeated in the additional parameters list.
-ValueError       undefined variables in ACalc          A variable was used in the equation which was not 
-                 compile: 'x'.                         defined in the parameter list.
-ValueError       unused variables in ACalc compile:    A variable was defined in the parameter list but was
-                 'x'.                                  not used in the equation.
-ValueError       duplicate parameter names in          One or more variable names were repeated in the
-                 ACalc compile.                        parameter list.
-ValueError       unbalanced parentheses in ACalc       The left and right parentheses "(", ")", do not match.
-                 compile.
-ValueError       invalid tokens in ACalc compile:      An invalid symbol was present in the equation.
-                 'x'.
-SyntaxError      invalid syntax in equation in         A syntax error was found in the equation.
-                 ACalc compile in position 'x' 'y'.
-ValueError       unsupported element in equation       The equation contains one or more elements which are
-                 in ACalc compile.                     likely valid Python, but are not supported in ACalc.
-ValueError       unsupported function call in          An unsupported function call was made.
-                 equation in ACalc compile.
-SyntaxError      parsing error in ACalc compile:       An unspecified parsing error occured.
-                 'x'
-ValueError       unknown compile error in ACalc        An unspecified compile error occured.
-                 compile.
-ValueError       stack overflow or underflow           The equation was checked before execution, and a
-                 in ACalc compile.                     stack overflow was detected. The equation may be
-                                                       too complex.
-================ ====================================  =====================================================
-
-
-Run Time
-________
-
-These are the exceptions which can occur during the execution phase. All errors 
-except for the arithmetic overflow errors should have been detected during the 
-compile phase. These run-time checks are in addition to the compile checks.
-
-
-================ ====================================  ======================================
-Exception type     Text                                        Description
-================ ====================================  ======================================
-ValueError        ACalc vm stack overflow or            A stack overflow was detected.
-                  underflow.
-ValueError        ACalc vm uknown op code.              An unknown opcde was detected.
-ValueError        ACalc vm variable array overflow.     The variable array index overflowed.
-ValueError        ACalc vm operator is invalid for      An operator used was invalid for the
-                  array type.                           array type.
-================ ====================================  ======================================
 
 
 ---------------------------------------------------------------------
@@ -1521,8 +3075,8 @@ SIMD instructions.
 SIMD Support Attributes
 -----------------------
 
-There is a module which can be used to detect if ArrayFunc is compiled with 
-SIMD support and if the current hardware supports the required SIMD level.
+There is an attribute which can be tested to detect if ArrayFunc is compiled 
+with SIMD support and if the current hardware supports the required SIMD level.
 
 arrayfunc.simdsupport.hassimd
 
@@ -1543,9 +3097,9 @@ Performance
 The purpose of the Arrayfunc module is to execute common operations faster than
 native Python. The relative speed will depend upon a number of factors:
 
-* The function or opcode.
+* The function.
 * The data type of the array.
-* Function options. Turning overflow checking off will result in faster performance.
+* Function options. Turning checking off will result in faster performance.
 * The data in the arrays and the parameters. 
 * The size of the array.
 
@@ -1553,7 +3107,7 @@ The speeds listed below should be used as rough guidelines only. More exact
 results will require application specific testing. The numbers shown are the
 execution time of each function relative to native Python. For example, a value 
 of '50' means that the corresponding Arrayfunc operation ran 50 times faster 
-than the closest native Python equivalent. Overflow checking was on in all 
+than the closest native Python equivalent. Error checking was on in all 
 tests.
 
 Both relative performance (the speed-up as compared to Python) and absolute
@@ -1571,169 +3125,82 @@ means that the benchmark results should be taken as general guidelines rather
 than precise comparisons. 
 
 
-Amap
-----
+Arithmetical Functions
+----------------------
 
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-      function     b     B     h     H     i     I     l     L     q     Q     f     d
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        af_add   162   146   150   145   155   122    96    77   102    69   137    88
-        af_div    77    64    77    78    71    67    78    66    80    65   180   200
-      af_div_r    66    77    72    79    80    74    79    74    81    71   138   116
-   af_floordiv    37    35    25    40    35    30    37    29    38    29   107    83
- af_floordiv_r    27    39    29    38    38    32    39    31    37    32    76    80
-        af_mod    28    38    25    41    39    30    36    29    38    28    51    47
-      af_mod_r    36    31    37    36    35    28    36    28    37    28    33    32
-       af_mult   109   139   103   154    95    97    82    68    84    67   112   102
-        af_neg   166         161         147         105         115         103    85
-        af_pow    55    63    56    52    38    33    20    19    21    18    18    18
-      af_pow_r    49    53    46    47    35    31    20    18    20    18   2.7   4.4
-        af_sub   163   153   159   149   161   116    94    82   109    83   119   106
-      af_sub_r   151   139   152   152   145   121   100    82   111    88   126   106
-        af_and   190   220   161   255   240   134   135    87   120   100            
-         af_or   222   192   177   174   221   198   123    90   114    83            
-        af_xor   217   248   292   212   203   190   117    93   137   109            
-     af_invert   326   222   277   285   232   159   150   116   185   155            
-         af_eq   155   174   172   169   138   119   109    88   120    85   160   126
-         af_gt   176   194   135   141   147   119   107    82   102    80   236   150
-        af_gte   173   152   162   171   131   117   104    81   110    84   223   163
-         af_lt   182   167   138   133   160   112   116    75   106    90   217   154
-        af_lte   164   159   178   151   146   132   108    89    93    76   225   156
-         af_ne   226   222   148   129   154   118   115    80   153    77   206   163
-     af_lshift   178   170   211   224   172   150   114    95   140   103            
-   af_lshift_r   165   169   183   259   157   152   122   104   136   122            
-     af_rshift   168   265   190   262   242   153   153   119   137   104            
-   af_rshift_r   208   258   177   245   231   190   122    90   113   101            
-        af_abs   114         114         128         103          97         264   125
-     math_acos                                                                16    14
-    math_acosh                                                               8.2   7.3
-     math_asin                                                                18    16
-    math_asinh                                                               7.8   8.0
-     math_atan                                                                16    15
-    math_atan2                                                                11    10
-  math_atan2_r                                                                13   8.5
-    math_atanh                                                               8.2   9.6
-     math_ceil                                                               113   103
- math_copysign                                                               248   196
-      math_cos                                                                24    11
-     math_cosh                                                                12   9.6
-  math_degrees                                                               179   125
-      math_erf                                                                17    16
-     math_erfc                                                               9.6   8.7
-      math_exp                                                                18    11
-    math_expm1                                                               8.1   8.5
-     math_fabs                                                               221   140
-math_factorial    80    81    71    71    87    66    70    58    87    80            
-    math_floor                                                               134   108
-     math_fmod                                                                15    14
-   math_fmod_r                                                                52    52
-    math_gamma                                                               1.5   1.7
-    math_hypot                                                                30    19
-  math_hypot_r                                                                30    18
-    math_isinf                                                               115   107
-    math_isnan                                                               263   157
-    math_ldexp                                                                61    61
-   math_lgamma                                                               9.0   7.2
-      math_log                                                                18    13
-    math_log10                                                                12   8.9
-    math_log1p                                                               8.9    10
-     math_log2                                                                15    14
-      math_pow                                                                30    34
-    math_pow_r                                                               4.6   7.4
-  math_radians                                                               168   133
-      math_sin                                                                21    11
-     math_sinh                                                               6.6   6.4
-     math_sqrt                                                                80    56
-      math_tan                                                               8.0   7.5
-     math_tanh                                                               6.9   7.0
-    math_trunc                                                                86    78
- aops_subst_gt   198   194   234   172   169   142   123    98   119    97   181   159
-aops_subst_gte   198   211   209   177   165   177   130   107   138   103   195   134
- aops_subst_lt   203   242   179   203   206   176   132   105   128   113   269   137
-aops_subst_lte   200   237   184   175   192   171   132   100   141    99   203   135
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+ function   b     B     h     H     i     I     l     L     q     Q     f     d  
+========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
+       add  113   151    90   150    97   130    68    63    70    54   156    73
+   truediv   95    91    91    88    85    79    82    74    78    73   191   106
+  floordiv   53    48    52    50    45    45    42    44    42    40    90    84
+       mod   33    41    31    43    42    37    44    30    42    31    46    51
+       mul   19    41    19    28    11    15   6.9   9.2   6.9   9.0   156    69
+       neg  160         180         162         103         101         144    83
+       pow   63    66    56    57    52    45    28    26    28    25    24    20
+       sub  101   202   110   195    97   140    68    58    76    65   155    81
+     and\_  293   332   316   318   263   235    78    69    80    64            
+      or\_  230   232   243   225   210   205    89    70    84    68            
+       xor  305   325   323   325   271   217    74    71    67    59            
+    invert  384   281   400   319   337   269   249   205   220   256            
+        eq  125   112   122   121   124   129   124   121    88   116   131   106
+        gt  144   152    97   111   171   153    97   109   109    96   142   109
+        ge  201   209   136   158   181   178    92    99    92   143   140   104
+        lt  155   142   140   126   147   141    99   113   138    85   168   109
+        le  226   203   166   102   196   183   144   125   110   118   145   117
+        ne  196   201   170   107   192   186   108   100   117   107   134   107
+    lshift  235   304   226   290   209   239    88    66    90    72            
+    rshift  253   242   255   234   304   189    84    73    84    71            
+     abs\_  144         140         119         100          97         166   122
+      acos                                                               16    14
+     acosh                                                              7.8   7.3
+      asin                                                               17    15
+     asinh                                                              8.0   8.2
+      atan                                                               15    15
+     atan2                                                               13    11
+     atanh                                                              8.4   9.1
+      ceil                                                              127   110
+  copysign                                                              285   119
+       cos                                                               21    10
+      cosh                                                               12   9.6
+   degrees                                                              189   128
+       erf                                                               16    15
+      erfc                                                              9.7   8.3
+       exp                                                               17    11
+     expm1                                                              8.3   8.2
+      fabs                                                              222   155
+ factorial   75    92    93    88    84    77    89    74    95    80            
+     floor                                                              121   104
+      fmod                                                               12    14
+     gamma                                                              1.3   1.5
+     hypot                                                               33    22
+     isinf                                                              144   127
+     isnan                                                              179   155
+     ldexp                                                               32    34
+    lgamma                                                              8.8   6.8
+       log                                                               16    12
+     log10                                                               11   8.7
+     log1p                                                              9.0    11
+      log2                                                               14    12
+   radians                                                              181   139
+       sin                                                               22    11
+      sinh                                                              6.2   5.9
+      sqrt                                                               31    27
+       tan                                                              8.4   6.8
+      tanh                                                              6.8   7.4
+     trunc                                                               94    77
+========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
 Average:    108
-Maximum:    326
-Minimum:    1.5
+Maximum:    400
+Minimum:    1.3
 Array size: 100000
 =========== ========
 
-
-
-ACalc
------
-
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-      function     b     B     h     H     i     I     l     L     q     Q     f     d
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-           add    22    21    22    23    24    18    22    17    24    19    28    28
-           sub    23    23    22    24    25    19    22    18    23    18    29    27
-          mult    11    14   8.0    13   5.3   7.1   3.2   4.5   3.2   4.5    29    28
-           div    40    40    32    37    39    35    38    27    39    26    57    52
-      floordiv    20    19    20    19    21    16    13    12    16    12    43    43
-           mod    18    19    14    19    19    16    18    12    20    12    22    21
-          uadd    61    48    58    57    56    45    49    37    51    39    35    35
-          usub    36          34          34          32          34          34    32
-           pow    37    33    32    32    27    24    17    15    17    15    14    13
-        bitand    35    30    31    30    33    26    31    26    34    26            
-         bitor    33    31    32    30    32    25    30    25    34    24            
-        bitxor    36    34    35    36    35    25    34    27    36    26            
-        invert    61    52    60    57    62    51    56    47    64    54            
-        lshift    32    31    31    31    33    26    31    28    31    26            
-        rshift    31    30    29    31    32    25    30    25    36    25            
-           abs    37    59    37    66    36    58    35    51    37    54    45    45
-     math_acos                                                                15    15
-    math_acosh                                                               8.7   7.8
-     math_asin                                                                16    15
-    math_asinh                                                               7.9   8.7
-     math_atan                                                                16    15
-    math_atan2                                                                11    10
-    math_atanh                                                               8.7   8.9
-     math_ceil                                                                73    79
- math_copysign                                                                66    60
-      math_cos                                                                20    11
-     math_cosh                                                                12   9.8
-  math_degrees                                                                54    59
-      math_erf                                                                16    16
-     math_erfc                                                               9.6   8.7
-      math_exp                                                                17    11
-    math_expm1                                                               8.4   9.3
-     math_fabs                                                                69    81
-math_factorial    40    43    40    46    42    34    40    38    41    38            
-    math_floor                                                                73    69
-     math_fmod                                                                15    15
-    math_gamma                                                               1.6   1.9
-    math_hypot                                                                24    18
-    math_ldexp                                                                39    39
-   math_lgamma                                                               9.9   7.0
-      math_log                                                                18    13
-    math_log10                                                                11   9.9
-    math_log1p                                                               9.9    11
-     math_log2                                                                14    13
-      math_pow                                                                27    26
-  math_radians                                                                58    59
-      math_sin                                                                19    11
-     math_sinh                                                               6.4   5.5
-     math_sqrt                                                                45    38
-      math_tan                                                               8.8   7.0
-     math_tanh                                                               6.7   7.0
-    math_trunc                                                                56    51
-============== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-
-
-=========== ========
-Stat         Value
-=========== ========
-Average:    29
-Maximum:    81
-Minimum:    1.6
-Array size: 100000
-=========== ========
 
 
 

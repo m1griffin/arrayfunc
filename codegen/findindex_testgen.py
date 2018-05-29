@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -58,11 +58,6 @@ testdata = {
 # Patch in the case for 'I' arrays.
 testdata['I']['skipminoverflow'] = codegen_common.OvflTestSkip
 testdata['I']['skipmaxoverflow'] = codegen_common.OvflTestSkip
-
-
-# This is used to insert code to convert the test data to bytes type. 
-bytesconvertereven = 'self.dataeven = bytes(self.dataeven)'
-bytesconverterodd = 'self.dataodd = bytes(self.dataodd)'
 
 
 # ==============================================================================
@@ -142,8 +137,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		result = arrayfunc.findindex('==', self.dataeven, param)
 		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -154,8 +148,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		result = arrayfunc.findindex('==', self.dataodd, param)
 		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -166,8 +159,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[0] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		result = arrayfunc.findindex('==', self.dataeven, param)
 		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -178,8 +170,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[0] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		result = arrayfunc.findindex('==', self.dataodd, param)
 		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -190,8 +181,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[-1] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		result = arrayfunc.findindex('==', self.dataeven, param)
 		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -202,8 +192,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[-1] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		result = arrayfunc.findindex('==', self.dataodd, param)
 		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -213,8 +202,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataeven, param)
+		result = arrayfunc.findindex('==', self.dataeven, param)
 		expected = self.FindIndex('==', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -224,8 +212,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test eq  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataodd, param)
+		result = arrayfunc.findindex('==', self.dataodd, param)
 		expected = self.FindIndex('==', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -241,8 +228,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		result = arrayfunc.findindex('>', self.dataeven, param)
 		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -253,8 +239,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		result = arrayfunc.findindex('>', self.dataodd, param)
 		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -265,8 +250,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[0] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		result = arrayfunc.findindex('>', self.dataeven, param)
 		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -277,8 +261,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[0] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		result = arrayfunc.findindex('>', self.dataodd, param)
 		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -289,8 +272,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[-1] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		result = arrayfunc.findindex('>', self.dataeven, param)
 		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -301,8 +283,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[-1] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		result = arrayfunc.findindex('>', self.dataodd, param)
 		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -312,8 +293,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataeven, param)
+		result = arrayfunc.findindex('>', self.dataeven, param)
 		expected = self.FindIndex('>', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -323,8 +303,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test gt  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gt, self.dataodd, param)
+		result = arrayfunc.findindex('>', self.dataodd, param)
 		expected = self.FindIndex('>', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -340,8 +319,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -352,8 +330,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -364,8 +341,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -376,8 +352,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -388,8 +363,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[0] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -400,8 +374,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[0] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -412,8 +385,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[0] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -424,8 +396,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[0] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -436,8 +407,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[-1] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -448,8 +418,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataeven[-1] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -460,8 +429,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[-1] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -472,8 +440,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 105%(decimal)s
 		self.dataodd[-1] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -483,8 +450,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -494,8 +460,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test gte  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
 		"""
 		param = 110%(decimal)s
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -511,8 +476,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		result = arrayfunc.findindex('<', self.dataeven, param)
 		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -523,8 +487,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		result = arrayfunc.findindex('<', self.dataodd, param)
 		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -535,8 +498,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[0] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		result = arrayfunc.findindex('<', self.dataeven, param)
 		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -547,8 +509,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[0] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		result = arrayfunc.findindex('<', self.dataodd, param)
 		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -559,8 +520,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[-1] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		result = arrayfunc.findindex('<', self.dataeven, param)
 		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -571,8 +531,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[-1] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		result = arrayfunc.findindex('<', self.dataodd, param)
 		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -582,8 +541,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
 		"""
 		param = 85%(decimal)s
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataeven, param)
+		result = arrayfunc.findindex('<', self.dataeven, param)
 		expected = self.FindIndex('<', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -593,8 +551,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test lt  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
 		"""
 		param = 85%(decimal)s
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_lt, self.dataodd, param)
+		result = arrayfunc.findindex('<', self.dataodd, param)
 		expected = self.FindIndex('<', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -610,8 +567,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -622,8 +578,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -634,8 +589,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -646,8 +600,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -658,8 +611,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[0] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -670,8 +622,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[0] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -682,8 +633,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[0] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -694,8 +644,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[0] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -706,8 +655,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[-1] = param + 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -718,8 +666,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[-1] = param
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -730,8 +677,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[-1] = param + 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -742,8 +688,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[-1] = param
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -753,8 +698,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter not found of even length array %(simdpresent)s SIMD.
 		"""
 		param = 85%(decimal)s
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataeven, param)
+		result = arrayfunc.findindex('>=', self.dataeven, param)
 		expected = self.FindIndex('>=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -764,8 +708,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""Test lte  - Array code %(typelabel)s. - Parameter not found of odd length array %(simdpresent)s SIMD.
 		"""
 		param = 85%(decimal)s
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_gte, self.dataodd, param)
+		result = arrayfunc.findindex('>=', self.dataodd, param)
 		expected = self.FindIndex('>=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -781,8 +724,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[len(self.dataeven) // 2] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		result = arrayfunc.findindex('!=', self.dataeven, param)
 		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -793,8 +735,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[len(self.dataodd) // 2] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		result = arrayfunc.findindex('!=', self.dataodd, param)
 		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -805,8 +746,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[0] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		result = arrayfunc.findindex('!=', self.dataeven, param)
 		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -817,8 +757,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[0] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		result = arrayfunc.findindex('!=', self.dataodd, param)
 		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -829,8 +768,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[-1] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		result = arrayfunc.findindex('!=', self.dataeven, param)
 		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -841,8 +779,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[-1] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		result = arrayfunc.findindex('!=', self.dataodd, param)
 		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -853,8 +790,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataeven[-1] = param - 1
-		%(bytesconvertereven)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataeven, param)
+		result = arrayfunc.findindex('!=', self.dataeven, param)
 		expected = self.FindIndex('!=', self.dataeven, param)
 		self.assertEqual(result, expected)
 
@@ -865,8 +801,7 @@ class findindex_operator_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 90%(decimal)s
 		self.dataodd[-1] = param - 1
-		%(bytesconverterodd)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_ne, self.dataodd, param)
+		result = arrayfunc.findindex('!=', self.dataodd, param)
 		expected = self.FindIndex('!=', self.dataodd, param)
 		self.assertEqual(result, expected)
 
@@ -893,11 +828,6 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""
 		self.data = array.array('%(typecode)s', [100]*100)
 		self.dataempty = array.array('%(typecode)s')
-
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.dataempty = bytes(self.dataempty)
 
 
 		# These are the compare operators to use when testing the findindex function.
@@ -936,7 +866,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test array limits  - Array code %(typelabel)s.
 		"""
 		param = 101%(decimal)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, maxlen=len(self.data)//2)
+		result = arrayfunc.findindex('==', self.data, param, maxlen=len(self.data)//2)
 		expected = self.FindIndex('==', self.data, param, maxlen=len(self.data)//2)
 		self.assertEqual(result, expected)
 
@@ -946,7 +876,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test array limits  - Array code %(typelabel)s.
 		"""
 		param = 101%(decimal)s
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, maxlen=-1)
+		result = arrayfunc.findindex('==', self.data, param, maxlen=-1)
 		expected = self.FindIndex('==', self.data, param, maxlen=-1)
 		self.assertEqual(result, expected)
 
@@ -964,7 +894,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq)
+			result = arrayfunc.findindex('==')
 
 
 	########################################################
@@ -972,7 +902,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when two parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data)
+			result = arrayfunc.findindex('==', self.data)
 
 
 	########################################################
@@ -981,7 +911,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""
 		param = 101%(decimal)s
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, param, 3, maxlen=2, nosimd=True)
+			result = arrayfunc.findindex('==', self.data, param, 3, maxlen=2, nosimd=True)
 
 
 	########################################################
@@ -989,7 +919,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, xx=2)
+			result = arrayfunc.findindex('==', self.data, 100%(decimal)s, xx=2)
 
 
 	########################################################
@@ -997,7 +927,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid maxlen keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, maxlen='x')
+			result = arrayfunc.findindex('==', self.data, 100%(decimal)s, maxlen='x')
 
 
 	########################################################
@@ -1005,7 +935,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid nosimd keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(decimal)s, nosimd='x')
+			result = arrayfunc.findindex('==', self.data, 100%(decimal)s, nosimd='x')
 
 
 	########################################################
@@ -1013,7 +943,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.findindex(-1, self.data, 100%(decimal)s)
+			result = arrayfunc.findindex('!', self.data, 100%(decimal)s)
 
 
 	########################################################
@@ -1021,7 +951,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex('a', self.data, 100%(decimal)s)
+			result = arrayfunc.findindex(62, self.data, 100%(decimal)s)
 
 
 	########################################################
@@ -1029,7 +959,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array input parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, 99, 100%(decimal)s)
+			result = arrayfunc.findindex('==', 99, 100%(decimal)s)
 
 
 	########################################################
@@ -1037,7 +967,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataempty, 100%(decimal)s)
+			result = arrayfunc.findindex('==', self.dataempty, 100%(decimal)s)
 
 
 	########################################################
@@ -1045,7 +975,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 'e')
+			result = arrayfunc.findindex('==', self.data, 'e')
 
 
 	########################################################
@@ -1053,7 +983,7 @@ class findindex_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100%(invaliddecimal)s)
+			result = arrayfunc.findindex('==', self.data, 100%(invaliddecimal)s)
 
 
 '''
@@ -1080,10 +1010,6 @@ class findindex_overflow_%(typelabel)s(unittest.TestCase):
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.dataovfl = bytes(self.dataovfl)
-
 
 
 	########################################################
@@ -1091,7 +1017,7 @@ class findindex_overflow_%(typelabel)s(unittest.TestCase):
 		"""Test parameter overflow min  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataovfl, self.MinVal %(overflowdec)s)
+			result = arrayfunc.findindex('==', self.dataovfl, self.MinVal %(overflowdec)s)
 
 
 	########################################################
@@ -1099,15 +1025,15 @@ class findindex_overflow_%(typelabel)s(unittest.TestCase):
 		"""Test parameter overflow max  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataovfl, self.Maxval %(overflowinc)s)
+			result = arrayfunc.findindex('==', self.dataovfl, self.Maxval %(overflowinc)s)
 
 
 	########################################################
 	def test_overflow_ok(self):
 		"""Test no overflow. These should not overflow  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataovfl, self.MinVal)
-		result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.dataovfl, self.Maxval)
+		result = arrayfunc.findindex('==', self.dataovfl, self.MinVal)
+		result = arrayfunc.findindex('==', self.dataovfl, self.Maxval)
 
 '''
 
@@ -1133,7 +1059,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, float('nan'))
+			result = arrayfunc.findindex('==', self.data, float('nan'))
 
 
 	########################################################
@@ -1141,7 +1067,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, float('inf'))
+			result = arrayfunc.findindex('==', self.data, float('inf'))
 
 
 	########################################################
@@ -1149,7 +1075,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for param of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, float('-inf'))
+			result = arrayfunc.findindex('==', self.data, float('-inf'))
 
 
 	########################################################
@@ -1157,7 +1083,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100.0, maxlen=float('nan'))
+			result = arrayfunc.findindex('==', self.data, 100.0, maxlen=float('nan'))
 
 
 	########################################################
@@ -1165,7 +1091,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100.0, maxlen=float('inf'))
+			result = arrayfunc.findindex('==', self.data, 100.0, maxlen=float('inf'))
 
 
 	########################################################
@@ -1173,7 +1099,7 @@ class findindex_nan_%(typelabel)s(unittest.TestCase):
 		"""Test for lim of -inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.findindex(arrayfunc.aops.af_eq, self.data, 100.0, maxlen=float('-inf'))
+			result = arrayfunc.findindex('==', self.data, 100.0, maxlen=float('-inf'))
 
 
 ##############################################################################
@@ -1194,9 +1120,6 @@ with open('test_findindex.py', 'w') as f:
 		datarec = testdata[funtypes]
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverter'] = ''
-		datarec['bytesconvertereven'] = ''
-		datarec['bytesconverterodd'] = ''
 		if funtypes in codegen_common.floatarrays:
 			datarec['decimal'] = '.0'
 		else:
@@ -1213,21 +1136,6 @@ with open('test_findindex.py', 'w') as f:
 		f.write(op_template % datarec)
 
 
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['decimal'] = ''
-	datarec['bytesconvertereven'] = bytesconvertereven
-	datarec['bytesconverterodd'] = bytesconverterodd
-	# With SIMD.
-	datarec['simdpresent'] = 'with'
-	datarec['nosimd'] = ''
-	f.write(op_template % datarec)
-	# Without SIMD.
-	datarec['simdpresent'] = 'without'
-	datarec['nosimd'] = ', nosimd=True'
-	f.write(op_template % datarec)
 
 	############################################################################
 
@@ -1238,11 +1146,6 @@ with open('test_findindex.py', 'w') as f:
 		datarec['typelabel'] = funtypes
 		f.write(param_template % datarec)
 
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	f.write(param_template % datarec)
 
 	############################################################################
 
@@ -1256,12 +1159,6 @@ with open('test_findindex.py', 'w') as f:
 			f.write(overflow_template % datarec)
 
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	f.write(overflow_template % datarec)
 
 	############################################################################
 

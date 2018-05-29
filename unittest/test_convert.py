@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     22-Jun-2014.
-# Ver:      12-Sep-2017.
+# Ver:      28-May-2018.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@
 """
 
 ##############################################################################
+import sys
+
 import array
 import itertools
 import math
 import operator
 import platform
-import sys
+import copy
 
 import unittest
 
@@ -58,7 +60,7 @@ class guardbands:
 	def __init__(self):
 	
 		# Min value for when the source is a 'd' (double) array.
-		self.source_d_min = {'y' : arrayfunc.arraylimits.bytes_min,
+		self.source_d_min = {
 					'b' : arrayfunc.arraylimits.b_min,
 					'B' : arrayfunc.arraylimits.B_min,
 					'h' : arrayfunc.arraylimits.h_min,
@@ -74,7 +76,7 @@ class guardbands:
 					}
 
 		# Max value for when the source is a 'd' (double) array.
-		self.source_d_max = {'y' : arrayfunc.arraylimits.bytes_max,
+		self.source_d_max = {
 					'b' : arrayfunc.arraylimits.b_max,
 					'B' : arrayfunc.arraylimits.B_max,
 					'h' : arrayfunc.arraylimits.h_max,
@@ -91,7 +93,7 @@ class guardbands:
 
 
 		# Min value for when the source is a 'f' (float) array.
-		self.source_f_min = {'y' : arrayfunc.arraylimits.bytes_min,
+		self.source_f_min = {
 					'b' : arrayfunc.arraylimits.b_min,
 					'B' : arrayfunc.arraylimits.B_min,
 					'h' : arrayfunc.arraylimits.h_min,
@@ -107,7 +109,7 @@ class guardbands:
 					}
 
 		# Max value for when the source is a 'f' (float) array.
-		self.source_f_max = {'y' : arrayfunc.arraylimits.bytes_max,
+		self.source_f_max = {
 					'b' : arrayfunc.arraylimits.b_max,
 					'B' : arrayfunc.arraylimits.B_max,
 					'h' : arrayfunc.arraylimits.h_max,
@@ -180,9 +182,6 @@ class convert_b(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'b' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -239,7 +238,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -248,8 +246,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -261,7 +257,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -270,8 +265,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -283,7 +276,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -292,8 +284,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -305,7 +295,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -314,8 +303,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -327,7 +314,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -337,8 +323,6 @@ class convert_b(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -350,7 +334,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -359,8 +342,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -372,7 +353,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -381,8 +361,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -394,7 +372,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -403,8 +380,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -416,7 +391,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -425,8 +399,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -438,7 +410,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -447,8 +418,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -460,7 +429,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -469,8 +437,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -482,7 +448,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -491,8 +456,6 @@ class convert_b(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -513,9 +476,7 @@ class convert_b(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -526,7 +487,6 @@ class convert_b(unittest.TestCase):
 		"""Test convert in array code  b - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -537,7 +497,6 @@ class convert_b(unittest.TestCase):
 		"""Test convert in array code  b - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -548,7 +507,6 @@ class convert_b(unittest.TestCase):
 		"""Test convert in array code  b - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -559,7 +517,6 @@ class convert_b(unittest.TestCase):
 		"""Test convert in array code  b - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -572,7 +529,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -587,7 +543,6 @@ class convert_b(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -608,11 +563,6 @@ class convert_b(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'b' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -639,9 +589,6 @@ class convert_B(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'B' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -698,7 +645,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -707,8 +653,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -720,7 +664,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -729,8 +672,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -742,7 +683,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -751,8 +691,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -764,7 +702,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -773,8 +710,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -786,7 +721,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -796,8 +730,6 @@ class convert_B(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -809,7 +741,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -818,8 +749,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -831,7 +760,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -840,8 +768,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -853,7 +779,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -862,8 +787,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -875,7 +798,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -884,8 +806,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -897,7 +817,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -906,8 +825,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -919,7 +836,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -928,8 +844,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -941,7 +855,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -950,8 +863,6 @@ class convert_B(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -972,9 +883,7 @@ class convert_B(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -985,7 +894,6 @@ class convert_B(unittest.TestCase):
 		"""Test convert in array code  B - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -996,7 +904,6 @@ class convert_B(unittest.TestCase):
 		"""Test convert in array code  B - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -1007,7 +914,6 @@ class convert_B(unittest.TestCase):
 		"""Test convert in array code  B - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1018,7 +924,6 @@ class convert_B(unittest.TestCase):
 		"""Test convert in array code  B - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1031,7 +936,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1046,7 +950,6 @@ class convert_B(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1067,11 +970,6 @@ class convert_B(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'B' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -1098,9 +996,6 @@ class convert_h(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'h' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -1157,7 +1052,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1166,8 +1060,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1179,7 +1071,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1188,8 +1079,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1201,7 +1090,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1210,8 +1098,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1223,7 +1109,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1232,8 +1117,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1245,7 +1128,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1255,8 +1137,6 @@ class convert_h(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1268,7 +1148,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1277,8 +1156,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1290,7 +1167,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1299,8 +1175,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1312,7 +1186,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1321,8 +1194,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1334,7 +1205,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1343,8 +1213,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1356,7 +1224,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1365,8 +1232,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1378,7 +1243,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -1387,8 +1251,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1400,7 +1262,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -1409,8 +1270,6 @@ class convert_h(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1431,9 +1290,7 @@ class convert_h(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -1444,7 +1301,6 @@ class convert_h(unittest.TestCase):
 		"""Test convert in array code  h - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -1455,7 +1311,6 @@ class convert_h(unittest.TestCase):
 		"""Test convert in array code  h - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -1466,7 +1321,6 @@ class convert_h(unittest.TestCase):
 		"""Test convert in array code  h - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1477,7 +1331,6 @@ class convert_h(unittest.TestCase):
 		"""Test convert in array code  h - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1490,7 +1343,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1505,7 +1357,6 @@ class convert_h(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1526,11 +1377,6 @@ class convert_h(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'h' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -1557,9 +1403,6 @@ class convert_H(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'H' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -1616,7 +1459,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1625,8 +1467,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1638,7 +1478,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1647,8 +1486,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1660,7 +1497,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1669,8 +1505,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1682,7 +1516,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1691,8 +1524,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1704,7 +1535,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1714,8 +1544,6 @@ class convert_H(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1727,7 +1555,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1736,8 +1563,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1749,7 +1574,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1758,8 +1582,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1771,7 +1593,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1780,8 +1601,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1793,7 +1612,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1802,8 +1620,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1815,7 +1631,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1824,8 +1639,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1837,7 +1650,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -1846,8 +1658,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1859,7 +1669,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -1868,8 +1677,6 @@ class convert_H(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -1890,9 +1697,7 @@ class convert_H(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -1903,7 +1708,6 @@ class convert_H(unittest.TestCase):
 		"""Test convert in array code  H - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -1914,7 +1718,6 @@ class convert_H(unittest.TestCase):
 		"""Test convert in array code  H - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -1925,7 +1728,6 @@ class convert_H(unittest.TestCase):
 		"""Test convert in array code  H - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1936,7 +1738,6 @@ class convert_H(unittest.TestCase):
 		"""Test convert in array code  H - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -1949,7 +1750,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1964,7 +1764,6 @@ class convert_H(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -1985,11 +1784,6 @@ class convert_H(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'H' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -2016,9 +1810,6 @@ class convert_i(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'i' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -2075,7 +1866,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2084,8 +1874,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2097,7 +1885,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2106,8 +1893,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2119,7 +1904,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2128,8 +1912,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2141,7 +1923,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2150,8 +1931,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2163,7 +1942,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2173,8 +1951,6 @@ class convert_i(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2186,7 +1962,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2195,8 +1970,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2208,7 +1981,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2217,8 +1989,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2230,7 +2000,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2239,8 +2008,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2252,7 +2019,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2261,8 +2027,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2274,7 +2038,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2283,8 +2046,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2296,7 +2057,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -2305,8 +2065,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2318,7 +2076,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -2327,8 +2084,6 @@ class convert_i(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2349,9 +2104,7 @@ class convert_i(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -2362,7 +2115,6 @@ class convert_i(unittest.TestCase):
 		"""Test convert in array code  i - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -2373,7 +2125,6 @@ class convert_i(unittest.TestCase):
 		"""Test convert in array code  i - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -2384,7 +2135,6 @@ class convert_i(unittest.TestCase):
 		"""Test convert in array code  i - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -2395,7 +2145,6 @@ class convert_i(unittest.TestCase):
 		"""Test convert in array code  i - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -2408,7 +2157,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2423,7 +2171,6 @@ class convert_i(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2444,11 +2191,6 @@ class convert_i(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'i' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -2475,9 +2217,6 @@ class convert_I(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'I' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -2534,7 +2273,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2543,8 +2281,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2556,7 +2292,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2565,8 +2300,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2578,7 +2311,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2587,8 +2319,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2600,7 +2330,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2609,8 +2338,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2622,7 +2349,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2632,8 +2358,6 @@ class convert_I(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2645,7 +2369,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2654,8 +2377,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2667,7 +2388,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2676,8 +2396,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2689,7 +2407,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2698,8 +2415,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2711,7 +2426,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2720,8 +2434,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2733,7 +2445,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2742,8 +2453,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2755,7 +2464,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -2764,8 +2472,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2777,7 +2483,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -2786,8 +2491,6 @@ class convert_I(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -2808,9 +2511,7 @@ class convert_I(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -2821,7 +2522,6 @@ class convert_I(unittest.TestCase):
 		"""Test convert in array code  I - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -2832,7 +2532,6 @@ class convert_I(unittest.TestCase):
 		"""Test convert in array code  I - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -2843,7 +2542,6 @@ class convert_I(unittest.TestCase):
 		"""Test convert in array code  I - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -2854,7 +2552,6 @@ class convert_I(unittest.TestCase):
 		"""Test convert in array code  I - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -2867,7 +2564,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2882,7 +2578,6 @@ class convert_I(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -2903,11 +2598,6 @@ class convert_I(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'I' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -2934,9 +2624,6 @@ class convert_l(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'l' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -2993,7 +2680,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3002,8 +2688,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3015,7 +2699,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3024,8 +2707,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3037,7 +2718,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3046,8 +2726,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3059,7 +2737,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3068,8 +2745,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3081,7 +2756,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3091,8 +2765,6 @@ class convert_l(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3104,7 +2776,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3113,8 +2784,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3126,7 +2795,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3135,8 +2803,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3148,7 +2814,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3157,8 +2822,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3170,7 +2833,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3179,8 +2841,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3192,7 +2852,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3201,8 +2860,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3214,7 +2871,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -3223,8 +2879,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3236,7 +2890,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -3245,8 +2898,6 @@ class convert_l(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3267,9 +2918,7 @@ class convert_l(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -3280,7 +2929,6 @@ class convert_l(unittest.TestCase):
 		"""Test convert in array code  l - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -3291,7 +2939,6 @@ class convert_l(unittest.TestCase):
 		"""Test convert in array code  l - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -3302,7 +2949,6 @@ class convert_l(unittest.TestCase):
 		"""Test convert in array code  l - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -3313,7 +2959,6 @@ class convert_l(unittest.TestCase):
 		"""Test convert in array code  l - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -3326,7 +2971,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3341,7 +2985,6 @@ class convert_l(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3362,11 +3005,6 @@ class convert_l(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'l' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -3393,9 +3031,6 @@ class convert_L(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'L' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -3452,7 +3087,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3461,8 +3095,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3474,7 +3106,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3483,8 +3114,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3496,7 +3125,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3505,8 +3133,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3518,7 +3144,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3527,8 +3152,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3540,7 +3163,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3550,8 +3172,6 @@ class convert_L(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3563,7 +3183,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3572,8 +3191,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3585,7 +3202,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3594,8 +3210,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3607,7 +3221,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3616,8 +3229,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3629,7 +3240,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3638,8 +3248,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3651,7 +3259,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3660,8 +3267,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3673,7 +3278,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -3682,8 +3286,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3695,7 +3297,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -3704,8 +3305,6 @@ class convert_L(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3726,9 +3325,7 @@ class convert_L(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -3739,7 +3336,6 @@ class convert_L(unittest.TestCase):
 		"""Test convert in array code  L - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -3750,7 +3346,6 @@ class convert_L(unittest.TestCase):
 		"""Test convert in array code  L - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -3761,7 +3356,6 @@ class convert_L(unittest.TestCase):
 		"""Test convert in array code  L - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -3772,7 +3366,6 @@ class convert_L(unittest.TestCase):
 		"""Test convert in array code  L - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -3785,7 +3378,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3800,7 +3392,6 @@ class convert_L(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3821,11 +3412,6 @@ class convert_L(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'L' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -3852,9 +3438,6 @@ class convert_q(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'q' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -3911,7 +3494,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3920,8 +3502,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3933,7 +3513,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3942,8 +3521,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3955,7 +3532,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3964,8 +3540,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3977,7 +3551,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -3986,8 +3559,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -3999,7 +3570,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4009,8 +3579,6 @@ class convert_q(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4022,7 +3590,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4031,8 +3598,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4044,7 +3609,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4053,8 +3617,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4066,7 +3628,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4075,8 +3636,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4088,7 +3647,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4097,8 +3655,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4110,7 +3666,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4119,8 +3674,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4132,7 +3685,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -4141,8 +3693,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4154,7 +3704,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -4163,8 +3712,6 @@ class convert_q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4185,9 +3732,7 @@ class convert_q(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -4198,7 +3743,6 @@ class convert_q(unittest.TestCase):
 		"""Test convert in array code  q - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -4209,7 +3753,6 @@ class convert_q(unittest.TestCase):
 		"""Test convert in array code  q - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -4220,7 +3763,6 @@ class convert_q(unittest.TestCase):
 		"""Test convert in array code  q - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -4231,7 +3773,6 @@ class convert_q(unittest.TestCase):
 		"""Test convert in array code  q - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -4244,7 +3785,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4259,7 +3799,6 @@ class convert_q(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4280,11 +3819,6 @@ class convert_q(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'q' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -4311,9 +3845,6 @@ class convert_Q(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'Q' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -4370,7 +3901,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4379,8 +3909,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4392,7 +3920,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4401,8 +3928,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4414,7 +3939,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4423,8 +3947,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4436,7 +3958,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4445,8 +3966,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4458,7 +3977,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4468,8 +3986,6 @@ class convert_Q(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4481,7 +3997,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4490,8 +4005,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4503,7 +4016,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4512,8 +4024,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4525,7 +4035,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4534,8 +4043,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4547,7 +4054,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4556,8 +4062,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4569,7 +4073,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4578,8 +4081,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4591,7 +4092,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -4600,8 +4100,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4613,7 +4111,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -4622,8 +4119,6 @@ class convert_Q(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4644,9 +4139,7 @@ class convert_Q(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -4657,7 +4150,6 @@ class convert_Q(unittest.TestCase):
 		"""Test convert in array code  Q - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -4668,7 +4160,6 @@ class convert_Q(unittest.TestCase):
 		"""Test convert in array code  Q - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -4679,7 +4170,6 @@ class convert_Q(unittest.TestCase):
 		"""Test convert in array code  Q - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -4690,7 +4180,6 @@ class convert_Q(unittest.TestCase):
 		"""Test convert in array code  Q - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -4703,7 +4192,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4718,7 +4206,6 @@ class convert_Q(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4739,11 +4226,6 @@ class convert_Q(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'Q' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -4770,9 +4252,6 @@ class convert_f(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'f' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -4829,7 +4308,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4838,8 +4316,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4851,7 +4327,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4860,8 +4335,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4873,7 +4346,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4882,8 +4354,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4895,7 +4365,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4904,8 +4373,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4917,7 +4384,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4927,8 +4393,6 @@ class convert_f(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4940,7 +4404,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4949,8 +4412,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4962,7 +4423,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4971,8 +4431,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -4984,7 +4442,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -4993,8 +4450,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5006,7 +4461,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5015,8 +4469,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5028,7 +4480,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5037,8 +4488,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5050,7 +4499,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -5059,8 +4507,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5072,7 +4518,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -5081,8 +4526,6 @@ class convert_f(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5103,9 +4546,7 @@ class convert_f(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -5116,7 +4557,6 @@ class convert_f(unittest.TestCase):
 		"""Test convert in array code  f - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -5127,7 +4567,6 @@ class convert_f(unittest.TestCase):
 		"""Test convert in array code  f - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -5138,7 +4577,6 @@ class convert_f(unittest.TestCase):
 		"""Test convert in array code  f - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -5149,7 +4587,6 @@ class convert_f(unittest.TestCase):
 		"""Test convert in array code  f - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -5162,7 +4599,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5177,7 +4613,6 @@ class convert_f(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5198,11 +4633,6 @@ class convert_f(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'f' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -5229,9 +4659,6 @@ class convert_d(unittest.TestCase):
 		self.FloatTypes = set(['d', 'f'])
 
 
-		# For bytes types, we need a non-array data type.
-		if 'd' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
 
 		# The maximum values for selected array types.
 		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
@@ -5288,7 +4715,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5297,8 +4723,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5310,7 +4734,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'B'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5319,8 +4742,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5332,7 +4753,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'h'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5341,8 +4761,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5354,7 +4772,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'H'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5363,8 +4780,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5376,7 +4791,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'i'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5386,8 +4800,6 @@ class convert_d(unittest.TestCase):
 			for dataitem, dataoutitem in zip(data, dataout):
 				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5399,7 +4811,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'I'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5408,8 +4819,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5421,7 +4830,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5430,8 +4838,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5443,7 +4849,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'L'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5452,8 +4857,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5465,7 +4868,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5474,8 +4876,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5487,7 +4887,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'Q'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5496,8 +4895,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5509,7 +4906,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'f'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -5518,8 +4914,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5531,7 +4925,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'd'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
 
@@ -5540,8 +4933,6 @@ class convert_d(unittest.TestCase):
 		if set([self.TypeCode, outputtest]) & self.FloatTypes:
 			for dataitem, dataoutitem in zip(data, dataout):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
 		else:
 			self.assertEqual(dataout, data)
 
@@ -5562,9 +4953,7 @@ class convert_d(unittest.TestCase):
 		"""
 		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		
 
 		with self.assertRaises(IndexError):
 			arrayfunc.convert(data, dataout)
@@ -5575,7 +4964,6 @@ class convert_d(unittest.TestCase):
 		"""Test convert in array code  d - Invalid input array data type.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(99, dataout)
@@ -5586,7 +4974,6 @@ class convert_d(unittest.TestCase):
 		"""Test convert in array code  d - Invalid output array data type.
 		"""
 		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert(data, 99)
@@ -5597,7 +4984,6 @@ class convert_d(unittest.TestCase):
 		"""Test convert in array code  d - All parameters missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -5608,7 +4994,6 @@ class convert_d(unittest.TestCase):
 		"""Test convert in array code  d - Second parameter missing.
 		"""
 		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		
 
 		with self.assertRaises(TypeError):
 			arrayfunc.convert()
@@ -5621,7 +5006,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'b'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5636,7 +5020,6 @@ class convert_d(unittest.TestCase):
 		outputtest = 'l'
 		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
 		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		
 
 		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
 
@@ -5657,470 +5040,6 @@ class convert_d(unittest.TestCase):
 			# This data should be unchanged.
 			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
 				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'd' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
-		else:
-			# This data should be converted.
-			self.assertEqual(dataout[:limlen], data[:limlen])
-			# This data should be unchanged.
-			self.assertEqual(originalout, dataout[limlen:])
-
-
-##############################################################################
-
-##############################################################################
-class convert_bytes(unittest.TestCase):
-	"""Test for basic convert function.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.TypeCode = 'B'
-
-		self.zerodata = array.array(self.TypeCode, [])
-
-		# This is used to test if array codes are floating point.
-		self.FloatTypes = set(['d', 'f'])
-
-
-		# For bytes types, we need a non-array data type.
-		if 'bytes' == 'bytes':
-			self.zerodata = bytes(self.zerodata)
-
-		# The maximum values for selected array types.
-		self.TestLimMax = {'b' : arrayfunc.arraylimits.b_max, 'B' : arrayfunc.arraylimits.B_max, 
-					'h' : arrayfunc.arraylimits.h_max, 'H' : arrayfunc.arraylimits.H_max, 
-					'i' : arrayfunc.arraylimits.i_max, 'I' : arrayfunc.arraylimits.I_max, 
-					'l' : arrayfunc.arraylimits.l_max, 'L' : arrayfunc.arraylimits.L_max, 
-					'f' : arrayfunc.arraylimits.f_max, 
-					'd' : arrayfunc.arraylimits.d_max}
-
-		self.TestLimMin = {'b' : arrayfunc.arraylimits.b_min, 'B' : arrayfunc.arraylimits.B_min, 
-					'h' : arrayfunc.arraylimits.h_min, 'H' : arrayfunc.arraylimits.H_min, 
-					'i' : arrayfunc.arraylimits.i_min, 'I' : arrayfunc.arraylimits.I_min, 
-					'l' : arrayfunc.arraylimits.l_min, 'L' : arrayfunc.arraylimits.L_min, 
-					'f' : arrayfunc.arraylimits.f_min, 
-					'd' : arrayfunc.arraylimits.d_min}
-
-		# Add 'Q' arrays if this is supported on this platform.
-		if 'Q' in array.typecodes:
-			self.TestLimMax['q'] = arrayfunc.arraylimits.q_max
-			self.TestLimMax['Q'] = arrayfunc.arraylimits.Q_max
-			self.TestLimMin['q'] = arrayfunc.arraylimits.q_min
-			self.TestLimMin['Q'] = arrayfunc.arraylimits.Q_min
-
-
-	########################################################
-	def TestLimits(self, datacode, dataoutcode):
-		"""Find a set of test values which are compatible with both input and output arrays.
-		"""
-		if (datacode in ('f', 'd')) and (dataoutcode not in ('f', 'd')):
-			dataoutmax = arrayguardbands.arrayguardbands(datacode, dataoutcode, 'max')
-			dataoutmin = arrayguardbands.arrayguardbands(datacode, dataoutcode, 'min')
-		else:
-			dataoutmax = self.TestLimMax[dataoutcode]
-			dataoutmin = self.TestLimMin[dataoutcode]
-
-		datamax = self.TestLimMax[datacode]
-		datamin = self.TestLimMin[datacode]
-		
-		maxval = datamax if datamax < dataoutmax else dataoutmax
-		minval = datamin if datamin > dataoutmin else dataoutmin
-
-		spread = int(maxval) - int(minval)
-		step = spread // 512
-		if step < 1:
-			step = 1
-
-		return int(minval), int(maxval), int(step)
-
-
-	########################################################
-	def test_convert_01(self):
-		"""Test convert in array code  bytes - Convert to array code b.
-		"""
-		outputtest = 'b'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_02(self):
-		"""Test convert in array code  bytes - Convert to array code B.
-		"""
-		outputtest = 'B'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_03(self):
-		"""Test convert in array code  bytes - Convert to array code h.
-		"""
-		outputtest = 'h'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_04(self):
-		"""Test convert in array code  bytes - Convert to array code H.
-		"""
-		outputtest = 'H'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_05(self):
-		"""Test convert in array code  bytes - Convert to array code i.
-		"""
-		outputtest = 'i'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				deltaval = min((abs(dataitem), abs(dataoutitem))) / 100.0
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=deltaval)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_06(self):
-		"""Test convert in array code  bytes - Convert to array code I.
-		"""
-		outputtest = 'I'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_07(self):
-		"""Test convert in array code  bytes - Convert to array code l.
-		"""
-		outputtest = 'l'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_08(self):
-		"""Test convert in array code  bytes - Convert to array code L.
-		"""
-		outputtest = 'L'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_09(self):
-		"""Test convert in array code  bytes - Convert to array code q.
-		"""
-		outputtest = 'q'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_10(self):
-		"""Test convert in array code  bytes - Convert to array code Q.
-		"""
-		outputtest = 'Q'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_11(self):
-		"""Test convert in array code  bytes - Convert to array code f.
-		"""
-		outputtest = 'f'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-	########################################################
-	def test_convert_12(self):
-		"""Test convert in array code  bytes - Convert to array code d.
-		"""
-		outputtest = 'd'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0.0, len(data)))
-
-		arrayfunc.convert(data, dataout)
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			for dataitem, dataoutitem in zip(data, dataout):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			self.assertEqual(list(dataout), list(data))
-		else:
-			self.assertEqual(dataout, data)
-
-
-
-	########################################################
-	def test_convert_13(self):
-		"""Test convert in array code  bytes - Zero length array.
-		"""
-		dataout = array.array(self.TypeCode, itertools.repeat(0, len(self.zerodata)))
-		with self.assertRaises(IndexError):
-			arrayfunc.convert(self.zerodata, dataout)
-
-
-	########################################################
-	def test_convert_14(self):
-		"""Test convert in array code  bytes - Unequal array length.
-		"""
-		minval, maxval, step = self.TestLimits(self.TypeCode, self.TypeCode)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-		dataout = array.array(self.TypeCode, itertools.repeat(0, len(data) // 2))
-		dataout = bytes(dataout)
-
-		with self.assertRaises(IndexError):
-			arrayfunc.convert(data, dataout)
-
-
-	########################################################
-	def test_convert_15(self):
-		"""Test convert in array code  bytes - Invalid input array data type.
-		"""
-		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		dataout = bytes(dataout)
-
-		with self.assertRaises(TypeError):
-			arrayfunc.convert(99, dataout)
-
-
-	########################################################
-	def test_convert_16(self):
-		"""Test convert in array code  bytes - Invalid output array data type.
-		"""
-		data = array.array(self.TypeCode, itertools.repeat(0, 100))
-		data = bytes(data)
-
-		with self.assertRaises(TypeError):
-			arrayfunc.convert(data, 99)
-
-
-	########################################################
-	def test_convert_17(self):
-		"""Test convert in array code  bytes - All parameters missing.
-		"""
-		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		dataout = bytes(dataout)
-
-		with self.assertRaises(TypeError):
-			arrayfunc.convert()
-
-
-	########################################################
-	def test_convert_18(self):
-		"""Test convert in array code  bytes - Second parameter missing.
-		"""
-		dataout = array.array(self.TypeCode, itertools.repeat(0, 100))
-		dataout = bytes(dataout)
-
-		with self.assertRaises(TypeError):
-			arrayfunc.convert()
-
-
-	########################################################
-	def test_convert_19(self):
-		"""Test convert in array code  bytes - Too many parameters.
-		"""
-		outputtest = 'b'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		with self.assertRaises(TypeError):
-			arrayfunc.convert(data, dataout, 2, maxlen=500)
-
-
-	########################################################
-	def test_convert_20(self):
-		"""Test convert in array code  bytes - Test lim parameter.
-		"""
-		outputtest = 'l'
-		minval, maxval, step = self.TestLimits(self.TypeCode, outputtest)
-		data = array.array(self.TypeCode, range(minval, maxval + 1, step))
-		data = bytes(data)
-
-		dataout = array.array(outputtest, itertools.repeat(0, len(data)))
-
-		limlen = len(dataout) // 2
-
-		# Save the second part of the output array. 
-		originalout = dataout[limlen:]
-
-		arrayfunc.convert(data, dataout, maxlen=limlen)
-
-		# The first part of the output should be converted.
-		converted = dataout[:limlen]
-
-		if set([self.TypeCode, outputtest]) & self.FloatTypes:
-			# This data should be converted.
-			for dataitem, dataoutitem in zip(data[:limlen], dataout[:limlen]):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-			# This data should be unchanged.
-			for dataitem, dataoutitem in zip(originalout, dataout[limlen:]):
-				self.assertAlmostEqual(dataoutitem, dataitem, delta=abs(dataitem)/100)
-		elif 'bytes' == 'bytes':
-			# This data should be converted.
-			self.assertEqual(list(dataout[:limlen]), list(data[:limlen]))
-			# This data should be unchanged.
-			self.assertEqual(list(originalout), list(dataout[limlen:]))
 		else:
 			# This data should be converted.
 			self.assertEqual(dataout[:limlen], data[:limlen])
@@ -6511,44 +5430,6 @@ class convert_nan_Q_f(unittest.TestCase):
 ##############################################################################
 
 ##############################################################################
-class convert_nan_bytes_f(unittest.TestCase):
-	"""Test convert function for nan, inf, or -inf.
-	"""
-
-	########################################################
-	def test_convert_nan_f_bytes_01(self):
-		"""Test convert floating point nan to bytes from array code f.
-		"""
-		data = array.array('f', [float('nan')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-	########################################################
-	def test_convert_inf_f_bytes_02(self):
-		"""Test convert floating point inf to bytes from array code f.
-		"""
-		data = array.array('f', [float('inf')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-	########################################################
-	def test_convert_ninf_f_bytes_03(self):
-		"""Test convert floating point -inf to bytes from array code f.
-		"""
-		data = array.array('f', [float('-inf')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-
-##############################################################################
-
-##############################################################################
 class convert_nan_b_d(unittest.TestCase):
 	"""Test convert function for nan, inf, or -inf.
 	"""
@@ -6921,44 +5802,6 @@ class convert_nan_Q_d(unittest.TestCase):
 		"""
 		data = array.array('d', [float('-inf')] * 100)
 		dataout = array.array('Q', itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-
-##############################################################################
-
-##############################################################################
-class convert_nan_bytes_d(unittest.TestCase):
-	"""Test convert function for nan, inf, or -inf.
-	"""
-
-	########################################################
-	def test_convert_nan_d_bytes_01(self):
-		"""Test convert floating point nan to bytes from array code d.
-		"""
-		data = array.array('d', [float('nan')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-	########################################################
-	def test_convert_inf_d_bytes_02(self):
-		"""Test convert floating point inf to bytes from array code d.
-		"""
-		data = array.array('d', [float('inf')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
-
-		with self.assertRaises(OverflowError):
-			arrayfunc.convert(data, dataout)
-
-	########################################################
-	def test_convert_ninf_d_bytes_03(self):
-		"""Test convert floating point -inf to bytes from array code d.
-		"""
-		data = array.array('d', [float('-inf')] * 100)
-		dataout = bytes(itertools.repeat(0, len(data)))
 
 		with self.assertRaises(OverflowError):
 			arrayfunc.convert(data, dataout)

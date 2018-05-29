@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -98,13 +98,6 @@ class count_%(typelabel)s(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.%(maxsteptypecode)s_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(%(initval)s, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -347,13 +340,6 @@ with open('test_count.py', 'w') as f:
 		if funtypes in codegen_common.floatarrays:
 			f.write(op_template_float % testvalues)
 		f.write(endclass)
-
-
-	# Do the tests for bytes.
-	testvalues = {'typecode' : 'B'}
-	testvalues['typelabel'] = 'bytes'
-	testvalues.update(testdata['B'])
-	f.write(op_template % testvalues)
 
 
 	f.write(codegen_common.testendtemplate % 'count')

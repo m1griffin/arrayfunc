@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      12-Sep-2017.
+# Ver:      28-May-2018.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@
 """
 
 ##############################################################################
+import sys
+
 import array
 import itertools
 import math
 import operator
 import platform
-import sys
+import copy
 
 import unittest
 
@@ -68,7 +70,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. General test with SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -78,7 +79,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. General test without SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -88,7 +88,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test increasing values with SIMD.
 		"""
 		data = array.array('b', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -98,7 +97,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test increasing values without SIMD.
 		"""
 		data = array.array('b', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -108,7 +106,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test decreasing values with SIMD.
 		"""
 		data = array.array('b', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -118,7 +115,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test decreasing values without SIMD.
 		"""
 		data = array.array('b', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -128,7 +124,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test finding min for data type with SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -138,7 +133,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test finding min for data type without SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -148,7 +142,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('b', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -158,7 +151,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('b', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -168,7 +160,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -178,7 +169,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -224,7 +214,6 @@ class amin_operator_b(unittest.TestCase):
 		"""Test amin  - Array code b. Test excess parameters.
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -257,7 +246,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. General test with SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -267,7 +255,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. General test without SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -277,7 +264,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test increasing values with SIMD.
 		"""
 		data = array.array('B', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -287,7 +273,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test increasing values without SIMD.
 		"""
 		data = array.array('B', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -297,7 +282,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test decreasing values with SIMD.
 		"""
 		data = array.array('B', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -307,7 +291,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test decreasing values without SIMD.
 		"""
 		data = array.array('B', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -317,7 +300,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test finding min for data type with SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -327,7 +309,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test finding min for data type without SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -337,7 +318,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('B', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -347,7 +327,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('B', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -357,7 +336,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -367,7 +345,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -413,7 +390,6 @@ class amin_operator_B(unittest.TestCase):
 		"""Test amin  - Array code B. Test excess parameters.
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -446,7 +422,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. General test with SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -456,7 +431,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. General test without SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -466,7 +440,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test increasing values with SIMD.
 		"""
 		data = array.array('h', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -476,7 +449,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test increasing values without SIMD.
 		"""
 		data = array.array('h', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -486,7 +458,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test decreasing values with SIMD.
 		"""
 		data = array.array('h', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -496,7 +467,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test decreasing values without SIMD.
 		"""
 		data = array.array('h', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -506,7 +476,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test finding min for data type with SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -516,7 +485,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test finding min for data type without SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -526,7 +494,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('h', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -536,7 +503,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('h', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -546,7 +512,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -556,7 +521,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -602,7 +566,6 @@ class amin_operator_h(unittest.TestCase):
 		"""Test amin  - Array code h. Test excess parameters.
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -635,7 +598,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. General test with SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -645,7 +607,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. General test without SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -655,7 +616,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test increasing values with SIMD.
 		"""
 		data = array.array('H', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -665,7 +625,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test increasing values without SIMD.
 		"""
 		data = array.array('H', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -675,7 +634,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test decreasing values with SIMD.
 		"""
 		data = array.array('H', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -685,7 +643,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test decreasing values without SIMD.
 		"""
 		data = array.array('H', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -695,7 +652,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test finding min for data type with SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -705,7 +661,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test finding min for data type without SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -715,7 +670,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('H', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -725,7 +679,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('H', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -735,7 +688,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -745,7 +697,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -791,7 +742,6 @@ class amin_operator_H(unittest.TestCase):
 		"""Test amin  - Array code H. Test excess parameters.
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -824,7 +774,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. General test with SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -834,7 +783,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. General test without SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -844,7 +792,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test increasing values with SIMD.
 		"""
 		data = array.array('i', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -854,7 +801,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test increasing values without SIMD.
 		"""
 		data = array.array('i', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -864,7 +810,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test decreasing values with SIMD.
 		"""
 		data = array.array('i', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -874,7 +819,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test decreasing values without SIMD.
 		"""
 		data = array.array('i', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -884,7 +828,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test finding min for data type with SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -894,7 +837,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test finding min for data type without SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -904,7 +846,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('i', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -914,7 +855,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('i', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -924,7 +864,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -934,7 +873,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -980,7 +918,6 @@ class amin_operator_i(unittest.TestCase):
 		"""Test amin  - Array code i. Test excess parameters.
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1013,7 +950,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. General test with SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1023,7 +959,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. General test without SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1033,7 +968,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test increasing values with SIMD.
 		"""
 		data = array.array('I', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1043,7 +977,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test increasing values without SIMD.
 		"""
 		data = array.array('I', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1053,7 +986,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test decreasing values with SIMD.
 		"""
 		data = array.array('I', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1063,7 +995,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test decreasing values without SIMD.
 		"""
 		data = array.array('I', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1073,7 +1004,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test finding min for data type with SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1083,7 +1013,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test finding min for data type without SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1093,7 +1022,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('I', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1103,7 +1031,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('I', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1113,7 +1040,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1123,7 +1049,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1169,7 +1094,6 @@ class amin_operator_I(unittest.TestCase):
 		"""Test amin  - Array code I. Test excess parameters.
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1202,7 +1126,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. General test with SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1212,7 +1135,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. General test without SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1222,7 +1144,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test increasing values with SIMD.
 		"""
 		data = array.array('l', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1232,7 +1153,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test increasing values without SIMD.
 		"""
 		data = array.array('l', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1242,7 +1162,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test decreasing values with SIMD.
 		"""
 		data = array.array('l', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1252,7 +1171,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test decreasing values without SIMD.
 		"""
 		data = array.array('l', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1262,7 +1180,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test finding min for data type with SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1272,7 +1189,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test finding min for data type without SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1282,7 +1198,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('l', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1292,7 +1207,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('l', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1302,7 +1216,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1312,7 +1225,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1358,7 +1270,6 @@ class amin_operator_l(unittest.TestCase):
 		"""Test amin  - Array code l. Test excess parameters.
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1391,7 +1302,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. General test with SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1401,7 +1311,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. General test without SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1411,7 +1320,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test increasing values with SIMD.
 		"""
 		data = array.array('L', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1421,7 +1329,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test increasing values without SIMD.
 		"""
 		data = array.array('L', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1431,7 +1338,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test decreasing values with SIMD.
 		"""
 		data = array.array('L', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1441,7 +1347,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test decreasing values without SIMD.
 		"""
 		data = array.array('L', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1451,7 +1356,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test finding min for data type with SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1461,7 +1365,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test finding min for data type without SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1471,7 +1374,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('L', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1481,7 +1383,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('L', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1491,7 +1392,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1501,7 +1401,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1547,7 +1446,6 @@ class amin_operator_L(unittest.TestCase):
 		"""Test amin  - Array code L. Test excess parameters.
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1580,7 +1478,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. General test with SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1590,7 +1487,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. General test without SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1600,7 +1496,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test increasing values with SIMD.
 		"""
 		data = array.array('q', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1610,7 +1505,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test increasing values without SIMD.
 		"""
 		data = array.array('q', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1620,7 +1514,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test decreasing values with SIMD.
 		"""
 		data = array.array('q', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1630,7 +1523,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test decreasing values without SIMD.
 		"""
 		data = array.array('q', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1640,7 +1532,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test finding min for data type with SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1650,7 +1541,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test finding min for data type without SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1660,7 +1550,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1670,7 +1559,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1680,7 +1568,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1690,7 +1577,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1736,7 +1622,6 @@ class amin_operator_q(unittest.TestCase):
 		"""Test amin  - Array code q. Test excess parameters.
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1769,7 +1654,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. General test with SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1779,7 +1663,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. General test without SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1789,7 +1672,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test increasing values with SIMD.
 		"""
 		data = array.array('Q', range(1,100))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1799,7 +1681,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test increasing values without SIMD.
 		"""
 		data = array.array('Q', range(1,100))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1809,7 +1690,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test decreasing values with SIMD.
 		"""
 		data = array.array('Q', range(100,1,-1))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1819,7 +1699,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test decreasing values without SIMD.
 		"""
 		data = array.array('Q', range(100,1,-1))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1829,7 +1708,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test finding min for data type with SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1839,7 +1717,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test finding min for data type without SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1849,7 +1726,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('Q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1859,7 +1735,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('Q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1869,7 +1744,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1879,7 +1753,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -1925,7 +1798,6 @@ class amin_operator_Q(unittest.TestCase):
 		"""Test amin  - Array code Q. Test excess parameters.
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -1958,7 +1830,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. General test with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1968,7 +1839,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. General test without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1978,7 +1848,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test increasing values with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in range(1,100)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -1988,7 +1857,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test increasing values without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in range(1,100)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -1998,7 +1866,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test decreasing values with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in range(100,1,-1)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2008,7 +1875,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test decreasing values without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in range(100,1,-1)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2018,7 +1884,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test finding min for data type with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2028,7 +1893,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test finding min for data type without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2038,7 +1902,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2048,7 +1911,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2058,7 +1920,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -2068,7 +1929,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -2114,7 +1974,6 @@ class amin_operator_f(unittest.TestCase):
 		"""Test amin  - Array code f. Test excess parameters.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 
@@ -2147,7 +2006,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. General test with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2157,7 +2015,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. General test without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2167,7 +2024,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test increasing values with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in range(1,100)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2177,7 +2033,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test increasing values without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in range(1,100)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2187,7 +2042,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test decreasing values with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in range(100,1,-1)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2197,7 +2051,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test decreasing values without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in range(100,1,-1)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2207,7 +2060,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test finding min for data type with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2217,7 +2069,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test finding min for data type without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2227,7 +2078,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		
 		result = arrayfunc.amin(data)
 		self.assertEqual(result, min(data))
 
@@ -2237,7 +2087,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		
 		result = arrayfunc.amin(data, nosimd=True)
 		self.assertEqual(result, min(data))
 
@@ -2247,7 +2096,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, maxlen=5)
 		self.assertEqual(result, min(data[:5]))
 
@@ -2257,7 +2105,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal], range(11,-88,-3))])
-		
 		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, min(data[:5]))
 
@@ -2303,196 +2150,6 @@ class amin_operator_d(unittest.TestCase):
 		"""Test amin  - Array code d. Test excess parameters.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		
-		with self.assertRaises(TypeError):
-			result = arrayfunc.amin(data, 5, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = min(data, 2)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class amin_operator_bytes(unittest.TestCase):
-	"""Test for basic operator function.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.TypeCode = 'B'
-
-		self.MaxVal = arrayfunc.arraylimits.B_max
-		self.MinVal = arrayfunc.arraylimits.B_min
-
-
-	########################################################
-	def test_function_01(self):
-		"""Test amin  - Array code bytes. General test with SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test amin  - Array code bytes. General test without SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data, nosimd=True)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test amin  - Array code bytes. Test increasing values with SIMD.
-		"""
-		data = array.array('B', range(1,100))
-		data = bytes(data)
-		result = arrayfunc.amin(data)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test amin  - Array code bytes. Test increasing values without SIMD.
-		"""
-		data = array.array('B', range(1,100))
-		data = bytes(data)
-		result = arrayfunc.amin(data, nosimd=True)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test amin  - Array code bytes. Test decreasing values with SIMD.
-		"""
-		data = array.array('B', range(100,1,-1))
-		data = bytes(data)
-		result = arrayfunc.amin(data)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test amin  - Array code bytes. Test decreasing values without SIMD.
-		"""
-		data = array.array('B', range(100,1,-1))
-		data = bytes(data)
-		result = arrayfunc.amin(data, nosimd=True)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test amin  - Array code bytes. Test finding min for data type with SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_08(self):
-		"""Test amin  - Array code bytes. Test finding min for data type without SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data, nosimd=True)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_09(self):
-		"""Test amin  - Array code bytes. Test finding value from array that contains min for data type with SIMD.
-		"""
-		data = array.array('B', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		data = bytes(data)
-		result = arrayfunc.amin(data)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test amin  - Array code bytes. Test finding value from array that contains min for data type without SIMD.
-		"""
-		data = array.array('B', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		data = bytes(data)
-		result = arrayfunc.amin(data, nosimd=True)
-		self.assertEqual(result, min(data))
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test amin  - Array code bytes. Test optional lim parameter with SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data, maxlen=5)
-		self.assertEqual(result, min(data[:5]))
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test amin  - Array code bytes. Test optional lim parameter without SIMD.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), [self.MaxVal], range(88,12,-3)))
-		data = bytes(data)
-		result = arrayfunc.amin(data, maxlen=5, nosimd=True)
-		self.assertEqual(result, min(data[:5]))
-
-
-	########################################################
-	def test_function_13(self):
-		"""Test amin  - Array code bytes. Test invalid parameter type with SIMD.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.amin(1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = min(1)
-
-
-	########################################################
-	def test_function_14(self):
-		"""Test amin  - Array code bytes. Test invalid parameter type without SIMD.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.amin(1, nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = min(1)
-
-
-	########################################################
-	def test_function_15(self):
-		"""Test amin  - Array code bytes. Test missing parameter.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.amin()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = min()
-
-
-	########################################################
-	def test_function_16(self):
-		"""Test amin  - Array code bytes. Test excess parameters.
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		data = bytes(data)
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amin(data, 5, 2, 2)
 

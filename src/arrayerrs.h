@@ -41,12 +41,15 @@
 #define ARR_ERR_VALUE_ERR -6
 // The operation requested is not valid for this platform.
 #define ARR_ERR_PLATFORM -7
+// Divide by zero error.
+#define ARR_ERR_ZERODIV -8
 
 /*--------------------------------------------------------------------------- */
 
 // The following functions are used to provide standardized error messages. 
 
 void ErrMsgArithCalc(void);
+void ErrMsgZeroDiv(void);
 void ErrMsgArrayLengthErr(void);
 void ErrMsgArrayLengthMismatch(void);
 void ErrMsgArithOverflowCalc(void);
@@ -54,7 +57,9 @@ void ErrMsgArithOverflowParam(void);
 void ErrMsgArrayAndParamMismatch(void);
 void ErrMsgArrayTypeMismatch(void);
 void ErrMsgUnknownArrayType(void);
-void ErrMsgArrayorBytesExpected(void);
+void ErrMsgTypeExpectFloat(void);
+void ErrMsgTypeExpectInt(void);
+void ErrMsgArrayExpected(void);
 void ErrMsgOperatorNotValidforthisFunction(void);
 void ErrMsgOperatorNotValidforthisPlatform(void);
 void ErrMsgParameterError(void);

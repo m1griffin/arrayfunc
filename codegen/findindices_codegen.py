@@ -94,21 +94,13 @@ ccodedate = '11-May-2014'
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('arrayfunc.csv')
-
-# Filter out the compare operations.
-compops = [x for x in oplist if x['compare_ops'] != '']
-
-# ==============================================================================
-
 # Output the generated code.
 for funtypes in codegen_common.arraycodes:
 	arraytype = codegen_common.arraytypes[funtypes]
 	outputlist.append(template_start % {'arraytype' : arraytype, 
 		'funcmodifier' : arraytype.replace(' ', '_')})
 
-	for ops in compops:
+	for ops in codegen_common.CompOps:
 		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 		testop.update(ops)
 		outputlist.append(op_template % testop)
@@ -122,7 +114,7 @@ codegen_common.OutputSourceCode(filename + '.c', outputlist,
 	maindescription, 
 	codegen_common.PlatformIndependentDescr, 
 	ccodedate, 
-	funcname, [])
+	funcname, ['arrayparams_base', 'arrayops'])
 
 # ==============================================================================
 

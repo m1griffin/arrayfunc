@@ -30,7 +30,7 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
 #include "count_common.h"
@@ -69,7 +69,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 
 
 	struct args_param argtypes = {' ', ' ', 0};
-	struct arrayparamstypes arr1type = {0, 0, ' '};
+	char arr1type;
 
 	/* Import the raw objects. */
 	if (!PyArg_ParseTuple(args, "OO|O:count", &dataobj, &param1obj, &param2obj)) {
@@ -78,13 +78,13 @@ struct args_param parsepyargs_parm(PyObject *args) {
 	}
 
 	// Test if the first parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
+	arr1type = lookuparraycode(dataobj);
+	if (!arr1type) {
 		argtypes.error = 2;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array1type = arr1type.arraycode;
+		argtypes.array1type = arr1type;
 	}
 
 
@@ -93,7 +93,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 
 	// The third parameter is optional, so we have to test if it was set.
 	if (param2obj != NULL) {
-		argtypes.param2type = paramtypecode(param2obj->ob_type->tp_name);
+		argtypes.param2type = paramtypecode(param2obj);
 	} else {
 		argtypes.param2type = 'z';
 	}

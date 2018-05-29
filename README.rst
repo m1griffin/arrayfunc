@@ -23,6 +23,8 @@ ones from other sources.
 The purpose of these functions is to perform mathematical calculations on arrays
 faster than using native Python.
 
+See full documentation at: http://arrayfunc.readthedocs.io/en/latest/
+
 ---------------------------------------------------------------------
 
 Functions

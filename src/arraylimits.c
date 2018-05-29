@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -40,7 +40,27 @@ static PyMethodDef arraylimits_methods[] = {
 
 PyDoc_STRVAR(module_doc,
 "Provide the maximum and minimum platform specific array data value limits. \n\
-These values are provided by the compiler and exposed as module attributes \n");
+These values are provided by the compiler and exposed as module attributes \n\
+The following lists the Python array codes together with the corresponding \n\
+'C' data types. Integer sizes may vary depending upon the compiler  \n\
+implementation. \n\
+-----------  ---------------------- \n\
+Array Code    C Type \n\
+-----------  ---------------------- \n\
+  b            signed char \n\
+  B            unsigned char \n\
+  h            signed short \n\
+  H            unsigned short \n\
+  i            signed int \n\
+  I            unsigned int \n\
+  l            signed long \n\
+  L            unsigned long \n\
+  q            signed long long \n\
+  Q            unsigned long long \n\
+  f            float \n\
+  d            double \n\
+-----------  ---------------------- \n\
+");
 
 static struct PyModuleDef arraylimitsmodule = {
 	PyModuleDef_HEAD_INIT,
@@ -61,9 +81,6 @@ PyMODINIT_FUNC PyInit_arraylimits(void) {
 	m = PyModule_Create(&arraylimitsmodule);
 	if (m == NULL) { goto iserror; }
 
-	// Bytes
-	if (PyModule_AddObject(m, "bytes_min", PyLong_FromUnsignedLong(0)) < 0) { goto iserror; }
-	if (PyModule_AddObject(m, "bytes_max", PyLong_FromUnsignedLong(UCHAR_MAX)) < 0) { goto iserror; }
 
 	// b - signed char
 	if (PyModule_AddObject(m, "b_min", PyLong_FromLong(SCHAR_MIN)) < 0) { goto iserror; }

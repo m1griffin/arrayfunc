@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     05-Jun-2014.
-# Ver:      12-Sep-2017.
+# Ver:      28-May-2018.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@
 """
 
 ##############################################################################
+import sys
+
 import array
 import itertools
 import math
 import operator
 import platform
-import sys
+import copy
 
 import unittest
 
@@ -68,13 +70,6 @@ class count_b(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.b_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'b' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -245,13 +240,6 @@ class count_B(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'B' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -409,13 +397,6 @@ class count_h(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.h_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'h' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -586,13 +567,6 @@ class count_H(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'H' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -750,13 +724,6 @@ class count_i(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.i_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'i' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -927,13 +894,6 @@ class count_I(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'I' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1091,13 +1051,6 @@ class count_l(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.l_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'l' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -1268,13 +1221,6 @@ class count_L(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'L' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1432,13 +1378,6 @@ class count_q(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.q_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'q' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -1609,13 +1548,6 @@ class count_Q(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'Q' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -1773,13 +1705,6 @@ class count_f(unittest.TestCase):
 		# This is the largest step allowed for this array type.
 		self.MaxStep = arrayfunc.arraylimits.f_max
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0.0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'f' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
 
 
 	########################################################
@@ -2014,13 +1939,6 @@ class count_d(unittest.TestCase):
 		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0.0, 6))
 
 
-		# For bytes types, we need a non-array data type.
-		if 'd' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
 	########################################################
 	def PyCount(self, data, start, step):
 		"""This should produce a Python equivalent to count for unit testing.
@@ -2227,168 +2145,6 @@ class count_d(unittest.TestCase):
 
 
 ##############################################################################
-
-
-
-##############################################################################
-class count_bytes(unittest.TestCase):
-	"""Test for basic count function.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.TypeCode = 'B'
-
-		self.data = array.array(self.TypeCode, itertools.repeat(0, 512))
-
-		self.MaxVal = arrayfunc.arraylimits.B_max
-		self.MinVal = arrayfunc.arraylimits.B_min
-
-		self.zerodata = array.array(self.TypeCode, [])
-
-		# This is the largest step allowed for this array type.
-		self.MaxStep = arrayfunc.arraylimits.b_max
-		self.MaxStepData = array.array(self.TypeCode, itertools.repeat(0, 6))
-
-
-		# For bytes types, we need a non-array data type.
-		if 'bytes' == 'bytes':
-			self.data = bytes(self.data)
-			self.zerodata = bytes(self.zerodata)
-			self.MaxStepData = bytes(self.MaxStepData)
-
-
-	########################################################
-	def PyCount(self, data, start, step):
-		"""This should produce a Python equivalent to count for unit testing.
-		"""
-		seq = []
-
-		val = start
-
-		for x in range(len(data)):
-			seq.append(val)
-			val = val + step
-			if (step >= 0) and (val > self.MaxVal):
-				val = (val - (self.MaxVal + 1)) + self.MinVal
-			elif (step < 0) and (val < self.MinVal):
-				val = (val - (self.MinVal - 1)) + self.MaxVal
-
-		return seq
-
-
-	########################################################
-	def test_count_01(self):
-		"""Test count in array code  bytes - start from 0, count up by one, and proceed to end without limit.
-		"""
-		arrayfunc.count(self.data, 0)
-		self.assertEqual(list(self.data), self.PyCount(self.data, 0, 1))
-
-
-	########################################################
-	def test_count_02(self):
-		"""Test count in array code  bytes - start from 10, count up by one, and proceed to end without limit.
-		"""
-		arrayfunc.count(self.data, 10)
-		self.assertEqual(list(self.data), self.PyCount(self.data, 10, 1))
-
-
-	########################################################
-	def test_count_03(self):
-		"""Test count in array code  bytes - start from 0, count up by 7, and proceed to end without limit.
-		"""
-		arrayfunc.count(self.data, 0, 7)
-		self.assertEqual(list(self.data), self.PyCount(self.data, 0, 7))
-
-
-	########################################################
-	def test_count_04(self):
-		"""Test count in array code  bytes - start from 10, count up by 7, and proceed to end without limit.
-		"""
-		arrayfunc.count(self.data, 10, 7)
-		self.assertEqual(list(self.data), self.PyCount(self.data, 10, 7))
-
-
-	########################################################
-	def test_count_05(self):
-		"""Test count in array code  bytes - Zero length array.
-		"""
-		with self.assertRaises(IndexError):
-			arrayfunc.count(self.zerodata, 0)
-
-
-	########################################################
-	def test_count_06(self):
-		"""Test count in array code  bytes - Missing start parameter.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.count(self.data)
-
-
-	########################################################
-	def test_count_07(self):
-		"""Test count in array code  bytes - Too many parameters.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.count(self.data, 0, 1, 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.count(10, 12, 20)
-
-
-	########################################################
-	def test_count_08(self):
-		"""Test count in array code  bytes - Invalid param type for array.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.count(1, 0, 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.count('a')
-
-	########################################################
-	def test_count_09(self):
-		"""Test count in array code  bytes - Invalid param type for start.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.count(self.data, 'a', 1)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = itertools.count('a')
-
-
-	########################################################
-	def test_count_10(self):
-		"""Test count in array code  bytes - Invalid param type for step.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.count(self.data, 0, 'a')
-
-
-	########################################################
-	def test_count_11(self):
-		"""Test count in array code  bytes - Step is maximum size.
-		"""
-		# We use a smaller array because we expect an overflow near the beginning.
-		arrayfunc.count(self.MaxStepData, 0, self.MaxStep)
-		# Float overflow behaviour seems to be unclear, so we test for it differently.
-		if 'B' in ('f', 'd'):
-			self.assertTrue(float('inf') in self.MaxStepData)
-		else:
-			self.assertEqual(list(self.MaxStepData), self.PyCount(self.MaxStepData, 0, self.MaxStep))
-
-
-	########################################################
-	def test_count_12(self):
-		"""Test count in array code  bytes - start from 10, down by one, and proceed to end without limit.
-		"""
-		arrayfunc.count(self.data, 10, -1)
-		self.assertEqual(list(self.data), self.PyCount(self.data, 10, -1))
 
 
 

@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -103,93 +103,87 @@ class afilter_operator_%(typelabel)s(unittest.TestCase):
 		self.dataout = array.array('%(typecode)s', [%(typeconvert)s(0)]*self.ArrayLength)
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.data2 = bytes(self.data2)
-			self.dataout = bytes(self.dataout)
-
 
 	########################################################
 	def test_operator_01_eq(self):
 		"""Test eq  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(eq_true1)s)
+		result = arrayfunc.afilter('==', self.data, self.dataout, %(eq_true1)s)
 		expected = [x for x in self.data if x == %(eq_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:2], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(eq_false1)s)
+		result = arrayfunc.afilter('==', self.data, self.dataout, %(eq_false1)s)
 		self.assertEqual(result, 0)
 
 	########################################################
 	def test_operator_02_gt(self):
 		"""Test gt  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gt, self.data, self.dataout, %(gt_true1)s)
+		result = arrayfunc.afilter('>', self.data, self.dataout, %(gt_true1)s)
 		expected = [x for x in self.data if x > %(gt_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:5], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_gt, self.data, self.dataout, %(gt_false1)s)
+		result = arrayfunc.afilter('>', self.data, self.dataout, %(gt_false1)s)
 		self.assertEqual(result, 0)
 
 	########################################################
 	def test_operator_03_gte(self):
 		"""Test gte  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data, self.dataout, %(gt_true1)s)
+		result = arrayfunc.afilter('>=', self.data, self.dataout, %(gt_true1)s)
 		expected = [x for x in self.data if x >= %(gt_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:5], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data, self.dataout, %(gte_true2)s)
+		result = arrayfunc.afilter('>=', self.data, self.dataout, %(gte_true2)s)
 		expected = [x for x in self.data if x >= %(gte_true2)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:5], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data, self.dataout, %(gte_false1)s)
+		result = arrayfunc.afilter('>=', self.data, self.dataout, %(gte_false1)s)
 		self.assertEqual(result, 0)
 
 	########################################################
 	def test_operator_04_lt(self):
 		"""Test lt  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lt, self.data, self.dataout, %(lt_true1)s)
+		result = arrayfunc.afilter('<', self.data, self.dataout, %(lt_true1)s)
 		expected = [x for x in self.data if x < %(lt_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:7], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_lt, self.data, self.dataout, %(lt_false1)s)
+		result = arrayfunc.afilter('<', self.data, self.dataout, %(lt_false1)s)
 		self.assertEqual(result, 0)
 
 	########################################################
 	def test_operator_05_lte(self):
 		"""Test lte  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data, self.dataout, %(lte_true1)s)
+		result = arrayfunc.afilter('<=', self.data, self.dataout, %(lte_true1)s)
 		expected = [x for x in self.data if x <= %(lte_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:9], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data, self.dataout, %(gte_true2)s)
+		result = arrayfunc.afilter('<=', self.data, self.dataout, %(gte_true2)s)
 		expected = [x for x in self.data if x <= %(lte_true2)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:7], expected)
 
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data, self.dataout, %(lte_false1)s)
+		result = arrayfunc.afilter('<=', self.data, self.dataout, %(lte_false1)s)
 		self.assertEqual(result, 0)
 
 	########################################################
 	def test_operator_06_ne(self):
 		"""Test ne  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_ne, self.data, self.dataout, %(ne_true1)s)
+		result = arrayfunc.afilter('!=', self.data, self.dataout, %(ne_true1)s)
 		expected = [x for x in self.data if x != %(ne_true1)s]
 		self.assertEqual(result, len(expected))
 		self.assertEqual(list(self.dataout)[0:9], expected)
 		
-		result = arrayfunc.afilter(arrayfunc.aops.af_ne, self.data2, self.dataout, %(ne_false1)s)
+		result = arrayfunc.afilter('!=', self.data2, self.dataout, %(ne_false1)s)
 		self.assertEqual(result, 0)
 
 ##############################################################################
@@ -214,13 +208,6 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		self.dataempty = array.array('%(typecode)s')
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-			self.dataout = bytes(self.dataout)
-			self.dataempty = bytes(self.dataempty)
-
-
 	########################################################
 	def test_param_01_no_params(self):
 		"""Test exception when no parameters passed  - Array code %(typelabel)s.
@@ -237,7 +224,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when one parameter passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq)
+			result = arrayfunc.afilter('==')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -248,7 +235,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when two parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data)
+			result = arrayfunc.afilter('==', self.data)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -259,7 +246,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when three parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout)
+			result = arrayfunc.afilter('==', self.data, self.dataout)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -270,7 +257,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception when six parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(testdata)s, 5, 5)
+			result = arrayfunc.afilter('==', self.data, self.dataout, %(testdata)s, 5, 5)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -281,7 +268,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(testdata)s, xx=2)
+			result = arrayfunc.afilter('==', self.data, self.dataout, %(testdata)s, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -292,7 +279,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(testdata)s, maxlen='x')
+			result = arrayfunc.afilter('==', self.data, self.dataout, %(testdata)s, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -303,7 +290,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.afilter(-1, self.data, self.dataout, %(testdata)s)
+			result = arrayfunc.afilter('!', self.data, self.dataout, %(testdata)s)
 
 
 	########################################################
@@ -311,7 +298,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter('a', self.data, self.dataout, %(testdata)s)
+			result = arrayfunc.afilter(62, self.data, self.dataout, %(testdata)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -322,7 +309,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array input parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, 99, self.dataout, %(testdata)s)
+			result = arrayfunc.afilter('==', 99, self.dataout, %(testdata)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -333,7 +320,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, 99, %(testdata)s)
+			result = arrayfunc.afilter('==', self.data, 99, %(testdata)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -344,7 +331,7 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.dataempty, self.dataout, %(testdata)s)
+			result = arrayfunc.afilter('==', self.dataempty, self.dataout, %(testdata)s)
 
 
 	########################################################
@@ -352,16 +339,16 @@ class afilter_parameter_%(typelabel)s(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataempty, %(testdata)s)
+			result = arrayfunc.afilter('==', self.data, self.dataempty, %(testdata)s)
 
 	########################################################
 	def test_param_14_invalid_array_param_type(self):
 		"""Test exception with invalid compare parameter type  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(paramdata1)s)
+			result = arrayfunc.afilter('==', self.data, self.dataout, %(paramdata1)s)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, %(paramdata2)s)
+			result = arrayfunc.afilter('==', self.data, self.dataout, %(paramdata2)s)
 
 
 ##############################################################################
@@ -386,31 +373,26 @@ class afilter_overflow_%(typelabel)s(unittest.TestCase):
 		self.Maxval = arrayfunc.arraylimits.%(typecode)s_max
 
 
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
-
-
 	########################################################
 %(skipminoverflow)s	def test_overflow_01_min(self):
 		"""Test parameter overflow min  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.data, self.MinVal %(overflowdec)s)
+			result = arrayfunc.afilter('==', self.data, self.data, self.MinVal %(overflowdec)s)
 
 	########################################################
 %(skipmaxoverflow)s	def test_overflow_02_max(self):
 		"""Test parameter overflow max  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.data, self.Maxval %(overflowinc)s)
+			result = arrayfunc.afilter('==', self.data, self.data, self.Maxval %(overflowinc)s)
 
 	########################################################
 	def test_overflow_03_ok(self):
 		"""Test no overflow. These should not overflow  - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.data, self.MinVal)
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.data, self.Maxval)
+		result = arrayfunc.afilter('==', self.data, self.data, self.MinVal)
+		result = arrayfunc.afilter('==', self.data, self.data, self.Maxval)
 
 ##############################################################################
 
@@ -442,7 +424,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_01_eq(self):
 		"""Test eq with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('==', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('nan') == %(testval)s)
 
@@ -450,7 +432,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_02_eq(self):
 		"""Test eq with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('==', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('inf') == %(testval)s)
 
@@ -458,7 +440,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_03_eq(self):
 		"""Test eq with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('==', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('-inf') == %(testval)s)
 
@@ -467,7 +449,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_04_gt(self):
 		"""Test gt with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gt, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('nan') > %(testval)s)
 
@@ -475,7 +457,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_05_gt(self):
 		"""Test gt with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gt, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_inf))
 		self.assertTrue(float('inf') > %(testval)s)
 
@@ -483,7 +465,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_06_gt(self):
 		"""Test gt with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gt, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('-inf') > %(testval)s)
 
@@ -492,7 +474,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_07_gte(self):
 		"""Test gte with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>=', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('nan') >= %(testval)s)
 
@@ -500,7 +482,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_08_gte(self):
 		"""Test gte with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>=', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_inf))
 		self.assertTrue(float('inf') >= %(testval)s)
 
@@ -508,7 +490,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_09_gte(self):
 		"""Test gte with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_gte, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('>=', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('-inf') >= %(testval)s)
 
@@ -517,7 +499,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_10_lt(self):
 		"""Test lt with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lt, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('nan') < %(testval)s)
 
@@ -525,7 +507,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_11_lt(self):
 		"""Test lt with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lt, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('inf') < %(testval)s)
 
@@ -533,7 +515,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_12_lt(self):
 		"""Test lt with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lt, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_ninf))
 		self.assertTrue(float('-inf') < %(testval)s)
 
@@ -542,7 +524,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_13_lte(self):
 		"""Test lte with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<=', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('nan') <= %(testval)s)
 
@@ -550,7 +532,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_14_lte(self):
 		"""Test lte with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<=', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, 0)
 		self.assertFalse(float('inf') <= %(testval)s)
 
@@ -558,7 +540,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_15_lte(self):
 		"""Test lte with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_lte, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('<=', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_ninf))
 		self.assertTrue(float('-inf') <= %(testval)s)
 
@@ -567,7 +549,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_16_ne(self):
 		"""Test ne with nan and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_ne, self.data_nan, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('!=', self.data_nan, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_nan))
 		self.assertTrue(float('nan') != %(testval)s)
 
@@ -575,7 +557,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_17_ne(self):
 		"""Test ne with inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_ne, self.data_inf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('!=', self.data_inf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_inf))
 		self.assertTrue(float('inf') != %(testval)s)
 
@@ -583,7 +565,7 @@ class afilter_nan_test%(seq)s_%(typelabel)s(unittest.TestCase):
 	def test_nan_val%(seq)s_18_ne(self):
 		"""Test ne with -inf and data %(testval)s - Array code %(typelabel)s.
 		"""
-		result = arrayfunc.afilter(arrayfunc.aops.af_ne, self.data_ninf, self.dataout, %(testval)s)
+		result = arrayfunc.afilter('!=', self.data_ninf, self.dataout, %(testval)s)
 		self.assertEqual(result, len(self.data_ninf))
 		self.assertTrue(float('-inf') != %(testval)s)
 
@@ -614,21 +596,21 @@ class afilter_nanparam_%(typelabel)s(unittest.TestCase):
 		"""Test parameter nan  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, float('nan'))
+			result = arrayfunc.afilter('==', self.data, self.dataout, float('nan'))
 
 	########################################################
 	def test_nanparam_02_inf(self):
 		"""Test parameter inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, float('inf'))
+			result = arrayfunc.afilter('==', self.data, self.dataout, float('inf'))
 
 	########################################################
 	def test_nanparam_03_ninf(self):
 		"""Test parameter negative inf  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.afilter(arrayfunc.aops.af_eq, self.data, self.dataout, float('-inf'))
+			result = arrayfunc.afilter('==', self.data, self.dataout, float('-inf'))
 
 
 ##############################################################################
@@ -669,14 +651,6 @@ with open('test_afilter.py', 'w') as f:
 			datarec['typelabel'] = funtypes
 			f.write(overflow_template % datarec)
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	f.write(op_template % datarec)
-	f.write(param_template % datarec)
-	f.write(overflow_template % datarec)
 
 
 	# Output the generated code for nan and inf data in array tests.

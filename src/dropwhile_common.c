@@ -5,11 +5,11 @@
 //           Common platform independent code.
 // Language: C
 // Date:     10-May-2014
-// Ver:      24-Sep-2017.
+// Ver:      28-May-2018.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,7 +32,9 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
+#include "arrayops.h"
+
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
@@ -60,7 +62,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -73,7 +75,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -86,7 +88,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -99,7 +101,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -112,7 +114,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -125,7 +127,7 @@ Py_ssize_t dropwhile_signed_char(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -163,7 +165,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -176,7 +178,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -189,7 +191,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -202,7 +204,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -215,7 +217,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -228,7 +230,7 @@ Py_ssize_t dropwhile_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -266,7 +268,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -279,7 +281,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -292,7 +294,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -305,7 +307,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -318,7 +320,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -331,7 +333,7 @@ Py_ssize_t dropwhile_signed_short(signed int opcode, Py_ssize_t arraylen, signed
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -369,7 +371,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -382,7 +384,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -395,7 +397,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -408,7 +410,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -421,7 +423,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -434,7 +436,7 @@ Py_ssize_t dropwhile_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsi
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -472,7 +474,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -485,7 +487,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -498,7 +500,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -511,7 +513,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -524,7 +526,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -537,7 +539,7 @@ Py_ssize_t dropwhile_signed_int(signed int opcode, Py_ssize_t arraylen, signed i
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -575,7 +577,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -588,7 +590,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -601,7 +603,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -614,7 +616,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -627,7 +629,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -640,7 +642,7 @@ Py_ssize_t dropwhile_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsign
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -678,7 +680,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -691,7 +693,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -704,7 +706,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -717,7 +719,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -730,7 +732,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -743,7 +745,7 @@ Py_ssize_t dropwhile_signed_long(signed int opcode, Py_ssize_t arraylen, signed 
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -781,7 +783,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -794,7 +796,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -807,7 +809,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -820,7 +822,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -833,7 +835,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -846,7 +848,7 @@ Py_ssize_t dropwhile_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsig
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -884,7 +886,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -897,7 +899,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -910,7 +912,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -923,7 +925,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -936,7 +938,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -949,7 +951,7 @@ Py_ssize_t dropwhile_signed_long_long(signed int opcode, Py_ssize_t arraylen, si
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -987,7 +989,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -1000,7 +1002,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -1013,7 +1015,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -1026,7 +1028,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -1039,7 +1041,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -1052,7 +1054,7 @@ Py_ssize_t dropwhile_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, 
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -1090,7 +1092,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -1103,7 +1105,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -1116,7 +1118,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -1129,7 +1131,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -1142,7 +1144,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -1155,7 +1157,7 @@ Py_ssize_t dropwhile_float(signed int opcode, Py_ssize_t arraylen, float *data, 
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {
@@ -1193,7 +1195,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 	outindex = 0;
 
 	switch(opcode) {
-		// af_eq
+		// AF_EQ
 		case OP_AF_EQ: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] == param1)) {
@@ -1206,7 +1208,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 			}
 			return outindex;
 		}
-		// af_gt
+		// AF_GT
 		case OP_AF_GT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] > param1)) {
@@ -1219,7 +1221,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 			}
 			return outindex;
 		}
-		// af_gte
+		// AF_GTE
 		case OP_AF_GTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] >= param1)) {
@@ -1232,7 +1234,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 			}
 			return outindex;
 		}
-		// af_lt
+		// AF_LT
 		case OP_AF_LT: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] < param1)) {
@@ -1245,7 +1247,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 			}
 			return outindex;
 		}
-		// af_lte
+		// AF_LTE
 		case OP_AF_LTE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] <= param1)) {
@@ -1258,7 +1260,7 @@ Py_ssize_t dropwhile_double(signed int opcode, Py_ssize_t arraylen, double *data
 			}
 			return outindex;
 		}
-		// af_ne
+		// AF_NE
 		case OP_AF_NE: {
 			for(index = 0; index < arraylen; index++) {
 				if (!(data[index] != param1)) {

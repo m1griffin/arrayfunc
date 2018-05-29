@@ -5,11 +5,11 @@
 //           Common platform independent code.
 // Language: C
 // Date:     08-May-2014
-// Ver:      24-Sep-2017.
+// Ver:      28-May-2018.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -35,8 +35,9 @@
 #ifdef AF_HASSIMD
 #include "aany_simd_x86.h"
 #endif
+#include "arrayparams_base.h"
+#include "arrayops.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
@@ -68,7 +69,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -77,7 +78,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -86,7 +87,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -95,7 +96,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -104,7 +105,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -113,7 +114,7 @@ signed int aany_signed_char(signed int opcode, Py_ssize_t arraylen, signed char 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -143,7 +144,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -152,7 +153,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -161,7 +162,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -170,7 +171,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -179,7 +180,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -188,7 +189,7 @@ signed int aany_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned c
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -226,7 +227,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -235,7 +236,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -244,7 +245,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -253,7 +254,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -262,7 +263,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -271,7 +272,7 @@ signed int aany_signed_short(signed int opcode, Py_ssize_t arraylen, signed shor
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -301,7 +302,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -310,7 +311,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -319,7 +320,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -328,7 +329,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -337,7 +338,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -346,7 +347,7 @@ signed int aany_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -384,7 +385,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -393,7 +394,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -402,7 +403,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -411,7 +412,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -420,7 +421,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -429,7 +430,7 @@ signed int aany_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *d
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -459,7 +460,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -468,7 +469,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -477,7 +478,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -486,7 +487,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -495,7 +496,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -504,7 +505,7 @@ signed int aany_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -534,7 +535,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -543,7 +544,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -552,7 +553,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -561,7 +562,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -570,7 +571,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -579,7 +580,7 @@ signed int aany_signed_long(signed int opcode, Py_ssize_t arraylen, signed long 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -609,7 +610,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -618,7 +619,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -627,7 +628,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -636,7 +637,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -645,7 +646,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -654,7 +655,7 @@ signed int aany_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned l
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -684,7 +685,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -693,7 +694,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -702,7 +703,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -711,7 +712,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -720,7 +721,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -729,7 +730,7 @@ signed int aany_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed 
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -759,7 +760,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 	Py_ssize_t index; 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -768,7 +769,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -777,7 +778,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -786,7 +787,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -795,7 +796,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -804,7 +805,7 @@ signed int aany_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -842,7 +843,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -851,7 +852,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -860,7 +861,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -869,7 +870,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -878,7 +879,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -887,7 +888,7 @@ signed int aany_float(signed int opcode, Py_ssize_t arraylen, float *data, float
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
@@ -925,7 +926,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 #endif
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
@@ -934,7 +935,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
@@ -943,7 +944,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
@@ -952,7 +953,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
@@ -961,7 +962,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
@@ -970,7 +971,7 @@ signed int aany_double(signed int opcode, Py_ssize_t arraylen, double *data, dou
 		}
 		return ARR_ERR_NOTFOUND;
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		for(index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {

@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -59,10 +59,6 @@ testdata = {
 	}
 
 
-# This is used to insert code to convert the test data to bytes type. 
-bytesconverter = 'data = bytes(data)'
-
-
 # ==============================================================================
 
 # The basic template for testing each array type for operator function.
@@ -88,7 +84,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. General test with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data)
 		self.assertEqual(result, max(data))
 
@@ -98,7 +93,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. General test without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, nosimd=True)
 		self.assertEqual(result, max(data))
 
@@ -108,7 +102,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test increasing values with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(increasing)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data)
 		self.assertEqual(result, max(data))
 
@@ -118,7 +111,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test increasing values without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(increasing)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, nosimd=True)
 		self.assertEqual(result, max(data))
 
@@ -128,7 +120,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test decreasing values with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(decreasing)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data)
 		self.assertEqual(result, max(data))
 
@@ -138,7 +129,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test decreasing values without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(decreasing)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, nosimd=True)
 		self.assertEqual(result, max(data))
 
@@ -148,7 +138,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test finding max for data type with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data)
 		self.assertEqual(result, max(data))
 
@@ -158,7 +147,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test finding max for data type without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, nosimd=True)
 		self.assertEqual(result, max(data))
 
@@ -168,7 +156,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test finding value from array that contains min for data type with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(minval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data)
 		self.assertEqual(result, max(data))
 
@@ -178,7 +165,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test finding value from array that contains min for data type without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(minval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, nosimd=True)
 		self.assertEqual(result, max(data))
 
@@ -188,7 +174,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test optional lim parameter with SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, maxlen=5)
 		self.assertEqual(result, max(data[:5]))
 
@@ -198,7 +183,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test optional lim parameter without SIMD.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
-		%(bytesconverter)s
 		result = arrayfunc.amax(data, maxlen=5, nosimd=True)
 		self.assertEqual(result, max(data[:5]))
 
@@ -244,7 +228,6 @@ class amax_operator_%(typelabel)s(unittest.TestCase):
 		"""Test amax  - Array code %(typelabel)s. Test excess parameters.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		with self.assertRaises(TypeError):
 			result = arrayfunc.amax(data, 5, 2, 2)
 
@@ -357,16 +340,8 @@ with open('test_amax.py', 'w') as f:
 		datarec = testdata[funtypes]
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverter'] = ''
 		f.write(op_template % datarec)
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['bytesconverter'] = bytesconverter
-	f.write(op_template % datarec)
 
 
 	# Output the generated code for nan and inf.

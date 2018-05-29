@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     01-May-2017
-// Ver:      24-Sep-2017.
+// Ver:      28-May-2018.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
 
 /*--------------------------------------------------------------------------- */
@@ -75,7 +74,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -96,7 +95,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -117,7 +116,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -139,7 +138,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -161,7 +160,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -182,7 +181,7 @@ signed int aany_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
@@ -245,7 +244,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -266,7 +265,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -287,7 +286,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -309,7 +308,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -331,7 +330,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -352,7 +351,7 @@ signed int aany_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
@@ -415,7 +414,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -436,7 +435,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -457,7 +456,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -479,7 +478,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -501,7 +500,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -522,7 +521,7 @@ signed int aany_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed i
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
@@ -585,7 +584,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -606,7 +605,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -627,7 +626,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -648,7 +647,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -669,7 +668,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -690,7 +689,7 @@ signed int aany_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, 
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
@@ -753,7 +752,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 
 
 	switch(opcode) {
-	// af_eq
+	// AF_EQ
 	case OP_AF_EQ: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
@@ -774,7 +773,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gt
+	// AF_GT
 	case OP_AF_GT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
@@ -795,7 +794,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_gte
+	// AF_GTE
 	case OP_AF_GTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
@@ -816,7 +815,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lt
+	// AF_LT
 	case OP_AF_LT: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
@@ -837,7 +836,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_lte
+	// AF_LTE
 	case OP_AF_LTE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
@@ -858,7 +857,7 @@ signed int aany_double_simd(signed int opcode, Py_ssize_t arraylen, double *data
 		return ARR_ERR_NOTFOUND;
 
 	}
-	// af_ne
+	// AF_NE
 	case OP_AF_NE: {
 		// Use SIMD.
 		for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {

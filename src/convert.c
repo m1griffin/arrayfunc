@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
+#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
 #include "convert_common.h"
@@ -79,8 +79,6 @@ static PyObject *py_convert(PyObject *self, PyObject *args, PyObject *keywds) {
 	// Number of elements to work on. If zero or less, ignore this parameter.
 	Py_ssize_t arraymaxlen = 0;
 
-	struct arrayparamstypes arr1type = {0, 0, ' '};
-	struct arrayparamstypes arr2type = {0, 0, ' '};
 
 	// The error code returned by the function.
 	signed int resultcode;
@@ -97,25 +95,19 @@ static PyObject *py_convert(PyObject *self, PyObject *args, PyObject *keywds) {
 	}
 
 
-	// Test if the first parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
-		ErrMsgArrayorBytesExpected();
+	// Test if the first parameter is an array.
+	itemcode = lookuparraycode(dataobj);
+	if (!itemcode) {
+		ErrMsgArrayExpected();
 		return NULL;
-	} else {
-		// Get the array code type character.
-		itemcode = arr1type.arraycode;
 	}
 
 
-	// Test if the second parameter is an array or bytes.
-	arr2type = paramarraytype(dataoutobj);
-	if (!arr2type.isarray) {
-		ErrMsgArrayorBytesExpected();
+	// Test if the second parameter is an array.
+	arraycode = lookuparraycode(dataoutobj);
+	if (!arraycode) {
+		ErrMsgArrayExpected();
 		return NULL;
-	} else {
-		// Get the array code type character.
-		arraycode = arr2type.arraycode;
 	}
 
 

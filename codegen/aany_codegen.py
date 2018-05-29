@@ -291,13 +291,6 @@ simdvalues = {
 'd' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd', 'tmpslice' : tmpfloatslice},
 }
 
-# ==============================================================================
-
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('arrayfunc.csv')
-
-# Filter out the compare operations.
-compops = [x for x in oplist if x['compare_ops'] != '']
 
 # ==============================================================================
 
@@ -344,7 +337,7 @@ for funtypes in codegen_common.arraycodes:
 	outputlist.append(start_temp % datavals)
 
 	# Each comparison operation.
-	for ops in compops:
+	for ops in codegen_common.CompOps:
 		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 		testop.update(ops)
 		outputlist.append(op_template % testop)
@@ -357,7 +350,7 @@ codegen_common.OutputSourceCode(filename + '.c', outputlist,
 	maindescription, 
 	codegen_common.PlatformIndependentDescr, 
 	ccodedate, 
-	funcname, ['simdmacromsg'])
+	funcname, ['simdmacromsg', 'arrayparams_base', 'arrayops'])
 
 # ==============================================================================
 
@@ -393,7 +386,7 @@ for funtypes in codegen_common.arraycodes:
 
 
 		# Each comparison operation.
-		for ops in compops:
+		for ops in codegen_common.CompOps:
 			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 			testop.update(ops)
 			testop.update(simdvalues[funtypes])

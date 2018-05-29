@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2015    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -86,11 +86,6 @@ class repeat_%(typelabel)s(unittest.TestCase):
 
 		self.MaxVal = arrayfunc.arraylimits.%(typecode)s_max
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
-
-
-		# For bytes types, we need a non-array data type.
-		if '%(typelabel)s' == 'bytes':
-			self.data = bytes(self.data)
 
 
 	########################################################
@@ -262,13 +257,6 @@ with open('test_repeat.py', 'w') as f:
 			f.write(opfloat)
 
 		f.write(endclass)
-
-
-	# Do the tests for bytes.
-	testvalues = testdata['B']
-	testvalues['typecode'] = 'B'
-	testvalues['typelabel'] = 'bytes'
-	f.write(op_template % testvalues)
 
 
 	f.write(codegen_common.testendtemplate % 'repeat')

@@ -36,6 +36,10 @@ void ErrMsgArithCalc(void) {
 	PyErr_SetString(PyExc_ArithmeticError, "arithmetic error in calculation.");
 }
 
+void ErrMsgZeroDiv(void) {
+	PyErr_SetString(PyExc_ZeroDivisionError, "zero division error in calculation.");
+}
+
 void ErrMsgArrayLengthErr(void) {
 	PyErr_SetString(PyExc_IndexError, "array length error.");
 }
@@ -64,8 +68,16 @@ void ErrMsgUnknownArrayType(void) {
 	PyErr_SetString(PyExc_TypeError, "unknown array type.");
 }
 
-void ErrMsgArrayorBytesExpected(void) {
-	PyErr_SetString(PyExc_TypeError, "array.array or bytes expected.");
+void ErrMsgTypeExpectFloat(void) {
+	PyErr_SetString(PyExc_TypeError, "requires float or double data parameters.");
+}
+
+void ErrMsgTypeExpectInt(void) {
+	PyErr_SetString(PyExc_TypeError, "requires integer data parameters.");
+}
+
+void ErrMsgArrayExpected(void) {
+	PyErr_SetString(PyExc_TypeError, "array.array expected.");
 }
 
 void ErrMsgOperatorNotValidforthisFunction(void) {

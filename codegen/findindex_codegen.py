@@ -325,14 +325,6 @@ simdcodedate = '10-May-2017'
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('arrayfunc.csv')
-
-# Filter out the compare operations.
-compops = [x for x in oplist if x['compare_ops'] != '']
-
-# ==============================================================================
-
 # Output the generated code.
 for funtypes in codegen_common.arraycodes:
 	arraytype = codegen_common.arraytypes[funtypes]
@@ -355,7 +347,7 @@ for funtypes in codegen_common.arraycodes:
 
 	# Write the non-SIMD code.
 	# Each comparison operation.
-	for ops in compops:
+	for ops in codegen_common.CompOps:
 		testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 		testop.update(ops)
 		outputlist.append(op_template % testop)
@@ -370,7 +362,7 @@ codegen_common.OutputSourceCode(filename + '.c', outputlist,
 	maindescription, 
 	codegen_common.PlatformIndependentDescr, 
 	ccodedate, 
-	funcname, ['simdmacromsg'])
+	funcname, ['simdmacromsg', 'arrayparams_base', 'arrayops'])
 
 
 # ==============================================================================
@@ -407,7 +399,7 @@ for funtypes in codegen_common.arraycodes:
 
 
 		# Each comparison operation.
-		for ops in compops:
+		for ops in codegen_common.CompOps:
 			testop = {'oplabel' : ops['opcodename'].replace(' ', '_').upper()}
 			testop.update(ops)
 			testop.update(simdvalues[funtypes])

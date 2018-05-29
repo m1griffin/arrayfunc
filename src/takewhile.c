@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@
 
 #include "Python.h"
 
-#include "arrayfunc.h"
 #include "arrayerrs.h"
+#include "arrayparams_base.h"
 
+#include "arrayops.h"
 #include "takewhile_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -64,49 +65,48 @@ static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
 */
 struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 
-	PyObject *dataobj, *dataoutobj, *param1obj;
+	PyObject *dataobj, *dataoutobj, *param1obj, *opstr;
 
 
 	struct args_param argtypes = {' ', ' ', ' ', 0};
-	struct arrayparamstypes arr1type = {0, 0, ' '};
-	struct arrayparamstypes arr2type = {0, 0, ' '};
-	signed int opcode;
 
 	// Number of elements to work on. If zero or less, ignore this parameter.
 	Py_ssize_t arraymaxlen = 0;
 
+	char array1code, array2code;
+
 
 	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iOOO|n:takewhile", kwlist, 
-			&opcode, &dataobj, &dataoutobj, &param1obj, &arraymaxlen)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "UOOO|n:takewhile", kwlist, 
+			&opstr, &dataobj, &dataoutobj, &param1obj, &arraymaxlen)) {
 		argtypes.error = 1;
 		return argtypes;
 	}
 
-	// Test if the second parameter is an array or bytes.
-	arr1type = paramarraytype(dataobj);
-	if (!arr1type.isarray) {
+	// Test if the second parameter is an array.
+	array1code = lookuparraycode(dataobj);
+	if (!array1code) {
 		argtypes.error = 2;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array1type = arr1type.arraycode;
+		argtypes.array1type = array1code;
 	}
 
 
-	// Test if the third parameter is an array or bytes.
-	arr2type = paramarraytype(dataoutobj);
-	if (!arr2type.isarray) {
+	// Test if the second parameter is an array.
+	array2code = lookuparraycode(dataoutobj);
+	if (!array2code) {
 		argtypes.error = 3;
 		return argtypes;
 	} else {
 		// Get the array code type character.
-		argtypes.array2type = arr2type.arraycode;
+		argtypes.array2type = array2code;
 	}
 
 
 	// Get the parameter type codes.
-	argtypes.param1type = paramtypecode(param1obj->ob_type->tp_name);
+	argtypes.param1type = paramtypecode(param1obj);
 
 
 
@@ -134,6 +134,7 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 	// Codes indicating the type of array and the operation desired.
 	char itemcode;
 	signed int opcode;
+	PyObject *opstr;
 
 
 	// How long the array is.
@@ -190,8 +191,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		case 'b' : {
 			// There does not seem to be a format string for signed char, so we must use a larger type
 			// and check it manually. 
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*l|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -208,8 +209,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// unsigned char
 		case 'B' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*l|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -226,8 +227,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// signed short
 		case 'h' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*h|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.h, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*h|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.h, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -235,8 +236,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// unsigned short
 		case 'H' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*l|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -253,8 +254,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// signed int
 		case 'i' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*i|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.i, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*i|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.i, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -266,8 +267,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 			// same size, then we cannot check for overflow.
 			if (sizeof(signed long) > sizeof(unsigned int)) {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*l|n:takewhile", kwlist, 
-						&opcode, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
+						&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
 					return NULL;
 				}
 				// Check the data range manually.
@@ -281,8 +282,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 				}
 			} else {
 				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*I|n:takewhile", kwlist, 
-						&opcode, &datapy, &dataoutpy, &param1py.I, &arraymaxlen)) {
+				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*I|n:takewhile", kwlist, 
+						&opstr, &datapy, &dataoutpy, &param1py.I, &arraymaxlen)) {
 					return NULL;
 				}
 			}
@@ -291,8 +292,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// signed long
 		case 'l' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*l|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.l, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.l, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -300,8 +301,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// unsigned long
 		case 'L' : {
 			// The format codes do NOT match the array codes for this type.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*k|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.L, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*k|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.L, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -309,8 +310,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// signed long
 		case 'q' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*L|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.q, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*L|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.q, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -318,8 +319,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// unsigned long
 		case 'Q' : {
 			// The format codes do NOT match the array codes for this type.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*K|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.Q, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*K|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.Q, &arraymaxlen)) {
 				return NULL;
 			}
 			break;
@@ -327,8 +328,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// float
 		case 'f' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*f|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.f, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*f|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.f, &arraymaxlen)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -343,8 +344,8 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 		// double
 		case 'd' : {
 			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "iy*y*d|n:takewhile", kwlist, 
-					&opcode, &datapy, &dataoutpy, &param1py.d, &arraymaxlen)) {
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*d|n:takewhile", kwlist, 
+					&opstr, &datapy, &dataoutpy, &param1py.d, &arraymaxlen)) {
 				return NULL;
 			}
 			// Check the data range manually.
@@ -362,6 +363,19 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 			return NULL;
 			break;
 		}
+	}
+
+
+	// Convert the command string to an integer.
+	opcode = opstrdecode(opstr);
+
+	// Check if the command string is valid.
+	if (opcode < 0) {
+		// Release the buffers. 
+		PyBuffer_Release(&datapy);
+		PyBuffer_Release(&dataoutpy);
+		ErrMsgOperatorNotValidforthisFunction();
+		return NULL;
 	}
 
 

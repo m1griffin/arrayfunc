@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -55,9 +55,6 @@ testdata = {
 
 
 
-# This is used to insert code to convert the test data to bytes type. 
-bytesconverter = 'data = bytes(data)'
-
 # This defines how to test with and without SIMD.
 simdon = {'simdlabel' : 'with_SIMD', 'simdstatus' : 'with', 'simdtest' : ''}
 simdoff = {'simdlabel' : 'without_SIMD', 'simdstatus' : 'without SIMD', 'simdtest' : ', nosimd=True'}
@@ -88,7 +85,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data %(simdtest)s)
 		self.assertEqual(result, sum(data))
 
@@ -98,7 +94,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with overflow checking on %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data, disovfl=False %(simdtest)s)
 		self.assertEqual(result, sum(data))
 
@@ -108,7 +103,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with overflow checking off %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data, disovfl=True %(simdtest)s)
 		self.assertEqual(result, sum(data))
 
@@ -118,7 +112,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with array limit applied %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data, maxlen=10 %(simdtest)s)
 		self.assertEqual(result, sum(data[:10]))
 
@@ -128,7 +121,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking on %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data, disovfl=False, maxlen=10 %(simdtest)s)
 		self.assertEqual(result, sum(data[:10]))
 
@@ -138,7 +130,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking off %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		result = arrayfunc.asum(data, disovfl=True, maxlen=10 %(simdtest)s)
 		self.assertEqual(result, sum(data[:10]))
 
@@ -159,7 +150,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. Test invalid parameter type for overflow flag %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum(data, disovfl='a' %(simdtest)s)
 
@@ -172,7 +162,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. Test invalid parameter type for limit %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum(data, maxlen='a' %(simdtest)s)
 
@@ -198,7 +187,6 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. Test too many (five) parameters.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		%(bytesconverter)s
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum(data, False, 2, 2, 2)
 
@@ -217,7 +205,6 @@ maxovlf_template = '''
 		"""Test asum  - Array code %(typelabel)s. Arithmetic positive overflow expected.
 		"""
 		data = array.array('%(typecode)s', %(maxval)s)
-		%(bytesconverter)s
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(data %(simdtest)s)
 
@@ -231,7 +218,6 @@ minovlf_template = '''
 		"""Test asum  - Array code %(typelabel)s. Arithmetic overflow expected for negative numbers.
 		"""
 		data = array.array('%(typecode)s', %(minval)s)
-		%(bytesconverter)s
 		with self.assertRaises(OverflowError):
 			result = arrayfunc.asum(data %(simdtest)s)
 
@@ -426,7 +412,6 @@ with open('test_asum.py', 'w') as f:
 		datarec = copy.deepcopy(testdata[funtypes])
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverter'] = ''
 		# SIMD is only implemented for floating point, turn it off.
 		if funtypes in codegen_common.floatarrays:
 			datarec.update(simdoff)
@@ -454,19 +439,10 @@ with open('test_asum.py', 'w') as f:
 		datarec = copy.deepcopy(testdata[funtypes])
 		datarec['typecode'] = funtypes
 		datarec['typelabel'] = funtypes
-		datarec['bytesconverter'] = ''
 		datarec.update(simdon)
 		f.write(op_template % datarec)
 		f.write(endclass_template)
 
-
-	# Do the tests for bytes.
-	datarec = testdata['B']
-	datarec['typecode'] = 'B'
-	datarec['typelabel'] = 'bytes'
-	datarec['bytesconverter'] = bytesconverter
-	datarec.update(simdnone)
-	f.write(op_template % datarec)
 
 
 	# Output the generated code for nan and inf.
