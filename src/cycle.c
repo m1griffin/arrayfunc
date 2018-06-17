@@ -33,6 +33,7 @@
 #include "arrayparams_base.h"
 #include "arrayerrs.h"
 
+#include "arrayops.h"
 #include "cycle_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -98,7 +99,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 	if (param3obj != NULL) {
 		argtypes.param3type = paramtypecode(param3obj);
 	} else {
-		argtypes.param3type = 'z';
+		argtypes.param3type = 0;
 	}
 
 
@@ -170,7 +171,7 @@ static PyObject *py_cycle(PyObject *self, PyObject *args)
 
 	// The last parameter (step) was not specified.
 	param3tmp_l = 1;
-	if (argtypes.param3type == 'z') {
+	if (!argtypes.param3type) {
 		param3py.b = 1;
 		param3py.B = 1;
 		param3py.h = 1;

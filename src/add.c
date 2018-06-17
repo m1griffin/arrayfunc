@@ -2153,7 +2153,7 @@ static PyObject *py_add(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, "add");
+	arraydata = getparams_two(self, args, keywds, 1, "add");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

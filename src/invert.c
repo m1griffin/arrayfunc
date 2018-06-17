@@ -35,7 +35,7 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_1noerr.h"
+#include "arrayparams_one.h"
 
 /*--------------------------------------------------------------------------- */
 
@@ -43,15 +43,15 @@
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, bool hassecondarray) {
+void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -68,15 +68,15 @@ void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dat
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, bool hassecondarray) {
+void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -93,15 +93,15 @@ void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned cha
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, bool hassecondarray) {
+void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -118,15 +118,15 @@ void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, bool hassecondarray) {
+void invert_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -143,15 +143,15 @@ void invert_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned s
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, bool hassecondarray) {
+void invert_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -168,15 +168,15 @@ void invert_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataou
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, bool hassecondarray) {
+void invert_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -193,15 +193,15 @@ void invert_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, bool hassecondarray) {
+void invert_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -218,15 +218,15 @@ void invert_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dat
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, bool hassecondarray) {
+void invert_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -243,15 +243,15 @@ void invert_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned lon
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, bool hassecondarray) {
+void invert_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -268,15 +268,15 @@ void invert_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void invert_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, bool hassecondarray) {
+void invert_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -297,13 +297,13 @@ static PyObject *py_invert(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// This is used to hold the parsed parameters.
-	struct args_params_1noerr arraydata = ARGSINIT_1NOERR;
+	struct args_params_1 arraydata = ARGSINIT_ONE;
 
 	// -----------------------------------------------------
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_1noerr(self, args, keywds, "invert");
+	arraydata = getparams_one(self, args, keywds, 0, "invert");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -316,67 +316,67 @@ static PyObject *py_invert(PyObject *self, PyObject *args, PyObject *keywds) {
 
 		// signed_char
 		case 'b' : {
-			invert_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.hassecondarray);
+			invert_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_char
 		case 'B' : {
-			invert_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.hassecondarray);
+			invert_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_short
 		case 'h' : {
-			invert_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.hassecondarray);
+			invert_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_short
 		case 'H' : {
-			invert_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.hassecondarray);
+			invert_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_int
 		case 'i' : {
-			invert_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.hassecondarray);
+			invert_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_int
 		case 'I' : {
-			invert_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.hassecondarray);
+			invert_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long
 		case 'l' : {
-			invert_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.hassecondarray);
+			invert_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long
 		case 'L' : {
-			invert_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.hassecondarray);
+			invert_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long_long
 		case 'q' : {
-			invert_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.hassecondarray);
+			invert_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long_long
 		case 'Q' : {
-			invert_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.hassecondarray);
+			invert_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.hasoutputarray);
 			break;
 		}
 
 		// We don't know this code.
 		default: {
-			releasebuffers_1noerr(arraydata);
+			releasebuffers_one(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
@@ -384,7 +384,7 @@ static PyObject *py_invert(PyObject *self, PyObject *args, PyObject *keywds) {
 	}
 
 	// Release the buffers. 
-	releasebuffers_1noerr(arraydata);
+	releasebuffers_one(arraydata);
 
 
 	// Everything was successful.

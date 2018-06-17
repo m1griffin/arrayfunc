@@ -29,14 +29,16 @@
 
 /*--------------------------------------------------------------------------- */
 
-#define ARGSINIT_ONE {0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}}
+#define ARGSINIT_ONE {0, 0, 0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}}
 
 
 // Provide a struct for returning data from parsing Python arguments.
 struct args_params_1 {
 	char error;
 	char arraytype;
-	bool hassecondarray;
+	bool hasoutputarray;
+	char hasbuffer1;
+	char hasbuffer2;
 	unsigned int ignoreerrors;
 	Py_ssize_t arraylength;
 	union dataarrays array1;
@@ -47,7 +49,7 @@ struct args_params_1 {
 
 /*--------------------------------------------------------------------------- */
 
-struct args_params_1 getparams_one(PyObject *self, PyObject *args, PyObject *keywds, char *funcname);
+struct args_params_1 getparams_one(PyObject *self, PyObject *args, PyObject *keywds, char matherrors, char *funcname);
 
 void releasebuffers_one(struct args_params_1 arraydata);
 

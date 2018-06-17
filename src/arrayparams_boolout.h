@@ -29,13 +29,14 @@
 
 /*--------------------------------------------------------------------------- */
 
-#define ARGSINIT_BOOLOUT {0, 0, 0, {NULL}, {NULL}}
+#define ARGSINIT_BOOLOUT {0, 0, 0, 0, {NULL}, {NULL}}
 
 
 // Provide a struct for returning data from parsing Python arguments.
 struct args_params_boolout {
 	char error;
 	char arraytype;
+	char hasbuffer1;
 	Py_ssize_t arraylength;
 	union dataarrays array1;
 	Py_buffer pybuffer1;

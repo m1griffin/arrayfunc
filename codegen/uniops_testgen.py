@@ -704,6 +704,13 @@ class factorial_error_%(typelabel)s(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('%(typecode)s', itertools.repeat(maxfactorials['%(typecode)s'], arraysize))

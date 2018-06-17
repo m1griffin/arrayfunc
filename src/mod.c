@@ -1755,11 +1755,11 @@ signed int mod_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - param * floor(data1[x] / param);
+			data1[x] = data1[x] - param * floorf(data1[x] / param);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - param * floor(data1[x] / param);
+			data1[x] = data1[x] - param * floorf(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -1784,11 +1784,11 @@ signed int mod_float_2(Py_ssize_t arraylen, float *data1, float param, float *da
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - param * floor(data1[x] / param);
+			data3[x] = data1[x] - param * floorf(data1[x] / param);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - param * floor(data1[x] / param);
+			data3[x] = data1[x] - param * floorf(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -1814,12 +1814,12 @@ signed int mod_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data2[x] = param - data2[x] * floor(param / data2[x]);
+			data2[x] = param - data2[x] * floorf(param / data2[x]);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
-			data2[x] = param - data2[x] * floor(param / data2[x]);
+			data2[x] = param - data2[x] * floorf(param / data2[x]);
 			if (!isfinite(data2[x])) {
 				if (datatmp == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -1844,11 +1844,11 @@ signed int mod_float_4(Py_ssize_t arraylen, float param, float *data2, float *da
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = param - data2[x] * floor(param / data2[x]);
+			data3[x] = param - data2[x] * floorf(param / data2[x]);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = param - data2[x] * floor(param / data2[x]);
+			data3[x] = param - data2[x] * floorf(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -1873,12 +1873,12 @@ signed int mod_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data1[x] = data1[x] - data2[x] * floorf(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data1[x] = data1[x] - data2[x] * floorf(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -1903,12 +1903,12 @@ signed int mod_float_6(Py_ssize_t arraylen, float *data1, float *data2, float *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data3[x] = data1[x] - data2[x] * floorf(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data3[x] = data1[x] - data2[x] * floorf(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2124,7 +2124,7 @@ static PyObject *py_mod(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, "mod");
+	arraydata = getparams_two(self, args, keywds, 1, "mod");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

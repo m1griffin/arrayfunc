@@ -31,6 +31,7 @@
 #include "Python.h"
 
 #include <limits.h>
+
 #include <math.h>
 
 #include "arrayerrs.h"
@@ -45,9 +46,9 @@
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -55,7 +56,7 @@ signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = logf(data[x]);
 			}
@@ -66,7 +67,7 @@ signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = logf(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -88,9 +89,9 @@ signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned 
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int log_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int log_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -98,7 +99,7 @@ signed int log_double(Py_ssize_t arraylen, double *data, double *dataout, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = log(data[x]);
 			}
@@ -109,7 +110,7 @@ signed int log_double(Py_ssize_t arraylen, double *data, double *dataout, unsign
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = log(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -141,7 +142,7 @@ static PyObject *py_log(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "log");
+	arraydata = getparams_one(self, args, keywds, 1, "log");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -153,12 +154,12 @@ static PyObject *py_log(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = log_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = log_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = log_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = log_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.

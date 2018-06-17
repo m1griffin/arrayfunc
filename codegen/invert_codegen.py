@@ -68,7 +68,7 @@ uniops_head = """//-------------------------------------------------------------
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_1noerr.h"
+#include "arrayparams_one.h"
 
 /*--------------------------------------------------------------------------- */
 """
@@ -82,15 +82,15 @@ uniops_invert_int = """
 /* arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-void %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, bool hassecondarray) {
+void %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
-	if (hassecondarray) {		
+	if (hasoutputarray) {		
 		for(x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
@@ -113,7 +113,7 @@ void %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(
 opscall = """
 		// %(funcmodifier)s
 		case '%(arraycode)s' : {
-			%(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.hassecondarray);
+			%(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.hasoutputarray);
 			break;
 		}
 """
@@ -129,13 +129,13 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// This is used to hold the parsed parameters.
-	struct args_params_1noerr arraydata = ARGSINIT_1NOERR;
+	struct args_params_1 arraydata = ARGSINIT_ONE;
 
 	// -----------------------------------------------------
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_1noerr(self, args, keywds, "%(funclabel)s");
+	arraydata = getparams_one(self, args, keywds, 0, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -148,7 +148,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 %(opscall)s
 		// We don't know this code.
 		default: {
-			releasebuffers_1noerr(arraydata);
+			releasebuffers_one(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
@@ -156,7 +156,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 	}
 
 	// Release the buffers. 
-	releasebuffers_1noerr(arraydata);
+	releasebuffers_one(arraydata);
 
 
 	// Everything was successful.

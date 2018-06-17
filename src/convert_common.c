@@ -5,7 +5,7 @@
 //           Common platform independent code.
 // Language: C
 // Date:     08-May-2014
-// Ver:      28-May-2018.
+// Ver:      13-Jun-2018.
 //
 //------------------------------------------------------------------------------
 //
@@ -34,6 +34,7 @@
 
 #include <float.h>
 #include "convguardbands.h"
+#include "arrayparams_base.h"
 
 #include "arrayerrs.h"
 

@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      28-May-2018.
+# Ver:      13-Jun-2018.
 #
 ###############################################################################
 #
@@ -3424,6 +3424,13 @@ class factorial_error_b(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('b', itertools.repeat(maxfactorials['b'], arraysize))
@@ -3507,6 +3514,13 @@ class factorial_error_B(unittest.TestCase):
 				'q' : 20, 
 				'Q' : 20
 				}
+
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
 
 		arraysize = 200
 
@@ -3592,6 +3606,13 @@ class factorial_error_h(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('h', itertools.repeat(maxfactorials['h'], arraysize))
@@ -3675,6 +3696,13 @@ class factorial_error_H(unittest.TestCase):
 				'q' : 20, 
 				'Q' : 20
 				}
+
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
 
 		arraysize = 200
 
@@ -3760,6 +3788,13 @@ class factorial_error_i(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('i', itertools.repeat(maxfactorials['i'], arraysize))
@@ -3843,6 +3878,13 @@ class factorial_error_I(unittest.TestCase):
 				'q' : 20, 
 				'Q' : 20
 				}
+
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
 
 		arraysize = 200
 
@@ -3928,6 +3970,13 @@ class factorial_error_l(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('l', itertools.repeat(maxfactorials['l'], arraysize))
@@ -4011,6 +4060,13 @@ class factorial_error_L(unittest.TestCase):
 				'q' : 20, 
 				'Q' : 20
 				}
+
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
 
 		arraysize = 200
 
@@ -4096,6 +4152,13 @@ class factorial_error_q(unittest.TestCase):
 				'Q' : 20
 				}
 
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
+
 		arraysize = 200
 
 		self.maxfacarray = array.array('q', itertools.repeat(maxfactorials['q'], arraysize))
@@ -4179,6 +4242,13 @@ class factorial_error_Q(unittest.TestCase):
 				'q' : 20, 
 				'Q' : 20
 				}
+
+		# Check if long integer (l and L) is 8 bytes or only 4.
+		# If it is the smaller size, we must revise the maximum factorial size.
+		if arrayfunc.arraylimits.L_max < 18446744073709551615:
+			maxfactorials['l'] = 12
+			maxfactorials['L'] = 12
+
 
 		arraysize = 200
 

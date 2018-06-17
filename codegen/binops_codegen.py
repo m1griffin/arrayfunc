@@ -70,7 +70,7 @@ mathops_head = """//------------------------------------------------------------
 
 #include "arrayparams_base.h"
 
-#include "arrayparams_noerr2.h"
+#include "arrayparams_two.h"
 
 /*--------------------------------------------------------------------------- */
 """
@@ -215,14 +215,14 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// This is used to hold the parsed parameters.
-	struct args_params_noerr2 arraydata = ARGSINIT_NOERR2;
+	struct args_params_2 arraydata = ARGSINIT_TWO;
 
 
 	// -----------------------------------------------------
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_noerr2(self, args, keywds, "%(funclabel)s");
+	arraydata = getparams_two(self, args, keywds, 0, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -235,7 +235,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 %(opscall)s
 		// Wrong array type code.
 		default: {
-			releasebuffers_noerr2(arraydata);
+			releasebuffers_two(arraydata);
 			ErrMsgTypeExpectFloat();
 			return NULL;
 			break;
@@ -243,7 +243,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 	}
 
 	// Release the buffers. 
-	releasebuffers_noerr2(arraydata);
+	releasebuffers_two(arraydata);
 
 
 	// Everything was successful.

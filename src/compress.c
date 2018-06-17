@@ -49,7 +49,7 @@ struct args_param {
 
 // The list of keyword arguments. All argument must be listed, whether we 
 // intend to use them for keywords or not. 
-static char *kwlist[] = {"data", "dataout", "selecdtor", "maxlen", NULL};
+static char *kwlist[] = {"data", "dataout", "selector", "maxlen", NULL};
 
 /*--------------------------------------------------------------------------- */
 
@@ -82,7 +82,7 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 	}
 
 
-	// Test if the first parameter is an array or bytes.
+	// Test if the first parameter is an array.
 	arr1type = lookuparraycode(dataobj);
 	if (!arr1type) {
 		argtypes.error = 2;
@@ -93,7 +93,7 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 	}
 
 
-	// Test if the second parameter is an array or bytes.
+	// Test if the second parameter is an array.
 	arr2type = lookuparraycode(dataoutobj);
 	if (!arr2type) {
 		argtypes.error = 3;
@@ -104,7 +104,7 @@ struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
 	}
 
 
-	// Test if the third parameter is an array or bytes.
+	// Test if the third parameter is an array.
 	arr3type = lookuparraycode(selectorobj);
 	if (!arr3type) {
 		argtypes.error = 3;

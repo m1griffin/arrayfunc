@@ -2688,11 +2688,11 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - param * floor(data1[x] / param);
+			data1[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - param * floor(data1[x] / param);
+			data1[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2717,11 +2717,11 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - param * floor(data1[x] / param);
+			data3[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - param * floor(data1[x] / param);
+			data3[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2747,12 +2747,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data2[x] = param - data2[x] * floor(param / data2[x]);
+			data2[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
-			data2[x] = param - data2[x] * floor(param / data2[x]);
+			data2[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 			if (!isfinite(data2[x])) {
 				if (datatmp == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2777,11 +2777,11 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = param - data2[x] * floor(param / data2[x]);
+			data3[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 		}
 	} else {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = param - data2[x] * floor(param / data2[x]);
+			data3[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2806,12 +2806,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data1[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data1[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -2836,12 +2836,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data3[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
 		for(x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] - data2[x] * floor(data1[x] / data2[x]);
+			data3[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
 					return ARR_ERR_ZERODIV;
@@ -3241,7 +3241,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, "%(funclabel)s");
+	arraydata = getparams_two(self, args, keywds, 1, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -3524,6 +3524,15 @@ for func in funclist:
 
 			# This is used for pow only.
 			funcdata['abs'] = absfunc[arraycode]
+
+			# This is used for mod only.
+			if (arraycode == 'f') and (func['pyoperator'] == '%'):
+				funcdata['modfloor'] = 'floorf'
+			elif (arraycode == 'd') and (func['pyoperator'] == '%'):
+				funcdata['modfloor'] = 'floor'
+			else:
+				funcdata['modfloor'] = ''
+
 
 			# The way that powtemplate works requires that all the data in
 			# 'funcdata' is defind before we get to powtemplate.

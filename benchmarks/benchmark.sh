@@ -2,41 +2,10 @@
 
 # Benchmark all the functions associated with arrayfunc.
 
-
-echo "Testing amap benchmarks."
-
-# Time at which the test sequence started.
-starttime=$(date '+%s')
-
-./benchamap.py
-
-# Time at which the test sequence completed.
-endtime=$(date '+%s')
-elapsedtime=$(($endtime - $starttime))
-
-echo "Amap benchmarks completed in " $elapsedtime " seconds."
-echo
-
-# ==============================================================================
-
-echo "Testing acalc benchmarks."
-
-# Time at which the test sequence started.
-starttime=$(date '+%s')
-
-./benchacalc.py
-
-# Time at which the test sequence completed.
-endtime=$(date '+%s')
-elapsedtime=$(($endtime - $starttime))
-
-echo "Acalc benchmarks completed in " $elapsedtime " seconds."
-echo
-
 # ==============================================================================
 
 
-echo "Testing other functions benchmarks."
+echo "Testing general functions benchmarks."
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')
@@ -48,5 +17,25 @@ starttime=$(date '+%s')
 endtime=$(date '+%s')
 elapsedtime=$(($endtime - $starttime))
 
-echo "Other functions benchmarks completed in " $elapsedtime " seconds."
+echo "General functions benchmarks completed in " $elapsedtime " seconds."
+
+
+# ==============================================================================
+
+
+echo "Testing math functions benchmarks."
+
+# Time at which the test sequence started.
+starttime=$(date '+%s')
+
+./benchmath.py
+
+# Time at which the test sequence completed.
+endtime=$(date '+%s')
+elapsedtime=$(($endtime - $starttime))
+
+echo "Math functions benchmarks completed in " $elapsedtime " seconds."
+echo
+
+# ==============================================================================
 

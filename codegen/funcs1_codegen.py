@@ -65,6 +65,7 @@ mathfunc1 = """//---------------------------------------------------------------
 #include "Python.h"
 
 #include <limits.h>
+%(MSVSCcompat)s
 #include <math.h>
 
 #include "arrayerrs.h"
@@ -79,9 +80,9 @@ mathfunc1 = """//---------------------------------------------------------------
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -89,7 +90,7 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(floatfunc)s;
 			}
@@ -100,7 +101,7 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(floatfunc)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -122,9 +123,9 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -132,7 +133,7 @@ signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *datao
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(doublefunc)s;
 			}
@@ -143,7 +144,7 @@ signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *datao
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(doublefunc)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -175,7 +176,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "%(funclabel)s");
+	arraydata = getparams_one(self, args, keywds, 1, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -187,12 +188,12 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = %(funclabel)s_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = %(funclabel)s_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = %(funclabel)s_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = %(funclabel)s_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.
@@ -309,6 +310,13 @@ const float radtodeg_f = (float) (180.0 / M_PI);
 /*--------------------------------------------------------------------------- */
 """
 
+# For MSVS compatibility for Windows.
+MSVSCmath = """
+// This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
+// the M_PI constant. This must be immediately above <math.h>.
+#define _USE_MATH_DEFINES
+"""
+
 # ==============================================================================
 
 # These are used for most normal functions.
@@ -350,10 +358,13 @@ for func in funclist:
 	# Insert the appropriate arithmetic constant or functions here.
 	if func['funcname'] == 'degrees':
 		arithcalcs = radtodeg
+		MSVSCcompat = MSVSCmath
 	elif func['funcname'] == 'radians':
 		arithcalcs = degtorad
+		MSVSCcompat = MSVSCmath
 	else:
 		arithcalcs = ''
+		MSVSCcompat = ''
 
 
 	funcdata = {'funclabel' : func['funcname'], 
@@ -362,7 +373,8 @@ for func in funclist:
 			'opcodedocs' : func['opcodedocs'], 
 			'supportedarrays' : supportedarrays,
 			'matherrors' : ', '.join(func['matherrors'].split(',')),
-			'arithcalcs' : arithcalcs}	
+			'arithcalcs' : arithcalcs,
+			'MSVSCcompat' : MSVSCcompat}	
 
 
 	with open(filename, 'w') as f:

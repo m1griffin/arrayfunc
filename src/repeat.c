@@ -33,6 +33,7 @@
 #include "arrayparams_base.h"
 #include "arrayerrs.h"
 
+#include "arrayops.h"
 #include "repeat_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -74,7 +75,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 	}
 
 
-	// Test if the second parameter is an array or bytes.
+	// Test if the second parameter is an array.
 	arr1type = lookuparraycode(dataobj);
 	if (!arr1type) {
 		argtypes.error = 2;

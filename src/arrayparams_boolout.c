@@ -48,8 +48,9 @@ static char *kwlist[] = {"data", "maxlen", NULL};
  * Returns: Nothing.
 */
 void releasebuffers_boolout(struct args_params_boolout arraydata) {
-	if (!(&arraydata.pybuffer1 == NULL)) {
+	if (arraydata.hasbuffer1) {
 		PyBuffer_Release(&arraydata.pybuffer1);
+		arraydata.hasbuffer1 = 0;
 	}
 }
 
@@ -127,6 +128,7 @@ struct args_params_boolout getparams_boolout(PyObject *self, PyObject *args, PyO
 
 	// Assign the buffer to a union which lets us get at them as typed data.
 	arraydata.array1.buf = arraydata.pybuffer1.buf;
+	arraydata.hasbuffer1 = 1;
 
 
 	// The length of the data array.

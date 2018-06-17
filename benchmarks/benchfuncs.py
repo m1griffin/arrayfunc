@@ -5,11 +5,11 @@
 # Purpose:  Benchmark functions for miscellaneous functions.
 # Language: Python 3.4
 # Date:     16-Sep-2014.
-# Ver:      04-Sep-2017.
+# Ver:      14-Jun-2018.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -252,7 +252,7 @@ def benchafilter(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.afilter(arrayfunc.aops.af_lt, data, dataout, compval)
+		x = arrayfunc.afilter('<', data, dataout, compval)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -324,7 +324,7 @@ def benchdropwhile(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.dropwhile(arrayfunc.aops.af_lt, data, dataout, compval)
+		x = arrayfunc.dropwhile('<', data, dataout, compval)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -359,7 +359,7 @@ def benchtakewhile(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.takewhile(arrayfunc.aops.af_lt, data, dataout, compval)
+		x = arrayfunc.takewhile('<', data, dataout, compval)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -394,7 +394,7 @@ def benchaany(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.aany(arrayfunc.aops.af_gt, data, compval, nosimd=True)
+		x = arrayfunc.aany('>', data, compval, nosimd=True)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -403,7 +403,7 @@ def benchaany(arraycode):
 	if arrayfunc.simdsupport.hassimd:
 		starttime = time.perf_counter()
 		for i in range(simdcounts):
-			x = arrayfunc.aany(arrayfunc.aops.af_gt, data, compval)
+			x = arrayfunc.aany('>', data, compval)
 		endtime = time.perf_counter()
 
 		simdtime = (endtime - starttime) / simdcounts
@@ -438,7 +438,7 @@ def benchaall(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.aall(arrayfunc.aops.af_gt, data, compval, nosimd=True)
+		x = arrayfunc.aall('>', data, compval, nosimd=True)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -447,7 +447,7 @@ def benchaall(arraycode):
 	if arrayfunc.simdsupport.hassimd:
 		starttime = time.perf_counter()
 		for i in range(simdcounts):
-			x = arrayfunc.aall(arrayfunc.aops.af_gt, data, compval)
+			x = arrayfunc.aall('>', data, compval)
 		endtime = time.perf_counter()
 
 		simdtime = (endtime - starttime) / simdcounts
@@ -574,7 +574,7 @@ def benchfindindex(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.findindex(arrayfunc.aops.af_eq, data, compval, nosimd=True)
+		x = arrayfunc.findindex('==', data, compval, nosimd=True)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -583,7 +583,7 @@ def benchfindindex(arraycode):
 	if arrayfunc.simdsupport.hassimd:
 		starttime = time.perf_counter()
 		for i in range(simdcounts):
-			x = arrayfunc.findindex(arrayfunc.aops.af_eq, data, compval)
+			x = arrayfunc.findindex('==', data, compval)
 		endtime = time.perf_counter()
 
 		simdtime = (endtime - starttime) / simdcounts
@@ -625,7 +625,7 @@ def benchfindindices(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.findindices(arrayfunc.aops.af_eq, data, dataout, compval)
+		x = arrayfunc.findindices('==', data, dataout, compval)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -705,7 +705,7 @@ def benchasumov(arraycode):
 	# Arrayfunc time.
 	starttime = time.perf_counter()
 	for i in range(afunccounts):
-		x = arrayfunc.asum(data, disovfl=True, nosimd=True)
+		x = arrayfunc.asum(data, matherrors=True, nosimd=True)
 	endtime = time.perf_counter()
 
 	functime = (endtime - starttime) / afunccounts
@@ -714,7 +714,7 @@ def benchasumov(arraycode):
 	if arrayfunc.simdsupport.hassimd:
 		starttime = time.perf_counter()
 		for i in range(simdcounts):
-			x = arrayfunc.asum(data, disovfl=True)
+			x = arrayfunc.asum(data, matherrors=True)
 		endtime = time.perf_counter()
 
 		simdtime = (endtime - starttime) / simdcounts

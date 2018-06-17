@@ -46,9 +46,9 @@
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -56,7 +56,7 @@ signed int abs__signed_char(Py_ssize_t arraylen, signed char *data, signed char 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -67,7 +67,7 @@ signed int abs__signed_char(Py_ssize_t arraylen, signed char *data, signed char 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -90,9 +90,9 @@ signed int abs__signed_char(Py_ssize_t arraylen, signed char *data, signed char 
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -100,7 +100,7 @@ signed int abs__signed_short(Py_ssize_t arraylen, signed short *data, signed sho
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -111,7 +111,7 @@ signed int abs__signed_short(Py_ssize_t arraylen, signed short *data, signed sho
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -134,9 +134,9 @@ signed int abs__signed_short(Py_ssize_t arraylen, signed short *data, signed sho
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -144,7 +144,7 @@ signed int abs__signed_int(Py_ssize_t arraylen, signed int *data, signed int *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -155,7 +155,7 @@ signed int abs__signed_int(Py_ssize_t arraylen, signed int *data, signed int *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == INT_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -178,9 +178,9 @@ signed int abs__signed_int(Py_ssize_t arraylen, signed int *data, signed int *da
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -188,7 +188,7 @@ signed int abs__signed_long(Py_ssize_t arraylen, signed long *data, signed long 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -199,7 +199,7 @@ signed int abs__signed_long(Py_ssize_t arraylen, signed long *data, signed long 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -222,9 +222,9 @@ signed int abs__signed_long(Py_ssize_t arraylen, signed long *data, signed long 
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -232,7 +232,7 @@ signed int abs__signed_long_long(Py_ssize_t arraylen, signed long long *data, si
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -243,7 +243,7 @@ signed int abs__signed_long_long(Py_ssize_t arraylen, signed long long *data, si
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -266,9 +266,9 @@ signed int abs__signed_long_long(Py_ssize_t arraylen, signed long long *data, si
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -276,7 +276,7 @@ signed int abs__float(Py_ssize_t arraylen, float *data, float *dataout, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = fabsf(data[x]);
 			}
@@ -287,7 +287,7 @@ signed int abs__float(Py_ssize_t arraylen, float *data, float *dataout, unsigned
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = fabsf(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -310,9 +310,9 @@ signed int abs__float(Py_ssize_t arraylen, float *data, float *dataout, unsigned
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int abs__double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int abs__double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -320,7 +320,7 @@ signed int abs__double(Py_ssize_t arraylen, double *data, double *dataout, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = fabs(data[x]);
 			}
@@ -331,7 +331,7 @@ signed int abs__double(Py_ssize_t arraylen, double *data, double *dataout, unsig
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = fabs(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -366,7 +366,7 @@ static PyObject *py_abs_(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "abs_");
+	arraydata = getparams_one(self, args, keywds, 1, "abs_");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -379,43 +379,43 @@ static PyObject *py_abs_(PyObject *self, PyObject *args, PyObject *keywds) {
 
 		// signed_char
 		case 'b' : {
-			resultcode = abs__signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_short
 		case 'h' : {
-			resultcode = abs__signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_int
 		case 'i' : {
-			resultcode = abs__signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long
 		case 'l' : {
-			resultcode = abs__signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long_long
 		case 'q' : {
-			resultcode = abs__signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// float
 		case 'f' : {
-			resultcode = abs__float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// double
 		case 'd' : {
-			resultcode = abs__double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = abs__double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 

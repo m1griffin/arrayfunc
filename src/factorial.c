@@ -119,9 +119,9 @@ unsigned long long fact_usll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 403
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -132,7 +132,7 @@ signed int factorial_signed_char(Py_ssize_t arraylen, signed char *data, signed 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SC_FACT)) {
 					dataout[x] = DEFAULT_FACT;
@@ -151,7 +151,7 @@ signed int factorial_signed_char(Py_ssize_t arraylen, signed char *data, signed 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SC_FACT)) {
 					return ARR_ERR_OVFL;
@@ -178,9 +178,9 @@ signed int factorial_signed_char(Py_ssize_t arraylen, signed char *data, signed 
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -191,7 +191,7 @@ signed int factorial_unsigned_char(Py_ssize_t arraylen, unsigned char *data, uns
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USC_FACT) {
 					dataout[x] = DEFAULT_FACT;
@@ -210,7 +210,7 @@ signed int factorial_unsigned_char(Py_ssize_t arraylen, unsigned char *data, uns
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USC_FACT) {
 					return ARR_ERR_OVFL;
@@ -237,9 +237,9 @@ signed int factorial_unsigned_char(Py_ssize_t arraylen, unsigned char *data, uns
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -250,7 +250,7 @@ signed int factorial_signed_short(Py_ssize_t arraylen, signed short *data, signe
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SS_FACT)) {
 					dataout[x] = DEFAULT_FACT;
@@ -269,7 +269,7 @@ signed int factorial_signed_short(Py_ssize_t arraylen, signed short *data, signe
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SS_FACT)) {
 					return ARR_ERR_OVFL;
@@ -296,9 +296,9 @@ signed int factorial_signed_short(Py_ssize_t arraylen, signed short *data, signe
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -309,7 +309,7 @@ signed int factorial_unsigned_short(Py_ssize_t arraylen, unsigned short *data, u
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USS_FACT) {
 					dataout[x] = DEFAULT_FACT;
@@ -328,7 +328,7 @@ signed int factorial_unsigned_short(Py_ssize_t arraylen, unsigned short *data, u
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USS_FACT) {
 					return ARR_ERR_OVFL;
@@ -355,9 +355,9 @@ signed int factorial_unsigned_short(Py_ssize_t arraylen, unsigned short *data, u
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -368,7 +368,7 @@ signed int factorial_signed_int(Py_ssize_t arraylen, signed int *data, signed in
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SI_FACT)) {
 					dataout[x] = DEFAULT_FACT;
@@ -387,7 +387,7 @@ signed int factorial_signed_int(Py_ssize_t arraylen, signed int *data, signed in
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SI_FACT)) {
 					return ARR_ERR_OVFL;
@@ -414,9 +414,9 @@ signed int factorial_signed_int(Py_ssize_t arraylen, signed int *data, signed in
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -427,7 +427,7 @@ signed int factorial_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USI_FACT) {
 					dataout[x] = DEFAULT_FACT;
@@ -446,7 +446,7 @@ signed int factorial_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsig
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USI_FACT) {
 					return ARR_ERR_OVFL;
@@ -473,9 +473,9 @@ signed int factorial_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsig
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -486,7 +486,7 @@ signed int factorial_signed_long(Py_ssize_t arraylen, signed long *data, signed 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SL_FACT)) {
 					dataout[x] = DEFAULT_FACT;
@@ -505,7 +505,7 @@ signed int factorial_signed_long(Py_ssize_t arraylen, signed long *data, signed 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SL_FACT)) {
 					return ARR_ERR_OVFL;
@@ -532,9 +532,9 @@ signed int factorial_signed_long(Py_ssize_t arraylen, signed long *data, signed 
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -545,7 +545,7 @@ signed int factorial_unsigned_long(Py_ssize_t arraylen, unsigned long *data, uns
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USL_FACT) {
 					dataout[x] = DEFAULT_FACT;
@@ -564,7 +564,7 @@ signed int factorial_unsigned_long(Py_ssize_t arraylen, unsigned long *data, uns
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USL_FACT) {
 					return ARR_ERR_OVFL;
@@ -591,9 +591,9 @@ signed int factorial_unsigned_long(Py_ssize_t arraylen, unsigned long *data, uns
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -604,7 +604,7 @@ signed int factorial_signed_long_long(Py_ssize_t arraylen, signed long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SLL_FACT)) {
 					dataout[x] = DEFAULT_FACT;
@@ -623,7 +623,7 @@ signed int factorial_signed_long_long(Py_ssize_t arraylen, signed long long *dat
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > MAX_SLL_FACT)) {
 					return ARR_ERR_OVFL;
@@ -650,9 +650,9 @@ signed int factorial_signed_long_long(Py_ssize_t arraylen, signed long long *dat
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int factorial_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int factorial_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -663,7 +663,7 @@ signed int factorial_unsigned_long_long(Py_ssize_t arraylen, unsigned long long 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USLL_FACT) {
 					dataout[x] = DEFAULT_FACT;
@@ -682,7 +682,7 @@ signed int factorial_unsigned_long_long(Py_ssize_t arraylen, unsigned long long 
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > MAX_USLL_FACT) {
 					return ARR_ERR_OVFL;
@@ -721,7 +721,7 @@ static PyObject *py_factorial(PyObject *self, PyObject *args, PyObject *keywds) 
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "factorial");
+	arraydata = getparams_one(self, args, keywds, 1, "factorial");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -734,61 +734,61 @@ static PyObject *py_factorial(PyObject *self, PyObject *args, PyObject *keywds) 
 
 		// signed_char
 		case 'b' : {
-			resultcode = factorial_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_char
 		case 'B' : {
-			resultcode = factorial_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_short
 		case 'h' : {
-			resultcode = factorial_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_short
 		case 'H' : {
-			resultcode = factorial_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_int
 		case 'i' : {
-			resultcode = factorial_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_int
 		case 'I' : {
-			resultcode = factorial_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long
 		case 'l' : {
-			resultcode = factorial_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long
 		case 'L' : {
-			resultcode = factorial_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long_long
 		case 'q' : {
-			resultcode = factorial_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long_long
 		case 'Q' : {
-			resultcode = factorial_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = factorial_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 

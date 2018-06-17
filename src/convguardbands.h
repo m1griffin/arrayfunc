@@ -40,8 +40,8 @@ Code	Type						x86-32	x-86-64	ARM-32
 'I' 	unsigned int 		int 	4		4		4
 'l' 	signed long 		int 	4		8		4
 'L' 	unsigned long 		int 	4		8		4
-'q'		signed long long	int 	8		8		???
-'Q'		unsigned long long	int 	8		8		???
+'q'		signed long long	int 	8		8		8
+'Q'		unsigned long long	int 	8		8		8
 'f' 	float 				float 	4		4		4
 'd' 	double 				float 	8		8		8
 

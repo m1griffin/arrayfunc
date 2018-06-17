@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      28-May-2018.
+# Ver:      13-Jun-2018.
 #
 ###############################################################################
 #
@@ -78,7 +78,7 @@ class asum_operator_b_(unittest.TestCase):
 		"""Test asum  - Array code b. General test with overflow checking on .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -87,7 +87,7 @@ class asum_operator_b_(unittest.TestCase):
 		"""Test asum  - Array code b. General test with overflow checking off .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -105,7 +105,7 @@ class asum_operator_b_(unittest.TestCase):
 		"""Test asum  - Array code b. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -114,7 +114,7 @@ class asum_operator_b_(unittest.TestCase):
 		"""Test asum  - Array code b. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -135,11 +135,11 @@ class asum_operator_b_(unittest.TestCase):
 		"""
 		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -151,7 +151,7 @@ class asum_operator_b_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -211,7 +211,7 @@ class asum_operator_B_(unittest.TestCase):
 		"""Test asum  - Array code B. General test with overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -220,7 +220,7 @@ class asum_operator_B_(unittest.TestCase):
 		"""Test asum  - Array code B. General test with overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -238,7 +238,7 @@ class asum_operator_B_(unittest.TestCase):
 		"""Test asum  - Array code B. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -247,7 +247,7 @@ class asum_operator_B_(unittest.TestCase):
 		"""Test asum  - Array code B. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -268,11 +268,11 @@ class asum_operator_B_(unittest.TestCase):
 		"""
 		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -284,7 +284,7 @@ class asum_operator_B_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -344,7 +344,7 @@ class asum_operator_h_(unittest.TestCase):
 		"""Test asum  - Array code h. General test with overflow checking on .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -353,7 +353,7 @@ class asum_operator_h_(unittest.TestCase):
 		"""Test asum  - Array code h. General test with overflow checking off .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -371,7 +371,7 @@ class asum_operator_h_(unittest.TestCase):
 		"""Test asum  - Array code h. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -380,7 +380,7 @@ class asum_operator_h_(unittest.TestCase):
 		"""Test asum  - Array code h. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -401,11 +401,11 @@ class asum_operator_h_(unittest.TestCase):
 		"""
 		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -417,7 +417,7 @@ class asum_operator_h_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -477,7 +477,7 @@ class asum_operator_H_(unittest.TestCase):
 		"""Test asum  - Array code H. General test with overflow checking on .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -486,7 +486,7 @@ class asum_operator_H_(unittest.TestCase):
 		"""Test asum  - Array code H. General test with overflow checking off .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -504,7 +504,7 @@ class asum_operator_H_(unittest.TestCase):
 		"""Test asum  - Array code H. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -513,7 +513,7 @@ class asum_operator_H_(unittest.TestCase):
 		"""Test asum  - Array code H. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -534,11 +534,11 @@ class asum_operator_H_(unittest.TestCase):
 		"""
 		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -550,7 +550,7 @@ class asum_operator_H_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -610,7 +610,7 @@ class asum_operator_i_(unittest.TestCase):
 		"""Test asum  - Array code i. General test with overflow checking on .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -619,7 +619,7 @@ class asum_operator_i_(unittest.TestCase):
 		"""Test asum  - Array code i. General test with overflow checking off .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -637,7 +637,7 @@ class asum_operator_i_(unittest.TestCase):
 		"""Test asum  - Array code i. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -646,7 +646,7 @@ class asum_operator_i_(unittest.TestCase):
 		"""Test asum  - Array code i. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -667,11 +667,11 @@ class asum_operator_i_(unittest.TestCase):
 		"""
 		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -683,7 +683,7 @@ class asum_operator_i_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -743,7 +743,7 @@ class asum_operator_I_(unittest.TestCase):
 		"""Test asum  - Array code I. General test with overflow checking on .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -752,7 +752,7 @@ class asum_operator_I_(unittest.TestCase):
 		"""Test asum  - Array code I. General test with overflow checking off .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -770,7 +770,7 @@ class asum_operator_I_(unittest.TestCase):
 		"""Test asum  - Array code I. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -779,7 +779,7 @@ class asum_operator_I_(unittest.TestCase):
 		"""Test asum  - Array code I. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -800,11 +800,11 @@ class asum_operator_I_(unittest.TestCase):
 		"""
 		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -816,7 +816,7 @@ class asum_operator_I_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -876,7 +876,7 @@ class asum_operator_l_(unittest.TestCase):
 		"""Test asum  - Array code l. General test with overflow checking on .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -885,7 +885,7 @@ class asum_operator_l_(unittest.TestCase):
 		"""Test asum  - Array code l. General test with overflow checking off .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -903,7 +903,7 @@ class asum_operator_l_(unittest.TestCase):
 		"""Test asum  - Array code l. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -912,7 +912,7 @@ class asum_operator_l_(unittest.TestCase):
 		"""Test asum  - Array code l. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -933,11 +933,11 @@ class asum_operator_l_(unittest.TestCase):
 		"""
 		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -949,7 +949,7 @@ class asum_operator_l_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1027,7 +1027,7 @@ class asum_operator_L_(unittest.TestCase):
 		"""Test asum  - Array code L. General test with overflow checking on .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -1036,7 +1036,7 @@ class asum_operator_L_(unittest.TestCase):
 		"""Test asum  - Array code L. General test with overflow checking off .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -1054,7 +1054,7 @@ class asum_operator_L_(unittest.TestCase):
 		"""Test asum  - Array code L. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1063,7 +1063,7 @@ class asum_operator_L_(unittest.TestCase):
 		"""Test asum  - Array code L. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1084,11 +1084,11 @@ class asum_operator_L_(unittest.TestCase):
 		"""
 		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1100,7 +1100,7 @@ class asum_operator_L_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1169,7 +1169,7 @@ class asum_operator_q_(unittest.TestCase):
 		"""Test asum  - Array code q. General test with overflow checking on .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -1178,7 +1178,7 @@ class asum_operator_q_(unittest.TestCase):
 		"""Test asum  - Array code q. General test with overflow checking off .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -1196,7 +1196,7 @@ class asum_operator_q_(unittest.TestCase):
 		"""Test asum  - Array code q. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1205,7 +1205,7 @@ class asum_operator_q_(unittest.TestCase):
 		"""Test asum  - Array code q. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1226,11 +1226,11 @@ class asum_operator_q_(unittest.TestCase):
 		"""
 		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1242,7 +1242,7 @@ class asum_operator_q_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1320,7 +1320,7 @@ class asum_operator_Q_(unittest.TestCase):
 		"""Test asum  - Array code Q. General test with overflow checking on .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -1329,7 +1329,7 @@ class asum_operator_Q_(unittest.TestCase):
 		"""Test asum  - Array code Q. General test with overflow checking off .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -1347,7 +1347,7 @@ class asum_operator_Q_(unittest.TestCase):
 		"""Test asum  - Array code Q. General test with array limit applied and overflow checking on .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1356,7 +1356,7 @@ class asum_operator_Q_(unittest.TestCase):
 		"""Test asum  - Array code Q. General test with array limit applied and overflow checking off .
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1377,11 +1377,11 @@ class asum_operator_Q_(unittest.TestCase):
 		"""
 		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1393,7 +1393,7 @@ class asum_operator_Q_(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1462,7 +1462,7 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with overflow checking on without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=False , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
@@ -1471,7 +1471,7 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with overflow checking off without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=True , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
@@ -1489,7 +1489,7 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with array limit applied and overflow checking on without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1498,7 +1498,7 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with array limit applied and overflow checking off without SIMD.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1519,11 +1519,11 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' , nosimd=True)
+			result = arrayfunc.asum(data, matherrors='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1535,7 +1535,7 @@ class asum_operator_f_without_SIMD(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1613,7 +1613,7 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with overflow checking on without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=False , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
@@ -1622,7 +1622,7 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with overflow checking off without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=True , nosimd=True)
 		self.assertEqual(result, sum(data))
 
 
@@ -1640,7 +1640,7 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with array limit applied and overflow checking on without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1649,7 +1649,7 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with array limit applied and overflow checking off without SIMD.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 , nosimd=True)
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 , nosimd=True)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1670,11 +1670,11 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' , nosimd=True)
+			result = arrayfunc.asum(data, matherrors='a' , nosimd=True)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1686,7 +1686,7 @@ class asum_operator_d_without_SIMD(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1764,7 +1764,7 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with overflow checking on with.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -1773,7 +1773,7 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with overflow checking off with.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -1791,7 +1791,7 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with array limit applied and overflow checking on with.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1800,7 +1800,7 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code f. General test with array limit applied and overflow checking off with.
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1821,11 +1821,11 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 		"""
 		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1837,7 +1837,7 @@ class asum_operator_f_with_SIMD(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -1897,7 +1897,7 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with overflow checking on with.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False )
+		result = arrayfunc.asum(data, matherrors=False )
 		self.assertEqual(result, sum(data))
 
 
@@ -1906,7 +1906,7 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with overflow checking off with.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True )
+		result = arrayfunc.asum(data, matherrors=True )
 		self.assertEqual(result, sum(data))
 
 
@@ -1924,7 +1924,7 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with array limit applied and overflow checking on with.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1933,7 +1933,7 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 		"""Test asum  - Array code d. General test with array limit applied and overflow checking off with.
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 )
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -1954,11 +1954,11 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 		"""
 		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' )
+			result = arrayfunc.asum(data, matherrors='a' )
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -1970,7 +1970,7 @@ class asum_operator_d_with_SIMD(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -2044,7 +2044,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with nan - Array code f, overflow disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2064,7 +2064,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with infinity - Array code f, overflow disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2084,7 +2084,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with negative infinity - Array code f, overflow disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2104,7 +2104,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with nan - Array code f, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2124,7 +2124,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with infinity - Array code f, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2144,7 +2144,7 @@ class asum_nan_f(unittest.TestCase):
 		"""Test array with negative infinity - Array code f, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2206,7 +2206,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with nan - Array code d, overflow disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2226,7 +2226,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with infinity - Array code d, overflow disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2246,7 +2246,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with negative infinity - Array code d, overflow disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2266,7 +2266,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with nan - Array code d, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2286,7 +2286,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with infinity - Array code d, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -2306,7 +2306,7 @@ class asum_nan_d(unittest.TestCase):
 		"""Test array with negative infinity - Array code d, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):

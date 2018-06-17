@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      28-May-2018.
+// Ver:      13-Jun-2018.
 //
 //------------------------------------------------------------------------------
 //
@@ -45,7 +45,7 @@
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
@@ -96,7 +96,7 @@ float asum_float_simd(Py_ssize_t arraylen, float *data) {
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */

@@ -33,6 +33,7 @@
 #include "arrayparams_base.h"
 #include "arrayerrs.h"
 
+#include "arrayops.h"
 #include "count_common.h"
 
 /*--------------------------------------------------------------------------- */
@@ -95,7 +96,7 @@ struct args_param parsepyargs_parm(PyObject *args) {
 	if (param2obj != NULL) {
 		argtypes.param2type = paramtypecode(param2obj);
 	} else {
-		argtypes.param2type = 'z';
+		argtypes.param2type = 0;
 	}
 
 
@@ -166,7 +167,7 @@ py_count(PyObject *self, PyObject *args)
 	itemcode = argtypes.array1type;
 
 	// The second parameter (step) was not specified.
-	if (argtypes.param2type == 'z') {
+	if (!argtypes.param2type) {
 		param2py.b = 1;
 		param2py.B = 1;
 		param2py.h = 1;

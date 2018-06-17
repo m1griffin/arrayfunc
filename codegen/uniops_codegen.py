@@ -84,9 +84,9 @@ uniops_op_float = """
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -94,7 +94,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(copname)s;
 			}
@@ -105,7 +105,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = %(copname)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -136,9 +136,9 @@ uniops_neg_int = """
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -146,7 +146,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
@@ -157,7 +157,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
@@ -186,9 +186,9 @@ uniops_abs_int = """
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -196,7 +196,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -207,7 +207,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
@@ -238,9 +238,9 @@ uniops_fac_intsigned = """
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -251,7 +251,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
 					dataout[x] = DEFAULT_FACT;
@@ -270,7 +270,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
 					return ARR_ERR_OVFL;
@@ -300,9 +300,9 @@ uniops_fac_intunsigned = """
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -313,7 +313,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > %(maxfact)s) {
 					dataout[x] = DEFAULT_FACT;
@@ -332,7 +332,7 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				if (data[x] > %(maxfact)s) {
 					return ARR_ERR_OVFL;
@@ -441,7 +441,7 @@ unsigned long long fact_usll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 403
 opscall = """
 		// %(funcmodifier)s
 		case '%(arraycode)s' : {
-			resultcode = %(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = %(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 """
@@ -466,7 +466,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "%(funclabel)s");
+	arraydata = getparams_one(self, args, keywds, 1, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

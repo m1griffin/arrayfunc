@@ -31,6 +31,11 @@
 #include "Python.h"
 
 #include <limits.h>
+
+// This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
+// the M_PI constant. This must be immediately above <math.h>.
+#define _USE_MATH_DEFINES
+
 #include <math.h>
 
 #include "arrayerrs.h"
@@ -53,9 +58,9 @@ const float degtorad_f = (float) (M_PI / 180.0);
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -63,7 +68,7 @@ signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = degtorad_f * data[x];
 			}
@@ -74,7 +79,7 @@ signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsig
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {		
+		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = degtorad_f * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -96,9 +101,9 @@ signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsig
    data = The input data array.
    dataout = The output data array.
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hassecondarray = If true, the output goes into the second array.
+   hasoutputarray = If true, the output goes into the second array.
 */
-signed int radians_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hassecondarray) {
+signed int radians_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -106,7 +111,7 @@ signed int radians_double(Py_ssize_t arraylen, double *data, double *dataout, un
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = degtorad_d * data[x];
 			}
@@ -117,7 +122,7 @@ signed int radians_double(Py_ssize_t arraylen, double *data, double *dataout, un
 		}
 	} else {
 	// Math error checking enabled.
-		if (hassecondarray) {
+		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
 				dataout[x] = degtorad_d * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
@@ -149,7 +154,7 @@ static PyObject *py_radians(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_one(self, args, keywds, "radians");
+	arraydata = getparams_one(self, args, keywds, 1, "radians");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -161,12 +166,12 @@ static PyObject *py_radians(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = radians_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = radians_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = radians_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hassecondarray);
+			resultcode = radians_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.

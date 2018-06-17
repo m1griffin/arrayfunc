@@ -276,7 +276,7 @@ codegen_common.OutputSourceCode(filename + '.c', outputlist,
 	maindescription, 
 	codegen_common.PlatformIndependentDescr, 
 	ccodedate, 
-	funcname, ['float', 'guardbands'])
+	funcname, ['float', 'guardbands', 'arrayparams_base'])
 
 # ==============================================================================
 

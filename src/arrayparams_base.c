@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -27,24 +27,13 @@
 
 #include <string.h>
 #include <limits.h>
+#include <float.h>
 
 #include "arrayerrs.h"
 
 #include "arrayparams_base.h"
 
-
 /*--------------------------------------------------------------------------- */
-
-// Return true if the array code is an integer type.
-char isintarraycode(char arraycode) {
-	return (strchr("bBhHiIlLqQ", arraycode) != NULL);
-}
-
-
-// Return true if the array code is for a signed integer array.
-char issignedintarraycode(char arraycode) {
-	return (strchr("bhilq", arraycode) != NULL);
-}
 
 
 // Return true if the array code is a float type.
@@ -111,115 +100,6 @@ char lookuparraycode(PyObject *dataobj) {
 
 
 /*--------------------------------------------------------------------------- */
-
-
-/* Determines if the Python object is an integer array.
- * dataobj = The object to be tested.
- * Returns TRUE if an integer array, otherwise returns FALSE.
-*/
-char isintarrayobjtype(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is an array.
-	if (!isarrayobjtype(dataobj)) { return 0; }
-
-	return isintarraycode(lookuparraycode(dataobj));
-
-}
-
-
-/* Determines if the Python object is a float array (array code 'f'). 
- * dataobj = The object to be tested.
- * Returns TRUE if a Python float array, otherwise returns FALSE.
-*/
-char isfloatarrayobjtype(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is an array.
-	if (!isarrayobjtype(dataobj)) { return 0; }
-
-	return isfloatarraycode(lookuparraycode(dataobj));
-
-}
-
-
-
-/* Determines if the Python object is a double array (array code 'd'). 
- * dataobj = The object to be tested.
- * Returns TRUE if a Python double array, otherwise returns FALSE.
-*/
-char isdoublearrayobjtype(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is an array.
-	if (!isarrayobjtype(dataobj)) { return 0; }
-
-	return isdoublearraycode(lookuparraycode(dataobj));
-
-}
-
-
-
-/* Determines if the Python object is an integer.
- * dataobj = The object to be tested.
- * Returns TRUE if an integer, otherwise returns FALSE.
-*/
-char isintobjtype(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is an int.
-	return (strcmp(dataobj->ob_type->tp_name, "int") == 0);
-
-}
-
-
-/* Determines if the Python object is a float.
- * dataobj = The object to be tested.
- * Returns TRUE if a float, otherwise returns FALSE.
-*/
-char isfloatobjtype(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is a float.
-	return (strcmp(dataobj->ob_type->tp_name, "float") == 0);
-
-}
-
-
-/* Determines if the Python object is null. This will indicate that no
- * 	parameter was provided.
- * dataobj = The object to be tested.
- * Returns TRUE if a float, otherwise returns FALSE.
-*/
-char isnullobjtype(PyObject *dataobj) {
-
-	// Check if is null.
-	return (dataobj == NULL);
-
-}
-
-
-/* Determines if the Python object is an integer or float type.
- * dataobj = The object to be tested.
- * Returns TRUE if the queried type, otherwise returns FALSE.
-*/
-char isnumberobjcat(PyObject *dataobj) {
-
-	if (dataobj == NULL) { return 0; }
-
-	// Check if is an integer or float.
-	return (isintobjtype(dataobj) || isfloatobjtype(dataobj));
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-
 
 
 /*--------------------------------------------------------------------------- */
@@ -360,88 +240,311 @@ char issignedlongrange(signed long long x) {
 
 // Returns true if the parameter is within the correct range for an unsigned char.
 // B
-char isunsignedcharrange(signed long long x) {
-	return ((x <= UCHAR_MAX) && (x >= 0));
+char isunsignedcharrange(unsigned long long x) {
+	return (x <= UCHAR_MAX);
 }
 
 // Returns true if the parameter is within the correct range for an unsigned short.
 // H
-char isunsignedshortrange(signed long long x) {
-	return ((x <= USHRT_MAX) && (x >= 0));
+char isunsignedshortrange(unsigned long long x) {
+	return (x <= USHRT_MAX);
 }
 
 // Returns true if the parameter is within the correct range for an unsigned int.
 // I
-char isunsignedintrange(signed long long x) {
-	return ((x <= UINT_MAX) && (x >= 0));
+char isunsignedintrange(unsigned long long x) {
+	return (x <= UINT_MAX);
 }
+
+// Returns true if the parameter is within the correct range for an unsigned long.
+// L
+char isunsignedlongrange(unsigned long long x) {
+	return (x <= ULONG_MAX);
+}
+
+
+
+// Returns true if the parameter is within the correct range for a float (single).
+// f
+char isfloatrange(double x) {
+	// Have to check for non-finite values explicitly as these won't be 
+	// covered by normal compare operations.
+	if (isnan(x) || (isinf(x) != 0)) { return 1; }
+
+	return ((x <= FLT_MAX) && (x >= -FLT_MAX));
+}
+
+/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
 
 
-// Check the range of values for unsigned integer numeric paramters.
-// PyArg_ParseTupleAndKeywords does not check unsigned integers for overflow,
-// therefore we need to add checks for this after after parsing these numbers 
-// into a larger signed variable (which does check for overflow). 
-// We also check for signed integers while we are at it in order to reduce the
-// number of format string parsing cases needed.
-// We can check for array codes b, h, i, l, B, H, and I only. 
-// Also see ischeckedintcode, as this tests if the array code is one which this 
-// one tests.
-//
-// arraytype = The array code.
-// param_q = The raw parameter as a signed integer.
-// parampy = A union which stores all the possible types.
-// returns true if OK, false if overflow.
-char intparamrangeok(char arraytype, signed long long param_q, struct paramsvals *parampy) {
+/* Take a single python parameter object and get the data. This could be an
+   integer, float, or array.
+   
+   dataobj = A parameter as a PyObject (not parsed).
+   paramobjdata = A structure which will be used to return the data extracted
+     from dataobj. Different fields will be valid depending on what the type of
+     data in dataobj was. 
 
-	// Check if the integer falls within the expected range for that array type.
-	switch (arraytype) {
-		case 'b': { if (!issignedcharrange(param_q)) { return 0; }
-			parampy->b = (signed char) param_q;
-			return 1;
-			break;
+   Returns 0 if OK, otherwise non-zero.
+
+*/
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata) {
+
+	// Used to track overflows in integer conversions.
+	int intparamoverflow = 0;
+	// temporary variables for parsing data.
+	long long llintparam;
+	unsigned long long ullintparam;
+	char arraycode = 0;
+	Py_buffer datapy;
+
+
+	paramobjdata->hasbuffer = 0;
+
+	// Parameter is an array.
+	if (PyObject_CheckBuffer(dataobj)) {
+		// Check that this is actually an array and not some other buffer type.
+		if (!isarrayobjtype(dataobj)) {
+			paramobjdata->paramtype = paramobj_error;
+			return -1;
+		}
+
+		// Not entirely sure if PyBUF_ND is the correct flag.
+		if (PyObject_GetBuffer(dataobj, &datapy, PyBUF_ND)) {
+			paramobjdata->paramtype = paramobj_error;
+			return -1;
+		}
+
+		paramobjdata->pybuffer = datapy;
+
+		arraycode = lookuparraycode(dataobj);
+		if (arraycode) {
+			paramobjdata->paramtype = paramobj_array;
+			paramobjdata->arraycode = arraycode;
+			paramobjdata->array.buf = datapy.buf;
+			paramobjdata->hasbuffer = 1;
+			return 0;
+		} else {
+			paramobjdata->paramtype = paramobj_error;
+			PyBuffer_Release(&paramobjdata->pybuffer);
+			paramobjdata->hasbuffer = 0;
+			return -1;
+		}
+
+	// Not an array, so expect a number.
+	} else {
+		// Parameter is an integer.
+		if (PyLong_Check(dataobj)) {
+			// Check if a signed long long.
+			llintparam = PyLong_AsLongLongAndOverflow(dataobj, &intparamoverflow);
+			// No overflow, so we can treat it as a signed long long.
+			if (!intparamoverflow) {
+				paramobjdata->llintparam = llintparam;
+				paramobjdata->paramtype = paramobj_int;
+				return 0;
+
+			// If it overflowed, it could be an unsigned long long.
+			} else {
+				ullintparam = PyLong_AsUnsignedLongLong(dataobj);
+
+				// An overflow happened. The integer is too large to represent
+				// as a native integer.
+				if ((ullintparam == (unsigned long long)-1) && PyErr_Occurred()) {
+					paramobjdata->paramtype = paramobj_error;
+					return -1;
+				}
+
+				paramobjdata->ullintparam = ullintparam;
+				paramobjdata->paramtype = paramobj_uint;
+				return 0;
 			}
-		case 'h': { if (!issignedshortrange(param_q)) { return 0; }
-			parampy->h = (signed short) param_q;
-			return 1;
-			break;
+
+		// Parameter is expected to be a float.
+		} else {
+			if (PyFloat_Check(dataobj)) {
+				paramobjdata->dparam = PyFloat_AS_DOUBLE(dataobj);
+				paramobjdata->paramtype = paramobj_float;
+				return 0;
+
+			// Error - unknown object type.
+			} else {
+				paramobjdata->paramtype = paramobj_error;
+				return -1;
 			}
-		case 'i': { if (!issignedintrange(param_q)) { return 0; }
-			parampy->i = (signed int) param_q;
-			return 1;
-			break;
-			}
-		case 'l': { if (!issignedlongrange(param_q)) { return 0; }
-			parampy->l = (signed long) param_q;
-			return 1;
-			break;
-			}
-		case 'B': { if (!isunsignedcharrange(param_q)) { return 0; }
-			parampy->B = (unsigned char) param_q;
-			return 1;
-			break;
-			}
-		case 'H': { if (!isunsignedshortrange(param_q)) { return 0; }
-			parampy->H = (unsigned short) param_q;
-			return 1;
-			break;
-			}
-		case 'I': { if (!isunsignedintrange(param_q)) { return 0; }
-			parampy->I = (unsigned int) param_q;
-			return 1;
-			break;
-			}
-		default: { return 0; }
+		}
 	}
 
+	// If we reach this point, something has gone wrong.
+	return -2;
 }
 
 
-// This function checks if intparamrangeok will check this parameter type.
-char ischeckedintcode(char arraycode) {
-	return (strchr("bhilBHI", arraycode) != NULL);
+/*--------------------------------------------------------------------------- */
+
+/* Extract the numeric parameter data and check it for range.
+ * arraycode = The array code for the associated array from the other
+ *    parameter. The type of numeric parameter is expected to be compatible
+ *    with this.
+ * paramobjdata = Contains values and information about the numeric parameter
+ *    we want to analyse.
+ * checkedvalue = The output value cast to the correct numeric type.
+ * Returns = Zero if OK, otherwise indicates an error.
+*/
+char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
+			struct paramsvals *checkedvalue) {
+
+	unsigned long long intparam;
+
+
+	// Make sure it is a numeric type.
+	if ((paramobjdata->paramtype != paramobj_int) && 
+		(paramobjdata->paramtype != paramobj_uint) &&
+		 (paramobjdata->paramtype != paramobj_float))  { return -2; }
+
+
+
+	// Is it a float?
+	if (paramobjdata->paramtype == paramobj_float) {
+		// Double precision float.
+		if (arraycode == 'd') {
+			// We can't check for overflow as this is the largest floating
+			// point type we have.
+			checkedvalue->d = (double) paramobjdata->dparam;
+			return 0;
+		}
+		// Single precision float.
+		if (arraycode == 'f') {
+			// Overflow.
+			if (!isfloatrange(paramobjdata->dparam))  { return -1; }
+			checkedvalue->f = (float) paramobjdata->dparam;
+			return 0;
+		}
+		// Array code doesn't match numeric type.
+		return -2;
+	}
+		
+
+	// We are assuming that in checking the parameter previously we first tried
+	// to make it a signed integer, but if the largest signed integer could
+	// not contain it we tried to make it an unsiged integer.
+
+
+	// Is it a signed integer?
+	if (strchr("bhilq", arraycode) != NULL) {
+		// Check if signed int data. This could also be the case if the
+		// integer was too large for the largest signed integer type.
+		if (paramobjdata->paramtype != paramobj_int) { return -2; }
+
+		switch(arraycode) {
+			// signed char
+			case 'b' : {
+				// Overflow.
+				if (!issignedcharrange(paramobjdata->llintparam))  { return -1; }
+				checkedvalue->b = (signed char) paramobjdata->llintparam;
+				return 0;
+			}
+			// signed short
+			case 'h' : {
+				// Overflow.
+				if (!issignedshortrange(paramobjdata->llintparam))  { return -1; }
+				checkedvalue->h = (signed short) paramobjdata->llintparam;
+				return 0;
+			}
+			// signed int
+			case 'i' : {
+				// Overflow.
+				if (!issignedintrange(paramobjdata->llintparam))  { return -1; }
+				checkedvalue->i = (signed int) paramobjdata->llintparam;
+				return 0;
+			}
+			// signed long
+			case 'l' : {
+				// Overflow.
+				if (!issignedlongrange(paramobjdata->llintparam))  { return -1; }
+				checkedvalue->l = (signed long) paramobjdata->llintparam;
+				return 0;
+			}
+			// signed long long
+			case 'q' : {
+				// We can't check for overflow as this is the largest signed
+				// integer type we have.
+				checkedvalue->q = (signed long long) paramobjdata->llintparam;
+				return 0;
+			}
+			// An unknown array type has been encountered.
+			default : { return -2; }
+		}
+		
+	}
+
+
+	// Unsigned integer.
+	if (strchr("BHILQ", arraycode) != NULL) {
+		// The original values could have been in either the unsigned or 
+		// signed range.
+		if (!(paramobjdata->paramtype == paramobj_uint) && 
+			!(paramobjdata->paramtype == paramobj_int)) { return -2; }
+
+		// It was in the signed data range, so convert to unsigned type.
+		if (paramobjdata->paramtype == paramobj_int) {
+			intparam = (unsigned long long) paramobjdata->llintparam;
+		} else {
+			intparam = paramobjdata->ullintparam;
+		}
+			
+		// We now have the integer value in the expected unsigned type and
+		// it must be in valid range.
+		
+		switch(arraycode) {
+			// unsigned char
+			case 'B' : {
+				// Overflow.
+				if (!isunsignedcharrange(intparam))  { return -1; }
+				checkedvalue->B = (signed char) intparam;
+				return 0;
+			}
+			// unsigned short
+			case 'H' : {
+				// Overflow.
+				if (!isunsignedshortrange(intparam))  { return -1; }
+				checkedvalue->H = (signed short) intparam;
+				return 0;
+			}
+			// unsigned int
+			case 'I' : {
+				// Overflow.
+				if (!isunsignedintrange(intparam))  { return -1; }
+				checkedvalue->I = (signed int) intparam;
+				return 0;
+			}
+			// unsigned long
+			case 'L' : {
+				// Overflow.
+				if (!isunsignedlongrange(intparam))  { return -1; }
+				checkedvalue->L = (signed long) intparam;
+				return 0;
+			}
+			// unsigned long long
+			case 'Q' : {
+				// We can't check for overflow as this is the largest signed
+				// integer type we have.
+				checkedvalue->Q = (signed long long) intparam;
+				return 0;
+			}
+			// An unknown array type has been encountered.
+			default : { return -2; }
+		}
+
+	} 
+
+
+	// We should never reach here unless there has been a programming error.
+	return -2;
+
+
 }
 
 /*--------------------------------------------------------------------------- */

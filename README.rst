@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 3.1.0 for 2017-10-12
-:Copyright: 2014 - 2017
+:Version: 4.0.0 for 2018-06-09
+:Copyright: 2014 - 2018
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
 
@@ -17,8 +17,8 @@ Introduction
 
 The arrayfunc module provides high speed array processing functions for use with
 the standard Python array module. These functions are patterned after the
-functions in the standard Python Itertools module together with some additional 
-ones from other sources.
+functions in the standard Python Itertools and math module together with some 
+additional ones from other sources.
 
 The purpose of these functions is to perform mathematical calculations on arrays
 faster than using native Python.
@@ -27,16 +27,14 @@ See full documentation at: http://arrayfunc.readthedocs.io/en/latest/
 
 ---------------------------------------------------------------------
 
-Functions
-=========
+Function Summary
+================
 
-Summary
--------
 
 The functions fall into several categories.
 
 Filling Arrays
-______________
+--------------
 
 ========= ======================================================================
 Function    Description
@@ -50,7 +48,7 @@ repeat     Fill an array with a specified value.
 
 
 Filtering Arrays
-________________
+----------------
 
 ============== =================================================================
 Function         Description
@@ -66,7 +64,21 @@ takewhile       Like dropwhile, but starts from the beginning and stops when the
 
 
 Examining and Searching Arrays
-______________________________
+------------------------------
+
+============== =================================================================
+Function         Description
+============== =================================================================
+findindex       Returns the index of the first value in an array to meet the
+                specified criteria.
+findindices     Searches an array for the array indices which meet the specified 
+                criteria and writes the results to a second array. Also returns
+                the number of matches found.
+============== =================================================================
+
+
+Summarising Arrays
+------------------
 
 ============== =================================================================
 Function         Description
@@ -77,40 +89,12 @@ aall            Returns True if all element in an array meet the selected
                 criteria.
 amax            Returns the maximum value in the array.
 amin            Returns the minimum value in the array.
-findindex       Returns the index of the first value in an array to meet the
-                specified criteria.
-findindices     Searches an array for the array indices which meet the specified 
-                criteria and writes the results to a second array. Also returns
-                the number of matches found.
-============== =================================================================
-
-
-Operating on Arrays
-___________________
-
-============== =================================================================
-Function         Description
-============== =================================================================
-amap            Apply an operator to each element of an array, together with an 
-                optional second parameter (for operators taking two parameters).
-                The results are written to a second array.
-amapi           Like amap, but the results are written in place to the input
-                array.
-starmap         Like amap, but where a second array acts as the second 
-                parameter. The results are written to an output array.
-starmapi        Like starmap, but the results are written in place to the first 
-                input array.
 asum            Calculate the arithmetic sum of an array.
-acalc           Calculate arbitrary equations over an array. 
 ============== =================================================================
-
-Amap and amapi support more than 70 different operations. Starmap and starmapi
-support more than two dozen different operations. ACalc supports more than 50
-operations.
 
 
 Data Conversion
-_______________
+---------------
 
 ========= ======================================================================
 Function   Description
@@ -118,6 +102,138 @@ Function   Description
 convert    Convert arrays between data types. The data will be converted into
            the form required by the output array.
 ========= ======================================================================
+
+
+Mathematical operator functions
+-------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        add x + y
+    truediv x / y
+   floordiv x // y
+        mod x % y
+        mul x * y
+        neg -x
+        pow x**y or math.pow(x, y)
+        sub x - y
+      abs\_ abs(x)
+=========== ===============================================
+
+Comparison operator functions
+-----------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+         eq x == y
+         gt x > y
+         ge x >= y
+         lt x < y
+         le x <= y
+         ne x != y
+=========== ===============================================
+
+Bitwise operator functions
+--------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+      and\_ x & y
+       or\_ x | y
+        xor x ^ y
+     invert ~x
+     lshift x << y
+     rshift x >> y
+=========== ===============================================
+
+Power and logarithmic functions
+-------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        exp math.exp(x)
+      expm1 math.expm1(x)
+        log math.log(x)
+      log10 math.log10(x)
+      log1p math.log1p(x)
+       log2 math.log2(x)
+       sqrt math.sqrt(x)
+=========== ===============================================
+
+Hyperbolic functions
+--------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+      acosh math.acosh(x)
+      asinh math.asinh(x)
+      atanh math.atanh(x)
+       cosh math.cosh(x)
+       sinh math.sinh(x)
+       tanh math.tanh(x)
+=========== ===============================================
+
+Trigonometric functions
+-----------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+       acos math.acos(x)
+       asin math.asin(x)
+       atan math.atan(x)
+      atan2 math.atan2(x, y)
+        cos math.cos(x)
+      hypot math.hypot(x, y)
+        sin math.sin(x)
+        tan math.tan(x)
+=========== ===============================================
+
+Angular conversion
+------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+    degrees math.degrees(x)
+    radians math.radians(x)
+=========== ===============================================
+
+Number-theoretic and representation functions
+---------------------------------------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+       ceil math.ceil(x)
+   copysign math.copysign(x, y)
+       fabs math.fabs(x)
+  factorial math.factorial(x)
+      floor math.floor(x)
+       fmod math.fmod(x, y)
+      isinf math.isinf(x)
+      isnan math.isnan(x)
+      ldexp math.ldexp(x, y)
+      trunc math.trunc(x)
+=========== ===============================================
+
+Special functions
+-----------------
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        erf math.erf(x)
+       erfc math.erfc(x)
+      gamma math.gamma(x)
+     lgamma math.lgamma(x)
+=========== ===============================================
+
 
 Attributes
 __________
@@ -131,8 +247,7 @@ These attributes are part of the "arraylimits" module.
 Supported Array Types
 =====================
 
-Arrayfunc supports all standard Python 3.x array types, as well as the 'bytes' 
-type.
+Arrayfunc supports all standard Python 3.x array types.
 
 
 ---------------------------------------------------------------------
@@ -196,14 +311,14 @@ example::
 Release History
 ===============
 
-* 1.0.0 - First release.
-* 1.1.0 - Added support for math constants math.pi and math.e.
+* 3.1.0 - Added log2 to amap, amapi, and acalc.
+* 3.0.0 - Changed package format to "Wheel" files. No functional changes.
+* 2.1.1 - Fixed missing header files in PyPI package. No functional changes.
 * 2.0.0 - Many changes. Updated MS Windows support to 3.6 and latest compiler.
           This in turn brought the Windows version up to feature parity with
           the other versions. Changed supported MS Windows version from 32 bit
           to 64 bit. Added SIMD support for some functions which provided a 
           significant performance for those affected. Updated supported versions
           of Debian and FreeBSD to current releases.
-* 2.1.1 - Fixed missing header files in PyPI package. No functional changes.
-* 3.0.0 - Changed package format to "Wheel" files. No functional changes.
-* 3.1.0 - Added log2 to amap, amapi, and acalc.
+* 1.1.0 - Added support for math constants math.pi and math.e.
+* 1.0.0 - First release.

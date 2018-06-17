@@ -40,7 +40,7 @@
 
 // The list of keyword arguments. All argument must be listed, whether we 
 // intend to use them for keywords or not. 
-static char *kwlist[] = {"data", "disovfl", "maxlen", "nosimd", NULL};
+static char *kwlist[] = {"data", "matherrors", "maxlen", "nosimd", NULL};
 
 /*--------------------------------------------------------------------------- */
 
@@ -71,7 +71,7 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 	// Indicates an error.
 	signed int errflag = 0;
 	// If true, disable integer overflow checking.
-	signed int disableovfl = 0;
+	signed int ignoreerrors = 0;
 
 	// How long the array is.
 	Py_ssize_t arraylength;
@@ -88,7 +88,7 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 
 
 	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "O|ini:asum", kwlist, &dataobj, &disableovfl, &arraymaxlen, &nosimd)) {
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "O|ini:asum", kwlist, &dataobj, &ignoreerrors, &arraymaxlen, &nosimd)) {
 		ErrMsgParameterError();
 		return NULL;
 	}
@@ -104,7 +104,7 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 
 	// Now we will fetch the actual data.
 	if (!PyArg_ParseTupleAndKeywords(args, keywds, "y*|ini:asum", kwlist, 
-			&datapy, &disableovfl, &arraymaxlen, &nosimd)) {
+			&datapy, &ignoreerrors, &arraymaxlen, &nosimd)) {
 		return NULL;
 	}
 
@@ -132,73 +132,73 @@ static PyObject *py_asum(PyObject *self, PyObject *args, PyObject *keywds)
 	switch(itemcode) {
 		// signed char
 		case 'b' : {
-			resultfound.l = asum_signed_char(arraylength, data.b, &errflag, disableovfl);
+			resultfound.l = asum_signed_char(arraylength, data.b, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromLong(resultfound.l);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultfound.L = asum_unsigned_char(arraylength, data.B, &errflag, disableovfl);
+			resultfound.L = asum_unsigned_char(arraylength, data.B, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromUnsignedLong(resultfound.L);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultfound.l = asum_signed_short(arraylength, data.h, &errflag, disableovfl);
+			resultfound.l = asum_signed_short(arraylength, data.h, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromLong(resultfound.l);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultfound.L = asum_unsigned_short(arraylength, data.H, &errflag, disableovfl);
+			resultfound.L = asum_unsigned_short(arraylength, data.H, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromUnsignedLong(resultfound.L);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultfound.l = asum_signed_int(arraylength, data.i, &errflag, disableovfl);
+			resultfound.l = asum_signed_int(arraylength, data.i, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromLong(resultfound.l);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultfound.L = asum_unsigned_int(arraylength, data.I, &errflag, disableovfl);
+			resultfound.L = asum_unsigned_int(arraylength, data.I, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromUnsignedLong(resultfound.L);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultfound.l = asum_signed_long(arraylength, data.l, &errflag, disableovfl);
+			resultfound.l = asum_signed_long(arraylength, data.l, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromLong(resultfound.l);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultfound.L = asum_unsigned_long(arraylength, data.L, &errflag, disableovfl);
+			resultfound.L = asum_unsigned_long(arraylength, data.L, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromUnsignedLong(resultfound.L);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultfound.q = asum_signed_long_long(arraylength, data.q, &errflag, disableovfl);
+			resultfound.q = asum_signed_long_long(arraylength, data.q, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromLongLong(resultfound.q);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultfound.Q = asum_unsigned_long_long(arraylength, data.Q, &errflag, disableovfl);
+			resultfound.Q = asum_unsigned_long_long(arraylength, data.Q, &errflag, ignoreerrors);
 			sumreturn = PyLong_FromUnsignedLongLong(resultfound.Q);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultfound.f = asum_float(arraylength, data.f, &errflag, disableovfl, nosimd);
+			resultfound.f = asum_float(arraylength, data.f, &errflag, ignoreerrors, nosimd);
 			sumreturn = PyFloat_FromDouble((double) resultfound.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultfound.d = asum_double(arraylength, data.d, &errflag, disableovfl, nosimd);
+			resultfound.d = asum_double(arraylength, data.d, &errflag, ignoreerrors, nosimd);
 			sumreturn = PyFloat_FromDouble(resultfound.d);
 			break;
 		}
@@ -241,12 +241,12 @@ large arrays are used (and may be impossible due to limits on array \n\
 indices in the array module). \n\
 \n\
 x = asum(inparray)\n\
-x = asum(inparray, disovfl=True, maxlen=y)\n\
+x = asum(inparray, matherrors=True, maxlen=y)\n\
 x = asum(inparray, nosimd=True)\n\
 \n\
 * inparray - The array to be summed.\n\
-* disovfl - If this keyword parameter is True, integer overflow checking \n\
-  will be disabled. This is an optional parameter.\n\
+* matherrors - If this keyword parameter is True, integer overflow \n\
+  checking will be disabled. This is an optional parameter.\n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\

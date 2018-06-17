@@ -37,10 +37,10 @@ template_basic = """/*----------------------------------------------------------
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl) { 
+%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int ignoreerrors) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
@@ -48,7 +48,7 @@ template_basic = """/*----------------------------------------------------------
 
 	*errflag = 0;
 	// Overflow checking disabled.
-	if (disableovfl) {
+	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
@@ -82,10 +82,10 @@ template_basic_u = """/*--------------------------------------------------------
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    Returns: The sum of the array.
 */
-%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl) { 
+%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int ignoreerrors) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
@@ -93,7 +93,7 @@ template_basic_u = """/*--------------------------------------------------------
 
 	*errflag = 0;
 	// Overflow checking disabled.
-	if (disableovfl) {
+	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
@@ -123,11 +123,11 @@ simdtemplate = """
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int disableovfl, unsigned int nosimd) { 
+%(sumtype)s asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd) { 
 
 	// array index counter. 
 	Py_ssize_t x; 
@@ -136,7 +136,7 @@ simdtemplate = """
 
 #ifdef AF_HASSIMD
 	// SIMD version. Only use this if overflow checking is disabled.
-	if (disableovfl && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return asum_%(funcmodifier)s_simd(arraylen, data);
 	}
 #endif
@@ -144,7 +144,7 @@ simdtemplate = """
 
 	*errflag = 0;
 	// Overflow checking disabled.
-	if (disableovfl) {
+	if (ignoreerrors) {
 		for(x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
@@ -173,7 +173,7 @@ simdsupport = """
    arraylen = The length of the data array.
    data = The input data array.
    errflag = Set to true if an overflow error occured in integer operations.
-   disableovfl = If true, arithmetic overflow checking is disabled.
+   ignoreerrors = If true, arithmetic overflow checking is disabled.
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */

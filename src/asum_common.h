@@ -5,7 +5,7 @@
 //           Common platform independent code.
 // Language: C
 // Date:     15-May-2014
-// Ver:      28-May-2018.
+// Ver:      13-Jun-2018.
 //
 //------------------------------------------------------------------------------
 //
@@ -26,16 +26,16 @@
 //------------------------------------------------------------------------------
 
 
-signed long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *errflag, signed int disableovfl);
-unsigned long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signed int *errflag, signed int disableovfl);
-signed long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int *errflag, signed int disableovfl);
-unsigned long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, signed int *errflag, signed int disableovfl);
-signed long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *errflag, signed int disableovfl);
-unsigned long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, signed int *errflag, signed int disableovfl);
-signed long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int *errflag, signed int disableovfl);
-unsigned long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, signed int *errflag, signed int disableovfl);
-signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed int *errflag, signed int disableovfl);
-unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, signed int *errflag, signed int disableovfl);
-float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int disableovfl, unsigned int nosimd);
-double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signed int disableovfl, unsigned int nosimd);
+signed long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *errflag, signed int ignoreerrors);
+unsigned long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, signed int *errflag, signed int ignoreerrors);
+signed long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int *errflag, signed int ignoreerrors);
+unsigned long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data, signed int *errflag, signed int ignoreerrors);
+signed long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *errflag, signed int ignoreerrors);
+unsigned long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, signed int *errflag, signed int ignoreerrors);
+signed long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int *errflag, signed int ignoreerrors);
+unsigned long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, signed int *errflag, signed int ignoreerrors);
+signed long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed int *errflag, signed int ignoreerrors);
+unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, signed int *errflag, signed int ignoreerrors);
+float asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd);
+double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signed int ignoreerrors, unsigned int nosimd);
 

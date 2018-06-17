@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# Setup file for arrayfunc. As part of the setup process this script will
+# attempt to detect if the current system is x86-64 with GCC and if so will 
+# enable SIMD extensions. If the current system is any other architecture or 
+# compiler they will be disabled.
+
+
 import platform
 from setuptools import setup, Extension
 
@@ -19,9 +25,9 @@ extensions = [
 	('compress', ['src/compress.c', 'src/compress_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('convert', ['src/convert.c', 'src/convert_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('count', ['src/count.c', 'src/count_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('cycle', ['src/cycle.c', 'src/cycle_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('repeat', ['src/repeat.c', 'src/repeat_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('count', ['src/count.c', 'src/count_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('cycle', ['src/cycle.c', 'src/cycle_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('repeat', ['src/repeat.c', 'src/repeat_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 
 	('dropwhile', ['src/dropwhile.c', 'src/dropwhile_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 	('takewhile', ['src/takewhile.c', 'src/takewhile_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
@@ -50,16 +56,16 @@ extensions = [
 	('lt', ['src/lt.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('le', ['src/le.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('and_', ['src/and_.c', 'src/arrayparams_noerr2.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('or_', ['src/or_.c', 'src/arrayparams_noerr2.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('xor', ['src/xor.c', 'src/arrayparams_noerr2.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('lshift', ['src/lshift.c', 'src/arrayparams_noerr2.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('rshift', ['src/rshift.c', 'src/arrayparams_noerr2.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('and_', ['src/and_.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('or_', ['src/or_.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('xor', ['src/xor.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('lshift', ['src/lshift.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('rshift', ['src/rshift.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('neg', ['src/neg.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('abs_', ['src/abs_.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('factorial', ['src/factorial.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('invert', ['src/invert.c', 'src/arrayparams_1noerr.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('invert', ['src/invert.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('acos', ['src/acos.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('acosh', ['src/acosh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -119,11 +125,13 @@ extensions = [
 # we're actually dealing with GCC. If this changes in future, we can change the 
 # following to enable the option. There are however also #define statements in
 # the C source which must also be changed.
+# First however, we must check to make sure this is an x86 CPU, otherwise the
+# SIMD flags are completely different.
 PyCompilerType = platform.python_compiler()
-if ('GCC' in PyCompilerType) and ('Clang' not in PyCompilerType):
-	Compile_Args = '-msse4.1'
+if ('x86' in platform.machine()) and ('GCC' in PyCompilerType) and ('Clang' not in PyCompilerType):
+	Compile_Args = ['-msse4.1']
 else:
-	Compile_Args = ''
+	Compile_Args = []
 
 
 
@@ -148,7 +156,7 @@ setup(name = 'arrayfunc',
 		],
 	keywords = 'mathematical array functions',
 	ext_package='arrayfunc',
-	ext_modules = [Extension(x, y, extra_compile_args=[Compile_Args]) for x,y in extensions],
+	ext_modules = [Extension(x, y, extra_compile_args=Compile_Args) for x,y in extensions],
 	packages=['arrayfunc']
 	)
 

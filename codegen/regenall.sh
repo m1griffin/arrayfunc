@@ -20,6 +20,27 @@ do
 	fi
 done
 
+# Move C source files.
+for csource in `ls *.c`
+
+do
+
+	# Move it to the C source code directory.
+	mv $csource ../src
+
+done
+
+# Move C source headers.
+for csource in `ls *.h`
+
+do
+
+	# Move it to the C source code directory.
+	mv $csource ../src
+
+done
+
+
 
 # Unit test code generation.
 for codetarget in `ls *_testgen.py`
@@ -36,19 +57,24 @@ do
 done
 
 
+for utest in `ls test_*.py`
+
+do
+
+	# Set executable bit
+	chmod +x $utest
+
+	# Move it to the unit test directory.
+	mv $utest ../unittest
+
+done
+
+
+# TODO: Remove.
 # Documentation and op codes.
-echo "Generating:  docsgen.py"
-./docsgen.py
-filecount=$(($filecount + 1))
-echo "Generating:  opcodes.py"
-./opcodes.py
-filecount=$(($filecount + 1))
-echo "Generating:  acalcdocsgen.py"
-./acalcdocsgen.py
-filecount=$(($filecount + 1))
-echo "Generating:  acalcopcodes.py"
-./acalcopcodes.py
-filecount=$(($filecount + 1))
+#echo "Generating:  docsgen.py"
+#./docsgen.py
+#filecount=$(($filecount + 1))
 
 
 # Time at which the test sequence completed.

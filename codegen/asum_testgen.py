@@ -94,7 +94,7 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with overflow checking on %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, disovfl=False %(simdtest)s)
+		result = arrayfunc.asum(data, matherrors=False %(simdtest)s)
 		self.assertEqual(result, sum(data))
 
 
@@ -103,7 +103,7 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with overflow checking off %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, disovfl=True %(simdtest)s)
+		result = arrayfunc.asum(data, matherrors=True %(simdtest)s)
 		self.assertEqual(result, sum(data))
 
 
@@ -121,7 +121,7 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking on %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, disovfl=False, maxlen=10 %(simdtest)s)
+		result = arrayfunc.asum(data, matherrors=False, maxlen=10 %(simdtest)s)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -130,7 +130,7 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking off %(simdstatus)s.
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, disovfl=True, maxlen=10 %(simdtest)s)
+		result = arrayfunc.asum(data, matherrors=True, maxlen=10 %(simdtest)s)
 		self.assertEqual(result, sum(data[:10]))
 
 
@@ -151,11 +151,11 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 		"""
 		data = array.array('%(typecode)s', %(gentest)s)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, disovfl='a' %(simdtest)s)
+			result = arrayfunc.asum(data, matherrors='a' %(simdtest)s)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 	########################################################
 	def test_function_09(self):
@@ -167,7 +167,7 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], disovfl='a')
+			result = sum([1, 2, 3], matherrors='a')
 
 
 	########################################################
@@ -277,7 +277,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with nan - Array code %(typelabel)s, overflow disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -297,7 +297,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with infinity - Array code %(typelabel)s, overflow disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -317,7 +317,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with negative infinity - Array code %(typelabel)s, overflow disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -337,7 +337,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with nan - Array code %(typelabel)s, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -357,7 +357,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with infinity - Array code %(typelabel)s, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):
@@ -377,7 +377,7 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 		"""Test array with negative infinity - Array code %(typelabel)s, overflow and SIMD disabled.
 		"""
 		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, disovfl=True)
+		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
 
 		# NaN cannot be compared using normal means.
 		if math.isnan(expected):

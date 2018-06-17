@@ -2118,7 +2118,7 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, "sub");
+	arraydata = getparams_two(self, args, keywds, 1, "sub");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

@@ -67,10 +67,32 @@ struct paramsvals {
 };
 
 
+// The categories that a parameter can fall into.
+enum paramtypes
+{ 
+	paramobj_error,
+	paramobj_array,
+	paramobj_int,
+	paramobj_uint,
+	paramobj_float,
+};
+
+
+// This holds both array and numeric (integer or floating point) data values.
+// This is used to parse the parameters.
+struct paramsdata {
+	char arraycode;
+	char hasbuffer;
+	long long llintparam;
+	unsigned long long ullintparam;
+	double dparam;
+	Py_buffer pybuffer;
+	union dataarrays array;
+	enum paramtypes paramtype;
+};
+
 /*--------------------------------------------------------------------------- */
 
-char isintarraycode(char arraycode);
-char issignedintarraycode(char arraycode);
 char isfloatarraycode(char arraycode);
 char isdoublearraycode(char arraycode);
 
@@ -78,16 +100,8 @@ char isdoublearraycode(char arraycode);
 char lookuparraycode(PyObject *dataobj);
 	
 char isarrayobjtype(PyObject *dataobj);
-char isintarrayobjtype(PyObject *dataobj);
-char isfloatarrayobjtype(PyObject *dataobj);
-char isdoublearrayobjtype(PyObject *dataobj);
 
-char isintobjtype(PyObject *dataobj);
-char isfloatobjtype(PyObject *dataobj);
-char isnullobjtype(PyObject *dataobj);
-char isnumberobjcat(PyObject *dataobj);
 
-	
 Py_ssize_t calcarraylength(char itemcode, Py_ssize_t bufferlength);
 Py_ssize_t adjustarraymaxlen(Py_ssize_t arraylength, Py_ssize_t arraymaxlen);
 	
@@ -99,19 +113,21 @@ void makefmtstr(char *basestr, char *funcname, char *formatstr);
 char issignedcharrange(signed long long x);
 char issignedshortrange(signed long long x);
 char issignedintrange(signed long long x);
-char issignedintrange(signed long long x);
 char issignedlongrange(signed long long x);
 
-char isunsignedcharrange(signed long long x);
-char isunsignedshortrange(signed long long x);
-char isunsignedintrange(signed long long x);
+char isunsignedcharrange(unsigned long long x);
+char isunsignedshortrange(unsigned long long x);
+char isunsignedintrange(unsigned long long x);
+char isunsignedlongrange(unsigned long long x);
+
+char isfloatrange(double x);
 
 
 /*--------------------------------------------------------------------------- */
 
-char ischeckedintcode(char arraycode);
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata);
 
-char intparamrangeok(char arraytype, signed long long param_q, struct paramsvals *parampy);
-
+char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
+			struct paramsvals *checkedvalue);
 
 /*--------------------------------------------------------------------------- */
