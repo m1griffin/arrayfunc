@@ -5,7 +5,7 @@
 //           Common platform independent code.
 // Language: C
 // Date:     08-May-2014
-// Ver:      13-Jun-2018.
+// Ver:      19-Jun-2018.
 //
 //------------------------------------------------------------------------------
 //
@@ -32,11 +32,12 @@
 
 #include "Python.h"
 
+#include "arrayparams_base.h"
+#include "arrayops.h"
+#include "simddefs.h"
 #ifdef AF_HASSIMD
 #include "aany_simd_x86.h"
 #endif
-#include "arrayparams_base.h"
-#include "arrayops.h"
 
 #include "arrayerrs.h"
 

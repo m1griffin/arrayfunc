@@ -255,15 +255,14 @@ Arrayfunc supports all standard Python 3.x array types.
 Performance
 ===========
 
-Performance will vary depending on the function, operation, array data type 
-used, and whether overflow checking is enabled. 
+Average performance increase on x86_64 Ubuntu with GCC is 100 times faster than 
+native Python. Performance will vary depending on the function, operation, array 
+data type used, and whether overflow checking is enabled, with the performance 
+increase ranging from 50% to 500 times. 
 
-Average performance increase for amap is 80 times faster than native Python.
-Functions other than amap, starmap, and acalc average is 50 times faster  than
-native Python. However, some functions and operations may be more than 200 to 
-300 times faster than native Python.
+Other platforms show similar improvements.
 
-Detailed performance figures are listed in the documentation.
+Detailed performance figures are listed in the full documentation.
 
 
 ---------------------------------------------------------------------
@@ -277,13 +276,16 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 ================= ========  ========================== =========================
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
-Ubuntu 16.04 LTS   64 bit    GCC                         3.5
+Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Debian 9           32 bit    GCC                         3.5
 Debian 9           64 bit    GCC                         3.5
 FreeBSD 11         64 bit    LLVM                        3.5
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.6
+MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
+Raspbian (RPi 3)   32 bit    GCC                         3.5
 ================= ========  ========================== =========================
 
+The Raspbian (RPi 3) tests were conducted on a Raspberry Pi ARM CPU. All others
+were conducted using VMs running on x86 hardware. 
 
 ---------------------------------------------------------------------
 
@@ -311,6 +313,14 @@ example::
 Release History
 ===============
 
+* 4.0.0 - Major revision with many changes. Amap, starmap, and acalc were 
+          replaced with new individual functions. This change was made to 
+          provides a simpler and more consistent interface which is tailored to
+          the individual function rather than attempting to make one parameter 
+          format fit all. The "disovfl" parameter has been named to "matherrors" 
+          in order to better reflect that it encompasses more than just integer
+          overflow. Support for the "bytes" type has been removed. The Raspberry
+          Pi has been added as a supported platform.
 * 3.1.0 - Added log2 to amap, amapi, and acalc.
 * 3.0.0 - Changed package format to "Wheel" files. No functional changes.
 * 2.1.1 - Fixed missing header files in PyPI package. No functional changes.

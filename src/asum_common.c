@@ -5,7 +5,7 @@
 //           Common platform independent code.
 // Language: C
 // Date:     15-May-2014
-// Ver:      13-Jun-2018.
+// Ver:      19-Jun-2018.
 //
 //------------------------------------------------------------------------------
 //
@@ -32,6 +32,7 @@
 
 #include "Python.h"
 
+#include "simddefs.h"
 #ifdef AF_HASSIMD
 #include "asum_simd_x86.h"
 #endif

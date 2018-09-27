@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      13-Jun-2018.
+# Ver:      19-Jun-2018.
 #
 ###############################################################################
 #
@@ -2032,91 +2032,6 @@ class abs__opt_param_errors_d(unittest.TestCase):
 
 
 ##############################################################################
-class abs__invalidarray_Q(unittest.TestCase):
-	"""Test for invalid arrays.
-	test_template_invalidarray
-	"""
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.data = array.array('Q', [5,4,3,2,1,0,1,2,3,4,5])
-		self.dataout = array.array('Q', [0]*len(self.data))
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace(self):
-		"""Test abs_ in place - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data)
-
-
-	########################################################
-	def test_abs__inplace_ov_a1(self):
-		"""Test abs_ in place with matherrors=True  - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, matherrors=True)
-
-
-	########################################################
-	def test_abs__inplace_lim_a2(self):
-		"""Test abs_ in place with array limit  - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, maxlen=self.limited)
-
-
-	########################################################
-	def test_abs__inplace_ov_lim_a3(self):
-		"""Test abs_ in place with matherrors=True and array limit  - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited)
-
-
-	########################################################
-	def test_abs__outputarray_a4(self):
-		"""Test abs_ to output array - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, self.dataout)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a4(self):
-		"""Test abs_ to output array with matherrors=True  - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, self.dataout, matherrors=True)
-
-
-	########################################################
-	def test_abs__outputarray_lim_a5(self):
-		"""Test abs_ to output array with array limit  - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited)
-
-
-	########################################################
-	def test_abs__outputarray_ov_lim_a6(self):
-		"""Test abs_ to output array with matherrors=True and array limit - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited)
-
-
-##############################################################################
-
-
-
-##############################################################################
 class abs__invalidarray_H(unittest.TestCase):
 	"""Test for invalid arrays.
 	test_template_invalidarray
@@ -2192,6 +2107,91 @@ class abs__invalidarray_H(unittest.TestCase):
 	########################################################
 	def test_abs__outputarray_ov_lim_a6(self):
 		"""Test abs_ to output array with matherrors=True and array limit - Array code H.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__invalidarray_I(unittest.TestCase):
+	"""Test for invalid arrays.
+	test_template_invalidarray
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('I', [5,4,3,2,1,0,1,2,3,4,5])
+		self.dataout = array.array('I', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace(self):
+		"""Test abs_ in place - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data)
+
+
+	########################################################
+	def test_abs__inplace_ov_a1(self):
+		"""Test abs_ in place with matherrors=True  - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, matherrors=True)
+
+
+	########################################################
+	def test_abs__inplace_lim_a2(self):
+		"""Test abs_ in place with array limit  - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, maxlen=self.limited)
+
+
+	########################################################
+	def test_abs__inplace_ov_lim_a3(self):
+		"""Test abs_ in place with matherrors=True and array limit  - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited)
+
+
+	########################################################
+	def test_abs__outputarray_a4(self):
+		"""Test abs_ to output array - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, self.dataout)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a4(self):
+		"""Test abs_ to output array with matherrors=True  - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, self.dataout, matherrors=True)
+
+
+	########################################################
+	def test_abs__outputarray_lim_a5(self):
+		"""Test abs_ to output array with array limit  - Array code I.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited)
+
+
+	########################################################
+	def test_abs__outputarray_ov_lim_a6(self):
+		"""Test abs_ to output array with matherrors=True and array limit - Array code I.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited)
@@ -2287,7 +2287,7 @@ class abs__invalidarray_L(unittest.TestCase):
 
 
 ##############################################################################
-class abs__invalidarray_I(unittest.TestCase):
+class abs__invalidarray_Q(unittest.TestCase):
 	"""Test for invalid arrays.
 	test_template_invalidarray
 	"""
@@ -2297,15 +2297,15 @@ class abs__invalidarray_I(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data = array.array('I', [5,4,3,2,1,0,1,2,3,4,5])
-		self.dataout = array.array('I', [0]*len(self.data))
+		self.data = array.array('Q', [5,4,3,2,1,0,1,2,3,4,5])
+		self.dataout = array.array('Q', [0]*len(self.data))
 
 		self.limited = len(self.data) // 2
 
 
 	########################################################
 	def test_abs__inplace(self):
-		"""Test abs_ in place - Array code I.
+		"""Test abs_ in place - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data)
@@ -2313,7 +2313,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__inplace_ov_a1(self):
-		"""Test abs_ in place with matherrors=True  - Array code I.
+		"""Test abs_ in place with matherrors=True  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, matherrors=True)
@@ -2321,7 +2321,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__inplace_lim_a2(self):
-		"""Test abs_ in place with array limit  - Array code I.
+		"""Test abs_ in place with array limit  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, maxlen=self.limited)
@@ -2329,7 +2329,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__inplace_ov_lim_a3(self):
-		"""Test abs_ in place with matherrors=True and array limit  - Array code I.
+		"""Test abs_ in place with matherrors=True and array limit  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited)
@@ -2337,7 +2337,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__outputarray_a4(self):
-		"""Test abs_ to output array - Array code I.
+		"""Test abs_ to output array - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, self.dataout)
@@ -2345,7 +2345,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__outputarray_ov_a4(self):
-		"""Test abs_ to output array with matherrors=True  - Array code I.
+		"""Test abs_ to output array with matherrors=True  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, self.dataout, matherrors=True)
@@ -2353,7 +2353,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__outputarray_lim_a5(self):
-		"""Test abs_ to output array with array limit  - Array code I.
+		"""Test abs_ to output array with array limit  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited)
@@ -2361,7 +2361,7 @@ class abs__invalidarray_I(unittest.TestCase):
 
 	########################################################
 	def test_abs__outputarray_ov_lim_a6(self):
-		"""Test abs_ to output array with matherrors=True and array limit - Array code I.
+		"""Test abs_ to output array with matherrors=True and array limit - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited)

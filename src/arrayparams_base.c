@@ -287,11 +287,13 @@ char isfloatrange(double x) {
    paramobjdata = A structure which will be used to return the data extracted
      from dataobj. Different fields will be valid depending on what the type of
      data in dataobj was. 
-
+   hasbuffer = If 1, a buffer handle was obtained and must be released. If 0,
+     there is no buffer to be released (either not a buffer object, or was not
+     obtained.
    Returns 0 if OK, otherwise non-zero.
 
 */
-int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata) {
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer) {
 
 	// Used to track overflows in integer conversions.
 	int intparamoverflow = 0;
@@ -302,7 +304,7 @@ int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata) {
 	Py_buffer datapy;
 
 
-	paramobjdata->hasbuffer = 0;
+	*hasbuffer = 0;
 
 	// Parameter is an array.
 	if (PyObject_CheckBuffer(dataobj)) {
@@ -325,12 +327,12 @@ int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata) {
 			paramobjdata->paramtype = paramobj_array;
 			paramobjdata->arraycode = arraycode;
 			paramobjdata->array.buf = datapy.buf;
-			paramobjdata->hasbuffer = 1;
+			*hasbuffer = 1;
 			return 0;
 		} else {
 			paramobjdata->paramtype = paramobj_error;
 			PyBuffer_Release(&paramobjdata->pybuffer);
-			paramobjdata->hasbuffer = 0;
+			*hasbuffer = 0;
 			return -1;
 		}
 

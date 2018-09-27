@@ -127,7 +127,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1)) {
+	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 3;
 		releasebuffers_comp(arraydata);
@@ -135,7 +135,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 	}
 
 	// Parse the second object parameter. 
-	if (get_paramdata(dataobj2, &paramobjdata2)) {
+	if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 		ErrMsgParameterError();
 		arraydata.error = 4;
 		releasebuffers_comp(arraydata);

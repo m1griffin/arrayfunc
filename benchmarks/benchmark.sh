@@ -5,36 +5,18 @@
 # ==============================================================================
 
 
-echo "Testing general functions benchmarks."
+echo "Testing benchmarks." $(date)
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')
 
-# This one does not get automatically regenerated.
-./benchfuncs.py
+./benchmarks.py
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')
 elapsedtime=$(($endtime - $starttime))
 
-echo "General functions benchmarks completed in " $elapsedtime " seconds."
-
-
-# ==============================================================================
-
-
-echo "Testing math functions benchmarks."
-
-# Time at which the test sequence started.
-starttime=$(date '+%s')
-
-./benchmath.py
-
-# Time at which the test sequence completed.
-endtime=$(date '+%s')
-elapsedtime=$(($endtime - $starttime))
-
-echo "Math functions benchmarks completed in " $elapsedtime " seconds."
+echo "Benchmarks completed in " $elapsedtime " seconds."
 echo
 
 # ==============================================================================

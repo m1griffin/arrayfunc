@@ -173,7 +173,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1)) {
+	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 3;
 		releasebuffers_two(arraydata);
@@ -181,7 +181,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	}
 
 	// Parse the second object parameter. 
-	if (get_paramdata(dataobj2, &paramobjdata2)) {
+	if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 		ErrMsgParameterError();
 		arraydata.error = 4;
 		releasebuffers_two(arraydata);
@@ -234,7 +234,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 
 	// Parse the third object parameter. This one is optional.
 	if (dataobj3 != NULL) {
-		if (get_paramdata(dataobj3, &paramobjdata3)) {
+		if (get_paramdata(dataobj3, &paramobjdata3, &arraydata.hasbuffer3)) {
 			ErrMsgParameterError();
 			arraydata.error = 8;
 			releasebuffers_two(arraydata);

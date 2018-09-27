@@ -212,7 +212,7 @@ codegen_common.OutputSourceCode(filename + '.c', outputlist,
 	maindescription, 
 	codegen_common.PlatformIndependentDescr, 
 	ccodedate, 
-	funcname, ['simdmacromsg'])
+	funcname, ['simddefs', 'simdmacromsg'])
 
 
 # ==============================================================================
@@ -249,7 +249,7 @@ codegen_common.OutputSourceCode(simdfilename + '.c', outputlist,
 	maindescription, 
 	codegen_common.SIMDDescription, 
 	simdcodedate,
-	'', [])
+	'', ['simddefs', 'arrayops'])
 
 
 # ==============================================================================

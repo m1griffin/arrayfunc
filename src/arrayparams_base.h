@@ -82,7 +82,6 @@ enum paramtypes
 // This is used to parse the parameters.
 struct paramsdata {
 	char arraycode;
-	char hasbuffer;
 	long long llintparam;
 	unsigned long long ullintparam;
 	double dparam;
@@ -125,7 +124,7 @@ char isfloatrange(double x);
 
 /*--------------------------------------------------------------------------- */
 
-int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata);
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer);
 
 char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
 			struct paramsvals *checkedvalue);
