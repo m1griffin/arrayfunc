@@ -313,6 +313,8 @@ example::
 Release History
 ===============
 
+* 4.0.1 - Repeat upload to synchronise source and Windows binary "wheel"
+          version. PyPI was not happy with the previous attempt. 
 * 4.0.0 - Major revision with many changes. Amap, starmap, and acalc were 
           replaced with new individual functions. This change was made to 
           provides a simpler and more consistent interface which is tailored to

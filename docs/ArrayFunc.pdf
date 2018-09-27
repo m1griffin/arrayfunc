@@ -1478,12 +1478,12 @@ endobj
 endobj
 288 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 348 0 R /XYZ 62.69291 340.6772 0 ] /Rect [ 62.69291 246.0236 143.2529 258.0236 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 348 0 R /XYZ 62.69291 574.6772 0 ] /Rect [ 62.69291 246.0236 143.2529 258.0236 ] /Subtype /Link /Type /Annot
 >>
 endobj
 289 0 obj
 <<
-/Border [ 0 0 0 ] /Contents () /Dest [ 348 0 R /XYZ 62.69291 340.6772 0 ] /Rect [ 521.4627 246.7736 532.5827 258.7736 ] /Subtype /Link /Type /Annot
+/Border [ 0 0 0 ] /Contents () /Dest [ 348 0 R /XYZ 62.69291 574.6772 0 ] /Rect [ 521.4627 246.7736 532.5827 258.7736 ] /Subtype /Link /Type /Annot
 >>
 endobj
 290 0 obj
@@ -2073,7 +2073,7 @@ endobj
 endobj
 350 0 obj
 <<
-/Author (Michael Griffin) /CreationDate (D:20180918004622+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20180918004622+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
+/Author (Michael Griffin) /CreationDate (D:20180927044228+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20180927044228+00'00') /Producer (ReportLab PDF Library - www.reportlab.com) 
   /Subject (\(unspecified\)) /Title (ArrayFunc) /Trapped /False
 >>
 endobj
@@ -2805,7 +2805,7 @@ endobj
 endobj
 492 0 obj
 <<
-/Dest [ 348 0 R /XYZ 62.69291 340.6772 0 ] /Parent 351 0 R /Prev 484 0 R /Title (Platform support)
+/Dest [ 348 0 R /XYZ 62.69291 574.6772 0 ] /Parent 351 0 R /Prev 484 0 R /Title (Platform support)
 >>
 endobj
 493 0 obj
@@ -37616,7 +37616,7 @@ endstream
 endobj
 553 0 obj
 <<
-/Length 14830
+/Length 9359
 >>
 stream
 1 0 0 1 0 0 cm  BT /F1 12 Tf 14.4 TL ET
@@ -37938,392 +37938,48 @@ BT 1 0 0 1 0 3 Tm 18 TL /F2 15 Tf 0 0 0 rg (Platform Effects) Tj T* ET
 Q
 Q
 q
-1 0 0 1 62.69291 639.0236 cm
+1 0 0 1 62.69291 651.0236 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL 2.647318 Tw (The following shows an example of how the platform, including CPU, OS, and compiler can affect) Tj T* 0 Tw 1.61311 Tw (performance. The two right hand columns show the time required to run all benchmarks on each test) Tj T* 0 Tw (platform, with the results normalised such that Ubuntu 18.04 is equal to "1.0".) Tj T* ET
+BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL 2.927674 Tw (The platform, including CPU, OS, compiler, and compiler version can affect performance, and this) Tj T* 0 Tw (influence can change significantly for different functions.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 62.69291 609.0236 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL 2.495697 Tw (The "Python" column shows the time to execute the benchmarks in native Python. The "Arrayfunc") Tj T* 0 Tw (column shows the similar result for running Arrayfunc functions with default optimisation options.) Tj T* ET
-Q
-Q
-q
-1 0 0 1 62.69291 567.0236 cm
+1 0 0 1 62.69291 633.0236 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 26 Tm /F1 10 Tf 12 TL .19229 Tw (Larger numbers indicate the benchmarks ran more quickly. Smaller numbers indicate the benchmarks ran) Tj T* 0 Tw 2.139986 Tw (more slowly. Differences of a few percent are not likely to be significant given the sensitivity to test) Tj T* 0 Tw (conditions.) Tj T* ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (If your require exact application requires) Tj T* ET
 Q
 Q
 q
-1 0 0 1 62.69291 561.0236 cm
-Q
-q
-1 0 0 1 62.69291 417.0236 cm
-1 1 1 rg
-n 0 144 469.8898 -18 re f*
-.878431 .878431 .878431 rg
-n 0 126 469.8898 -18 re f*
-1 1 1 rg
-n 0 108 469.8898 -18 re f*
-.878431 .878431 .878431 rg
-n 0 90 469.8898 -18 re f*
-1 1 1 rg
-n 0 72 469.8898 -18 re f*
-.878431 .878431 .878431 rg
-n 0 54 469.8898 -18 re f*
-1 1 1 rg
-n 0 36 469.8898 -18 re f*
-.878431 .878431 .878431 rg
-n 0 18 469.8898 -18 re f*
-.960784 .960784 .862745 rg
-n 0 144 469.8898 -18 re f*
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 129 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 205.5416 12 re f*
-Q
+1 0 0 1 62.69291 615.0236 cm
 q
 0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 95.54578 0 Td (OS) Tj T* -95.54578 0 Td ET
+BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Benchmark your application on the specific platform) Tj T* ET
 Q
 Q
 q
-1 0 0 1 223.5416 129 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 75.01662 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 17.50831 0 Td (Compiler) Tj T* -17.50831 0 Td ET
-Q
-Q
-q
-1 0 0 1 310.5582 129 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 57.6133 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 13.24165 0 Td (Python) Tj T* -13.24165 0 Td ET
-Q
-Q
-q
-1 0 0 1 380.1715 129 cm
-q
-.960784 .960784 .862745 rg
-n 0 0 83.71829 12 re f*
-Q
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 20.46414 0 Td (Arrayfunc) Tj T* -20.46414 0 Td ET
-Q
-Q
-0 0 0 rg
-q
-1 0 0 1 6 111 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (FreeBSD 11.0) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 111 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (LLVM) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 111 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.71) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 111 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.94) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 9.0 32 bit) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.64) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 93 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.42) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 75 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Debian 9.0 64 bit) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 75 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 75 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (1.03) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 75 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (1.00) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 57 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Suse 15.0) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 57 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 57 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.95) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 57 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (1.03) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 39 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Ubuntu 18.04) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 39 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 39 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (1.09) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 39 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (1.04) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 21 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Windows 10) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 21 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (VC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 21 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.88) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 21 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.83) Tj T* ET
-Q
-Q
-q
-1 0 0 1 6 3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (Raspbian "Stretch" \(ARM\)) Tj T* ET
-Q
-Q
-q
-1 0 0 1 223.5416 3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (GCC) Tj T* ET
-Q
-Q
-q
-1 0 0 1 310.5582 3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.11) Tj T* ET
-Q
-Q
-q
-1 0 0 1 380.1715 3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (0.16) Tj T* ET
-Q
-Q
-q
-1 J
-1 j
-0 0 0 RG
-.25 w
-n 0 126 m 469.8898 126 l S
-n 0 108 m 469.8898 108 l S
-n 0 90 m 469.8898 90 l S
-n 0 72 m 469.8898 72 l S
-n 0 54 m 469.8898 54 l S
-n 0 36 m 469.8898 36 l S
-n 0 18 m 469.8898 18 l S
-n 217.5416 0 m 217.5416 144 l S
-n 304.5582 0 m 304.5582 144 l S
-n 374.1715 0 m 374.1715 144 l S
-n 0 144 m 469.8898 144 l S
-n 0 0 m 469.8898 0 l S
-n 0 0 m 0 144 l S
-n 469.8898 0 m 469.8898 144 l S
-Q
-Q
-q
-1 0 0 1 62.69291 417.0236 cm
-Q
-q
-1 0 0 1 62.69291 411.0236 cm
-Q
-q
-1 0 0 1 62.69291 411.0236 cm
-Q
-q
-1 0 0 1 62.69291 399.0236 cm
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL ("Raspbian" was running on a Raspberry Pi 3 \(ARM CPU\).) Tj T* ET
-Q
-Q
-q
-Q
-Q
-q
-1 0 0 1 62.69291 393.0236 cm
-Q
-q
-1 0 0 1 62.69291 381.0236 cm
-0 0 0 rg
-BT /F1 10 Tf 12 TL ET
-q
-1 0 0 1 6 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL 10.5 0 Td (\177) Tj T* -10.5 0 Td ET
-Q
-Q
-q
-1 0 0 1 23 -3 cm
-q
-0 0 0 rg
-BT 1 0 0 1 0 2 Tm /F1 10 Tf 12 TL (All others were running in VirtualBox VMs on an x86_64 PC.) Tj T* ET
-Q
-Q
-q
-Q
-Q
-q
-1 0 0 1 62.69291 381.0236 cm
-Q
-q
-1 0 0 1 62.69291 352.6772 cm
+1 0 0 1 62.69291 586.6772 cm
 n 0 14.17323 m 469.8898 14.17323 l S
 Q
 q
-1 0 0 1 62.69291 319.6772 cm
+1 0 0 1 62.69291 553.6772 cm
 q
 BT 1 0 0 1 0 3.5 Tm 21 TL /F2 17.5 Tf 0 0 0 rg (Platform support) Tj T* ET
 Q
 Q
 q
-1 0 0 1 62.69291 289.6772 cm
+1 0 0 1 62.69291 523.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL .923735 Tw (Arrayfunc is written in 'C' and uses the standard C libraries to implement the underlying math functions.) Tj T* 0 Tw (Arrayfunc has been tested on the following platforms.) Tj T* ET
 Q
 Q
 q
-1 0 0 1 62.69291 283.6772 cm
+1 0 0 1 62.69291 517.6772 cm
 Q
 q
-1 0 0 1 62.69291 157.6772 cm
+1 0 0 1 62.69291 391.6772 cm
 1 1 1 rg
 n 0 126 469.8898 -18 re f*
 .878431 .878431 .878431 rg
@@ -38576,10 +38232,10 @@ n 469.8898 0 m 469.8898 126 l S
 Q
 Q
 q
-1 0 0 1 62.69291 157.6772 cm
+1 0 0 1 62.69291 391.6772 cm
 Q
 q
-1 0 0 1 62.69291 127.6772 cm
+1 0 0 1 62.69291 361.6772 cm
 q
 0 0 0 rg
 BT 1 0 0 1 0 14 Tm /F1 10 Tf 12 TL 1.51061 Tw (The Raspbian \(RPi 3\) tests were conducted on a Raspberry Pi ARM CPU. All others were conducted) Tj T* 0 Tw (using VMs running on x86 hardware.) Tj T* ET
@@ -39460,71 +39116,71 @@ xref
 0000596619 00000 n 
 0000611876 00000 n 
 0000642049 00000 n 
-0000656933 00000 n 
-0000657649 00000 n 
-0000657684 00000 n 
-0000657719 00000 n 
-0000657754 00000 n 
-0000657789 00000 n 
-0000657824 00000 n 
-0000657859 00000 n 
-0000657894 00000 n 
-0000657929 00000 n 
-0000657964 00000 n 
-0000658000 00000 n 
-0000658036 00000 n 
-0000658072 00000 n 
-0000658108 00000 n 
-0000658144 00000 n 
-0000658180 00000 n 
-0000658216 00000 n 
-0000658252 00000 n 
-0000658288 00000 n 
-0000658324 00000 n 
-0000658360 00000 n 
-0000658396 00000 n 
-0000658432 00000 n 
-0000658468 00000 n 
-0000658504 00000 n 
-0000658540 00000 n 
-0000658576 00000 n 
-0000658612 00000 n 
-0000658648 00000 n 
-0000658684 00000 n 
-0000658720 00000 n 
-0000658756 00000 n 
-0000658792 00000 n 
-0000658828 00000 n 
-0000658864 00000 n 
-0000658900 00000 n 
-0000658936 00000 n 
-0000658972 00000 n 
-0000659008 00000 n 
-0000659044 00000 n 
-0000659080 00000 n 
-0000659116 00000 n 
-0000659152 00000 n 
-0000659188 00000 n 
-0000659224 00000 n 
-0000659260 00000 n 
-0000659296 00000 n 
-0000659332 00000 n 
-0000659368 00000 n 
-0000659404 00000 n 
-0000659440 00000 n 
-0000659476 00000 n 
-0000659512 00000 n 
-0000659548 00000 n 
-0000659584 00000 n 
-0000659620 00000 n 
-0000659656 00000 n 
-0000659692 00000 n 
-0000659728 00000 n 
-0000659764 00000 n 
+0000651461 00000 n 
+0000652177 00000 n 
+0000652212 00000 n 
+0000652247 00000 n 
+0000652282 00000 n 
+0000652317 00000 n 
+0000652352 00000 n 
+0000652387 00000 n 
+0000652422 00000 n 
+0000652457 00000 n 
+0000652492 00000 n 
+0000652528 00000 n 
+0000652564 00000 n 
+0000652600 00000 n 
+0000652636 00000 n 
+0000652672 00000 n 
+0000652708 00000 n 
+0000652744 00000 n 
+0000652780 00000 n 
+0000652816 00000 n 
+0000652852 00000 n 
+0000652888 00000 n 
+0000652924 00000 n 
+0000652960 00000 n 
+0000652996 00000 n 
+0000653032 00000 n 
+0000653068 00000 n 
+0000653104 00000 n 
+0000653140 00000 n 
+0000653176 00000 n 
+0000653212 00000 n 
+0000653248 00000 n 
+0000653284 00000 n 
+0000653320 00000 n 
+0000653356 00000 n 
+0000653392 00000 n 
+0000653428 00000 n 
+0000653464 00000 n 
+0000653500 00000 n 
+0000653536 00000 n 
+0000653572 00000 n 
+0000653608 00000 n 
+0000653644 00000 n 
+0000653680 00000 n 
+0000653716 00000 n 
+0000653752 00000 n 
+0000653788 00000 n 
+0000653824 00000 n 
+0000653860 00000 n 
+0000653896 00000 n 
+0000653932 00000 n 
+0000653968 00000 n 
+0000654004 00000 n 
+0000654040 00000 n 
+0000654076 00000 n 
+0000654112 00000 n 
+0000654148 00000 n 
+0000654184 00000 n 
+0000654220 00000 n 
+0000654256 00000 n 
+0000654292 00000 n 
 trailer
 <<
 /ID 
-[<2df109fe28b6acd0256270a96dd4e274><2df109fe28b6acd0256270a96dd4e274>]
+[<41cc78a67787cb28cc985462bcbd27e6><41cc78a67787cb28cc985462bcbd27e6>]
 % ReportLab generated PDF document -- digest (http://www.reportlab.com)
 
 /Info 350 0 R
@@ -39532,5 +39188,5 @@ trailer
 /Size 615
 >>
 startxref
-659800
+654328
 %%EOF
