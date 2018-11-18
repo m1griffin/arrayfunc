@@ -53,12 +53,12 @@ class %(funclabel)s_general_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 
 		self.data = array.array('%(typecode)s', xdata + data%(testlabel)s + xdata)
 
-		self.expected = any([%(pyoperator)s(x) for x in self.data])
+		self.expected = %(anyall)s([%(pyoperator)s(x) for x in self.data])
 
 		self.limited = len(self.data) // 2
 
 		limresults = [%(pyoperator)s(x) for x in self.data]
-		self.expectedlim = any(limresults[:self.limited])
+		self.expectedlim = %(anyall)s(limresults[:self.limited])
 
 
 	########################################################
@@ -129,8 +129,10 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		result = arrayfunc.%(funcname)s(self.cleandata)
 
+		expected = %(anyall)s([%(pyoperator)s(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -139,8 +141,10 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		result = arrayfunc.%(funcname)s(self.testdatacentre)
 
+		expected = %(anyall)s([%(pyoperator)s(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -149,8 +153,10 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		result = arrayfunc.%(funcname)s(self.testdatastart)
 
+		expected = %(anyall)s([%(pyoperator)s(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -159,8 +165,10 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		result = arrayfunc.%(funcname)s(self.testdataend)
 
+		expected = %(anyall)s([%(pyoperator)s(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -169,8 +177,10 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		result = arrayfunc.%(funcname)s(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = %(anyall)s([%(pyoperator)s(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################
@@ -288,6 +298,14 @@ test_templates = {'test_template_nonfinite' : test_template_nonfinite}
 # Select what non-finite value to use when testing how a function works.
 nftestvals = {'isinf' : ['inf', 'ninf'],
 			'isnan' : ['nan'],
+			'isfinite' : ['inf', 'ninf', 'nan']
+}
+
+
+# Determines whether to use 'any' or 'all' when testing.
+anyall = {'isinf' : 'any',
+			'isnan' : 'any',
+			'isfinite' : 'all'
 }
 
 # ==============================================================================
@@ -318,12 +336,13 @@ for func in funclist:
 		testtemplate = test_templates[func['test_op_templ']]
 
 		for functype in codegen_common.floatarrays:
-			for testlabel in nftestvals[func['funcname']]:
-				funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
+			for testlabel in nftestvals[funcname]:
+				funcdata = {'funclabel' : funcname, 'funcname' : funcname, 
 					'pyoperator' : func['pyoperator'],
 					'typelabel' : functype, 'typecode' : functype, 
 					'test_op_x' : func['test_op_x'],
-					'testlabel' : testlabel}
+					'testlabel' : testlabel,
+					'anyall' : anyall[funcname]}
 				f.write(testtemplate % funcdata)
 
 				# Test for invalid parameters. One template should work for all 

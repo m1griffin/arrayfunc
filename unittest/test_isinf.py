@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      16-Nov-2018.
 #
 ###############################################################################
 #
@@ -227,8 +227,10 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.cleandata)
 
+		expected = any([math.isinf(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -237,8 +239,10 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatacentre)
 
+		expected = any([math.isinf(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -247,8 +251,10 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatastart)
 
+		expected = any([math.isinf(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -257,8 +263,10 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend)
 
+		expected = any([math.isinf(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -267,8 +275,10 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isinf(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################
@@ -452,8 +462,10 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.cleandata)
 
+		expected = any([math.isinf(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -462,8 +474,10 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatacentre)
 
+		expected = any([math.isinf(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -472,8 +486,10 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatastart)
 
+		expected = any([math.isinf(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -482,8 +498,10 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend)
 
+		expected = any([math.isinf(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -492,8 +510,10 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isinf(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################
@@ -677,8 +697,10 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.cleandata)
 
+		expected = any([math.isinf(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -687,8 +709,10 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatacentre)
 
+		expected = any([math.isinf(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -697,8 +721,10 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatastart)
 
+		expected = any([math.isinf(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -707,8 +733,10 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend)
 
+		expected = any([math.isinf(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -717,8 +745,10 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isinf(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################
@@ -902,8 +932,10 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.cleandata)
 
+		expected = any([math.isinf(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -912,8 +944,10 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatacentre)
 
+		expected = any([math.isinf(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -922,8 +956,10 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdatastart)
 
+		expected = any([math.isinf(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -932,8 +968,10 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend)
 
+		expected = any([math.isinf(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -942,8 +980,10 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isinf(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################

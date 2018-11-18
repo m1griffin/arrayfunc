@@ -98,6 +98,7 @@ extensions = [
 	('degrees', ['src/degrees.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('radians', ['src/radians.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
+	('isfinite', ['src/isfinite.c', 'src/arrayparams_boolout.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('isinf', ['src/isinf.c', 'src/arrayparams_boolout.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('isnan', ['src/isnan.c', 'src/arrayparams_boolout.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
@@ -140,7 +141,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '4.0.1',
+	version = '4.1.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

@@ -83,10 +83,10 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data) {
 	Py_ssize_t x;
 
 	for(x = 0; x < arraylen; x++) {
-		if (%(floatfunc)s) { return 1; }
+		if (%(floatfunc)s) { return %(foundsearch)s; }
 	}
 
-	return 0;
+	return %(notfoundsearch)s;
 
 }
 
@@ -101,10 +101,10 @@ signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data) {
 	Py_ssize_t x;
 
 	for(x = 0; x < arraylen; x++) {
-		if (%(doublefunc)s) { return 1; }
+		if (%(doublefunc)s) { return %(foundsearch)s; }
 	}
 
-	return 0;
+	return %(notfoundsearch)s;
 
 }
 
@@ -194,10 +194,7 @@ Call formats: \\n\\
   positive integer. If a zero or negative length, or a value which is \\n\\
   greater than the actual length of the array is specified, this \\n\\
   parameter is ignored. \\n\\
-* result - A boolean value corresponding to the result of all the \\n\\
-  comparison operations. If at least one comparison operation results in \\n\\
-  true, the return value will be true. If none of them result in true, \\n\\
-  the return value will be false.\\n\\
+* %(helpresult)s\\n\\
 ");
 
 
@@ -244,6 +241,38 @@ specialfloatfunctmpl = '%(c_operator_f)s'
 specialdoublefunctmpl = '%(c_operator_d)s'
 
 
+# ==============================================================================
+
+# Select what return value is used when condition is found.
+foundsearch = {'isinf' : 1,
+			'isnan' : 1,
+			'isfinite' : 0
+}
+
+
+# Select what return value is used when condition is not found.
+notfoundsearch = {'isinf' : 0,
+			'isnan' : 0,
+			'isfinite' : 1
+}
+
+# ==============================================================================
+
+anyhelp = """result - A boolean value corresponding to the result of all the \\n\\
+  comparison operations. If at least one comparison operation results in \\n\\
+  true, the return value will be true. If none of them result in true, \\n\\
+  the return value will be false."""
+
+allhelp = """result - A boolean value corresponding to the result of all the \\n\\
+  comparison operations. If all of the comparison operations result in \\n\\
+  true, the return value will be true. If any of them result in false, \\n\\
+  the return value will be false."""
+
+# Select the help description for the type of function.
+helpresult = {'isinf' : anyhelp,
+			'isnan' : anyhelp,
+			'isfinite' : allhelp
+}
 
 # ==============================================================================
 
@@ -258,21 +287,26 @@ funclist = [x for x in oplist if x['c_code_template'] == 'template_mathfuncnan']
 # ==============================================================================
 
 for func in funclist:
-	filename = func['funcname'] + '.c'
+	funcname = func['funcname']
+
+	filename = funcname + '.c'
 
 	floatfunc = specialfloatfunctmpl % {'c_operator_f' : func['c_operator_f']}
 	doublefunc = specialdoublefunctmpl % {'c_operator_d' : func['c_operator_d']}
 
 	supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-	funcdata = {'funclabel' : func['funcname'], 
+	funcdata = {'funclabel' : funcname, 
 			'funcfloatname' : func['c_operator_f'], 
 			'funcdoublename' : func['c_operator_d'],
 			'floatfunc' : floatfunc, 
 			'doublefunc' : doublefunc, 
 			'opcodedocs' : func['opcodedocs'], 
 			'supportedarrays' : supportedarrays,
-			'matherrors' : ', '.join(func['matherrors'].split(','))
+			'matherrors' : ', '.join(func['matherrors'].split(',')),
+			'foundsearch' : foundsearch[funcname],
+			'notfoundsearch' : notfoundsearch[funcname],
+			'helpresult' : helpresult[funcname]
 			}	
 
 	with open(filename, 'w') as f:

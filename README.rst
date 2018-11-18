@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 4.0.0 for 2018-06-09
+:Version: 4.1.0 for 2018-11-16
 :Copyright: 2014 - 2018
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -216,6 +216,7 @@ Number-theoretic and representation functions
   factorial math.factorial(x)
       floor math.floor(x)
        fmod math.fmod(x, y)
+   isfinite math.isfinite(x)
       isinf math.isinf(x)
       isnan math.isnan(x)
       ldexp math.ldexp(x, y)
@@ -277,8 +278,10 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
+Ubuntu 18.10       64 bit    GCC                         3.6
 Debian 9           32 bit    GCC                         3.5
 Debian 9           64 bit    GCC                         3.5
+OpenSuse 15        64 bit    GCC                         3.6
 FreeBSD 11         64 bit    LLVM                        3.5
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
 Raspbian (RPi 3)   32 bit    GCC                         3.5
@@ -313,6 +316,7 @@ example::
 Release History
 ===============
 
+* 4.1.0 - Added isfinite function.
 * 4.0.1 - Repeat upload to synchronise source and Windows binary "wheel"
           version. PyPI was not happy with the previous attempt. 
 * 4.0.0 - Major revision with many changes. Amap, starmap, and acalc were 

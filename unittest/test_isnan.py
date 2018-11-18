@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      16-Nov-2018.
 #
 ###############################################################################
 #
@@ -227,8 +227,10 @@ class isnan_nan_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.cleandata)
 
+		expected = any([math.isnan(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -237,8 +239,10 @@ class isnan_nan_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdatacentre)
 
+		expected = any([math.isnan(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -247,8 +251,10 @@ class isnan_nan_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdatastart)
 
+		expected = any([math.isnan(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -257,8 +263,10 @@ class isnan_nan_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdataend)
 
+		expected = any([math.isnan(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -267,8 +275,10 @@ class isnan_nan_f(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isnan(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################
@@ -452,8 +462,10 @@ class isnan_nan_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.cleandata)
 
+		expected = any([math.isnan(x) for x in self.cleandata])
+
 		# Should not find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -462,8 +474,10 @@ class isnan_nan_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdatacentre)
 
+		expected = any([math.isnan(x) for x in self.testdatacentre])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -472,8 +486,10 @@ class isnan_nan_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdatastart)
 
+		expected = any([math.isnan(x) for x in self.testdatastart])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -482,8 +498,10 @@ class isnan_nan_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdataend)
 
+		expected = any([math.isnan(x) for x in self.testdataend])
+
 		# Should find the value.
-		self.assertTrue(result)
+		self.assertEqual(result, expected)
 
 
 	########################################################
@@ -492,8 +510,10 @@ class isnan_nan_d(unittest.TestCase):
 		"""
 		result = arrayfunc.isnan(self.testdataend, maxlen=len(self.testdataend) - 1)
 
+		expected = any([math.isnan(x) for x in self.testdataend[:len(self.testdataend) - 1]])
+
 		# Should find the value.
-		self.assertFalse(result)
+		self.assertEqual(result, expected)
 
 
 ##############################################################################

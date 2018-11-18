@@ -54,7 +54,7 @@ topheadercomp = '\n'.join([headerbarcomp, headertextcomp1, headertextcomp2, head
 # ==============================================================================
 # TODO: Remove.
 # Read in the data from the CSV spreadsheet which holds the configuration.
-csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
+#csvdata = codegen_common.ReadCSVData('arrayfunc.csv')
 
 # ==============================================================================
 
@@ -212,9 +212,9 @@ cheaderdata = GetHeaderFileDataSIMD()
 
 with open('docsgen.txt', 'w') as f:
 	# Ops codes.
-	DocsOpcodes(f)
+	#DocsOpcodes(f)
 	# ACalc
-	ACalcDocs(f)
+	#ACalcDocs(f)
 	# SIMD data.
 	WriteTableSIMD(cheaderdata, f)
 

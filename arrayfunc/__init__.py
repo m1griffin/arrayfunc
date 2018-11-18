@@ -3,11 +3,7 @@ for use with the standard Python array module. These functions are
 patterned after the functions in the standard Python Itertools module 
 together with some additional ones import other sources.
 
-The list of valid array operations may be found in the arrayops module 
-as aops data. e.g. arrayfunc.aops.af_add
 """
-
-#from arrayfunc.arrayops import aops
 
 from arrayfunc.count import count
 from arrayfunc.cycle import cycle
@@ -79,6 +75,7 @@ from arrayfunc.floor import floor
 from arrayfunc.fmod import fmod
 from arrayfunc.gamma import gamma
 from arrayfunc.hypot import hypot
+from arrayfunc.isfinite import isfinite
 from arrayfunc.isinf import isinf
 from arrayfunc.isnan import isnan
 from arrayfunc.ldexp import ldexp
