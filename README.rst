@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 4.1.0 for 2018-11-16
+:Version: 4.2.0 for 2018-12-22
 :Copyright: 2014 - 2018
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -107,6 +107,7 @@ convert    Convert arrays between data types. The data will be converted into
 Mathematical operator functions
 -------------------------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -124,6 +125,7 @@ Mathematical operator functions
 Comparison operator functions
 -----------------------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -138,6 +140,7 @@ Comparison operator functions
 Bitwise operator functions
 --------------------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -151,6 +154,7 @@ Bitwise operator functions
 
 Power and logarithmic functions
 -------------------------------
+
 
 =========== ===============================================
   Function              Equivalent to
@@ -167,6 +171,7 @@ Power and logarithmic functions
 Hyperbolic functions
 --------------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -180,6 +185,7 @@ Hyperbolic functions
 
 Trigonometric functions
 -----------------------
+
 
 =========== ===============================================
   Function              Equivalent to
@@ -197,6 +203,7 @@ Trigonometric functions
 Angular conversion
 ------------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -206,6 +213,7 @@ Angular conversion
 
 Number-theoretic and representation functions
 ---------------------------------------------
+
 
 =========== ===============================================
   Function              Equivalent to
@@ -226,6 +234,7 @@ Number-theoretic and representation functions
 Special functions
 -----------------
 
+
 =========== ===============================================
   Function              Equivalent to
 =========== ===============================================
@@ -233,6 +242,16 @@ Special functions
        erfc math.erfc(x)
       gamma math.gamma(x)
      lgamma math.lgamma(x)
+=========== ===============================================
+
+Additional functions
+--------------------
+
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        fma fma(x, y, z) or x * y + z
 =========== ===============================================
 
 
@@ -282,7 +301,8 @@ Ubuntu 18.10       64 bit    GCC                         3.6
 Debian 9           32 bit    GCC                         3.5
 Debian 9           64 bit    GCC                         3.5
 OpenSuse 15        64 bit    GCC                         3.6
-FreeBSD 11         64 bit    LLVM                        3.5
+Centos 7           64 bit    GCC                         3.6
+FreeBSD 12         64 bit    LLVM                        3.6
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
 Raspbian (RPi 3)   32 bit    GCC                         3.5
 ================= ========  ========================== =========================
@@ -316,6 +336,10 @@ example::
 Release History
 ===============
 
+* 4.2.0 - Added fma function. This has no equivalent in the Python 
+          standard library but is equivalent to x * y + z. Also changed
+          list of supported platforms to update FreeBSD to version 12
+          and added Centos 7.
 * 4.1.0 - Added isfinite function.
 * 4.0.1 - Repeat upload to synchronise source and Windows binary "wheel"
           version. PyPI was not happy with the previous attempt. 

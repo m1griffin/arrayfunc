@@ -1,6 +1,0 @@
-Documents the op codes for amap and starmap.
-
-=============== ====================== ===== ===== === ===== =========
-Name             Equivalent to          b h   B H   f   OV     Compare
-                                        i l   I L   d          Ops    
-=============== ====================== ===== ===== === ===== =========

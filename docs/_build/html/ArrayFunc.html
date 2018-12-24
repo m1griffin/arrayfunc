@@ -45,14 +45,14 @@
           <div class="body" role="main">
             
   <div class="section" id="arrayfunc">
-<h1><a class="toc-backref" href="#id12">ArrayFunc</a><a class="headerlink" href="#arrayfunc" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id13">ArrayFunc</a><a class="headerlink" href="#arrayfunc" title="Permalink to this headline">¶</a></h1>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Michael Griffin</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">4.1.0 for 2018-11-16</td>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">4.2.0 for 2018-12-22</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2018</td>
 </tr>
@@ -65,198 +65,203 @@
 <div class="contents topic" id="table-of-contents">
 <p class="topic-title first">Table of Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#arrayfunc" id="id12">ArrayFunc</a><ul>
-<li><a class="reference internal" href="#introduction" id="id13">Introduction</a></li>
-<li><a class="reference internal" href="#important-note-for-upgrading-to-version-4" id="id14">Important Note for Upgrading to Version 4</a></li>
-<li><a class="reference internal" href="#function-summary" id="id15">Function Summary</a><ul>
-<li><a class="reference internal" href="#filling-arrays" id="id16">Filling Arrays</a></li>
-<li><a class="reference internal" href="#filtering-arrays" id="id17">Filtering Arrays</a></li>
-<li><a class="reference internal" href="#examining-and-searching-arrays" id="id18">Examining and Searching Arrays</a></li>
-<li><a class="reference internal" href="#summarising-arrays" id="id19">Summarising Arrays</a></li>
-<li><a class="reference internal" href="#data-conversion" id="id20">Data Conversion</a></li>
-<li><a class="reference internal" href="#mathematical-operator-functions" id="id21">Mathematical operator functions</a></li>
-<li><a class="reference internal" href="#comparison-operator-functions" id="id22">Comparison operator functions</a></li>
-<li><a class="reference internal" href="#bitwise-operator-functions" id="id23">Bitwise operator functions</a></li>
-<li><a class="reference internal" href="#power-and-logarithmic-functions" id="id24">Power and logarithmic functions</a></li>
-<li><a class="reference internal" href="#hyperbolic-functions" id="id25">Hyperbolic functions</a></li>
-<li><a class="reference internal" href="#trigonometric-functions" id="id26">Trigonometric functions</a></li>
-<li><a class="reference internal" href="#angular-conversion" id="id27">Angular conversion</a></li>
-<li><a class="reference internal" href="#number-theoretic-and-representation-functions" id="id28">Number-theoretic and representation functions</a></li>
-<li><a class="reference internal" href="#special-functions" id="id29">Special functions</a></li>
-<li><a class="reference internal" href="#array-limit-attributes" id="id30">Array Limit Attributes</a></li>
+<li><a class="reference internal" href="#arrayfunc" id="id13">ArrayFunc</a><ul>
+<li><a class="reference internal" href="#introduction" id="id14">Introduction</a></li>
+<li><a class="reference internal" href="#important-note-for-upgrading-to-version-4" id="id15">Important Note for Upgrading to Version 4</a></li>
+<li><a class="reference internal" href="#function-summary" id="id16">Function Summary</a><ul>
+<li><a class="reference internal" href="#filling-arrays" id="id17">Filling Arrays</a></li>
+<li><a class="reference internal" href="#filtering-arrays" id="id18">Filtering Arrays</a></li>
+<li><a class="reference internal" href="#examining-and-searching-arrays" id="id19">Examining and Searching Arrays</a></li>
+<li><a class="reference internal" href="#summarising-arrays" id="id20">Summarising Arrays</a></li>
+<li><a class="reference internal" href="#data-conversion" id="id21">Data Conversion</a></li>
+<li><a class="reference internal" href="#mathematical-operator-functions" id="id22">Mathematical operator functions</a></li>
+<li><a class="reference internal" href="#comparison-operator-functions" id="id23">Comparison operator functions</a></li>
+<li><a class="reference internal" href="#bitwise-operator-functions" id="id24">Bitwise operator functions</a></li>
+<li><a class="reference internal" href="#power-and-logarithmic-functions" id="id25">Power and logarithmic functions</a></li>
+<li><a class="reference internal" href="#hyperbolic-functions" id="id26">Hyperbolic functions</a></li>
+<li><a class="reference internal" href="#trigonometric-functions" id="id27">Trigonometric functions</a></li>
+<li><a class="reference internal" href="#angular-conversion" id="id28">Angular conversion</a></li>
+<li><a class="reference internal" href="#number-theoretic-and-representation-functions" id="id29">Number-theoretic and representation functions</a></li>
+<li><a class="reference internal" href="#special-functions" id="id30">Special functions</a></li>
+<li><a class="reference internal" href="#additional-functions" id="id31">Additional functions</a></li>
+<li><a class="reference internal" href="#array-limit-attributes" id="id32">Array Limit Attributes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#searching-and-summarising-arrays" id="id31">Searching and Summarising Arrays.</a><ul>
-<li><a class="reference internal" href="#comparison-operators" id="id32">Comparison Operators</a></li>
-<li><a class="reference internal" href="#description" id="id33">Description</a><ul>
-<li><a class="reference internal" href="#count" id="id34">count</a></li>
-<li><a class="reference internal" href="#cycle" id="id35">cycle</a></li>
-<li><a class="reference internal" href="#repeat" id="id36">repeat</a></li>
-<li><a class="reference internal" href="#afilter" id="id37">afilter</a></li>
-<li><a class="reference internal" href="#compress" id="id38">compress</a></li>
-<li><a class="reference internal" href="#dropwhile" id="id39">dropwhile</a></li>
-<li><a class="reference internal" href="#takewhile" id="id40">takewhile</a></li>
-<li><a class="reference internal" href="#aany" id="id41">aany</a></li>
-<li><a class="reference internal" href="#aall" id="id42">aall</a></li>
-<li><a class="reference internal" href="#amax" id="id43">amax</a></li>
-<li><a class="reference internal" href="#amin" id="id44">amin</a></li>
-<li><a class="reference internal" href="#findindex" id="id45">findindex</a></li>
-<li><a class="reference internal" href="#findindices" id="id46">findindices</a></li>
-<li><a class="reference internal" href="#asum" id="id47">asum</a></li>
-<li><a class="reference internal" href="#convert" id="id48">convert</a></li>
+<li><a class="reference internal" href="#searching-and-summarising-arrays" id="id33">Searching and Summarising Arrays.</a><ul>
+<li><a class="reference internal" href="#comparison-operators" id="id34">Comparison Operators</a></li>
+<li><a class="reference internal" href="#description" id="id35">Description</a><ul>
+<li><a class="reference internal" href="#count" id="id36">count</a></li>
+<li><a class="reference internal" href="#cycle" id="id37">cycle</a></li>
+<li><a class="reference internal" href="#repeat" id="id38">repeat</a></li>
+<li><a class="reference internal" href="#afilter" id="id39">afilter</a></li>
+<li><a class="reference internal" href="#compress" id="id40">compress</a></li>
+<li><a class="reference internal" href="#dropwhile" id="id41">dropwhile</a></li>
+<li><a class="reference internal" href="#takewhile" id="id42">takewhile</a></li>
+<li><a class="reference internal" href="#aany" id="id43">aany</a></li>
+<li><a class="reference internal" href="#aall" id="id44">aall</a></li>
+<li><a class="reference internal" href="#amax" id="id45">amax</a></li>
+<li><a class="reference internal" href="#amin" id="id46">amin</a></li>
+<li><a class="reference internal" href="#findindex" id="id47">findindex</a></li>
+<li><a class="reference internal" href="#findindices" id="id48">findindices</a></li>
+<li><a class="reference internal" href="#asum" id="id49">asum</a></li>
+<li><a class="reference internal" href="#convert" id="id50">convert</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#arraylimits-attributes" id="id49">arraylimits attributes</a></li>
+<li><a class="reference internal" href="#arraylimits-attributes" id="id51">arraylimits attributes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#mathematical-functions" id="id50">Mathematical Functions</a><ul>
-<li><a class="reference internal" href="#id1" id="id51">Description</a><ul>
-<li><a class="reference internal" href="#parameter-forms" id="id52">Parameter Forms</a></li>
-<li><a class="reference internal" href="#parameter-type-consistency" id="id53">Parameter Type Consistency</a></li>
-<li><a class="reference internal" href="#using-less-than-the-entire-array" id="id54">Using Less than the Entire Array</a></li>
-<li><a class="reference internal" href="#supressing-or-ignoring-math-errors" id="id55">Supressing or Ignoring Math Errors</a></li>
-<li><a class="reference internal" href="#differences-with-native-python" id="id56">Differences with Native Python</a></li>
-<li><a class="reference internal" href="#other-notes" id="id57">Other Notes</a></li>
+<li><a class="reference internal" href="#mathematical-functions" id="id52">Mathematical Functions</a><ul>
+<li><a class="reference internal" href="#id1" id="id53">Description</a><ul>
+<li><a class="reference internal" href="#parameter-forms" id="id54">Parameter Forms</a></li>
+<li><a class="reference internal" href="#parameter-type-consistency" id="id55">Parameter Type Consistency</a></li>
+<li><a class="reference internal" href="#using-less-than-the-entire-array" id="id56">Using Less than the Entire Array</a></li>
+<li><a class="reference internal" href="#supressing-or-ignoring-math-errors" id="id57">Supressing or Ignoring Math Errors</a></li>
+<li><a class="reference internal" href="#differences-with-native-python" id="id58">Differences with Native Python</a></li>
+<li><a class="reference internal" href="#other-notes" id="id59">Other Notes</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id2" id="id58">Mathematical operator functions</a><ul>
-<li><a class="reference internal" href="#add" id="id59">add</a></li>
-<li><a class="reference internal" href="#truediv" id="id60">truediv</a></li>
-<li><a class="reference internal" href="#floordiv" id="id61">floordiv</a></li>
-<li><a class="reference internal" href="#mod" id="id62">mod</a></li>
-<li><a class="reference internal" href="#mul" id="id63">mul</a></li>
-<li><a class="reference internal" href="#neg" id="id64">neg</a></li>
-<li><a class="reference internal" href="#pow" id="id65">pow</a></li>
-<li><a class="reference internal" href="#sub" id="id66">sub</a></li>
-<li><a class="reference internal" href="#abs" id="id67">abs_</a></li>
+<li><a class="reference internal" href="#id2" id="id60">Mathematical operator functions</a><ul>
+<li><a class="reference internal" href="#add" id="id61">add</a></li>
+<li><a class="reference internal" href="#truediv" id="id62">truediv</a></li>
+<li><a class="reference internal" href="#floordiv" id="id63">floordiv</a></li>
+<li><a class="reference internal" href="#mod" id="id64">mod</a></li>
+<li><a class="reference internal" href="#mul" id="id65">mul</a></li>
+<li><a class="reference internal" href="#neg" id="id66">neg</a></li>
+<li><a class="reference internal" href="#pow" id="id67">pow</a></li>
+<li><a class="reference internal" href="#sub" id="id68">sub</a></li>
+<li><a class="reference internal" href="#abs" id="id69">abs_</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id3" id="id68">Comparison operator functions</a><ul>
-<li><a class="reference internal" href="#eq" id="id69">eq</a></li>
-<li><a class="reference internal" href="#gt" id="id70">gt</a></li>
-<li><a class="reference internal" href="#ge" id="id71">ge</a></li>
-<li><a class="reference internal" href="#lt" id="id72">lt</a></li>
-<li><a class="reference internal" href="#le" id="id73">le</a></li>
-<li><a class="reference internal" href="#ne" id="id74">ne</a></li>
+<li><a class="reference internal" href="#id3" id="id70">Comparison operator functions</a><ul>
+<li><a class="reference internal" href="#eq" id="id71">eq</a></li>
+<li><a class="reference internal" href="#gt" id="id72">gt</a></li>
+<li><a class="reference internal" href="#ge" id="id73">ge</a></li>
+<li><a class="reference internal" href="#lt" id="id74">lt</a></li>
+<li><a class="reference internal" href="#le" id="id75">le</a></li>
+<li><a class="reference internal" href="#ne" id="id76">ne</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id4" id="id75">Bitwise operator functions</a><ul>
-<li><a class="reference internal" href="#and" id="id76">and_</a></li>
-<li><a class="reference internal" href="#or" id="id77">or_</a></li>
-<li><a class="reference internal" href="#xor" id="id78">xor</a></li>
-<li><a class="reference internal" href="#invert" id="id79">invert</a></li>
-<li><a class="reference internal" href="#lshift" id="id80">lshift</a></li>
-<li><a class="reference internal" href="#rshift" id="id81">rshift</a></li>
+<li><a class="reference internal" href="#id4" id="id77">Bitwise operator functions</a><ul>
+<li><a class="reference internal" href="#and" id="id78">and_</a></li>
+<li><a class="reference internal" href="#or" id="id79">or_</a></li>
+<li><a class="reference internal" href="#xor" id="id80">xor</a></li>
+<li><a class="reference internal" href="#invert" id="id81">invert</a></li>
+<li><a class="reference internal" href="#lshift" id="id82">lshift</a></li>
+<li><a class="reference internal" href="#rshift" id="id83">rshift</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id5" id="id82">Power and logarithmic functions</a><ul>
-<li><a class="reference internal" href="#exp" id="id83">exp</a></li>
-<li><a class="reference internal" href="#expm1" id="id84">expm1</a></li>
-<li><a class="reference internal" href="#log" id="id85">log</a></li>
-<li><a class="reference internal" href="#log10" id="id86">log10</a></li>
-<li><a class="reference internal" href="#log1p" id="id87">log1p</a></li>
-<li><a class="reference internal" href="#log2" id="id88">log2</a></li>
-<li><a class="reference internal" href="#sqrt" id="id89">sqrt</a></li>
+<li><a class="reference internal" href="#id5" id="id84">Power and logarithmic functions</a><ul>
+<li><a class="reference internal" href="#exp" id="id85">exp</a></li>
+<li><a class="reference internal" href="#expm1" id="id86">expm1</a></li>
+<li><a class="reference internal" href="#log" id="id87">log</a></li>
+<li><a class="reference internal" href="#log10" id="id88">log10</a></li>
+<li><a class="reference internal" href="#log1p" id="id89">log1p</a></li>
+<li><a class="reference internal" href="#log2" id="id90">log2</a></li>
+<li><a class="reference internal" href="#sqrt" id="id91">sqrt</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id6" id="id90">Hyperbolic functions</a><ul>
-<li><a class="reference internal" href="#acosh" id="id91">acosh</a></li>
-<li><a class="reference internal" href="#asinh" id="id92">asinh</a></li>
-<li><a class="reference internal" href="#atanh" id="id93">atanh</a></li>
-<li><a class="reference internal" href="#cosh" id="id94">cosh</a></li>
-<li><a class="reference internal" href="#sinh" id="id95">sinh</a></li>
-<li><a class="reference internal" href="#tanh" id="id96">tanh</a></li>
+<li><a class="reference internal" href="#id6" id="id92">Hyperbolic functions</a><ul>
+<li><a class="reference internal" href="#acosh" id="id93">acosh</a></li>
+<li><a class="reference internal" href="#asinh" id="id94">asinh</a></li>
+<li><a class="reference internal" href="#atanh" id="id95">atanh</a></li>
+<li><a class="reference internal" href="#cosh" id="id96">cosh</a></li>
+<li><a class="reference internal" href="#sinh" id="id97">sinh</a></li>
+<li><a class="reference internal" href="#tanh" id="id98">tanh</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id7" id="id97">Trigonometric functions</a><ul>
-<li><a class="reference internal" href="#acos" id="id98">acos</a></li>
-<li><a class="reference internal" href="#asin" id="id99">asin</a></li>
-<li><a class="reference internal" href="#atan" id="id100">atan</a></li>
-<li><a class="reference internal" href="#atan2" id="id101">atan2</a></li>
-<li><a class="reference internal" href="#cos" id="id102">cos</a></li>
-<li><a class="reference internal" href="#hypot" id="id103">hypot</a></li>
-<li><a class="reference internal" href="#sin" id="id104">sin</a></li>
-<li><a class="reference internal" href="#tan" id="id105">tan</a></li>
+<li><a class="reference internal" href="#id7" id="id99">Trigonometric functions</a><ul>
+<li><a class="reference internal" href="#acos" id="id100">acos</a></li>
+<li><a class="reference internal" href="#asin" id="id101">asin</a></li>
+<li><a class="reference internal" href="#atan" id="id102">atan</a></li>
+<li><a class="reference internal" href="#atan2" id="id103">atan2</a></li>
+<li><a class="reference internal" href="#cos" id="id104">cos</a></li>
+<li><a class="reference internal" href="#hypot" id="id105">hypot</a></li>
+<li><a class="reference internal" href="#sin" id="id106">sin</a></li>
+<li><a class="reference internal" href="#tan" id="id107">tan</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id8" id="id106">Angular conversion</a><ul>
-<li><a class="reference internal" href="#degrees" id="id107">degrees</a></li>
-<li><a class="reference internal" href="#radians" id="id108">radians</a></li>
+<li><a class="reference internal" href="#id8" id="id108">Angular conversion</a><ul>
+<li><a class="reference internal" href="#degrees" id="id109">degrees</a></li>
+<li><a class="reference internal" href="#radians" id="id110">radians</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id9" id="id109">Number-theoretic and representation functions</a><ul>
-<li><a class="reference internal" href="#ceil" id="id110">ceil</a></li>
-<li><a class="reference internal" href="#copysign" id="id111">copysign</a></li>
-<li><a class="reference internal" href="#fabs" id="id112">fabs</a></li>
-<li><a class="reference internal" href="#factorial" id="id113">factorial</a></li>
-<li><a class="reference internal" href="#floor" id="id114">floor</a></li>
-<li><a class="reference internal" href="#fmod" id="id115">fmod</a></li>
-<li><a class="reference internal" href="#isfinite" id="id116">isfinite</a></li>
-<li><a class="reference internal" href="#isinf" id="id117">isinf</a></li>
-<li><a class="reference internal" href="#isnan" id="id118">isnan</a></li>
-<li><a class="reference internal" href="#ldexp" id="id119">ldexp</a></li>
-<li><a class="reference internal" href="#trunc" id="id120">trunc</a></li>
+<li><a class="reference internal" href="#id9" id="id111">Number-theoretic and representation functions</a><ul>
+<li><a class="reference internal" href="#ceil" id="id112">ceil</a></li>
+<li><a class="reference internal" href="#copysign" id="id113">copysign</a></li>
+<li><a class="reference internal" href="#fabs" id="id114">fabs</a></li>
+<li><a class="reference internal" href="#factorial" id="id115">factorial</a></li>
+<li><a class="reference internal" href="#floor" id="id116">floor</a></li>
+<li><a class="reference internal" href="#fmod" id="id117">fmod</a></li>
+<li><a class="reference internal" href="#isfinite" id="id118">isfinite</a></li>
+<li><a class="reference internal" href="#isinf" id="id119">isinf</a></li>
+<li><a class="reference internal" href="#isnan" id="id120">isnan</a></li>
+<li><a class="reference internal" href="#ldexp" id="id121">ldexp</a></li>
+<li><a class="reference internal" href="#trunc" id="id122">trunc</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id10" id="id121">Special functions</a><ul>
-<li><a class="reference internal" href="#erf" id="id122">erf</a></li>
-<li><a class="reference internal" href="#erfc" id="id123">erfc</a></li>
-<li><a class="reference internal" href="#gamma" id="id124">gamma</a></li>
-<li><a class="reference internal" href="#lgamma" id="id125">lgamma</a></li>
+<li><a class="reference internal" href="#id10" id="id123">Special functions</a><ul>
+<li><a class="reference internal" href="#erf" id="id124">erf</a></li>
+<li><a class="reference internal" href="#erfc" id="id125">erfc</a></li>
+<li><a class="reference internal" href="#gamma" id="id126">gamma</a></li>
+<li><a class="reference internal" href="#lgamma" id="id127">lgamma</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a class="reference internal" href="#option-flags-and-parameters" id="id126">Option Flags and Parameters</a><ul>
-<li><a class="reference internal" href="#arithmetic-overflow-control" id="id127">Arithmetic Overflow Control</a></li>
-<li><a class="reference internal" href="#using-only-part-of-an-array" id="id128">Using Only Part of an Array</a></li>
-<li><a class="reference internal" href="#simd-control" id="id129">SIMD Control</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#data-types" id="id130">Data Types</a><ul>
-<li><a class="reference internal" href="#array-types" id="id131">Array Types</a></li>
-<li><a class="reference internal" href="#numeric-parameter-types" id="id132">Numeric Parameter Types</a></li>
-<li><a class="reference internal" href="#maximum-array-size" id="id133">Maximum Array Size</a></li>
-<li><a class="reference internal" href="#platform-compiler-support" id="id134">Platform Compiler Support</a></li>
-<li><a class="reference internal" href="#integer-error-checking" id="id135">Integer Error Checking</a><ul>
-<li><a class="reference internal" href="#error-categories" id="id136">Error Categories</a></li>
-<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks" id="id137">Disabling Integer Division by Zero Checks</a></li>
-<li><a class="reference internal" href="#floating-point-nan-and-infinity" id="id138">Floating Point NaN and Infinity</a></li>
+<li><a class="reference internal" href="#id11" id="id128">Additional functions</a><ul>
+<li><a class="reference internal" href="#fma" id="id129">fma</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#exceptions" id="id139">Exceptions</a><ul>
-<li><a class="reference internal" href="#exceptions-general" id="id140">Exceptions - General</a></li>
+<li><a class="reference internal" href="#option-flags-and-parameters" id="id130">Option Flags and Parameters</a><ul>
+<li><a class="reference internal" href="#arithmetic-overflow-control" id="id131">Arithmetic Overflow Control</a></li>
+<li><a class="reference internal" href="#using-only-part-of-an-array" id="id132">Using Only Part of an Array</a></li>
+<li><a class="reference internal" href="#simd-control" id="id133">SIMD Control</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#simd-support" id="id141">SIMD Support</a><ul>
-<li><a class="reference internal" href="#general" id="id142">General</a></li>
-<li><a class="reference internal" href="#platform-support" id="id143">Platform Support</a></li>
-<li><a class="reference internal" href="#data-type-support" id="id144">Data Type Support</a></li>
-<li><a class="reference internal" href="#simd-support-attributes" id="id145">SIMD Support Attributes</a></li>
+<li><a class="reference internal" href="#data-types" id="id134">Data Types</a><ul>
+<li><a class="reference internal" href="#array-types" id="id135">Array Types</a></li>
+<li><a class="reference internal" href="#numeric-parameter-types" id="id136">Numeric Parameter Types</a></li>
+<li><a class="reference internal" href="#maximum-array-size" id="id137">Maximum Array Size</a></li>
+<li><a class="reference internal" href="#platform-compiler-support" id="id138">Platform Compiler Support</a></li>
+<li><a class="reference internal" href="#integer-error-checking" id="id139">Integer Error Checking</a><ul>
+<li><a class="reference internal" href="#error-categories" id="id140">Error Categories</a></li>
+<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks" id="id141">Disabling Integer Division by Zero Checks</a></li>
+<li><a class="reference internal" href="#floating-point-nan-and-infinity" id="id142">Floating Point NaN and Infinity</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#performance" id="id146">Performance</a><ul>
-<li><a class="reference internal" href="#variables-affecting-performance" id="id147">Variables affecting Performance</a></li>
-<li><a class="reference internal" href="#typical-performance-readings" id="id148">Typical Performance Readings</a><ul>
-<li><a class="reference internal" href="#non-optmised-performance" id="id149">Non-Optmised Performance</a></li>
-<li><a class="reference internal" href="#optmised-performance" id="id150">Optmised Performance</a></li>
-<li><a class="reference internal" href="#simd-optimisations" id="id151">SIMD Optimisations</a></li>
-<li><a class="reference internal" href="#array-size-versus-performance" id="id152">Array Size Versus Performance</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#platform-effects" id="id153">Platform Effects</a></li>
+<li><a class="reference internal" href="#exceptions" id="id143">Exceptions</a><ul>
+<li><a class="reference internal" href="#exceptions-general" id="id144">Exceptions - General</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id11" id="id154">Platform support</a></li>
+<li><a class="reference internal" href="#simd-support" id="id145">SIMD Support</a><ul>
+<li><a class="reference internal" href="#general" id="id146">General</a></li>
+<li><a class="reference internal" href="#platform-support" id="id147">Platform Support</a></li>
+<li><a class="reference internal" href="#data-type-support" id="id148">Data Type Support</a></li>
+<li><a class="reference internal" href="#simd-support-attributes" id="id149">SIMD Support Attributes</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#performance" id="id150">Performance</a><ul>
+<li><a class="reference internal" href="#variables-affecting-performance" id="id151">Variables affecting Performance</a></li>
+<li><a class="reference internal" href="#typical-performance-readings" id="id152">Typical Performance Readings</a><ul>
+<li><a class="reference internal" href="#non-optmised-performance" id="id153">Non-Optmised Performance</a></li>
+<li><a class="reference internal" href="#optmised-performance" id="id154">Optmised Performance</a></li>
+<li><a class="reference internal" href="#simd-optimisations" id="id155">SIMD Optimisations</a></li>
+<li><a class="reference internal" href="#array-size-versus-performance" id="id156">Array Size Versus Performance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#platform-effects" id="id157">Platform Effects</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#id12" id="id158">Platform support</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <hr class="docutils" />
 <div class="section" id="introduction">
-<h2><a class="toc-backref" href="#id13">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id14">Introduction</a><a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>The ArrayFunc module provides high speed array processing functions for use with
 the standard Python array module. These functions are patterned after the
 functions in the standard Python Itertools module together with some additional
@@ -266,7 +271,7 @@ significantly faster than using native Python.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="important-note-for-upgrading-to-version-4">
-<h2><a class="toc-backref" href="#id14">Important Note for Upgrading to Version 4</a><a class="headerlink" href="#important-note-for-upgrading-to-version-4" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Important Note for Upgrading to Version 4</a><a class="headerlink" href="#important-note-for-upgrading-to-version-4" title="Permalink to this headline">¶</a></h2>
 <p>Version 4 drops support for the amap, amapi, starmap, starmapi, and acalc
 functions. These have all been replaced by individual functions which perform
 the same calculations but in a more direct way.</p>
@@ -284,10 +289,10 @@ These functions however should still work in a compatible manner.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="function-summary">
-<h2><a class="toc-backref" href="#id15">Function Summary</a><a class="headerlink" href="#function-summary" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id16">Function Summary</a><a class="headerlink" href="#function-summary" title="Permalink to this headline">¶</a></h2>
 <p>The functions fall into several categories.</p>
 <div class="section" id="filling-arrays">
-<h3><a class="toc-backref" href="#id16">Filling Arrays</a><a class="headerlink" href="#filling-arrays" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">Filling Arrays</a><a class="headerlink" href="#filling-arrays" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="11%" />
@@ -314,7 +319,7 @@ values, and repeat until the array is filled.</td>
 </table>
 </div>
 <div class="section" id="filtering-arrays">
-<h3><a class="toc-backref" href="#id17">Filtering Arrays</a><a class="headerlink" href="#filtering-arrays" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id18">Filtering Arrays</a><a class="headerlink" href="#filtering-arrays" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
@@ -345,7 +350,7 @@ criteria fails.</td>
 </table>
 </div>
 <div class="section" id="examining-and-searching-arrays">
-<h3><a class="toc-backref" href="#id18">Examining and Searching Arrays</a><a class="headerlink" href="#examining-and-searching-arrays" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">Examining and Searching Arrays</a><a class="headerlink" href="#examining-and-searching-arrays" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
@@ -370,7 +375,7 @@ the number of matches found.</td>
 </table>
 </div>
 <div class="section" id="summarising-arrays">
-<h3><a class="toc-backref" href="#id19">Summarising Arrays</a><a class="headerlink" href="#summarising-arrays" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">Summarising Arrays</a><a class="headerlink" href="#summarising-arrays" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="18%" />
@@ -403,7 +408,7 @@ criteria.</td>
 </table>
 </div>
 <div class="section" id="data-conversion">
-<h3><a class="toc-backref" href="#id20">Data Conversion</a><a class="headerlink" href="#data-conversion" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">Data Conversion</a><a class="headerlink" href="#data-conversion" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="11%" />
@@ -423,7 +428,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="mathematical-operator-functions">
-<h3><a class="toc-backref" href="#id21">Mathematical operator functions</a><a class="headerlink" href="#mathematical-operator-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">Mathematical operator functions</a><a class="headerlink" href="#mathematical-operator-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -466,7 +471,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="comparison-operator-functions">
-<h3><a class="toc-backref" href="#id22">Comparison operator functions</a><a class="headerlink" href="#comparison-operator-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">Comparison operator functions</a><a class="headerlink" href="#comparison-operator-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -500,7 +505,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="bitwise-operator-functions">
-<h3><a class="toc-backref" href="#id23">Bitwise operator functions</a><a class="headerlink" href="#bitwise-operator-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">Bitwise operator functions</a><a class="headerlink" href="#bitwise-operator-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -534,7 +539,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="power-and-logarithmic-functions">
-<h3><a class="toc-backref" href="#id24">Power and logarithmic functions</a><a class="headerlink" href="#power-and-logarithmic-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id25">Power and logarithmic functions</a><a class="headerlink" href="#power-and-logarithmic-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -571,7 +576,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="hyperbolic-functions">
-<h3><a class="toc-backref" href="#id25">Hyperbolic functions</a><a class="headerlink" href="#hyperbolic-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">Hyperbolic functions</a><a class="headerlink" href="#hyperbolic-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -605,7 +610,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="trigonometric-functions">
-<h3><a class="toc-backref" href="#id26">Trigonometric functions</a><a class="headerlink" href="#trigonometric-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id27">Trigonometric functions</a><a class="headerlink" href="#trigonometric-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -645,7 +650,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="angular-conversion">
-<h3><a class="toc-backref" href="#id27">Angular conversion</a><a class="headerlink" href="#angular-conversion" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id28">Angular conversion</a><a class="headerlink" href="#angular-conversion" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -667,7 +672,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="number-theoretic-and-representation-functions">
-<h3><a class="toc-backref" href="#id28">Number-theoretic and representation functions</a><a class="headerlink" href="#number-theoretic-and-representation-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id29">Number-theoretic and representation functions</a><a class="headerlink" href="#number-theoretic-and-representation-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -716,7 +721,7 @@ the form required by the output array.</td>
 </table>
 </div>
 <div class="section" id="special-functions">
-<h3><a class="toc-backref" href="#id29">Special functions</a><a class="headerlink" href="#special-functions" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">Special functions</a><a class="headerlink" href="#special-functions" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="19%" />
@@ -743,8 +748,27 @@ the form required by the output array.</td>
 </tbody>
 </table>
 </div>
+<div class="section" id="additional-functions">
+<h3><a class="toc-backref" href="#id31">Additional functions</a><a class="headerlink" href="#additional-functions" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="19%" />
+<col width="81%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Function</th>
+<th class="head">Equivalent to</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>fma</td>
+<td>fma(x, y, z) or x * y + z</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="array-limit-attributes">
-<h3><a class="toc-backref" href="#id30">Array Limit Attributes</a><a class="headerlink" href="#array-limit-attributes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id32">Array Limit Attributes</a><a class="headerlink" href="#array-limit-attributes" title="Permalink to this headline">¶</a></h3>
 <p>In addition to functions, a set of attributes are provided representing the
 platform specific maximum and minimum numerical values for each array type.
 These attributes are part of the “arraylimits” module.</p>
@@ -752,9 +776,9 @@ These attributes are part of the “arraylimits” module.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="searching-and-summarising-arrays">
-<h2><a class="toc-backref" href="#id31">Searching and Summarising Arrays.</a><a class="headerlink" href="#searching-and-summarising-arrays" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id33">Searching and Summarising Arrays.</a><a class="headerlink" href="#searching-and-summarising-arrays" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="comparison-operators">
-<h3><a class="toc-backref" href="#id32">Comparison Operators</a><a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id34">Comparison Operators</a><a class="headerlink" href="#comparison-operators" title="Permalink to this headline">¶</a></h3>
 <p>Some functions use comparison operators. These are unicode strings containing
 the Python compare operators and include following:</p>
 <table border="1" class="docutils">
@@ -792,9 +816,9 @@ the Python compare operators and include following:</p>
 include any leading or trailing spaces or other characters.</p>
 </div>
 <div class="section" id="description">
-<h3><a class="toc-backref" href="#id33">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id35">Description</a><a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="count">
-<h4><a class="toc-backref" href="#id34">count</a><a class="headerlink" href="#count" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id36">count</a><a class="headerlink" href="#count" title="Permalink to this headline">¶</a></h4>
 <p>Fill an array with evenly spaced values using a start and step values. The
 function continues until the end of the array. The function does not check for
 integer overflow.</p>
@@ -821,7 +845,7 @@ will cause the function to count down.</li>
 </div>
 </div>
 <div class="section" id="cycle">
-<h4><a class="toc-backref" href="#id35">cycle</a><a class="headerlink" href="#cycle" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id37">cycle</a><a class="headerlink" href="#cycle" title="Permalink to this headline">¶</a></h4>
 <p>Fill an array with evenly spaced values using a start, stop, and step values,
 and repeat until the array is filled.</p>
 <p>cycle(dataarray, start, stop, step)</p>
@@ -849,7 +873,7 @@ and the absolute value used when incrementing.</li>
 </div>
 </div>
 <div class="section" id="repeat">
-<h4><a class="toc-backref" href="#id36">repeat</a><a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id38">repeat</a><a class="headerlink" href="#repeat" title="Permalink to this headline">¶</a></h4>
 <p>Fill an array with a specified value.</p>
 <p>repeat(dataarray, value)</p>
 <ul class="simple">
@@ -864,7 +888,7 @@ and the absolute value used when incrementing.</li>
 </div>
 </div>
 <div class="section" id="afilter">
-<h4><a class="toc-backref" href="#id37">afilter</a><a class="headerlink" href="#afilter" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id39">afilter</a><a class="headerlink" href="#afilter" title="Permalink to this headline">¶</a></h4>
 <p>Select values from an array based on a boolean criteria.</p>
 <p>x = afilter(op, inparray, outparray, rparam)</p>
 <p>x = afilter(op, inparray, outparray, rparam, maxlen=500)</p>
@@ -891,7 +915,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="compress">
-<h4><a class="toc-backref" href="#id38">compress</a><a class="headerlink" href="#compress" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id40">compress</a><a class="headerlink" href="#compress" title="Permalink to this headline">¶</a></h4>
 <p>Select values from an array based on another array of integers values. The
 selector array is interpreted as a set of boolean values, where any value other
 than <em>0</em> causes the value in the input array to be selected and copied to the
@@ -925,7 +949,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="dropwhile">
-<h4><a class="toc-backref" href="#id39">dropwhile</a><a class="headerlink" href="#dropwhile" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id41">dropwhile</a><a class="headerlink" href="#dropwhile" title="Permalink to this headline">¶</a></h4>
 <p>Select values from an array starting from where a selected criteria fails and
 proceeding to the end.</p>
 <p>x = dropwhile(op, inparray, outparray, rparam)</p>
@@ -953,7 +977,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="takewhile">
-<h4><a class="toc-backref" href="#id40">takewhile</a><a class="headerlink" href="#takewhile" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id42">takewhile</a><a class="headerlink" href="#takewhile" title="Permalink to this headline">¶</a></h4>
 <p>Like dropwhile, but starts from the beginning and stops when the criteria fails.</p>
 <p>example:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">inparray</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">54</span><span class="p">,</span> <span class="o">-</span><span class="mi">6</span><span class="p">])</span>
@@ -968,7 +992,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="aany">
-<h4><a class="toc-backref" href="#id41">aany</a><a class="headerlink" href="#aany" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id43">aany</a><a class="headerlink" href="#aany" title="Permalink to this headline">¶</a></h4>
 <p>Returns True if any element in an array meets the selected criteria.</p>
 <p>x = aany(op, inparray, rparam)</p>
 <p>x = aany(op, inparray, rparam, maxlen=500, nosimd=True)</p>
@@ -994,7 +1018,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="aall">
-<h4><a class="toc-backref" href="#id42">aall</a><a class="headerlink" href="#aall" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id44">aall</a><a class="headerlink" href="#aall" title="Permalink to this headline">¶</a></h4>
 <p>Returns True if all elements in an array meet the selected criteria.</p>
 <p>x = aall(op, inparray, rparam)</p>
 <p>x = aall(op, inparray, rparam, maxlen=500, nosimd=True)</p>
@@ -1023,7 +1047,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="amax">
-<h4><a class="toc-backref" href="#id43">amax</a><a class="headerlink" href="#amax" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id45">amax</a><a class="headerlink" href="#amax" title="Permalink to this headline">¶</a></h4>
 <p>Returns the maximum value in the array.</p>
 <p>x = amax(inparray)</p>
 <p>x = amax(inparray, maxlen=500)</p>
@@ -1046,7 +1070,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="amin">
-<h4><a class="toc-backref" href="#id44">amin</a><a class="headerlink" href="#amin" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id46">amin</a><a class="headerlink" href="#amin" title="Permalink to this headline">¶</a></h4>
 <p>Returns the minimum value in the array.</p>
 <p>x = amin(inparray)</p>
 <p>x = amin(inparray, maxlen=500)</p>
@@ -1069,7 +1093,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="findindex">
-<h4><a class="toc-backref" href="#id45">findindex</a><a class="headerlink" href="#findindex" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id47">findindex</a><a class="headerlink" href="#findindex" title="Permalink to this headline">¶</a></h4>
 <p>Returns the index of the first value in an array to meet the specified criteria.</p>
 <p>x = findindex(op, inparray, rparam)</p>
 <p>x = findindex(op, inparray, rparam, maxlen=500, nosimd=True)</p>
@@ -1093,7 +1117,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="findindices">
-<h4><a class="toc-backref" href="#id46">findindices</a><a class="headerlink" href="#findindices" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id48">findindices</a><a class="headerlink" href="#findindices" title="Permalink to this headline">¶</a></h4>
 <p>Searches an array for the array indices which meet the specified criteria and
 writes the results to a second array. Also returns the number of matches found.</p>
 <p>x = findindices(op, inparray, outparray, rparam)</p>
@@ -1122,7 +1146,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="asum">
-<h4><a class="toc-backref" href="#id47">asum</a><a class="headerlink" href="#asum" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id49">asum</a><a class="headerlink" href="#asum" title="Permalink to this headline">¶</a></h4>
 <p>Calculate the arithmetic sum of an array.</p>
 <p>For integer arrays, the intermediate sum is accumulated in the largest
 corresponding integer size. Signed integers are accumulated in the equivalent
@@ -1156,7 +1180,7 @@ overflow checking is also disabled.</li>
 </div>
 </div>
 <div class="section" id="convert">
-<h4><a class="toc-backref" href="#id48">convert</a><a class="headerlink" href="#convert" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id50">convert</a><a class="headerlink" href="#convert" title="Permalink to this headline">¶</a></h4>
 <p>Convert arrays between data types. The data will be converted into the form
 required by the output array. If any values in the input array are outside the
 range of the output array type, an exception will be raised. When floating point
@@ -1188,7 +1212,7 @@ actual length of the array is specified, this parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="arraylimits-attributes">
-<h3><a class="toc-backref" href="#id49">arraylimits attributes</a><a class="headerlink" href="#arraylimits-attributes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id51">arraylimits attributes</a><a class="headerlink" href="#arraylimits-attributes" title="Permalink to this headline">¶</a></h3>
 <p>A set of attributes are provided representing the platform specific maximum
 and minimum numerical values for each array type. These attributes are part of
 the “arraylimits” module.</p>
@@ -1289,9 +1313,9 @@ platform characteristics may also produce differences.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="mathematical-functions">
-<h2><a class="toc-backref" href="#id50">Mathematical Functions</a><a class="headerlink" href="#mathematical-functions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id52">Mathematical Functions</a><a class="headerlink" href="#mathematical-functions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="id1">
-<h3><a class="toc-backref" href="#id51">Description</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id53">Description</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <p>Mathematical functions provide similar functionality to the functions of the
 same name in the standard library “math” and “operator” modules, but operate
 over whole arrays instead of on a single value.</p>
@@ -1301,7 +1325,7 @@ of parameter and adjust its behaviour accordingly.</p>
 <p>Output can be either into a separate output array, or in-place (into the
 original array) if no output array is provided.</p>
 <div class="section" id="parameter-forms">
-<h4><a class="toc-backref" href="#id52">Parameter Forms</a><a class="headerlink" href="#parameter-forms" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id54">Parameter Forms</a><a class="headerlink" href="#parameter-forms" title="Permalink to this headline">¶</a></h4>
 <p>This example will subtract 10 from each element of array ‘x’, replacing the
 original data.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">])</span>
@@ -1331,14 +1355,14 @@ array ‘y’, and puts the result in array ‘z’.:</p>
 </div>
 </div>
 <div class="section" id="parameter-type-consistency">
-<h4><a class="toc-backref" href="#id53">Parameter Type Consistency</a><a class="headerlink" href="#parameter-type-consistency" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id55">Parameter Type Consistency</a><a class="headerlink" href="#parameter-type-consistency" title="Permalink to this headline">¶</a></h4>
 <p>Unless otherwise noted, all array and numeric parameters must be of the same
 type when calling a mathematical function. That is, you may not mix integer
 and floating point, or different integer sizes in the same calculation. Failing
 to do so will result in an exception being raised.</p>
 </div>
 <div class="section" id="using-less-than-the-entire-array">
-<h4><a class="toc-backref" href="#id54">Using Less than the Entire Array</a><a class="headerlink" href="#using-less-than-the-entire-array" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id56">Using Less than the Entire Array</a><a class="headerlink" href="#using-less-than-the-entire-array" title="Permalink to this headline">¶</a></h4>
 <p>If the size of the array is larger than the desired length of the calculation,
 it may be limited to the first part of the array by using the ‘maxlen’
 parameter. In the following example only the first 3 array elements will be
@@ -1349,7 +1373,7 @@ operated on, with the following ones left unchanged.:</p>
 </div>
 </div>
 <div class="section" id="supressing-or-ignoring-math-errors">
-<h4><a class="toc-backref" href="#id55">Supressing or Ignoring Math Errors</a><a class="headerlink" href="#supressing-or-ignoring-math-errors" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id57">Supressing or Ignoring Math Errors</a><a class="headerlink" href="#supressing-or-ignoring-math-errors" title="Permalink to this headline">¶</a></h4>
 <p>Functions can be made to ignore some mathematical errors (e.g. integer
 overflow) by setting the ‘matherrors’ keyword parameter to True.:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">20</span><span class="p">,</span><span class="mi">21</span><span class="p">,</span><span class="mi">22</span><span class="p">,</span><span class="mi">23</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">25</span><span class="p">])</span>
@@ -1365,7 +1389,7 @@ vary greatly depending upon the specific function and array type. Benchmark
 your calculation before deciding if this is worth while.</p>
 </div>
 <div class="section" id="differences-with-native-python">
-<h4><a class="toc-backref" href="#id56">Differences with Native Python</a><a class="headerlink" href="#differences-with-native-python" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id58">Differences with Native Python</a><a class="headerlink" href="#differences-with-native-python" title="Permalink to this headline">¶</a></h4>
 <p>In many cases the Python ‘math’ module functions are thin wrappers around the
 underlying C library, as is ‘arrayfunc’.</p>
 <p>However, in some cases ‘arrayfunc’ will not produce exactly the same result as
@@ -1407,18 +1431,20 @@ arrayfunc may not be the same in all cases.</li>
 </ul>
 </div>
 <div class="section" id="other-notes">
-<h4><a class="toc-backref" href="#id57">Other Notes</a><a class="headerlink" href="#other-notes" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id59">Other Notes</a><a class="headerlink" href="#other-notes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li>Ldexp only accepts an integer number as the second parameter, not an array.</li>
 <li>Math.pow is not implemented because it duplicates the operator pow (and the
 names would collide in arrayfunc).</li>
+<li>Fma is not part of the Python standard library, but has been offered here
+as an additional feature.</li>
 </ul>
 </div>
 </div>
 <div class="section" id="id2">
-<h3><a class="toc-backref" href="#id58">Mathematical operator functions</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id60">Mathematical operator functions</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="add">
-<h4><a class="toc-backref" href="#id59">add</a><a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id61">add</a><a class="headerlink" href="#add" title="Permalink to this headline">¶</a></h4>
 <p>Calculate add over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1464,7 +1490,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="truediv">
-<h4><a class="toc-backref" href="#id60">truediv</a><a class="headerlink" href="#truediv" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id62">truediv</a><a class="headerlink" href="#truediv" title="Permalink to this headline">¶</a></h4>
 <p>Calculate truediv over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1510,7 +1536,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="floordiv">
-<h4><a class="toc-backref" href="#id61">floordiv</a><a class="headerlink" href="#floordiv" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id63">floordiv</a><a class="headerlink" href="#floordiv" title="Permalink to this headline">¶</a></h4>
 <p>Calculate floordiv over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1556,7 +1582,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="mod">
-<h4><a class="toc-backref" href="#id62">mod</a><a class="headerlink" href="#mod" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id64">mod</a><a class="headerlink" href="#mod" title="Permalink to this headline">¶</a></h4>
 <p>Calculate mod over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1602,7 +1628,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="mul">
-<h4><a class="toc-backref" href="#id63">mul</a><a class="headerlink" href="#mul" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id65">mul</a><a class="headerlink" href="#mul" title="Permalink to this headline">¶</a></h4>
 <p>Calculate mul over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1648,7 +1674,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="neg">
-<h4><a class="toc-backref" href="#id64">neg</a><a class="headerlink" href="#neg" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id66">neg</a><a class="headerlink" href="#neg" title="Permalink to this headline">¶</a></h4>
 <p>Calculate neg over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1686,7 +1712,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="pow">
-<h4><a class="toc-backref" href="#id65">pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id67">pow</a><a class="headerlink" href="#pow" title="Permalink to this headline">¶</a></h4>
 <p>Calculate pow over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1732,7 +1758,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sub">
-<h4><a class="toc-backref" href="#id66">sub</a><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id68">sub</a><a class="headerlink" href="#sub" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sub over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1778,7 +1804,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="abs">
-<h4><a class="toc-backref" href="#id67">abs_</a><a class="headerlink" href="#abs" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id69">abs_</a><a class="headerlink" href="#abs" title="Permalink to this headline">¶</a></h4>
 <p>Calculate abs_ over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1817,9 +1843,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id3">
-<h3><a class="toc-backref" href="#id68">Comparison operator functions</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id70">Comparison operator functions</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="eq">
-<h4><a class="toc-backref" href="#id69">eq</a><a class="headerlink" href="#eq" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id71">eq</a><a class="headerlink" href="#eq" title="Permalink to this headline">¶</a></h4>
 <p>Calculate eq over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1862,7 +1888,7 @@ false.</li>
 </ul>
 </div>
 <div class="section" id="gt">
-<h4><a class="toc-backref" href="#id70">gt</a><a class="headerlink" href="#gt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id72">gt</a><a class="headerlink" href="#gt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate gt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1905,7 +1931,7 @@ false.</li>
 </ul>
 </div>
 <div class="section" id="ge">
-<h4><a class="toc-backref" href="#id71">ge</a><a class="headerlink" href="#ge" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id73">ge</a><a class="headerlink" href="#ge" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ge over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1948,7 +1974,7 @@ false.</li>
 </ul>
 </div>
 <div class="section" id="lt">
-<h4><a class="toc-backref" href="#id72">lt</a><a class="headerlink" href="#lt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id74">lt</a><a class="headerlink" href="#lt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1991,7 +2017,7 @@ false.</li>
 </ul>
 </div>
 <div class="section" id="le">
-<h4><a class="toc-backref" href="#id73">le</a><a class="headerlink" href="#le" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id75">le</a><a class="headerlink" href="#le" title="Permalink to this headline">¶</a></h4>
 <p>Calculate le over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2034,7 +2060,7 @@ false.</li>
 </ul>
 </div>
 <div class="section" id="ne">
-<h4><a class="toc-backref" href="#id74">ne</a><a class="headerlink" href="#ne" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id76">ne</a><a class="headerlink" href="#ne" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ne over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2078,9 +2104,9 @@ false.</li>
 </div>
 </div>
 <div class="section" id="id4">
-<h3><a class="toc-backref" href="#id75">Bitwise operator functions</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id77">Bitwise operator functions</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="and">
-<h4><a class="toc-backref" href="#id76">and_</a><a class="headerlink" href="#and" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id78">and_</a><a class="headerlink" href="#and" title="Permalink to this headline">¶</a></h4>
 <p>Calculate and_ over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2123,7 +2149,7 @@ parameter is ignored.</li>
 </ul>
 </div>
 <div class="section" id="or">
-<h4><a class="toc-backref" href="#id77">or_</a><a class="headerlink" href="#or" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id79">or_</a><a class="headerlink" href="#or" title="Permalink to this headline">¶</a></h4>
 <p>Calculate or_ over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2166,7 +2192,7 @@ parameter is ignored.</li>
 </ul>
 </div>
 <div class="section" id="xor">
-<h4><a class="toc-backref" href="#id78">xor</a><a class="headerlink" href="#xor" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id80">xor</a><a class="headerlink" href="#xor" title="Permalink to this headline">¶</a></h4>
 <p>Calculate xor over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2209,7 +2235,7 @@ parameter is ignored.</li>
 </ul>
 </div>
 <div class="section" id="invert">
-<h4><a class="toc-backref" href="#id79">invert</a><a class="headerlink" href="#invert" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id81">invert</a><a class="headerlink" href="#invert" title="Permalink to this headline">¶</a></h4>
 <p>Calculate invert over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2245,7 +2271,7 @@ parameter is ignored.</li>
 </ul>
 </div>
 <div class="section" id="lshift">
-<h4><a class="toc-backref" href="#id80">lshift</a><a class="headerlink" href="#lshift" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id82">lshift</a><a class="headerlink" href="#lshift" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lshift over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2288,7 +2314,7 @@ parameter is ignored.</li>
 </ul>
 </div>
 <div class="section" id="rshift">
-<h4><a class="toc-backref" href="#id81">rshift</a><a class="headerlink" href="#rshift" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id83">rshift</a><a class="headerlink" href="#rshift" title="Permalink to this headline">¶</a></h4>
 <p>Calculate rshift over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2332,9 +2358,9 @@ parameter is ignored.</li>
 </div>
 </div>
 <div class="section" id="id5">
-<h3><a class="toc-backref" href="#id82">Power and logarithmic functions</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id84">Power and logarithmic functions</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="exp">
-<h4><a class="toc-backref" href="#id83">exp</a><a class="headerlink" href="#exp" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id85">exp</a><a class="headerlink" href="#exp" title="Permalink to this headline">¶</a></h4>
 <p>Calculate exp over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2373,7 +2399,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="expm1">
-<h4><a class="toc-backref" href="#id84">expm1</a><a class="headerlink" href="#expm1" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id86">expm1</a><a class="headerlink" href="#expm1" title="Permalink to this headline">¶</a></h4>
 <p>Calculate expm1 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2412,7 +2438,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log">
-<h4><a class="toc-backref" href="#id85">log</a><a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id87">log</a><a class="headerlink" href="#log" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2451,7 +2477,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log10">
-<h4><a class="toc-backref" href="#id86">log10</a><a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id88">log10</a><a class="headerlink" href="#log10" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log10 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2490,7 +2516,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log1p">
-<h4><a class="toc-backref" href="#id87">log1p</a><a class="headerlink" href="#log1p" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id89">log1p</a><a class="headerlink" href="#log1p" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log1p over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2529,7 +2555,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="log2">
-<h4><a class="toc-backref" href="#id88">log2</a><a class="headerlink" href="#log2" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id90">log2</a><a class="headerlink" href="#log2" title="Permalink to this headline">¶</a></h4>
 <p>Calculate log2 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2568,7 +2594,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sqrt">
-<h4><a class="toc-backref" href="#id89">sqrt</a><a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id91">sqrt</a><a class="headerlink" href="#sqrt" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sqrt over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2608,9 +2634,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id6">
-<h3><a class="toc-backref" href="#id90">Hyperbolic functions</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id92">Hyperbolic functions</a><a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="acosh">
-<h4><a class="toc-backref" href="#id91">acosh</a><a class="headerlink" href="#acosh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id93">acosh</a><a class="headerlink" href="#acosh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate acosh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2649,7 +2675,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="asinh">
-<h4><a class="toc-backref" href="#id92">asinh</a><a class="headerlink" href="#asinh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id94">asinh</a><a class="headerlink" href="#asinh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate asinh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2688,7 +2714,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atanh">
-<h4><a class="toc-backref" href="#id93">atanh</a><a class="headerlink" href="#atanh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id95">atanh</a><a class="headerlink" href="#atanh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atanh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2727,7 +2753,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="cosh">
-<h4><a class="toc-backref" href="#id94">cosh</a><a class="headerlink" href="#cosh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id96">cosh</a><a class="headerlink" href="#cosh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate cosh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2766,7 +2792,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sinh">
-<h4><a class="toc-backref" href="#id95">sinh</a><a class="headerlink" href="#sinh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id97">sinh</a><a class="headerlink" href="#sinh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sinh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2805,7 +2831,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="tanh">
-<h4><a class="toc-backref" href="#id96">tanh</a><a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id98">tanh</a><a class="headerlink" href="#tanh" title="Permalink to this headline">¶</a></h4>
 <p>Calculate tanh over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2845,9 +2871,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id7">
-<h3><a class="toc-backref" href="#id97">Trigonometric functions</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id99">Trigonometric functions</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="acos">
-<h4><a class="toc-backref" href="#id98">acos</a><a class="headerlink" href="#acos" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id100">acos</a><a class="headerlink" href="#acos" title="Permalink to this headline">¶</a></h4>
 <p>Calculate acos over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2886,7 +2912,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="asin">
-<h4><a class="toc-backref" href="#id99">asin</a><a class="headerlink" href="#asin" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id101">asin</a><a class="headerlink" href="#asin" title="Permalink to this headline">¶</a></h4>
 <p>Calculate asin over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2925,7 +2951,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atan">
-<h4><a class="toc-backref" href="#id100">atan</a><a class="headerlink" href="#atan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id102">atan</a><a class="headerlink" href="#atan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2964,7 +2990,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="atan2">
-<h4><a class="toc-backref" href="#id101">atan2</a><a class="headerlink" href="#atan2" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id103">atan2</a><a class="headerlink" href="#atan2" title="Permalink to this headline">¶</a></h4>
 <p>Calculate atan2 over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3010,7 +3036,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="cos">
-<h4><a class="toc-backref" href="#id102">cos</a><a class="headerlink" href="#cos" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id104">cos</a><a class="headerlink" href="#cos" title="Permalink to this headline">¶</a></h4>
 <p>Calculate cos over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3049,7 +3075,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="hypot">
-<h4><a class="toc-backref" href="#id103">hypot</a><a class="headerlink" href="#hypot" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id105">hypot</a><a class="headerlink" href="#hypot" title="Permalink to this headline">¶</a></h4>
 <p>Calculate hypot over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3095,7 +3121,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="sin">
-<h4><a class="toc-backref" href="#id104">sin</a><a class="headerlink" href="#sin" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id106">sin</a><a class="headerlink" href="#sin" title="Permalink to this headline">¶</a></h4>
 <p>Calculate sin over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3134,7 +3160,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="tan">
-<h4><a class="toc-backref" href="#id105">tan</a><a class="headerlink" href="#tan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id107">tan</a><a class="headerlink" href="#tan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate tan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3174,9 +3200,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id8">
-<h3><a class="toc-backref" href="#id106">Angular conversion</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id108">Angular conversion</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="degrees">
-<h4><a class="toc-backref" href="#id107">degrees</a><a class="headerlink" href="#degrees" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id109">degrees</a><a class="headerlink" href="#degrees" title="Permalink to this headline">¶</a></h4>
 <p>Calculate degrees over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3215,7 +3241,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="radians">
-<h4><a class="toc-backref" href="#id108">radians</a><a class="headerlink" href="#radians" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id110">radians</a><a class="headerlink" href="#radians" title="Permalink to this headline">¶</a></h4>
 <p>Calculate radians over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3255,9 +3281,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id9">
-<h3><a class="toc-backref" href="#id109">Number-theoretic and representation functions</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id111">Number-theoretic and representation functions</a><a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="ceil">
-<h4><a class="toc-backref" href="#id110">ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id112">ceil</a><a class="headerlink" href="#ceil" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ceil over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3296,7 +3322,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="copysign">
-<h4><a class="toc-backref" href="#id111">copysign</a><a class="headerlink" href="#copysign" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id113">copysign</a><a class="headerlink" href="#copysign" title="Permalink to this headline">¶</a></h4>
 <p>Calculate copysign over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3342,7 +3368,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="fabs">
-<h4><a class="toc-backref" href="#id112">fabs</a><a class="headerlink" href="#fabs" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id114">fabs</a><a class="headerlink" href="#fabs" title="Permalink to this headline">¶</a></h4>
 <p>Calculate fabs over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3381,7 +3407,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="factorial">
-<h4><a class="toc-backref" href="#id113">factorial</a><a class="headerlink" href="#factorial" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id115">factorial</a><a class="headerlink" href="#factorial" title="Permalink to this headline">¶</a></h4>
 <p>Calculate factorial over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3419,7 +3445,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="floor">
-<h4><a class="toc-backref" href="#id114">floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id116">floor</a><a class="headerlink" href="#floor" title="Permalink to this headline">¶</a></h4>
 <p>Calculate floor over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3458,7 +3484,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="fmod">
-<h4><a class="toc-backref" href="#id115">fmod</a><a class="headerlink" href="#fmod" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id117">fmod</a><a class="headerlink" href="#fmod" title="Permalink to this headline">¶</a></h4>
 <p>Calculate fmod over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3504,7 +3530,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="isfinite">
-<h4><a class="toc-backref" href="#id116">isfinite</a><a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id118">isfinite</a><a class="headerlink" href="#isfinite" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isfinite over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3542,7 +3568,7 @@ value will be false.</li>
 </ul>
 </div>
 <div class="section" id="isinf">
-<h4><a class="toc-backref" href="#id117">isinf</a><a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id119">isinf</a><a class="headerlink" href="#isinf" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isinf over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3580,7 +3606,7 @@ value will be false.</li>
 </ul>
 </div>
 <div class="section" id="isnan">
-<h4><a class="toc-backref" href="#id118">isnan</a><a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id120">isnan</a><a class="headerlink" href="#isnan" title="Permalink to this headline">¶</a></h4>
 <p>Calculate isnan over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3618,7 +3644,7 @@ value will be false.</li>
 </ul>
 </div>
 <div class="section" id="ldexp">
-<h4><a class="toc-backref" href="#id119">ldexp</a><a class="headerlink" href="#ldexp" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id121">ldexp</a><a class="headerlink" href="#ldexp" title="Permalink to this headline">¶</a></h4>
 <p>Calculate ldexp over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3658,7 +3684,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="trunc">
-<h4><a class="toc-backref" href="#id120">trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id122">trunc</a><a class="headerlink" href="#trunc" title="Permalink to this headline">¶</a></h4>
 <p>Calculate trunc over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3698,9 +3724,9 @@ default is false.</li>
 </div>
 </div>
 <div class="section" id="id10">
-<h3><a class="toc-backref" href="#id121">Special functions</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id123">Special functions</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="erf">
-<h4><a class="toc-backref" href="#id122">erf</a><a class="headerlink" href="#erf" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id124">erf</a><a class="headerlink" href="#erf" title="Permalink to this headline">¶</a></h4>
 <p>Calculate erf over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3739,7 +3765,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="erfc">
-<h4><a class="toc-backref" href="#id123">erfc</a><a class="headerlink" href="#erfc" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id125">erfc</a><a class="headerlink" href="#erfc" title="Permalink to this headline">¶</a></h4>
 <p>Calculate erfc over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3778,7 +3804,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="gamma">
-<h4><a class="toc-backref" href="#id124">gamma</a><a class="headerlink" href="#gamma" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id126">gamma</a><a class="headerlink" href="#gamma" title="Permalink to this headline">¶</a></h4>
 <p>Calculate gamma over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3817,7 +3843,7 @@ default is false.</li>
 </ul>
 </div>
 <div class="section" id="lgamma">
-<h4><a class="toc-backref" href="#id125">lgamma</a><a class="headerlink" href="#lgamma" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id127">lgamma</a><a class="headerlink" href="#lgamma" title="Permalink to this headline">¶</a></h4>
 <p>Calculate lgamma over the values in an array.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3856,12 +3882,68 @@ default is false.</li>
 </ul>
 </div>
 </div>
+<div class="section" id="id11">
+<h3><a class="toc-backref" href="#id128">Additional functions</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fma">
+<h4><a class="toc-backref" href="#id129">fma</a><a class="headerlink" href="#fma" title="Permalink to this headline">¶</a></h4>
+<p>Calculate fma over the values in an array.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>Equivalent to:</td>
+<td>fma(x, y, z) or x * y + z</td>
+</tr>
+<tr class="row-even"><td>Array types supported:</td>
+<td>f, d</td>
+</tr>
+<tr class="row-odd"><td>Exceptions raised:</td>
+<td>ArithmeticError</td>
+</tr>
+</tbody>
+</table>
+<p>Call formats:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">array3</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">array3</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">param3</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">param3</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">array3</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">array3</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param2</span><span class="p">,</span> <span class="n">param3</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">array3</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">fma</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">array3</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li>array1 - The first input data array to be examined. If no output
+array is provided the results will overwrite the input data.</li>
+<li>array2 - A second input data array. Each element in this array is
+applied to the corresponding element in the first array.</li>
+<li>param2 - A non-array numeric parameter which is
+used in place of array2.</li>
+<li>array3 - A third input data array. Each element in this array is
+applied to the corresponding element in the first array.</li>
+<li>param3 - A non-array numeric parameter which is
+used in place of array3.</li>
+<li>outparray - The output array. This parameter is optional.</li>
+<li>maxlen - Limit the length of the array used. This must be a valid
+positive integer. If a zero or negative length, or a value which is
+greater than the actual length of the array is specified, this
+parameter is ignored.</li>
+<li>matherrors - If true, arithmetic error checking is disabled. The
+default is false.</li>
+</ul>
+</div>
+</div>
 </div>
 <hr class="docutils" />
 <div class="section" id="option-flags-and-parameters">
-<h2><a class="toc-backref" href="#id126">Option Flags and Parameters</a><a class="headerlink" href="#option-flags-and-parameters" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id130">Option Flags and Parameters</a><a class="headerlink" href="#option-flags-and-parameters" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="arithmetic-overflow-control">
-<h3><a class="toc-backref" href="#id127">Arithmetic Overflow Control</a><a class="headerlink" href="#arithmetic-overflow-control" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id131">Arithmetic Overflow Control</a><a class="headerlink" href="#arithmetic-overflow-control" title="Permalink to this headline">¶</a></h3>
 <p>Many functions allow integer overflow detection to be turned off if desired.
 See the list of operators for which operators this applies to.</p>
 <p>Integer overflow is when a number becomes too large to fit within the specified
@@ -3879,7 +3961,7 @@ with the amount of improvement depending on the type of calculation being
 performed and the data type used.</p>
 </div>
 <div class="section" id="using-only-part-of-an-array">
-<h3><a class="toc-backref" href="#id128">Using Only Part of an Array</a><a class="headerlink" href="#using-only-part-of-an-array" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id132">Using Only Part of an Array</a><a class="headerlink" href="#using-only-part-of-an-array" title="Permalink to this headline">¶</a></h3>
 <p>The array math functions only use existing arrays that the user provides and do
 not create new arrays or resize existing ones. The reason for this is that when
 very large arrays are being used, continually allocating and de-allocating
@@ -3898,7 +3980,7 @@ size of the array, the length limit will be ignored and the entire array used.
 The default is to use the entire array.</p>
 </div>
 <div class="section" id="simd-control">
-<h3><a class="toc-backref" href="#id129">SIMD Control</a><a class="headerlink" href="#simd-control" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id133">SIMD Control</a><a class="headerlink" href="#simd-control" title="Permalink to this headline">¶</a></h3>
 <p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
 multiple operations to take place in parallel. Some, but not all, functions will
 make use of these instructions to speed up execution.</p>
@@ -3914,9 +3996,9 @@ execution will be disabled. The default is “False”.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="data-types">
-<h2><a class="toc-backref" href="#id130">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id134">Data Types</a><a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="array-types">
-<h3><a class="toc-backref" href="#id131">Array Types</a><a class="headerlink" href="#array-types" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id135">Array Types</a><a class="headerlink" href="#array-types" title="Permalink to this headline">¶</a></h3>
 <p>The following array types from the Python standard library are supported.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -3969,7 +4051,7 @@ execution will be disabled. The default is “False”.</p>
 </table>
 </div>
 <div class="section" id="numeric-parameter-types">
-<h3><a class="toc-backref" href="#id132">Numeric Parameter Types</a><a class="headerlink" href="#numeric-parameter-types" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id136">Numeric Parameter Types</a><a class="headerlink" href="#numeric-parameter-types" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="20%" />
@@ -3994,7 +4076,7 @@ execution will be disabled. The default is “False”.</p>
 mismatch between Python and ‘C’ language numeric limits.</p>
 </div>
 <div class="section" id="maximum-array-size">
-<h3><a class="toc-backref" href="#id133">Maximum Array Size</a><a class="headerlink" href="#maximum-array-size" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id137">Maximum Array Size</a><a class="headerlink" href="#maximum-array-size" title="Permalink to this headline">¶</a></h3>
 <p>Arrays are limited to no more than the number of elements defined by the Python
 C API constant Py_ssize_t. The size of this will depend on your platform
 characteristics. However, it will normally allow for arrays larger than can be
@@ -4007,17 +4089,17 @@ run out of memory if you are not careful when creating very large arrays from
 lists.</p>
 </div>
 <div class="section" id="platform-compiler-support">
-<h3><a class="toc-backref" href="#id134">Platform Compiler Support</a><a class="headerlink" href="#platform-compiler-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id138">Platform Compiler Support</a><a class="headerlink" href="#platform-compiler-support" title="Permalink to this headline">¶</a></h3>
 <p>Beginning with version 2.0 of ArrayFunc, versions compiled with the Microsoft
 MSVS compiler now has feature parity with the GCC version. This change is due
 to the Microsoft C compiler now supporting a new enough version of the ‘C’
 standard.</p>
 </div>
 <div class="section" id="integer-error-checking">
-<h3><a class="toc-backref" href="#id135">Integer Error Checking</a><a class="headerlink" href="#integer-error-checking" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id139">Integer Error Checking</a><a class="headerlink" href="#integer-error-checking" title="Permalink to this headline">¶</a></h3>
 <p>Error checking in integer operators is conducted as follows:</p>
 <div class="section" id="error-categories">
-<h4><a class="toc-backref" href="#id136">Error Categories</a><a class="headerlink" href="#error-categories" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id140">Error Categories</a><a class="headerlink" href="#error-categories" title="Permalink to this headline">¶</a></h4>
 <table border="1" class="docutils">
 <colgroup>
 <col width="27%" />
@@ -4108,13 +4190,13 @@ arrays cannot contain fractional results.</li>
 </ul>
 </div>
 <div class="section" id="disabling-integer-division-by-zero-checks">
-<h4><a class="toc-backref" href="#id137">Disabling Integer Division by Zero Checks</a><a class="headerlink" href="#disabling-integer-division-by-zero-checks" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id141">Disabling Integer Division by Zero Checks</a><a class="headerlink" href="#disabling-integer-division-by-zero-checks" title="Permalink to this headline">¶</a></h4>
 <p>Divison by zero cannot be disabled for integer division or modulus operations.
 Division by zero could cause seg faults (crashes), so this option is ignored for
 these functions.</p>
 </div>
 <div class="section" id="floating-point-nan-and-infinity">
-<h4><a class="toc-backref" href="#id138">Floating Point NaN and Infinity</a><a class="headerlink" href="#floating-point-nan-and-infinity" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id142">Floating Point NaN and Infinity</a><a class="headerlink" href="#floating-point-nan-and-infinity" title="Permalink to this headline">¶</a></h4>
 <p>Floating point numbers include three special values, NaN (Not a Number), and
 negative and positive infinity. Arrayfunc uses the platform C compiler to create
 executable code. Some compilers may produce different results than other
@@ -4129,9 +4211,9 @@ code in most cases.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="exceptions">
-<h2><a class="toc-backref" href="#id139">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id143">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="exceptions-general">
-<h3><a class="toc-backref" href="#id140">Exceptions - General</a><a class="headerlink" href="#exceptions-general" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id144">Exceptions - General</a><a class="headerlink" href="#exceptions-general" title="Permalink to this headline">¶</a></h3>
 <p>The following exceptions apply to most functions.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4249,9 +4331,9 @@ value in the input array to integer.</td>
 </div>
 <hr class="docutils" />
 <div class="section" id="simd-support">
-<h2><a class="toc-backref" href="#id141">SIMD Support</a><a class="headerlink" href="#simd-support" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id145">SIMD Support</a><a class="headerlink" href="#simd-support" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="general">
-<h3><a class="toc-backref" href="#id142">General</a><a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id146">General</a><a class="headerlink" href="#general" title="Permalink to this headline">¶</a></h3>
 <p>SIMD (Single Instruction Multiple Data) is a set of CPU features which allow
 multiple operations to take place in parallel. Some, but not all, functions will
 make use of these instructions to speed up execution.</p>
@@ -4261,7 +4343,7 @@ to disable SIMD, but should there be hardware related problems the function can
 be forced to fall back to conventional execution mode.</p>
 </div>
 <div class="section" id="platform-support">
-<h3><a class="toc-backref" href="#id143">Platform Support</a><a class="headerlink" href="#platform-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id147">Platform Support</a><a class="headerlink" href="#platform-support" title="Permalink to this headline">¶</a></h3>
 <p>SIMD instructions are presently supported only on 64 bit x86 (i.e. AMD64) using
 the GCC compiler. Other compilers or platforms will still run the same functions
 and should produce the same results, but they will not benefit from SIMD
@@ -4272,7 +4354,7 @@ wider data types (e.g. double precision floating point) SIMD provides only
 marginal speed ups anyway.</p>
 </div>
 <div class="section" id="data-type-support">
-<h3><a class="toc-backref" href="#id144">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id148">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
 <p>The following table shows which array data types are supported by 64 bit x86
 SIMD instructions.</p>
 <table border="1" class="docutils">
@@ -4396,7 +4478,7 @@ SIMD instructions.</p>
 </table>
 </div>
 <div class="section" id="simd-support-attributes">
-<h3><a class="toc-backref" href="#id145">SIMD Support Attributes</a><a class="headerlink" href="#simd-support-attributes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id149">SIMD Support Attributes</a><a class="headerlink" href="#simd-support-attributes" title="Permalink to this headline">¶</a></h3>
 <p>There is an attribute which can be tested to detect if ArrayFunc is compiled
 with SIMD support and if the current hardware supports the required SIMD level.</p>
 <p>arrayfunc.simdsupport.hassimd</p>
@@ -4411,9 +4493,9 @@ with SIMD support and if the current hardware supports the required SIMD level.<
 </div>
 <hr class="docutils" />
 <div class="section" id="performance">
-<h2><a class="toc-backref" href="#id146">Performance</a><a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id150">Performance</a><a class="headerlink" href="#performance" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="variables-affecting-performance">
-<h3><a class="toc-backref" href="#id147">Variables affecting Performance</a><a class="headerlink" href="#variables-affecting-performance" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id151">Variables affecting Performance</a><a class="headerlink" href="#variables-affecting-performance" title="Permalink to this headline">¶</a></h3>
 <p>The purpose of the Arrayfunc module is to execute common operations faster than
 native Python. The relative speed will depend upon a number of factors:</p>
 <ul class="simple">
@@ -4442,9 +4524,9 @@ the built-in or “itertools” Python equivalents. This means that the benchmar
 results should be taken as general guidelines rather than precise comparisons.</p>
 </div>
 <div class="section" id="typical-performance-readings">
-<h3><a class="toc-backref" href="#id148">Typical Performance Readings</a><a class="headerlink" href="#typical-performance-readings" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id152">Typical Performance Readings</a><a class="headerlink" href="#typical-performance-readings" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="non-optmised-performance">
-<h4><a class="toc-backref" href="#id149">Non-Optmised Performance</a><a class="headerlink" href="#non-optmised-performance" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id153">Non-Optmised Performance</a><a class="headerlink" href="#non-optmised-performance" title="Permalink to this headline">¶</a></h4>
 <p>In this set of tests, all error checking was turned on (the default state) and
 SIMD acceleration was disabled (not the default).</p>
 <p>Relative Performance - Python Time / Arrayfunc Time.</p>
@@ -4482,494 +4564,494 @@ SIMD acceleration was disabled (not the default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>8.5</td>
-<td>6.9</td>
-<td>8.5</td>
+<td>8.9</td>
+<td>7.4</td>
+<td>8.1</td>
+<td>10</td>
+<td>9.4</td>
 <td>11</td>
-<td>8.7</td>
-<td>11</td>
-<td>11</td>
-<td>11</td>
-<td>6.6</td>
-<td>10.0</td>
-<td>17</td>
-<td>13</td>
+<td>8.3</td>
+<td>10</td>
+<td>7.0</td>
+<td>9.9</td>
+<td>18</td>
+<td>14</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>5.7</td>
 <td>3.7</td>
+<td>3.9</td>
+<td>4.3</td>
+<td>4.4</td>
+<td>3.5</td>
 <td>4.8</td>
-<td>4.5</td>
-<td>3.7</td>
-<td>5.8</td>
-<td>5.3</td>
-<td>5.6</td>
-<td>5.1</td>
-<td>5.5</td>
-<td>7.0</td>
-<td>6.3</td>
+<td>3.9</td>
+<td>4.7</td>
+<td>3.6</td>
+<td>4.6</td>
+<td>6.8</td>
+<td>5.4</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
-<td>116</td>
-<td>116</td>
-<td>114</td>
-<td>110</td>
-<td>116</td>
-<td>115</td>
-<td>115</td>
-<td>114</td>
-<td>116</td>
-<td>116</td>
-<td>116</td>
-<td>114</td>
+<td>124</td>
+<td>119</td>
+<td>127</td>
+<td>126</td>
+<td>119</td>
+<td>127</td>
+<td>128</td>
+<td>132</td>
+<td>121</td>
+<td>124</td>
+<td>120</td>
+<td>120</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
+<td>33</td>
+<td>31</td>
+<td>33</td>
 <td>30</td>
-<td>34</td>
-<td>32</td>
-<td>27</td>
-<td>27</td>
-<td>29</td>
-<td>14</td>
-<td>16</td>
-<td>13</td>
-<td>15</td>
+<td>26</td>
 <td>32</td>
 <td>21</td>
+<td>15</td>
+<td>15</td>
+<td>16</td>
+<td>22</td>
+<td>18</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>16</td>
-<td>16</td>
-<td>20</td>
-<td>18</td>
-<td>26</td>
-<td>27</td>
-<td>14</td>
-<td>13</td>
-<td>14</td>
-<td>16</td>
-<td>21</td>
-<td>47</td>
-</tr>
-<tr class="row-odd"><td>asum</td>
-<td>7.9</td>
-<td>10</td>
-<td>8.8</td>
-<td>10</td>
-<td>8.8</td>
-<td>11</td>
-<td>8.2</td>
-<td>11</td>
-<td>8.1</td>
-<td>8.7</td>
-<td>5.7</td>
-<td>6.2</td>
-</tr>
-<tr class="row-even"><td>compress</td>
-<td>37</td>
-<td>35</td>
-<td>37</td>
-<td>24</td>
-<td>33</td>
-<td>20</td>
-<td>39</td>
-<td>23</td>
-<td>42</td>
-<td>26</td>
-<td>33</td>
-<td>32</td>
-</tr>
-<tr class="row-odd"><td>count</td>
-<td>213</td>
-<td>212</td>
-<td>201</td>
-<td>213</td>
-<td>160</td>
-<td>106</td>
-<td>156</td>
-<td>115</td>
-<td>153</td>
-<td>111</td>
-<td>75</td>
-<td>76</td>
-</tr>
-<tr class="row-even"><td>cycle</td>
-<td>85</td>
-<td>84</td>
-<td>83</td>
-<td>79</td>
-<td>80</td>
-<td>58</td>
-<td>81</td>
-<td>63</td>
-<td>81</td>
-<td>62</td>
-<td>61</td>
-<td>59</td>
-</tr>
-<tr class="row-odd"><td>dropwhile</td>
-<td>146</td>
-<td>132</td>
-<td>149</td>
-<td>144</td>
-<td>176</td>
-<td>179</td>
-<td>169</td>
-<td>173</td>
-<td>171</td>
-<td>167</td>
-<td>155</td>
-<td>136</td>
-</tr>
-<tr class="row-even"><td>findindex</td>
-<td>14</td>
-<td>14</td>
-<td>16</td>
+<td>19</td>
 <td>20</td>
 <td>19</td>
+<td>20</td>
+<td>25</td>
+<td>25</td>
+<td>12</td>
+<td>14</td>
+<td>13</td>
+<td>13</td>
+<td>21</td>
+<td>29</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
+<td>9.1</td>
+<td>9.3</td>
+<td>8.3</td>
+<td>10</td>
+<td>8.2</td>
+<td>9.5</td>
+<td>8.4</td>
+<td>9.5</td>
+<td>7.7</td>
+<td>8.8</td>
+<td>6.8</td>
+<td>6.4</td>
+</tr>
+<tr class="row-even"><td>compress</td>
+<td>34</td>
+<td>34</td>
+<td>38</td>
+<td>23</td>
+<td>32</td>
+<td>16</td>
+<td>39</td>
+<td>25</td>
+<td>39</td>
+<td>25</td>
+<td>32</td>
+<td>31</td>
+</tr>
+<tr class="row-odd"><td>count</td>
+<td>220</td>
+<td>220</td>
+<td>217</td>
+<td>209</td>
+<td>148</td>
+<td>124</td>
+<td>150</td>
+<td>107</td>
+<td>152</td>
+<td>111</td>
+<td>73</td>
+<td>74</td>
+</tr>
+<tr class="row-even"><td>cycle</td>
+<td>82</td>
+<td>93</td>
+<td>86</td>
+<td>93</td>
+<td>77</td>
+<td>52</td>
+<td>87</td>
+<td>57</td>
+<td>87</td>
+<td>56</td>
+<td>59</td>
+<td>58</td>
+</tr>
+<tr class="row-odd"><td>dropwhile</td>
+<td>144</td>
+<td>143</td>
+<td>143</td>
+<td>147</td>
+<td>167</td>
+<td>175</td>
+<td>171</td>
+<td>167</td>
+<td>170</td>
+<td>169</td>
+<td>144</td>
+<td>132</td>
+</tr>
+<tr class="row-even"><td>findindex</td>
+<td>16</td>
+<td>16</td>
+<td>16</td>
+<td>20</td>
+<td>18</td>
 <td>18</td>
 <td>16</td>
-<td>17</td>
-<td>16</td>
-<td>17</td>
 <td>18</td>
+<td>16</td>
+<td>18</td>
+<td>17</td>
 <td>16</td>
 </tr>
 <tr class="row-odd"><td>findindices</td>
 <td>26</td>
 <td>26</td>
-<td>26</td>
-<td>26</td>
-<td>26</td>
 <td>27</td>
 <td>26</td>
+<td>26</td>
+<td>29</td>
+<td>26</td>
 <td>27</td>
-<td>25</td>
 <td>27</td>
-<td>23</td>
+<td>26</td>
+<td>24</td>
 <td>23</td>
 </tr>
 <tr class="row-even"><td>repeat</td>
-<td>132</td>
-<td>131</td>
-<td>126</td>
-<td>126</td>
-<td>109</td>
-<td>45</td>
-<td>118</td>
+<td>127</td>
+<td>133</td>
+<td>129</td>
+<td>125</td>
+<td>127</td>
 <td>41</td>
-<td>124</td>
+<td>109</td>
+<td>39</td>
+<td>116</td>
 <td>38</td>
-<td>110</td>
-<td>114</td>
+<td>117</td>
+<td>102</td>
 </tr>
 <tr class="row-odd"><td>takewhile</td>
-<td>233</td>
-<td>210</td>
-<td>249</td>
 <td>267</td>
-<td>250</td>
-<td>192</td>
-<td>177</td>
-<td>123</td>
-<td>157</td>
-<td>121</td>
-<td>317</td>
-<td>148</td>
+<td>259</td>
+<td>281</td>
+<td>276</td>
+<td>263</td>
+<td>196</td>
+<td>187</td>
+<td>133</td>
+<td>163</td>
+<td>138</td>
+<td>333</td>
+<td>154</td>
 </tr>
 <tr class="row-even"><td>add</td>
-<td>101</td>
-<td>126</td>
 <td>91</td>
-<td>130</td>
-<td>83</td>
 <td>122</td>
-<td>66</td>
+<td>87</td>
+<td>130</td>
+<td>82</td>
+<td>116</td>
 <td>57</td>
-<td>68</td>
-<td>52</td>
+<td>54</td>
+<td>53</td>
+<td>38</td>
 <td>115</td>
-<td>65</td>
+<td>50</td>
 </tr>
 <tr class="row-odd"><td>truediv</td>
-<td>74</td>
-<td>68</td>
-<td>75</td>
-<td>74</td>
-<td>75</td>
-<td>65</td>
-<td>71</td>
-<td>72</td>
-<td>63</td>
+<td>79</td>
 <td>67</td>
-<td>150</td>
-<td>85</td>
+<td>75</td>
+<td>76</td>
+<td>69</td>
+<td>60</td>
+<td>67</td>
+<td>57</td>
+<td>62</td>
+<td>56</td>
+<td>154</td>
+<td>79</td>
 </tr>
 <tr class="row-even"><td>floordiv</td>
-<td>34</td>
-<td>38</td>
-<td>35</td>
-<td>41</td>
+<td>32</td>
+<td>33</td>
+<td>33</td>
 <td>36</td>
-<td>35</td>
-<td>34</td>
-<td>38</td>
-<td>34</td>
+<td>33</td>
 <td>31</td>
-<td>129</td>
-<td>91</td>
+<td>32</td>
+<td>30</td>
+<td>31</td>
+<td>32</td>
+<td>109</td>
+<td>74</td>
 </tr>
 <tr class="row-odd"><td>mod</td>
+<td>24</td>
 <td>27</td>
+<td>23</td>
+<td>29</td>
 <td>31</td>
-<td>22</td>
-<td>33</td>
-<td>34</td>
 <td>28</td>
 <td>32</td>
-<td>24</td>
-<td>37</td>
+<td>23</td>
+<td>29</td>
 <td>22</td>
-<td>75</td>
-<td>61</td>
+<td>73</td>
+<td>55</td>
 </tr>
 <tr class="row-even"><td>mul</td>
 <td>19</td>
 <td>30</td>
-<td>15</td>
+<td>14</td>
 <td>24</td>
-<td>9.5</td>
-<td>86</td>
-<td>5.8</td>
-<td>47</td>
-<td>5.8</td>
-<td>46</td>
-<td>133</td>
-<td>65</td>
+<td>9.6</td>
+<td>73</td>
+<td>5.3</td>
+<td>40</td>
+<td>5.3</td>
+<td>37</td>
+<td>125</td>
+<td>56</td>
 </tr>
 <tr class="row-odd"><td>neg</td>
-<td>135</td>
+<td>127</td>
 <td>&#160;</td>
-<td>157</td>
+<td>146</td>
 <td>&#160;</td>
 <td>138</td>
 <td>&#160;</td>
-<td>93</td>
+<td>76</td>
 <td>&#160;</td>
-<td>95</td>
+<td>81</td>
 <td>&#160;</td>
-<td>117</td>
-<td>89</td>
+<td>115</td>
+<td>77</td>
 </tr>
 <tr class="row-even"><td>pow</td>
-<td>56</td>
-<td>62</td>
+<td>53</td>
+<td>59</td>
+<td>47</td>
 <td>52</td>
-<td>56</td>
-<td>45</td>
-<td>64</td>
-<td>26</td>
-<td>71</td>
-<td>25</td>
-<td>56</td>
-<td>9.5</td>
-<td>16</td>
+<td>43</td>
+<td>58</td>
+<td>24</td>
+<td>62</td>
+<td>23</td>
+<td>54</td>
+<td>8.0</td>
+<td>14</td>
 </tr>
 <tr class="row-odd"><td>sub</td>
-<td>79</td>
-<td>173</td>
-<td>99</td>
+<td>75</td>
+<td>152</td>
+<td>89</td>
 <td>166</td>
-<td>100</td>
-<td>149</td>
+<td>96</td>
+<td>131</td>
+<td>51</td>
+<td>44</td>
+<td>46</td>
+<td>43</td>
+<td>116</td>
 <td>55</td>
-<td>54</td>
-<td>56</td>
-<td>57</td>
-<td>137</td>
-<td>67</td>
 </tr>
 <tr class="row-even"><td>and_</td>
-<td>313</td>
-<td>304</td>
-<td>257</td>
-<td>294</td>
-<td>218</td>
-<td>198</td>
-<td>71</td>
+<td>262</td>
+<td>253</td>
+<td>255</td>
+<td>258</td>
+<td>219</td>
+<td>190</td>
 <td>59</td>
-<td>66</td>
-<td>65</td>
+<td>60</td>
+<td>64</td>
+<td>48</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>or_</td>
-<td>311</td>
-<td>314</td>
-<td>277</td>
-<td>323</td>
-<td>229</td>
-<td>197</td>
-<td>75</td>
-<td>64</td>
-<td>70</td>
-<td>65</td>
+<td>251</td>
+<td>275</td>
+<td>253</td>
+<td>243</td>
+<td>218</td>
+<td>194</td>
+<td>56</td>
+<td>57</td>
+<td>63</td>
+<td>49</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>xor</td>
-<td>200</td>
-<td>190</td>
-<td>210</td>
-<td>228</td>
-<td>196</td>
-<td>164</td>
-<td>75</td>
-<td>72</td>
-<td>67</td>
-<td>61</td>
+<td>159</td>
+<td>188</td>
+<td>180</td>
+<td>179</td>
+<td>181</td>
+<td>150</td>
+<td>63</td>
+<td>55</td>
+<td>60</td>
+<td>51</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>invert</td>
-<td>362</td>
-<td>256</td>
-<td>352</td>
-<td>249</td>
-<td>293</td>
-<td>222</td>
-<td>195</td>
-<td>185</td>
-<td>227</td>
-<td>213</td>
+<td>318</td>
+<td>269</td>
+<td>356</td>
+<td>301</td>
+<td>302</td>
+<td>218</td>
+<td>144</td>
+<td>190</td>
+<td>176</td>
+<td>197</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>eq</td>
-<td>125</td>
-<td>117</td>
-<td>130</td>
-<td>123</td>
-<td>123</td>
-<td>115</td>
 <td>101</td>
-<td>91</td>
+<td>96</td>
+<td>102</td>
+<td>99</td>
+<td>102</td>
+<td>107</td>
+<td>78</td>
+<td>71</td>
+<td>87</td>
+<td>94</td>
 <td>110</td>
-<td>88</td>
-<td>119</td>
-<td>90</td>
+<td>83</td>
 </tr>
 <tr class="row-odd"><td>gt</td>
-<td>161</td>
-<td>103</td>
-<td>103</td>
-<td>106</td>
-<td>185</td>
-<td>110</td>
-<td>84</td>
-<td>100</td>
-<td>88</td>
-<td>110</td>
-<td>111</td>
-<td>98</td>
+<td>78</td>
+<td>143</td>
+<td>77</td>
+<td>81</td>
+<td>141</td>
+<td>79</td>
+<td>82</td>
+<td>78</td>
+<td>68</td>
+<td>75</td>
+<td>107</td>
+<td>76</td>
 </tr>
 <tr class="row-even"><td>ge</td>
-<td>117</td>
-<td>132</td>
-<td>109</td>
-<td>120</td>
-<td>103</td>
-<td>125</td>
+<td>100</td>
+<td>97</td>
+<td>101</td>
+<td>97</td>
+<td>96</td>
+<td>106</td>
+<td>73</td>
+<td>110</td>
+<td>73</td>
+<td>93</td>
+<td>126</td>
 <td>86</td>
-<td>116</td>
-<td>94</td>
-<td>134</td>
-<td>148</td>
-<td>107</td>
 </tr>
 <tr class="row-odd"><td>lt</td>
-<td>175</td>
-<td>96</td>
-<td>103</td>
-<td>101</td>
-<td>173</td>
-<td>113</td>
-<td>85</td>
-<td>119</td>
+<td>115</td>
+<td>123</td>
+<td>72</td>
+<td>74</td>
 <td>92</td>
-<td>117</td>
-<td>127</td>
-<td>99</td>
+<td>139</td>
+<td>73</td>
+<td>77</td>
+<td>79</td>
+<td>81</td>
+<td>102</td>
+<td>80</td>
 </tr>
 <tr class="row-even"><td>le</td>
-<td>107</td>
-<td>125</td>
-<td>122</td>
-<td>119</td>
-<td>118</td>
-<td>131</td>
-<td>90</td>
+<td>102</td>
+<td>93</td>
+<td>97</td>
+<td>100</td>
 <td>98</td>
-<td>81</td>
-<td>101</td>
-<td>138</td>
-<td>86</td>
+<td>109</td>
+<td>76</td>
+<td>80</td>
+<td>74</td>
+<td>87</td>
+<td>120</td>
+<td>85</td>
 </tr>
 <tr class="row-odd"><td>ne</td>
-<td>155</td>
-<td>101</td>
-<td>95</td>
-<td>101</td>
-<td>180</td>
-<td>199</td>
-<td>87</td>
-<td>110</td>
-<td>97</td>
+<td>77</td>
+<td>130</td>
+<td>76</td>
 <td>119</td>
-<td>128</td>
-<td>102</td>
+<td>136</td>
+<td>152</td>
+<td>71</td>
+<td>82</td>
+<td>82</td>
+<td>74</td>
+<td>97</td>
+<td>69</td>
 </tr>
 <tr class="row-even"><td>lshift</td>
-<td>203</td>
-<td>193</td>
-<td>185</td>
-<td>195</td>
-<td>224</td>
-<td>140</td>
-<td>74</td>
-<td>63</td>
-<td>75</td>
+<td>186</td>
+<td>191</td>
+<td>173</td>
+<td>179</td>
+<td>206</td>
+<td>156</td>
+<td>64</td>
+<td>61</td>
 <td>65</td>
+<td>56</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>rshift</td>
-<td>195</td>
-<td>290</td>
-<td>200</td>
-<td>256</td>
-<td>219</td>
-<td>216</td>
-<td>73</td>
-<td>68</td>
-<td>82</td>
-<td>67</td>
+<td>173</td>
+<td>236</td>
+<td>176</td>
+<td>235</td>
+<td>168</td>
+<td>198</td>
+<td>63</td>
+<td>60</td>
+<td>65</td>
+<td>62</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>135</td>
+<td>137</td>
 <td>&#160;</td>
-<td>102</td>
+<td>110</td>
 <td>&#160;</td>
-<td>114</td>
+<td>117</td>
 <td>&#160;</td>
-<td>102</td>
+<td>105</td>
 <td>&#160;</td>
-<td>91</td>
+<td>99</td>
 <td>&#160;</td>
-<td>159</td>
-<td>111</td>
+<td>164</td>
+<td>108</td>
 </tr>
 <tr class="row-odd"><td>acos</td>
 <td>&#160;</td>
@@ -4982,7 +5064,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>14</td>
+<td>15</td>
 <td>12</td>
 </tr>
 <tr class="row-even"><td>acosh</td>
@@ -4996,8 +5078,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.5</td>
-<td>6.3</td>
+<td>9.6</td>
+<td>6.1</td>
 </tr>
 <tr class="row-odd"><td>asin</td>
 <td>&#160;</td>
@@ -5010,8 +5092,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>14</td>
 <td>13</td>
+<td>12</td>
 </tr>
 <tr class="row-even"><td>asinh</td>
 <td>&#160;</td>
@@ -5024,8 +5106,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
+<td>6.6</td>
 <td>6.9</td>
-<td>7.0</td>
 </tr>
 <tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
@@ -5038,8 +5120,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
+<td>14</td>
 <td>12</td>
-<td>11</td>
 </tr>
 <tr class="row-even"><td>atan2</td>
 <td>&#160;</td>
@@ -5052,8 +5134,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>10</td>
-<td>10</td>
+<td>11</td>
+<td>9.7</td>
 </tr>
 <tr class="row-odd"><td>atanh</td>
 <td>&#160;</td>
@@ -5066,8 +5148,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>7.4</td>
-<td>7.9</td>
+<td>7.2</td>
+<td>7.6</td>
 </tr>
 <tr class="row-even"><td>ceil</td>
 <td>&#160;</td>
@@ -5080,8 +5162,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>234</td>
-<td>178</td>
+<td>267</td>
+<td>182</td>
 </tr>
 <tr class="row-odd"><td>copysign</td>
 <td>&#160;</td>
@@ -5094,8 +5176,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>217</td>
-<td>99</td>
+<td>247</td>
+<td>109</td>
 </tr>
 <tr class="row-even"><td>cos</td>
 <td>&#160;</td>
@@ -5108,8 +5190,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
-<td>8.1</td>
+<td>16</td>
+<td>8.3</td>
 </tr>
 <tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
@@ -5122,8 +5204,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>13</td>
-<td>8.6</td>
+<td>11</td>
+<td>7.4</td>
 </tr>
 <tr class="row-even"><td>degrees</td>
 <td>&#160;</td>
@@ -5136,8 +5218,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>147</td>
-<td>129</td>
+<td>139</td>
+<td>117</td>
 </tr>
 <tr class="row-odd"><td>erf</td>
 <td>&#160;</td>
@@ -5150,7 +5232,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>16</td>
+<td>17</td>
 <td>13</td>
 </tr>
 <tr class="row-even"><td>erfc</td>
@@ -5164,8 +5246,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>10</td>
-<td>7.6</td>
+<td>9.2</td>
+<td>7.3</td>
 </tr>
 <tr class="row-odd"><td>exp</td>
 <td>&#160;</td>
@@ -5178,8 +5260,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>22</td>
-<td>10</td>
+<td>17</td>
+<td>8.9</td>
 </tr>
 <tr class="row-even"><td>expm1</td>
 <td>&#160;</td>
@@ -5192,8 +5274,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.7</td>
-<td>6.7</td>
+<td>6.9</td>
+<td>6.8</td>
 </tr>
 <tr class="row-odd"><td>fabs</td>
 <td>&#160;</td>
@@ -5206,20 +5288,20 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>166</td>
-<td>149</td>
+<td>187</td>
+<td>124</td>
 </tr>
 <tr class="row-even"><td>factorial</td>
-<td>214</td>
-<td>209</td>
-<td>200</td>
-<td>203</td>
-<td>213</td>
-<td>181</td>
-<td>145</td>
+<td>199</td>
+<td>201</td>
+<td>198</td>
+<td>198</td>
+<td>192</td>
+<td>171</td>
+<td>122</td>
+<td>109</td>
 <td>121</td>
-<td>134</td>
-<td>134</td>
+<td>98</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -5234,10 +5316,10 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>233</td>
-<td>175</td>
+<td>254</td>
+<td>170</td>
 </tr>
-<tr class="row-even"><td>fmod</td>
+<tr class="row-even"><td>fma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5248,10 +5330,24 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>13</td>
+<td>154</td>
+<td>45</td>
+</tr>
+<tr class="row-odd"><td>fmod</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>12</td>
 <td>12</td>
 </tr>
-<tr class="row-odd"><td>gamma</td>
+<tr class="row-even"><td>gamma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5262,94 +5358,10 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>1.5</td>
+<td>1.6</td>
 <td>1.3</td>
 </tr>
-<tr class="row-even"><td>hypot</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>24</td>
-<td>17</td>
-</tr>
-<tr class="row-odd"><td>isfinite</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>140</td>
-<td>122</td>
-</tr>
-<tr class="row-even"><td>isinf</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>151</td>
-<td>130</td>
-</tr>
-<tr class="row-odd"><td>isnan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>159</td>
-<td>144</td>
-</tr>
-<tr class="row-even"><td>ldexp</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>31</td>
-<td>33</td>
-</tr>
-<tr class="row-odd"><td>lgamma</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>9.1</td>
-<td>5.8</td>
-</tr>
-<tr class="row-even"><td>log</td>
+<tr class="row-odd"><td>hypot</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5361,9 +5373,93 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>26</td>
-<td>8.8</td>
+<td>17</td>
 </tr>
-<tr class="row-odd"><td>log10</td>
+<tr class="row-even"><td>isfinite</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>136</td>
+<td>124</td>
+</tr>
+<tr class="row-odd"><td>isinf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>149</td>
+<td>131</td>
+</tr>
+<tr class="row-even"><td>isnan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>173</td>
+<td>156</td>
+</tr>
+<tr class="row-odd"><td>ldexp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>29</td>
+<td>30</td>
+</tr>
+<tr class="row-even"><td>lgamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>9.3</td>
+<td>5.9</td>
+</tr>
+<tr class="row-odd"><td>log</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>26</td>
+<td>8.3</td>
+</tr>
+<tr class="row-even"><td>log10</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5375,9 +5471,9 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>15</td>
-<td>7.5</td>
+<td>7.8</td>
 </tr>
-<tr class="row-even"><td>log1p</td>
+<tr class="row-odd"><td>log1p</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5388,10 +5484,10 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>8.5</td>
-<td>8.8</td>
+<td>9.3</td>
+<td>10</td>
 </tr>
-<tr class="row-odd"><td>log2</td>
+<tr class="row-even"><td>log2</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5405,7 +5501,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>22</td>
 <td>11</td>
 </tr>
-<tr class="row-even"><td>radians</td>
+<tr class="row-odd"><td>radians</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5416,10 +5512,10 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>151</td>
-<td>131</td>
+<td>147</td>
+<td>116</td>
 </tr>
-<tr class="row-odd"><td>sin</td>
+<tr class="row-even"><td>sin</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5430,52 +5526,10 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>14</td>
-<td>8.3</td>
+<td>15</td>
+<td>7.8</td>
 </tr>
-<tr class="row-even"><td>sinh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>5.2</td>
-<td>5.6</td>
-</tr>
-<tr class="row-odd"><td>sqrt</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>23</td>
-<td>19</td>
-</tr>
-<tr class="row-even"><td>tan</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>6.8</td>
-<td>6.2</td>
-</tr>
-<tr class="row-odd"><td>tanh</td>
+<tr class="row-odd"><td>sinh</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5489,7 +5543,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>5.5</td>
 <td>5.6</td>
 </tr>
-<tr class="row-even"><td>trunc</td>
+<tr class="row-even"><td>sqrt</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -5500,8 +5554,50 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>251</td>
-<td>200</td>
+<td>25</td>
+<td>21</td>
+</tr>
+<tr class="row-odd"><td>tan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.1</td>
+<td>5.1</td>
+</tr>
+<tr class="row-even"><td>tanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.2</td>
+<td>6.6</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>278</td>
+<td>210</td>
 </tr>
 </tbody>
 </table>
@@ -5517,10 +5613,10 @@ SIMD acceleration was disabled (not the default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>89</td>
+<td>84</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>362</td>
+<td>356</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
 <td>1.3</td>
@@ -5532,7 +5628,7 @@ SIMD acceleration was disabled (not the default).</p>
 </table>
 </div>
 <div class="section" id="optmised-performance">
-<h4><a class="toc-backref" href="#id150">Optmised Performance</a><a class="headerlink" href="#optmised-performance" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id154">Optmised Performance</a><a class="headerlink" href="#optmised-performance" title="Permalink to this headline">¶</a></h4>
 <p>In this set of tests, all arithmatic error checking was disabled (not the
 default state) and SIMD acceleration was enabled (the normal default).</p>
 <p>Relative Performance with Optimisations - Python Time / Arrayfunc Time.</p>
@@ -5570,494 +5666,494 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>105</td>
-<td>6.3</td>
+<td>111</td>
+<td>7.6</td>
 <td>59</td>
-<td>7.4</td>
-<td>27</td>
-<td>13</td>
-<td>11</td>
-<td>11</td>
+<td>6.8</td>
+<td>32</td>
+<td>12</td>
 <td>11</td>
 <td>10</td>
-<td>42</td>
-<td>23</td>
+<td>11</td>
+<td>10</td>
+<td>45</td>
+<td>25</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>53</td>
-<td>4.1</td>
-<td>31</td>
+<td>47</td>
+<td>3.5</td>
+<td>27</td>
+<td>4.4</td>
+<td>13</td>
+<td>4.7</td>
+<td>3.3</td>
 <td>4.5</td>
-<td>14</td>
-<td>5.8</td>
-<td>5.1</td>
-<td>5.5</td>
-<td>5.2</td>
-<td>5.6</td>
-<td>23</td>
-<td>11</td>
+<td>4.5</td>
+<td>4.6</td>
+<td>21</td>
+<td>9.7</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
-<td>117</td>
-<td>116</td>
-<td>114</td>
-<td>109</td>
-<td>116</td>
-<td>115</td>
-<td>115</td>
-<td>115</td>
-<td>116</td>
-<td>116</td>
-<td>116</td>
-<td>114</td>
+<td>124</td>
+<td>119</td>
+<td>127</td>
+<td>125</td>
+<td>120</td>
+<td>127</td>
+<td>130</td>
+<td>131</td>
+<td>124</td>
+<td>129</td>
+<td>126</td>
+<td>123</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
-<td>79</td>
 <td>86</td>
-<td>40</td>
-<td>40</td>
-<td>78</td>
-<td>130</td>
-<td>14</td>
-<td>16</td>
-<td>14</td>
+<td>84</td>
+<td>43</td>
+<td>42</td>
+<td>82</td>
+<td>159</td>
+<td>21</td>
 <td>15</td>
-<td>113</td>
-<td>62</td>
+<td>15</td>
+<td>16</td>
+<td>127</td>
+<td>55</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>74</td>
+<td>73</td>
 <td>73</td>
 <td>37</td>
 <td>37</td>
 <td>115</td>
-<td>77</td>
+<td>80</td>
 <td>14</td>
-<td>16</td>
 <td>14</td>
-<td>16</td>
-<td>121</td>
-<td>59</td>
+<td>14</td>
+<td>15</td>
+<td>119</td>
+<td>37</td>
 </tr>
 <tr class="row-odd"><td>asum</td>
+<td>14</td>
+<td>14</td>
+<td>13</td>
+<td>16</td>
 <td>13</td>
 <td>16</td>
 <td>14</td>
+<td>16</td>
+<td>13</td>
 <td>15</td>
-<td>14</td>
-<td>18</td>
-<td>11</td>
-<td>19</td>
-<td>14</td>
-<td>15</td>
-<td>22</td>
+<td>26</td>
 <td>13</td>
 </tr>
 <tr class="row-even"><td>compress</td>
-<td>37</td>
+<td>35</td>
 <td>34</td>
-<td>37</td>
-<td>24</td>
-<td>32</td>
-<td>17</td>
-<td>40</td>
+<td>38</td>
 <td>23</td>
-<td>43</td>
-<td>26</td>
 <td>33</td>
-<td>32</td>
+<td>19</td>
+<td>39</td>
+<td>21</td>
+<td>39</td>
+<td>19</td>
+<td>28</td>
+<td>23</td>
 </tr>
 <tr class="row-odd"><td>count</td>
-<td>203</td>
-<td>189</td>
-<td>200</td>
-<td>213</td>
-<td>159</td>
-<td>116</td>
-<td>156</td>
-<td>122</td>
-<td>153</td>
-<td>102</td>
+<td>214</td>
+<td>217</td>
+<td>222</td>
+<td>201</td>
+<td>152</td>
+<td>120</td>
+<td>150</td>
+<td>103</td>
+<td>152</td>
+<td>112</td>
 <td>73</td>
-<td>76</td>
+<td>74</td>
 </tr>
 <tr class="row-even"><td>cycle</td>
+<td>81</td>
+<td>89</td>
 <td>85</td>
-<td>84</td>
-<td>80</td>
-<td>78</td>
-<td>67</td>
+<td>91</td>
+<td>76</td>
+<td>53</td>
+<td>85</td>
+<td>51</td>
+<td>83</td>
+<td>51</td>
+<td>57</td>
 <td>58</td>
-<td>85</td>
-<td>63</td>
-<td>82</td>
-<td>62</td>
-<td>61</td>
-<td>59</td>
 </tr>
 <tr class="row-odd"><td>dropwhile</td>
-<td>149</td>
+<td>143</td>
+<td>139</td>
+<td>143</td>
+<td>143</td>
+<td>174</td>
+<td>175</td>
+<td>157</td>
+<td>170</td>
+<td>169</td>
+<td>158</td>
 <td>144</td>
-<td>149</td>
-<td>145</td>
-<td>178</td>
-<td>176</td>
-<td>168</td>
-<td>173</td>
-<td>171</td>
-<td>162</td>
-<td>159</td>
-<td>145</td>
+<td>130</td>
 </tr>
 <tr class="row-even"><td>findindex</td>
-<td>188</td>
-<td>14</td>
-<td>104</td>
+<td>192</td>
+<td>16</td>
+<td>109</td>
 <td>20</td>
-<td>50</td>
-<td>17</td>
+<td>51</td>
+<td>18</td>
 <td>16</td>
 <td>17</td>
-<td>15</td>
-<td>15</td>
-<td>62</td>
+<td>16</td>
+<td>18</td>
+<td>63</td>
 <td>33</td>
 </tr>
 <tr class="row-odd"><td>findindices</td>
 <td>26</td>
 <td>26</td>
-<td>26</td>
-<td>26</td>
-<td>26</td>
 <td>27</td>
 <td>26</td>
+<td>26</td>
+<td>29</td>
+<td>26</td>
 <td>27</td>
-<td>25</td>
 <td>27</td>
-<td>23</td>
-<td>23</td>
+<td>27</td>
+<td>24</td>
+<td>24</td>
 </tr>
 <tr class="row-even"><td>repeat</td>
-<td>128</td>
-<td>131</td>
-<td>134</td>
-<td>127</td>
-<td>123</td>
-<td>44</td>
-<td>121</td>
-<td>41</td>
+<td>129</td>
+<td>130</td>
+<td>129</td>
 <td>124</td>
-<td>42</td>
-<td>120</td>
-<td>97</td>
+<td>124</td>
+<td>41</td>
+<td>112</td>
+<td>40</td>
+<td>109</td>
+<td>36</td>
+<td>123</td>
+<td>101</td>
 </tr>
 <tr class="row-odd"><td>takewhile</td>
-<td>251</td>
-<td>234</td>
-<td>257</td>
-<td>272</td>
+<td>264</td>
+<td>269</td>
+<td>294</td>
+<td>266</td>
 <td>250</td>
-<td>194</td>
-<td>167</td>
-<td>137</td>
-<td>164</td>
-<td>124</td>
-<td>317</td>
+<td>191</td>
+<td>188</td>
+<td>125</td>
+<td>178</td>
+<td>129</td>
+<td>345</td>
 <td>153</td>
 </tr>
 <tr class="row-even"><td>add</td>
-<td>191</td>
-<td>165</td>
-<td>170</td>
-<td>267</td>
-<td>250</td>
-<td>204</td>
-<td>135</td>
-<td>115</td>
-<td>137</td>
-<td>108</td>
-<td>149</td>
-<td>100</td>
+<td>169</td>
+<td>161</td>
+<td>179</td>
+<td>247</td>
+<td>234</td>
+<td>181</td>
+<td>119</td>
+<td>94</td>
+<td>98</td>
+<td>79</td>
+<td>154</td>
+<td>102</td>
 </tr>
 <tr class="row-odd"><td>truediv</td>
-<td>73</td>
+<td>78</td>
 <td>63</td>
 <td>66</td>
-<td>71</td>
-<td>79</td>
-<td>61</td>
-<td>80</td>
+<td>76</td>
+<td>74</td>
+<td>57</td>
 <td>75</td>
-<td>68</td>
-<td>68</td>
+<td>62</td>
+<td>66</td>
+<td>58</td>
 <td>204</td>
-<td>184</td>
+<td>178</td>
 </tr>
 <tr class="row-even"><td>floordiv</td>
-<td>38</td>
-<td>34</td>
-<td>40</td>
-<td>43</td>
-<td>43</td>
-<td>33</td>
-<td>41</td>
-<td>40</td>
-<td>42</td>
-<td>33</td>
-<td>189</td>
-<td>177</td>
-</tr>
-<tr class="row-odd"><td>mod</td>
-<td>28</td>
-<td>32</td>
-<td>24</td>
-<td>33</td>
 <td>36</td>
 <td>29</td>
-<td>35</td>
-<td>32</td>
-<td>40</td>
+<td>38</td>
+<td>36</td>
+<td>38</td>
 <td>30</td>
-<td>114</td>
-<td>103</td>
+<td>38</td>
+<td>31</td>
+<td>38</td>
+<td>33</td>
+<td>167</td>
+<td>128</td>
+</tr>
+<tr class="row-odd"><td>mod</td>
+<td>25</td>
+<td>28</td>
+<td>24</td>
+<td>30</td>
+<td>32</td>
+<td>29</td>
+<td>36</td>
+<td>29</td>
+<td>33</td>
+<td>28</td>
+<td>112</td>
+<td>98</td>
 </tr>
 <tr class="row-even"><td>mul</td>
+<td>175</td>
+<td>163</td>
+<td>172</td>
 <td>174</td>
-<td>169</td>
-<td>176</td>
-<td>153</td>
-<td>180</td>
-<td>166</td>
-<td>107</td>
-<td>89</td>
-<td>107</td>
+<td>181</td>
+<td>144</td>
+<td>95</td>
+<td>90</td>
+<td>100</td>
 <td>88</td>
-<td>160</td>
-<td>131</td>
+<td>165</td>
+<td>120</td>
 </tr>
 <tr class="row-odd"><td>neg</td>
-<td>165</td>
+<td>178</td>
 <td>&#160;</td>
-<td>202</td>
+<td>191</td>
 <td>&#160;</td>
-<td>127</td>
+<td>116</td>
 <td>&#160;</td>
-<td>95</td>
+<td>81</td>
 <td>&#160;</td>
-<td>103</td>
+<td>80</td>
 <td>&#160;</td>
-<td>185</td>
-<td>107</td>
+<td>180</td>
+<td>99</td>
 </tr>
 <tr class="row-even"><td>pow</td>
+<td>46</td>
+<td>47</td>
+<td>38</td>
 <td>45</td>
-<td>49</td>
-<td>44</td>
-<td>48</td>
-<td>30</td>
-<td>66</td>
-<td>18</td>
-<td>62</td>
+<td>29</td>
+<td>58</td>
 <td>17</td>
-<td>51</td>
-<td>8.5</td>
-<td>19</td>
+<td>53</td>
+<td>16</td>
+<td>48</td>
+<td>6.8</td>
+<td>16</td>
 </tr>
 <tr class="row-odd"><td>sub</td>
-<td>165</td>
-<td>265</td>
-<td>259</td>
-<td>251</td>
-<td>177</td>
-<td>142</td>
-<td>113</td>
-<td>109</td>
-<td>119</td>
+<td>159</td>
+<td>216</td>
+<td>238</td>
+<td>247</td>
+<td>159</td>
+<td>138</td>
+<td>105</td>
+<td>86</td>
 <td>106</td>
-<td>177</td>
-<td>117</td>
+<td>67</td>
+<td>141</td>
+<td>115</td>
 </tr>
 <tr class="row-even"><td>and_</td>
-<td>213</td>
-<td>205</td>
-<td>198</td>
-<td>201</td>
-<td>185</td>
-<td>161</td>
-<td>130</td>
-<td>115</td>
-<td>135</td>
-<td>129</td>
+<td>182</td>
+<td>179</td>
+<td>182</td>
+<td>188</td>
+<td>180</td>
+<td>154</td>
+<td>101</td>
+<td>144</td>
+<td>110</td>
+<td>112</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>or_</td>
-<td>211</td>
-<td>197</td>
-<td>178</td>
-<td>174</td>
+<td>189</td>
 <td>195</td>
-<td>160</td>
-<td>136</td>
-<td>115</td>
-<td>135</td>
+<td>177</td>
+<td>175</td>
+<td>189</td>
+<td>164</td>
+<td>120</td>
+<td>102</td>
 <td>126</td>
+<td>107</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>xor</td>
-<td>290</td>
-<td>302</td>
-<td>314</td>
-<td>340</td>
-<td>280</td>
-<td>258</td>
-<td>150</td>
-<td>147</td>
-<td>145</td>
-<td>127</td>
+<td>251</td>
+<td>275</td>
+<td>263</td>
+<td>254</td>
+<td>265</td>
+<td>195</td>
+<td>133</td>
+<td>122</td>
+<td>126</td>
+<td>119</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>invert</td>
-<td>361</td>
-<td>206</td>
-<td>394</td>
+<td>334</td>
 <td>266</td>
-<td>336</td>
-<td>211</td>
-<td>216</td>
-<td>197</td>
-<td>212</td>
-<td>225</td>
+<td>353</td>
+<td>296</td>
+<td>302</td>
+<td>227</td>
+<td>164</td>
+<td>176</td>
+<td>177</td>
+<td>247</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>eq</td>
-<td>133</td>
-<td>114</td>
-<td>98</td>
 <td>93</td>
+<td>97</td>
+<td>77</td>
+<td>121</td>
+<td>79</td>
+<td>132</td>
+<td>85</td>
+<td>135</td>
+<td>95</td>
+<td>92</td>
+<td>116</td>
 <td>94</td>
-<td>157</td>
-<td>109</td>
-<td>93</td>
-<td>137</td>
-<td>141</td>
-<td>130</td>
-<td>112</td>
 </tr>
 <tr class="row-odd"><td>gt</td>
-<td>95</td>
-<td>85</td>
+<td>83</td>
+<td>76</td>
+<td>79</td>
+<td>80</td>
+<td>126</td>
+<td>80</td>
 <td>92</td>
-<td>108</td>
-<td>99</td>
-<td>101</td>
-<td>96</td>
-<td>111</td>
-<td>103</td>
-<td>164</td>
-<td>150</td>
-<td>141</td>
+<td>92</td>
+<td>82</td>
+<td>125</td>
+<td>134</td>
+<td>115</td>
 </tr>
 <tr class="row-even"><td>ge</td>
-<td>118</td>
+<td>101</td>
+<td>96</td>
+<td>78</td>
+<td>113</td>
+<td>126</td>
 <td>127</td>
-<td>90</td>
-<td>99</td>
-<td>88</td>
-<td>127</td>
+<td>81</td>
+<td>158</td>
 <td>89</td>
-<td>97</td>
-<td>153</td>
-<td>199</td>
-<td>131</td>
-<td>122</td>
+<td>114</td>
+<td>110</td>
+<td>109</td>
 </tr>
 <tr class="row-odd"><td>lt</td>
-<td>134</td>
-<td>142</td>
+<td>112</td>
+<td>118</td>
+<td>112</td>
+<td>75</td>
+<td>76</td>
+<td>88</td>
+<td>128</td>
+<td>80</td>
+<td>127</td>
 <td>138</td>
-<td>157</td>
-<td>153</td>
-<td>126</td>
-<td>158</td>
-<td>147</td>
-<td>105</td>
-<td>180</td>
-<td>140</td>
-<td>134</td>
+<td>119</td>
+<td>112</td>
 </tr>
 <tr class="row-even"><td>le</td>
-<td>120</td>
-<td>136</td>
-<td>150</td>
-<td>140</td>
-<td>148</td>
-<td>175</td>
-<td>144</td>
-<td>149</td>
-<td>129</td>
-<td>170</td>
+<td>94</td>
+<td>102</td>
+<td>111</td>
+<td>119</td>
+<td>84</td>
 <td>137</td>
-<td>126</td>
+<td>119</td>
+<td>129</td>
+<td>122</td>
+<td>121</td>
+<td>122</td>
+<td>106</td>
 </tr>
 <tr class="row-odd"><td>ne</td>
-<td>148</td>
-<td>151</td>
-<td>150</td>
-<td>161</td>
-<td>149</td>
-<td>108</td>
-<td>144</td>
-<td>178</td>
-<td>108</td>
-<td>167</td>
-<td>138</td>
-<td>131</td>
+<td>118</td>
+<td>115</td>
+<td>118</td>
+<td>79</td>
+<td>123</td>
+<td>84</td>
+<td>119</td>
+<td>89</td>
+<td>125</td>
+<td>126</td>
+<td>105</td>
+<td>90</td>
 </tr>
 <tr class="row-even"><td>lshift</td>
-<td>177</td>
-<td>199</td>
-<td>173</td>
+<td>187</td>
 <td>197</td>
-<td>247</td>
-<td>162</td>
-<td>152</td>
-<td>123</td>
-<td>155</td>
-<td>122</td>
+<td>183</td>
+<td>181</td>
+<td>242</td>
+<td>160</td>
+<td>138</td>
+<td>124</td>
+<td>144</td>
+<td>118</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>rshift</td>
-<td>231</td>
-<td>328</td>
-<td>241</td>
-<td>305</td>
+<td>204</td>
+<td>267</td>
 <td>212</td>
-<td>232</td>
-<td>139</td>
-<td>193</td>
-<td>159</td>
-<td>177</td>
+<td>258</td>
+<td>181</td>
+<td>211</td>
+<td>127</td>
+<td>150</td>
+<td>115</td>
+<td>149</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>143</td>
+<td>149</td>
 <td>&#160;</td>
-<td>140</td>
+<td>149</td>
 <td>&#160;</td>
-<td>156</td>
+<td>157</td>
 <td>&#160;</td>
 <td>113</td>
 <td>&#160;</td>
-<td>106</td>
+<td>103</td>
 <td>&#160;</td>
-<td>176</td>
-<td>109</td>
+<td>185</td>
+<td>108</td>
 </tr>
 <tr class="row-odd"><td>acos</td>
 <td>&#160;</td>
@@ -6071,7 +6167,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>15</td>
-<td>12</td>
+<td>13</td>
 </tr>
 <tr class="row-even"><td>acosh</td>
 <td>&#160;</td>
@@ -6085,37 +6181,9 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>11</td>
-<td>6.4</td>
+<td>6.2</td>
 </tr>
 <tr class="row-odd"><td>asin</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>16</td>
-<td>14</td>
-</tr>
-<tr class="row-even"><td>asinh</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>7.0</td>
-<td>7.3</td>
-</tr>
-<tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6129,6 +6197,34 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>14</td>
 <td>12</td>
 </tr>
+<tr class="row-even"><td>asinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.7</td>
+<td>7.1</td>
+</tr>
+<tr class="row-odd"><td>atan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>16</td>
+<td>13</td>
+</tr>
 <tr class="row-even"><td>atan2</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6140,8 +6236,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.4</td>
-<td>8.6</td>
+<td>9.7</td>
+<td>8.2</td>
 </tr>
 <tr class="row-odd"><td>atanh</td>
 <td>&#160;</td>
@@ -6154,8 +6250,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>7.6</td>
-<td>8.3</td>
+<td>7.4</td>
+<td>8.0</td>
 </tr>
 <tr class="row-even"><td>ceil</td>
 <td>&#160;</td>
@@ -6168,8 +6264,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>256</td>
-<td>215</td>
+<td>300</td>
+<td>214</td>
 </tr>
 <tr class="row-odd"><td>copysign</td>
 <td>&#160;</td>
@@ -6182,8 +6278,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>277</td>
-<td>167</td>
+<td>327</td>
+<td>213</td>
 </tr>
 <tr class="row-even"><td>cos</td>
 <td>&#160;</td>
@@ -6196,8 +6292,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>16</td>
-<td>8.2</td>
+<td>17</td>
+<td>8.4</td>
 </tr>
 <tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
@@ -6210,8 +6306,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
-<td>8.7</td>
+<td>12</td>
+<td>7.5</td>
 </tr>
 <tr class="row-even"><td>degrees</td>
 <td>&#160;</td>
@@ -6224,8 +6320,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>273</td>
-<td>203</td>
+<td>281</td>
+<td>170</td>
 </tr>
 <tr class="row-odd"><td>erf</td>
 <td>&#160;</td>
@@ -6252,8 +6348,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>10</td>
-<td>7.9</td>
+<td>9.2</td>
+<td>7.0</td>
 </tr>
 <tr class="row-odd"><td>exp</td>
 <td>&#160;</td>
@@ -6266,8 +6362,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>23</td>
-<td>10</td>
+<td>16</td>
+<td>9.0</td>
 </tr>
 <tr class="row-even"><td>expm1</td>
 <td>&#160;</td>
@@ -6281,7 +6377,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>6.9</td>
-<td>7.3</td>
+<td>7.1</td>
 </tr>
 <tr class="row-odd"><td>fabs</td>
 <td>&#160;</td>
@@ -6294,20 +6390,20 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>163</td>
-<td>160</td>
+<td>197</td>
+<td>132</td>
 </tr>
 <tr class="row-even"><td>factorial</td>
-<td>184</td>
-<td>196</td>
-<td>185</td>
-<td>142</td>
-<td>183</td>
-<td>190</td>
-<td>130</td>
-<td>132</td>
-<td>144</td>
-<td>122</td>
+<td>168</td>
+<td>193</td>
+<td>197</td>
+<td>139</td>
+<td>181</td>
+<td>182</td>
+<td>128</td>
+<td>103</td>
+<td>118</td>
+<td>109</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -6322,10 +6418,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>257</td>
-<td>216</td>
+<td>267</td>
+<td>210</td>
 </tr>
-<tr class="row-even"><td>fmod</td>
+<tr class="row-even"><td>fma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6336,10 +6432,24 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>14</td>
+<td>174</td>
+<td>46</td>
+</tr>
+<tr class="row-odd"><td>fmod</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>13</td>
 <td>14</td>
 </tr>
-<tr class="row-odd"><td>gamma</td>
+<tr class="row-even"><td>gamma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6353,7 +6463,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>1.5</td>
 <td>1.3</td>
 </tr>
-<tr class="row-even"><td>hypot</td>
+<tr class="row-odd"><td>hypot</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6364,10 +6474,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>26</td>
-<td>15</td>
+<td>29</td>
+<td>16</td>
 </tr>
-<tr class="row-odd"><td>isfinite</td>
+<tr class="row-even"><td>isfinite</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6378,10 +6488,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>140</td>
-<td>122</td>
+<td>137</td>
+<td>125</td>
 </tr>
-<tr class="row-even"><td>isinf</td>
+<tr class="row-odd"><td>isinf</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6392,10 +6502,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>151</td>
-<td>131</td>
+<td>149</td>
+<td>133</td>
 </tr>
-<tr class="row-odd"><td>isnan</td>
+<tr class="row-even"><td>isnan</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6406,10 +6516,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>159</td>
-<td>146</td>
+<td>177</td>
+<td>182</td>
 </tr>
-<tr class="row-even"><td>ldexp</td>
+<tr class="row-odd"><td>ldexp</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6421,9 +6531,9 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>33</td>
-<td>35</td>
+<td>32</td>
 </tr>
-<tr class="row-odd"><td>lgamma</td>
+<tr class="row-even"><td>lgamma</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6434,10 +6544,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.2</td>
-<td>6.1</td>
+<td>9.3</td>
+<td>6.0</td>
 </tr>
-<tr class="row-even"><td>log</td>
+<tr class="row-odd"><td>log</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6448,10 +6558,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>31</td>
-<td>9.0</td>
+<td>30</td>
+<td>8.2</td>
 </tr>
-<tr class="row-odd"><td>log10</td>
+<tr class="row-even"><td>log10</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6463,9 +6573,9 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>16</td>
-<td>7.7</td>
+<td>7.9</td>
 </tr>
-<tr class="row-even"><td>log1p</td>
+<tr class="row-odd"><td>log1p</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6476,10 +6586,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.1</td>
-<td>9.9</td>
+<td>10.0</td>
+<td>11</td>
 </tr>
-<tr class="row-odd"><td>log2</td>
+<tr class="row-even"><td>log2</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6493,7 +6603,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>25</td>
 <td>12</td>
 </tr>
-<tr class="row-even"><td>radians</td>
+<tr class="row-odd"><td>radians</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6504,10 +6614,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>186</td>
-<td>140</td>
+<td>181</td>
+<td>115</td>
 </tr>
-<tr class="row-odd"><td>sin</td>
+<tr class="row-even"><td>sin</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6519,9 +6629,9 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>17</td>
-<td>8.4</td>
+<td>8.1</td>
 </tr>
-<tr class="row-even"><td>sinh</td>
+<tr class="row-odd"><td>sinh</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6532,10 +6642,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.3</td>
-<td>5.5</td>
+<td>5.6</td>
+<td>5.6</td>
 </tr>
-<tr class="row-odd"><td>sqrt</td>
+<tr class="row-even"><td>sqrt</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6546,10 +6656,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>28</td>
-<td>22</td>
+<td>31</td>
+<td>25</td>
 </tr>
-<tr class="row-even"><td>tan</td>
+<tr class="row-odd"><td>tan</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6560,10 +6670,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>7.1</td>
 <td>6.3</td>
+<td>5.2</td>
 </tr>
-<tr class="row-odd"><td>tanh</td>
+<tr class="row-even"><td>tanh</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6574,10 +6684,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.5</td>
-<td>5.8</td>
+<td>6.3</td>
+<td>6.9</td>
 </tr>
-<tr class="row-even"><td>trunc</td>
+<tr class="row-odd"><td>trunc</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6588,8 +6698,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>282</td>
-<td>282</td>
+<td>295</td>
+<td>279</td>
 </tr>
 </tbody>
 </table>
@@ -6605,10 +6715,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>106</td>
+<td>100</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>394</td>
+<td>353</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
 <td>1.3</td>
@@ -6620,7 +6730,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </table>
 </div>
 <div class="section" id="simd-optimisations">
-<h4><a class="toc-backref" href="#id151">SIMD Optimisations</a><a class="headerlink" href="#simd-optimisations" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id155">SIMD Optimisations</a><a class="headerlink" href="#simd-optimisations" title="Permalink to this headline">¶</a></h4>
 <p>This set of tests shows what the effect of SIMD optimisations are for those
 functions which support it. SIMD optimisations are enabled by default except in
 a few cases where they conflict with math error checking (in which case error
@@ -6664,9 +6774,9 @@ Unoptimsed / Optimised Time.</p>
 <tr class="row-even"><td>aall</td>
 <td>12</td>
 <td>&#160;</td>
-<td>6.9</td>
+<td>7.2</td>
 <td>&#160;</td>
-<td>3.1</td>
+<td>3.4</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -6676,45 +6786,45 @@ Unoptimsed / Optimised Time.</p>
 <td>1.8</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>9.2</td>
+<td>12</td>
 <td>&#160;</td>
-<td>6.5</td>
+<td>6.4</td>
 <td>&#160;</td>
-<td>3.8</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>3.6</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>3.3</td>
-<td>1.7</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.1</td>
+<td>1.8</td>
 </tr>
 <tr class="row-even"><td>amax</td>
+<td>2.6</td>
 <td>2.7</td>
-<td>2.5</td>
 <td>1.3</td>
-<td>1.5</td>
-<td>2.9</td>
-<td>4.5</td>
+<td>1.4</td>
+<td>3.2</td>
+<td>4.9</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>3.5</td>
-<td>3.0</td>
+<td>5.8</td>
+<td>3.1</td>
 </tr>
 <tr class="row-odd"><td>amin</td>
-<td>4.5</td>
-<td>4.5</td>
+<td>3.8</td>
+<td>3.7</td>
 <td>1.9</td>
-<td>2.0</td>
+<td>1.9</td>
 <td>4.5</td>
-<td>2.9</td>
+<td>3.3</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.7</td>
+<td>5.6</td>
 <td>1.3</td>
 </tr>
 <tr class="row-even"><td>asum</td>
@@ -6732,24 +6842,24 @@ Unoptimsed / Optimised Time.</p>
 <td>2.0</td>
 </tr>
 <tr class="row-odd"><td>findindex</td>
-<td>13</td>
+<td>12</td>
 <td>&#160;</td>
-<td>6.5</td>
+<td>6.7</td>
 <td>&#160;</td>
-<td>2.7</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<td>2.8</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>3.4</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.7</td>
 <td>2.0</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="array-size-versus-performance">
-<h4><a class="toc-backref" href="#id152">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id156">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
 <p>Benchmark the effects of array size on a selected arrayfunc function.</p>
 <p>Add two arrays - times faster than Python, unoptimised.</p>
 <table border="1" class="docutils">
@@ -7022,17 +7132,18 @@ Unoptimsed / Optimised Time.</p>
 </div>
 </div>
 <div class="section" id="platform-effects">
-<h3><a class="toc-backref" href="#id153">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id157">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
 <p>The platform, including CPU, OS, compiler, and compiler version can
 affect performance, and this influence can change significantly for
 different functions.</p>
-<p>If your require exact application requires</p>
-<p>Benchmark your application on the specific platform</p>
+<p>If your application requires exact performance data, then benchmark
+your application in the specific platform (hardware, OS, and compiler)
+that you will be using.</p>
 </div>
 </div>
 <hr class="docutils" />
-<div class="section" id="id11">
-<h2><a class="toc-backref" href="#id154">Platform support</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h2><a class="toc-backref" href="#id158">Platform support</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>Arrayfunc is written in ‘C’ and uses the standard C libraries to implement the
 underlying math functions. Arrayfunc has been tested on the following platforms.</p>
 <table border="1" class="docutils">
@@ -7075,17 +7186,22 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 <td>GCC</td>
 <td>3.6</td>
 </tr>
-<tr class="row-odd"><td>FreeBSD 11</td>
+<tr class="row-odd"><td>Centos 7</td>
+<td>64 bit</td>
+<td>GCC</td>
+<td>3.6</td>
+</tr>
+<tr class="row-even"><td>FreeBSD 12</td>
 <td>64 bit</td>
 <td>LLVM</td>
-<td>3.5</td>
+<td>3.6</td>
 </tr>
-<tr class="row-even"><td>MS Windows 10</td>
+<tr class="row-odd"><td>MS Windows 10</td>
 <td>64 bit</td>
 <td>MS Visual Studio C 2015</td>
 <td>3.7</td>
 </tr>
-<tr class="row-odd"><td>Raspbian (RPi 3)</td>
+<tr class="row-even"><td>Raspbian (RPi 3)</td>
 <td>32 bit</td>
 <td>GCC</td>
 <td>3.5</td>
@@ -7123,6 +7239,7 @@ were conducted using VMs running on x86 hardware.</p>
 <li><a class="reference internal" href="#angular-conversion">Angular conversion</a></li>
 <li><a class="reference internal" href="#number-theoretic-and-representation-functions">Number-theoretic and representation functions</a></li>
 <li><a class="reference internal" href="#special-functions">Special functions</a></li>
+<li><a class="reference internal" href="#additional-functions">Additional functions</a></li>
 <li><a class="reference internal" href="#array-limit-attributes">Array Limit Attributes</a></li>
 </ul>
 </li>
@@ -7245,6 +7362,10 @@ were conducted using VMs running on x86 hardware.</p>
 <li><a class="reference internal" href="#lgamma">lgamma</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#id11">Additional functions</a><ul>
+<li><a class="reference internal" href="#fma">fma</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#option-flags-and-parameters">Option Flags and Parameters</a><ul>
@@ -7289,7 +7410,7 @@ were conducted using VMs running on x86 hardware.</p>
 <li><a class="reference internal" href="#platform-effects">Platform Effects</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id11">Platform support</a></li>
+<li><a class="reference internal" href="#id12">Platform support</a></li>
 </ul>
 </li>
 </ul>

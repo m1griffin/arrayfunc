@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 4.1.0 for 2018-11-16
+:Version: 4.2.0 for 2018-12-22
 :Copyright: 2014 - 2018
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
@@ -271,6 +271,16 @@ Special functions
        erfc math.erfc(x)
       gamma math.gamma(x)
      lgamma math.lgamma(x)
+=========== ===============================================
+
+Additional functions
+--------------------
+
+
+=========== ===============================================
+  Function              Equivalent to
+=========== ===============================================
+        fma fma(x, y, z) or x * y + z
 =========== ===============================================
 
 
@@ -955,7 +965,8 @@ ___________
 * Ldexp only accepts an integer number as the second parameter, not an array.
 * Math.pow is not implemented because it duplicates the operator pow (and the 
   names would collide in arrayfunc).
-
+* Fma is not part of the Python standard library, but has been offered here
+  as an additional feature.
 
 
 
@@ -1161,7 +1172,7 @@ Call formats::
     neg(array1, outparray)
     neg(array1, maxlen=y)
     neg(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -1261,7 +1272,7 @@ Call formats::
     abs_(array1, outparray)
     abs_(array1, maxlen=y)
     abs_(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -1593,7 +1604,7 @@ Call formats::
     invert(array1)
     invert(array1, outparray)
     invert(array1, maxlen=y)
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1690,7 +1701,7 @@ Call formats::
     exp(array1, outparray)
     exp(array1, maxlen=y)
     exp(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1719,7 +1730,7 @@ Call formats::
     expm1(array1, outparray)
     expm1(array1, maxlen=y)
     expm1(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1748,7 +1759,7 @@ Call formats::
     log(array1, outparray)
     log(array1, maxlen=y)
     log(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1777,7 +1788,7 @@ Call formats::
     log10(array1, outparray)
     log10(array1, maxlen=y)
     log10(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1806,7 +1817,7 @@ Call formats::
     log1p(array1, outparray)
     log1p(array1, maxlen=y)
     log1p(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1835,7 +1846,7 @@ Call formats::
     log2(array1, outparray)
     log2(array1, maxlen=y)
     log2(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1864,7 +1875,7 @@ Call formats::
     sqrt(array1, outparray)
     sqrt(array1, maxlen=y)
     sqrt(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1897,7 +1908,7 @@ Call formats::
     acosh(array1, outparray)
     acosh(array1, maxlen=y)
     acosh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1926,7 +1937,7 @@ Call formats::
     asinh(array1, outparray)
     asinh(array1, maxlen=y)
     asinh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1955,7 +1966,7 @@ Call formats::
     atanh(array1, outparray)
     atanh(array1, maxlen=y)
     atanh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -1984,7 +1995,7 @@ Call formats::
     cosh(array1, outparray)
     cosh(array1, maxlen=y)
     cosh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2013,7 +2024,7 @@ Call formats::
     sinh(array1, outparray)
     sinh(array1, maxlen=y)
     sinh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2042,7 +2053,7 @@ Call formats::
     tanh(array1, outparray)
     tanh(array1, maxlen=y)
     tanh(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2075,7 +2086,7 @@ Call formats::
     acos(array1, outparray)
     acos(array1, maxlen=y)
     acos(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2104,7 +2115,7 @@ Call formats::
     asin(array1, outparray)
     asin(array1, maxlen=y)
     asin(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2133,7 +2144,7 @@ Call formats::
     atan(array1, outparray)
     atan(array1, maxlen=y)
     atan(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2198,7 +2209,7 @@ Call formats::
     cos(array1, outparray)
     cos(array1, maxlen=y)
     cos(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2263,7 +2274,7 @@ Call formats::
     sin(array1, outparray)
     sin(array1, maxlen=y)
     sin(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2292,7 +2303,7 @@ Call formats::
     tan(array1, outparray)
     tan(array1, maxlen=y)
     tan(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2325,7 +2336,7 @@ Call formats::
     degrees(array1, outparray)
     degrees(array1, maxlen=y)
     degrees(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2354,7 +2365,7 @@ Call formats::
     radians(array1, outparray)
     radians(array1, maxlen=y)
     radians(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2387,7 +2398,7 @@ Call formats::
     ceil(array1, outparray)
     ceil(array1, maxlen=y)
     ceil(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2452,7 +2463,7 @@ Call formats::
     fabs(array1, outparray)
     fabs(array1, maxlen=y)
     fabs(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2481,7 +2492,7 @@ Call formats::
     factorial(array1, outparray)
     factorial(array1, maxlen=y)
     factorial(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -2509,7 +2520,7 @@ Call formats::
     floor(array1, outparray)
     floor(array1, maxlen=y)
     floor(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2572,7 +2583,7 @@ Call formats::
 
     result = isfinite(array1)
     result = isfinite(array1, maxlen=y)
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -2600,7 +2611,7 @@ Call formats::
 
     result = isinf(array1)
     result = isinf(array1, maxlen=y)
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -2628,7 +2639,7 @@ Call formats::
 
     result = isnan(array1)
     result = isnan(array1, maxlen=y)
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * maxlen - Limit the length of the array used. This must be a valid 
@@ -2658,7 +2669,7 @@ Call formats::
     ldexp(array1, exp, outparray)
     ldexp(array1, exp, maxlen=y)
     ldexp(array1, exp, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * exp - The exponent to apply to the input array. This must be an integer.
@@ -2688,7 +2699,7 @@ Call formats::
     trunc(array1, outparray)
     trunc(array1, maxlen=y)
     trunc(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2721,7 +2732,7 @@ Call formats::
     erf(array1, outparray)
     erf(array1, maxlen=y)
     erf(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2750,7 +2761,7 @@ Call formats::
     erfc(array1, outparray)
     erfc(array1, maxlen=y)
     erfc(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2779,7 +2790,7 @@ Call formats::
     gamma(array1, outparray)
     gamma(array1, maxlen=y)
     gamma(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
 * outparray - The output array. This parameter is optional. 
@@ -2808,9 +2819,56 @@ Call formats::
     lgamma(array1, outparray)
     lgamma(array1, maxlen=y)
     lgamma(array1, matherrors=False))
- 
+
 * array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
+* outparray - The output array. This parameter is optional. 
+* maxlen - Limit the length of the array used. This must be a valid 
+  positive integer. If a zero or negative length, or a value which is 
+  greater than the actual length of the array is specified, this 
+  parameter is ignored. 
+* matherrors - If true, arithmetic error checking is disabled. The 
+  default is false.
+
+Additional functions
+--------------------
+
+
+fma
+_____________________________
+
+Calculate fma over the values in an array. 
+
+======================  ========================================================
+Equivalent to:          fma(x, y, z) or x * y + z
+Array types supported:  f, d
+Exceptions raised:      ArithmeticError
+======================  ========================================================
+
+Call formats::
+
+
+    fma(array1, array2, array3) 
+    fma(array1, array2, array3, outparray) 
+    fma(array1, array2, param3) 
+    fma(array1, array2, param3, outparray) 
+    fma(array1, param2, array3) 
+    fma(array1, param2, array3, outparray) 
+    fma(array1, param2, param3) 
+    fma(array1, param2, param3, outparray) 
+    fma(array1, array2, array3, maxlen=y) 
+    fma(array1, array2, array3, matherrors=False) 
+
+* array1 - The first input data array to be examined. If no output 
+  array is provided the results will overwrite the input data. 
+* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* param2 - A non-array numeric parameter which is 
+  used in place of array2. 
+* array3 - A third input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+* param3 - A non-array numeric parameter which is 
+  used in place of array3. 
 * outparray - The output array. This parameter is optional. 
 * maxlen - Limit the length of the array used. This must be a valid 
   positive integer. If a zero or negative length, or a value which is 
@@ -3193,87 +3251,88 @@ Relative Performance - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  8.5   6.9   8.5    11   8.7    11    11    11   6.6  10.0    17    13
-        aany  5.7   3.7   4.8   4.5   3.7   5.8   5.3   5.6   5.1   5.5   7.0   6.3
-     afilter  116   116   114   110   116   115   115   114   116   116   116   114
-        amax   30    34    32    27    27    29    14    16    13    15    32    21
-        amin   16    16    20    18    26    27    14    13    14    16    21    47
-        asum  7.9    10   8.8    10   8.8    11   8.2    11   8.1   8.7   5.7   6.2
-    compress   37    35    37    24    33    20    39    23    42    26    33    32
-       count  213   212   201   213   160   106   156   115   153   111    75    76
-       cycle   85    84    83    79    80    58    81    63    81    62    61    59
-   dropwhile  146   132   149   144   176   179   169   173   171   167   155   136
-   findindex   14    14    16    20    19    18    16    17    16    17    18    16
- findindices   26    26    26    26    26    27    26    27    25    27    23    23
-      repeat  132   131   126   126   109    45   118    41   124    38   110   114
-   takewhile  233   210   249   267   250   192   177   123   157   121   317   148
-         add  101   126    91   130    83   122    66    57    68    52   115    65
-     truediv   74    68    75    74    75    65    71    72    63    67   150    85
-    floordiv   34    38    35    41    36    35    34    38    34    31   129    91
-         mod   27    31    22    33    34    28    32    24    37    22    75    61
-         mul   19    30    15    24   9.5    86   5.8    47   5.8    46   133    65
-         neg  135         157         138          93          95         117    89
-         pow   56    62    52    56    45    64    26    71    25    56   9.5    16
-         sub   79   173    99   166   100   149    55    54    56    57   137    67
-       and\_  313   304   257   294   218   198    71    59    66    65            
-        or\_  311   314   277   323   229   197    75    64    70    65            
-         xor  200   190   210   228   196   164    75    72    67    61            
-      invert  362   256   352   249   293   222   195   185   227   213            
-          eq  125   117   130   123   123   115   101    91   110    88   119    90
-          gt  161   103   103   106   185   110    84   100    88   110   111    98
-          ge  117   132   109   120   103   125    86   116    94   134   148   107
-          lt  175    96   103   101   173   113    85   119    92   117   127    99
-          le  107   125   122   119   118   131    90    98    81   101   138    86
-          ne  155   101    95   101   180   199    87   110    97   119   128   102
-      lshift  203   193   185   195   224   140    74    63    75    65            
-      rshift  195   290   200   256   219   216    73    68    82    67            
-       abs\_  135         102         114         102          91         159   111
-        acos                                                               14    12
-       acosh                                                              9.5   6.3
-        asin                                                               14    13
-       asinh                                                              6.9   7.0
-        atan                                                               12    11
-       atan2                                                               10    10
-       atanh                                                              7.4   7.9
-        ceil                                                              234   178
-    copysign                                                              217    99
-         cos                                                               15   8.1
-        cosh                                                               13   8.6
-     degrees                                                              147   129
-         erf                                                               16    13
-        erfc                                                               10   7.6
-         exp                                                               22    10
-       expm1                                                              6.7   6.7
-        fabs                                                              166   149
-   factorial  214   209   200   203   213   181   145   121   134   134            
-       floor                                                              233   175
-        fmod                                                               13    12
-       gamma                                                              1.5   1.3
-       hypot                                                               24    17
-    isfinite                                                              140   122
-       isinf                                                              151   130
-       isnan                                                              159   144
-       ldexp                                                               31    33
-      lgamma                                                              9.1   5.8
-         log                                                               26   8.8
-       log10                                                               15   7.5
-       log1p                                                              8.5   8.8
+        aall  8.9   7.4   8.1    10   9.4    11   8.3    10   7.0   9.9    18    14
+        aany  3.7   3.9   4.3   4.4   3.5   4.8   3.9   4.7   3.6   4.6   6.8   5.4
+     afilter  124   119   127   126   119   127   128   132   121   124   120   120
+        amax   33    31    33    30    26    32    21    15    15    16    22    18
+        amin   19    20    19    20    25    25    12    14    13    13    21    29
+        asum  9.1   9.3   8.3    10   8.2   9.5   8.4   9.5   7.7   8.8   6.8   6.4
+    compress   34    34    38    23    32    16    39    25    39    25    32    31
+       count  220   220   217   209   148   124   150   107   152   111    73    74
+       cycle   82    93    86    93    77    52    87    57    87    56    59    58
+   dropwhile  144   143   143   147   167   175   171   167   170   169   144   132
+   findindex   16    16    16    20    18    18    16    18    16    18    17    16
+ findindices   26    26    27    26    26    29    26    27    27    26    24    23
+      repeat  127   133   129   125   127    41   109    39   116    38   117   102
+   takewhile  267   259   281   276   263   196   187   133   163   138   333   154
+         add   91   122    87   130    82   116    57    54    53    38   115    50
+     truediv   79    67    75    76    69    60    67    57    62    56   154    79
+    floordiv   32    33    33    36    33    31    32    30    31    32   109    74
+         mod   24    27    23    29    31    28    32    23    29    22    73    55
+         mul   19    30    14    24   9.6    73   5.3    40   5.3    37   125    56
+         neg  127         146         138          76          81         115    77
+         pow   53    59    47    52    43    58    24    62    23    54   8.0    14
+         sub   75   152    89   166    96   131    51    44    46    43   116    55
+       and\_  262   253   255   258   219   190    59    60    64    48            
+        or\_  251   275   253   243   218   194    56    57    63    49            
+         xor  159   188   180   179   181   150    63    55    60    51            
+      invert  318   269   356   301   302   218   144   190   176   197            
+          eq  101    96   102    99   102   107    78    71    87    94   110    83
+          gt   78   143    77    81   141    79    82    78    68    75   107    76
+          ge  100    97   101    97    96   106    73   110    73    93   126    86
+          lt  115   123    72    74    92   139    73    77    79    81   102    80
+          le  102    93    97   100    98   109    76    80    74    87   120    85
+          ne   77   130    76   119   136   152    71    82    82    74    97    69
+      lshift  186   191   173   179   206   156    64    61    65    56            
+      rshift  173   236   176   235   168   198    63    60    65    62            
+       abs\_  137         110         117         105          99         164   108
+        acos                                                               15    12
+       acosh                                                              9.6   6.1
+        asin                                                               13    12
+       asinh                                                              6.6   6.9
+        atan                                                               14    12
+       atan2                                                               11   9.7
+       atanh                                                              7.2   7.6
+        ceil                                                              267   182
+    copysign                                                              247   109
+         cos                                                               16   8.3
+        cosh                                                               11   7.4
+     degrees                                                              139   117
+         erf                                                               17    13
+        erfc                                                              9.2   7.3
+         exp                                                               17   8.9
+       expm1                                                              6.9   6.8
+        fabs                                                              187   124
+   factorial  199   201   198   198   192   171   122   109   121    98            
+       floor                                                              254   170
+         fma                                                              154    45
+        fmod                                                               12    12
+       gamma                                                              1.6   1.3
+       hypot                                                               26    17
+    isfinite                                                              136   124
+       isinf                                                              149   131
+       isnan                                                              173   156
+       ldexp                                                               29    30
+      lgamma                                                              9.3   5.9
+         log                                                               26   8.3
+       log10                                                               15   7.8
+       log1p                                                              9.3    10
         log2                                                               22    11
-     radians                                                              151   131
-         sin                                                               14   8.3
-        sinh                                                              5.2   5.6
-        sqrt                                                               23    19
-         tan                                                              6.8   6.2
-        tanh                                                              5.5   5.6
-       trunc                                                              251   200
+     radians                                                              147   116
+         sin                                                               15   7.8
+        sinh                                                              5.5   5.6
+        sqrt                                                               25    21
+         tan                                                              6.1   5.1
+        tanh                                                              6.2   6.6
+       trunc                                                              278   210
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    89
-Maximum:    362
+Average:    84
+Maximum:    356
 Minimum:    1.3
 Array size: 100000
 =========== ========
@@ -3291,90 +3350,92 @@ Relative Performance with Optimisations - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  105   6.3    59   7.4    27    13    11    11    11    10    42    23
-        aany   53   4.1    31   4.5    14   5.8   5.1   5.5   5.2   5.6    23    11
-     afilter  117   116   114   109   116   115   115   115   116   116   116   114
-        amax   79    86    40    40    78   130    14    16    14    15   113    62
-        amin   74    73    37    37   115    77    14    16    14    16   121    59
-        asum   13    16    14    15    14    18    11    19    14    15    22    13
-    compress   37    34    37    24    32    17    40    23    43    26    33    32
-       count  203   189   200   213   159   116   156   122   153   102    73    76
-       cycle   85    84    80    78    67    58    85    63    82    62    61    59
-   dropwhile  149   144   149   145   178   176   168   173   171   162   159   145
-   findindex  188    14   104    20    50    17    16    17    15    15    62    33
- findindices   26    26    26    26    26    27    26    27    25    27    23    23
-      repeat  128   131   134   127   123    44   121    41   124    42   120    97
-   takewhile  251   234   257   272   250   194   167   137   164   124   317   153
-         add  191   165   170   267   250   204   135   115   137   108   149   100
-     truediv   73    63    66    71    79    61    80    75    68    68   204   184
-    floordiv   38    34    40    43    43    33    41    40    42    33   189   177
-         mod   28    32    24    33    36    29    35    32    40    30   114   103
-         mul  174   169   176   153   180   166   107    89   107    88   160   131
-         neg  165         202         127          95         103         185   107
-         pow   45    49    44    48    30    66    18    62    17    51   8.5    19
-         sub  165   265   259   251   177   142   113   109   119   106   177   117
-       and\_  213   205   198   201   185   161   130   115   135   129            
-        or\_  211   197   178   174   195   160   136   115   135   126            
-         xor  290   302   314   340   280   258   150   147   145   127            
-      invert  361   206   394   266   336   211   216   197   212   225            
-          eq  133   114    98    93    94   157   109    93   137   141   130   112
-          gt   95    85    92   108    99   101    96   111   103   164   150   141
-          ge  118   127    90    99    88   127    89    97   153   199   131   122
-          lt  134   142   138   157   153   126   158   147   105   180   140   134
-          le  120   136   150   140   148   175   144   149   129   170   137   126
-          ne  148   151   150   161   149   108   144   178   108   167   138   131
-      lshift  177   199   173   197   247   162   152   123   155   122            
-      rshift  231   328   241   305   212   232   139   193   159   177            
-       abs\_  143         140         156         113         106         176   109
-        acos                                                               15    12
-       acosh                                                               11   6.4
-        asin                                                               16    14
-       asinh                                                              7.0   7.3
-        atan                                                               14    12
-       atan2                                                              9.4   8.6
-       atanh                                                              7.6   8.3
-        ceil                                                              256   215
-    copysign                                                              277   167
-         cos                                                               16   8.2
-        cosh                                                               15   8.7
-     degrees                                                              273   203
+        aall  111   7.6    59   6.8    32    12    11    10    11    10    45    25
+        aany   47   3.5    27   4.4    13   4.7   3.3   4.5   4.5   4.6    21   9.7
+     afilter  124   119   127   125   120   127   130   131   124   129   126   123
+        amax   86    84    43    42    82   159    21    15    15    16   127    55
+        amin   73    73    37    37   115    80    14    14    14    15   119    37
+        asum   14    14    13    16    13    16    14    16    13    15    26    13
+    compress   35    34    38    23    33    19    39    21    39    19    28    23
+       count  214   217   222   201   152   120   150   103   152   112    73    74
+       cycle   81    89    85    91    76    53    85    51    83    51    57    58
+   dropwhile  143   139   143   143   174   175   157   170   169   158   144   130
+   findindex  192    16   109    20    51    18    16    17    16    18    63    33
+ findindices   26    26    27    26    26    29    26    27    27    27    24    24
+      repeat  129   130   129   124   124    41   112    40   109    36   123   101
+   takewhile  264   269   294   266   250   191   188   125   178   129   345   153
+         add  169   161   179   247   234   181   119    94    98    79   154   102
+     truediv   78    63    66    76    74    57    75    62    66    58   204   178
+    floordiv   36    29    38    36    38    30    38    31    38    33   167   128
+         mod   25    28    24    30    32    29    36    29    33    28   112    98
+         mul  175   163   172   174   181   144    95    90   100    88   165   120
+         neg  178         191         116          81          80         180    99
+         pow   46    47    38    45    29    58    17    53    16    48   6.8    16
+         sub  159   216   238   247   159   138   105    86   106    67   141   115
+       and\_  182   179   182   188   180   154   101   144   110   112            
+        or\_  189   195   177   175   189   164   120   102   126   107            
+         xor  251   275   263   254   265   195   133   122   126   119            
+      invert  334   266   353   296   302   227   164   176   177   247            
+          eq   93    97    77   121    79   132    85   135    95    92   116    94
+          gt   83    76    79    80   126    80    92    92    82   125   134   115
+          ge  101    96    78   113   126   127    81   158    89   114   110   109
+          lt  112   118   112    75    76    88   128    80   127   138   119   112
+          le   94   102   111   119    84   137   119   129   122   121   122   106
+          ne  118   115   118    79   123    84   119    89   125   126   105    90
+      lshift  187   197   183   181   242   160   138   124   144   118            
+      rshift  204   267   212   258   181   211   127   150   115   149            
+       abs\_  149         149         157         113         103         185   108
+        acos                                                               15    13
+       acosh                                                               11   6.2
+        asin                                                               14    12
+       asinh                                                              6.7   7.1
+        atan                                                               16    13
+       atan2                                                              9.7   8.2
+       atanh                                                              7.4   8.0
+        ceil                                                              300   214
+    copysign                                                              327   213
+         cos                                                               17   8.4
+        cosh                                                               12   7.5
+     degrees                                                              281   170
          erf                                                               17    14
-        erfc                                                               10   7.9
-         exp                                                               23    10
-       expm1                                                              6.9   7.3
-        fabs                                                              163   160
-   factorial  184   196   185   142   183   190   130   132   144   122            
-       floor                                                              257   216
-        fmod                                                               14    14
+        erfc                                                              9.2   7.0
+         exp                                                               16   9.0
+       expm1                                                              6.9   7.1
+        fabs                                                              197   132
+   factorial  168   193   197   139   181   182   128   103   118   109            
+       floor                                                              267   210
+         fma                                                              174    46
+        fmod                                                               13    14
        gamma                                                              1.5   1.3
-       hypot                                                               26    15
-    isfinite                                                              140   122
-       isinf                                                              151   131
-       isnan                                                              159   146
-       ldexp                                                               33    35
-      lgamma                                                              9.2   6.1
-         log                                                               31   9.0
-       log10                                                               16   7.7
-       log1p                                                              9.1   9.9
+       hypot                                                               29    16
+    isfinite                                                              137   125
+       isinf                                                              149   133
+       isnan                                                              177   182
+       ldexp                                                               33    32
+      lgamma                                                              9.3   6.0
+         log                                                               30   8.2
+       log10                                                               16   7.9
+       log1p                                                             10.0    11
         log2                                                               25    12
-     radians                                                              186   140
-         sin                                                               17   8.4
-        sinh                                                              5.3   5.5
-        sqrt                                                               28    22
-         tan                                                              7.1   6.3
-        tanh                                                              5.5   5.8
-       trunc                                                              282   282
+     radians                                                              181   115
+         sin                                                               17   8.1
+        sinh                                                              5.6   5.6
+        sqrt                                                               31    25
+         tan                                                              6.3   5.2
+        tanh                                                              6.3   6.9
+       trunc                                                              295   279
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
 =========== ========
 Stat         Value
 =========== ========
-Average:    106
-Maximum:    394
+Average:    100
+Maximum:    353
 Minimum:    1.3
 Array size: 100000
 =========== ========
+
 
 
 SIMD Optimisations
@@ -3392,12 +3453,12 @@ Unoptimsed / Optimised Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall   12         6.9         3.1                                 2.5   1.8
-        aany  9.2         6.5         3.8                                 3.3   1.7
-        amax  2.7   2.5   1.3   1.5   2.9   4.5                           3.5   3.0
-        amin  4.5   4.5   1.9   2.0   4.5   2.9                           5.7   1.3
+        aall   12         7.2         3.4                                 2.5   1.8
+        aany   12         6.4         3.6                                 3.1   1.8
+        amax  2.6   2.7   1.3   1.4   3.2   4.9                           5.8   3.1
+        amin  3.8   3.7   1.9   1.9   4.5   3.3                           5.6   1.3
         asum                                                              3.9   2.0
-   findindex   13         6.5         2.7                                 3.4   2.0
+   findindex   12         6.7         2.8                                 3.7   2.0
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3446,9 +3507,9 @@ The platform, including CPU, OS, compiler, and compiler version can
 affect performance, and this influence can change significantly for 
 different functions. 
 
-If your require exact application requires 
-
-Benchmark your application on the specific platform
+If your application requires exact performance data, then benchmark
+your application in the specific platform (hardware, OS, and compiler) 
+that you will be using.
 
 
 ---------------------------------------------------------------------
@@ -3467,7 +3528,8 @@ Ubuntu 18.10       64 bit    GCC                         3.6
 Debian 9           32 bit    GCC                         3.5
 Debian 9           64 bit    GCC                         3.5
 OpenSuse 15        64 bit    GCC                         3.6
-FreeBSD 11         64 bit    LLVM                        3.5
+Centos 7           64 bit    GCC                         3.6
+FreeBSD 12         64 bit    LLVM                        3.6
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
 Raspbian (RPi 3)   32 bit    GCC                         3.5
 ================= ========  ========================== =========================

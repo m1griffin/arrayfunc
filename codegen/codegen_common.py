@@ -6,7 +6,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import datetime
 import csv
 import itertools
 import re
+import glob
+import os.path
 
 # ==============================================================================
 
@@ -536,3 +538,54 @@ def GenSIMDCHeaderText(outputlist, funcname):
 
 
 # ==============================================================================
+
+
+# ==============================================================================
+
+# Read the C function names from the SIMD header files.
+def GetHeaderFileDataSIMD():
+	"""Get the names of functions which have SIMD acceleration. This
+		works by reading the C source code header file names and 
+		extracting the name of the function from the file names. This 
+		assumes that the file name follows a specific convention.
+		It also searches through the file to find C function names
+		and extracts the data types from it. 
+		The C source code files must be in a specific position relative
+		to this script.
+	Parameters: None.
+		Returns: (list) a list of arrayfunc function names and the data
+			types used by that arrayfunc function.
+	"""
+	# Get a list of the SIMD related header files.
+	filelist=glob.glob('../src/*_simd_*.h')
+	filelist.sort()
+
+	filedata = []
+
+
+	for fname in filelist:
+		# This gets the function name from the file, assuming the function
+		# name is the first part of the file name (e.g. aall_simd_x86.h ).
+		simdfile = os.path.basename(fname)
+		funcname = simdfile.partition('_')[0]
+
+		with open(fname, 'r') as f:
+			typemaps = dict(zip(arraytypes.values(), itertools.repeat(False)))
+			cfuncs = [x for x in f if '_simd(' in x]
+
+			for line in cfuncs:
+				funcstart = line.partition('_simd(')[0]
+				cfuncname = funcstart.rpartition(' ')[2]
+				afuncname = cfuncname.rpartition(funcname)[-1]
+				afunctype = afuncname.replace('_', ' ')
+				afunclabel = afunctype.strip()
+				typemaps[afunclabel] = True
+				
+
+			filedata.append((funcname, typemaps))
+
+	return filedata
+
+
+# ==============================================================================
+

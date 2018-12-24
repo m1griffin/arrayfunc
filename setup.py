@@ -108,6 +108,8 @@ extensions = [
 	('hypot', ['src/hypot.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('ldexp', ['src/ldexp.c', 'src/arrayparams_special.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
+	('fma', ['src/fma.c', 'src/arrayparams_three.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+
 ]
 
 
@@ -141,7 +143,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '4.1.0',
+	version = '4.2.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

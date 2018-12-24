@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 ##############################################################################
 # Project:  arrayfunc
-# Purpose:  Generate the C code for math functions which accept a single 
-#			parameter.
+# Purpose:  Generate the C code for math functions which accept two 
+#			parameters.
 # Language: Python 3.4
 # Date:     30-Dec-2017
 #

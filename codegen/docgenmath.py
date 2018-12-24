@@ -87,30 +87,44 @@ doctempl2d = '''
     %(funcname)s(array1, outparray)
     %(funcname)s(array1, maxlen=y)
     %(funcname)s(array1, matherrors=False))
- 
+
 '''
 
 doctempl2e = '''
     %(funcname)s(array1)
     %(funcname)s(array1, outparray)
     %(funcname)s(array1, maxlen=y)
- 
+
 '''
- 
-    
+
+doctempl2f = '''
+    %(funcname)s(array1, array2, array3) 
+    %(funcname)s(array1, array2, array3, outparray) 
+    %(funcname)s(array1, array2, param3) 
+    %(funcname)s(array1, array2, param3, outparray) 
+    %(funcname)s(array1, param2, array3) 
+    %(funcname)s(array1, param2, array3, outparray) 
+    %(funcname)s(array1, param2, param3) 
+    %(funcname)s(array1, param2, param3, outparray) 
+    %(funcname)s(array1, array2, array3, maxlen=y) 
+    %(funcname)s(array1, array2, array3, matherrors=False) 
+
+'''
+
 doctempl2ldexp = '''
     %(funcname)s(array1, exp)
     %(funcname)s(array1, exp, outparray)
     %(funcname)s(array1, exp, maxlen=y)
     %(funcname)s(array1, exp, matherrors=False))
- 
+
 '''
-    
+
 doctempl2mathnan = '''
     result = %(funcname)s(array1)
     result = %(funcname)s(array1, maxlen=y)
- 
+
 '''
+
 
 doctempl3arr1 = '''* array1 - The first input data array to be examined. If no output 
   array is provided the results will overwrite the input data. 
@@ -121,7 +135,21 @@ doctempl3param = '''* param - A non-array numeric parameter.
 '''
 
 
+doctempl3param2 = '''* param2 - A non-array numeric parameter which is 
+  used in place of array2. 
+'''
+
+
+doctempl3param3 = '''* param3 - A non-array numeric parameter which is 
+  used in place of array3. 
+'''
+
 doctempl3arr2 = '''* array2 - A second input data array. Each element in this array is 
+  applied to the corresponding element in the first array. 
+'''
+
+
+doctempl3arr3 = '''* array3 - A third input data array. Each element in this array is 
   applied to the corresponding element in the first array. 
 '''
 
@@ -156,6 +184,7 @@ doctempl3resultnan = '''* result - A boolean value corresponding to the result o
   value will be false.
 '''
 
+
 # ==============================================================================
 
 
@@ -172,6 +201,12 @@ template_comp = [doctempl1, doctempl2c,
 	doctempl3maxlen, doctempl3resultcomp]
 
 template_mathfunc_2 = template_mathop
+
+template_mathfunc_3 = [doctempl1, doctempl2f, 
+	doctempl3arr1, doctempl3arr2, doctempl3param2, 
+	doctempl3arr3, doctempl3param3, doctempl3arrout,
+	doctempl3maxlen, doctempl3err]
+
 
 template_mathfunc_1 = [doctempl1, doctempl2d, 
 	doctempl3arr1, doctempl3arrout, doctempl3maxlen, doctempl3err]
@@ -205,6 +240,7 @@ doctemplates = {
 	'template_comp' : template_comp, 
 	'template_binop' : template_binop, 
 	'template_mathop' : template_mathop, 
+	'template_mathfunc_3' : template_mathfunc_3 
 }
 
 funccategories = {
@@ -217,6 +253,7 @@ funccategories = {
 'angular' : ('6', 'Angular conversion'), 
 'representation' : ('7', 'Number-theoretic and representation functions'), 
 'special' : ('8', 'Special functions'), 
+'additional' : ('9', 'Additional functions'), 
 }
 
 
@@ -230,6 +267,44 @@ mathtableheader = '''
 =========== ==============================================='''
 
 mathtablefooter = '=========== ==============================================='
+
+
+
+# ==============================================================================
+
+# Write the results to disk.
+def WriteTableSIMD(cheaderdata, outputfile):
+	"""Parameters: cheaderdata (list) = The list of functions and what array 
+			types they support.
+			outputfile (file object) = The output file object to write to.
+	"""
+	columnwidth = 3
+	tableheader = {'func' : 'function'}
+	tableheader.update(dict([(y,x) for x,y in codegen_common.arraytypes.items()]))
+
+	tablesep = dict.fromkeys(codegen_common.arraytypes.values(), '=' * columnwidth)
+	tablesep.update({'func' : '==========='})
+	tableformat = '%(func)10s ' + ' '.join(['%(' + codegen_common.arraytypes[x] + (')%is' % columnwidth) for x in codegen_common.arraycodes]) + '\n'
+
+
+	TableData = []
+	for func, arrstat in cheaderdata:
+		arrformat = dict([(x, 'X' if y else ' ') for x,y in arrstat.items()])
+		arrformat['func'] = func
+		TableData.append(tableformat % arrformat)
+
+
+	outputfile.write('\n\n\nDocuments which functions have SIMD support.\n\n')
+
+	outputfile.write(tableformat % tablesep)
+	outputfile.write(tableformat % tableheader)
+	outputfile.write(tableformat % tablesep)
+	outputfile.write(''.join(TableData))
+	outputfile.write(tableformat % tablesep)
+
+
+
+# ==============================================================================
 
 
 # ==============================================================================
@@ -252,6 +327,8 @@ prevcat = ''
 summtable = []
 
 
+# The main description of the functions. Note this does not cover
+# all functions.
 with open('docs_math.txt', 'w') as f:
 
 	f.write('.. contents:: Table of Contents\n\n')
@@ -304,9 +381,23 @@ with open('docs_math.txt', 'w') as f:
 		summtable.append(funcesc.rjust(11) + ' ' + op['opcodedocs'])
 
 
+# The summary table.
+with open('docs_summary.txt', 'w') as f:
+
 	# Now write out the summary table.
 	summtable.append(mathtablefooter)
 	f.write('\n\n\n')
 	f.write('\n'.join(summtable))
 	f.write('\n')
+
+
+
+# Get a list of the C function names and their array types from the SIMD
+# related C header files.
+cheaderdata = codegen_common.GetHeaderFileDataSIMD()
+
+# The summary table.
+with open('docs_simdtable.txt', 'w') as f:
+	WriteTableSIMD(cheaderdata, f)
+
 

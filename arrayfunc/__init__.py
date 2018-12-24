@@ -54,6 +54,8 @@ from arrayfunc.ge import ge
 from arrayfunc.lt import lt
 from arrayfunc.le import le
 
+from arrayfunc.fma import fma
+
 from arrayfunc.acos import acos
 from arrayfunc.acosh import acosh
 from arrayfunc.asin import asin
