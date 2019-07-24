@@ -32,13 +32,13 @@ import codegen_common
 # ==============================================================================
 
 # This template is for operators (e.g. +, -, /, *, etc.).
-test_template_op = ''' 
+test_op_templ = ''' 
 
 ##############################################################################
-class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.TestCase):
 	"""Test %(funclabel)s for basic general function operation using numeric 
 	data %(test_op_y)s.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -63,15 +63,28 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [%(test_op_x)s]
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		self.datax = array.array('%(typecode)s', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([%(test_op_y)s]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_none_a1(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -89,7 +102,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_none_a2(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -107,7 +120,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_none_a3(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -128,7 +141,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_none_a4(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -150,7 +163,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_array_b1(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -169,7 +182,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_array_b2(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -188,7 +201,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_array_b3(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -210,7 +223,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_array_b4(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datax)
@@ -233,7 +246,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_none_c1(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -251,7 +264,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_none_c2(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -269,7 +282,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_none_c3(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -290,7 +303,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_none_c4(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -312,7 +325,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_array_d1(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -331,7 +344,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_array_d2(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -350,7 +363,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_array_d3(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -372,7 +385,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_array_d4(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('%(typecode)s', self.datay)
@@ -460,7 +473,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_array_e5(self):
+	def test_%(funclabel)s_basic_array_array_array_f1(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
 		"""
 		data1 = array.array('%(typecode)s', self.datax)
@@ -477,8 +490,8 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_array_e6(self):
-		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_array_array_f2(self):
+		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
 		data1 = array.array('%(typecode)s', self.datax)
 		data2 = array.array('%(typecode)s', self.datay)
@@ -493,8 +506,8 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_array_e7(self):
-		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_array_array_f3(self):
+		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
 		data1 = array.array('%(typecode)s', self.datax)
 		data2 = array.array('%(typecode)s', self.datay)
@@ -516,6 +529,477 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 ##############################################################################
 
 '''
+
+# ==============================================================================
+
+# This template is for operators (e.g. +, -, *, etc.) which have SIMD support.
+test_op_simd_templ = ''' 
+
+##############################################################################
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unittest.TestCase):
+	"""Test %(funclabel)s for basic general function operation using numeric 
+	data %(test_op_y)s.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%%0.3f != %%0.3f' %% (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		self.datax = array.array('%(typecode)s', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([%(test_op_y)s]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_none_a1(self):
+		"""Test %(funclabel)s as *array-num-none* for basic function - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_none_a2(self):
+		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_none_a3(self):
+		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_array_b1(self):
+		"""Test %(funclabel)s as *array-num-array* for basic function - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_array_b2(self):
+		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_num_array_b3(self):
+		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code %(typelabel)s.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datax)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_none_c1(self):
+		"""Test %(funclabel)s as *num-array-none* for basic function - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_none_c2(self):
+		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_none_c3(self):
+		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_array_d1(self):
+		"""Test %(funclabel)s as *num-array-array* for basic function - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_array_d2(self):
+		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_num_array_array_d3(self):
+		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code %(typelabel)s.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('%(typecode)s', self.datay)
+				dataout = array.array('%(typecode)s', [0]*len(data1))
+
+				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+
+				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_array_none_e1(self):
+		"""Test %(funclabel)s as *array-array-none* for basic function - Array code %(typelabel)s.
+		"""
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
+
+		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		arrayfunc.%(funcname)s(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_array_none_e2(self):
+		"""Test %(funclabel)s as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code %(typelabel)s.
+		"""
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
+
+		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		arrayfunc.%(funcname)s(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_array_array_f1(self):
+		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
+		"""
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
+		dataout = array.array('%(typecode)s', [0]*len(data1))
+
+		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		arrayfunc.%(funcname)s(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_array_array_f2(self):
+		"""Test %(funclabel)s as *array-array-array* for basic function and nosimd=True - Array code %(typelabel)s.
+		"""
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
+		dataout = array.array('%(typecode)s', [0]*len(data1))
+
+		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+'''
+
+# ==============================================================================
+
+
+# ==============================================================================
+
+# The template used to generate the tests for testing invalid parameter types
+# for simd option.
+param_invalid_opt_simd_template = '''
+
+##############################################################################
+class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
+	"""Test %(funclabel)s for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('%(typecode)s', [%(test_op_x)s])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('%(typecode)s', [x for (x,y) in zip(itertools.cycle([%(test_op_y)s]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('%(typecode)s', itertools.repeat(%(zero_const)s, arraysize))
+
+
+
+	########################################################
+	def test_%(funclabel)s_array_num_none_a1(self):
+		"""Test %(funclabel)s as *array-num-none* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_%(funclabel)s_array_num_array_b1(self):
+		"""Test %(funclabel)s as *array-num-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_%(funclabel)s_num_array_none_c1(self):
+		"""Test %(funclabel)s as *num-array-none* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_%(funclabel)s_num_array_array_d1(self):
+		"""Test %(funclabel)s as *num-array-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_%(funclabel)s_array_array_none_e1(self):
+		"""Test %(funclabel)s as *array-array-none* for nosimd='a' - Array code %(typelabel)s.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_%(funclabel)s_array_array_array_f1(self):
+		"""Test %(funclabel)s as *array-array-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+##############################################################################
+
+'''
+
+# ==============================================================================
 
 # ==============================================================================
 
@@ -846,7 +1330,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_none_a1(self):
-		"""Test %(funclabel)s as *array-num-none* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-num-none* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -855,7 +1339,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -875,7 +1359,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_array_b1(self):
-		"""Test %(funclabel)s as *array-num-array* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-num-array* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -885,7 +1369,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.%(funcname)s(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -906,7 +1390,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_num_array_none_c1(self):
-		"""Test %(funclabel)s as *num-array-none* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *num-array-none* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -916,7 +1400,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -936,7 +1420,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_num_array_array_d1(self):
-		"""Test %(funclabel)s as *num-array-array* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *num-array-array* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -945,7 +1429,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.%(funcname)s(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -964,7 +1448,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_none_e1(self):
-		"""Test %(funclabel)s as *array-array-none* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array-none* for matherrors='a' - Array code %(typelabel)s.
 		"""
 
 		# This version is expected to pass.
@@ -972,7 +1456,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -990,14 +1474,14 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_array_f1(self):
-		"""Test %(funclabel)s as *array-array-array* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array-array* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.%(funcname)s(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -4539,7 +5023,7 @@ class %(funclabel)s_%(errorlabel)s_errors_%(typelabel)s(unittest.TestCase):
 				# Copy the array so we don't change the original data.
 				errordata = copy.copy(self.errordata)
 				# This test results in "nan".
-				expected = [float('nan')] * len(self.errordata)
+				expected = [math.nan] * len(self.errordata)
 
 				arrayfunc.%(funcname)s(testval, errordata, matherrors=True)
 
@@ -4572,7 +5056,7 @@ class %(funclabel)s_%(errorlabel)s_errors_%(typelabel)s(unittest.TestCase):
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# This test results in "nan".
-				expected = [float('nan')] * len(self.errordata)
+				expected = [math.nan] * len(self.errordata)
 
 				arrayfunc.%(funcname)s(testval, self.errordata, self.dataout, matherrors=True)
 
@@ -4606,7 +5090,7 @@ class %(funclabel)s_%(errorlabel)s_errors_%(typelabel)s(unittest.TestCase):
 		"""Test %(funclabel)s as *array-array-none* for %(errordata)s with error check off - Array code %(typelabel)s.
 		"""
 		# This test results in "nan".
-		expected = [float('nan')] * len(self.errordata)
+		expected = [math.nan] * len(self.errordata)
 
 		arrayfunc.%(funcname)s(self.dataok1, self.errordata, matherrors=True)
 
@@ -4633,7 +5117,7 @@ class %(funclabel)s_%(errorlabel)s_errors_%(typelabel)s(unittest.TestCase):
 		"""Test %(funclabel)s as *array-array-array* for %(errordata)s with error check off - Array code %(typelabel)s.
 		"""
 		# This test results in "nan".
-		expected = [float('nan')] * len(self.errordata)
+		expected = [math.nan] * len(self.errordata)
 
 		arrayfunc.%(funcname)s(self.dataok1, self.errordata, self.dataout, matherrors=True)
 
@@ -5379,7 +5863,7 @@ opstemplates = {
 # ==============================================================================
 
 # These are all the test code templates. 
-test_templates = {'test_template_op' : test_template_op,
+test_templates = {'test_template_op' : test_op_templ,
 			'nan_data_error_template' : nan_data_error_template,
 			'nan_div_data_error_template' : nan_div_data_error_template,
 			'inf_floordiv_data_error_template' : inf_floordiv_data_error_template,
@@ -5396,8 +5880,10 @@ oplist = codegen_common.ReadCSVData('funcs.csv')
 
 # Filter out the desired math functions.
 
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_op']
+funclist = [x for x in oplist if x['test_op_templ'] in ['test_template_op', 'test_template_op_simd']]
 
+# Create a list of names which support SIMD.
+havesimd = [x['funcname'] for x in funclist if x['test_op_templ'] == 'test_template_op_simd']
 
 # ==============================================================================
 
@@ -5417,7 +5903,6 @@ for func in funclist:
 
 		# Check each array type.
 		for functype in codegen_common.arraycodes:
-			testtemplate = test_templates[func['test_op_templ']]
 
 			# Convert the numeric literals to the appropriate type for the array.
 			if functype in codegen_common.floatarrays:
@@ -5486,7 +5971,27 @@ for func in funclist:
 
 
 			# Basic tests.
-			f.write(testtemplate % funcdata)
+			# Even array size.
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_op_templ % funcdata)
+
+			# Odd array size.
+			funcdata['arrayevenodd'] = 'odd'
+			f.write(test_op_templ % funcdata)
+
+			#####
+
+			# Not all functions support SIMD operations.
+			if funcname in havesimd:
+				# Even array size.
+				funcdata['arrayevenodd'] = 'even'
+				f.write(test_op_simd_templ % funcdata)
+
+				# Odd array size.
+				funcdata['arrayevenodd'] = 'odd'
+				f.write(test_op_simd_templ % funcdata)
+
+			#####
 
 			# Test for invalid parameters. One template should work for all 
 			# functions of this style.
@@ -5501,6 +6006,16 @@ for func in funclist:
 			# Test for invalid optional parameters such as errors and maxlen.
 			f.write(param_invalid_opt_template % funcdata)
 
+
+			#####
+
+			# Test for invalid nosimd optional parameter.
+			# Not all functions support SIMD operations.
+			if funcname in havesimd:
+				f.write(param_invalid_opt_simd_template % funcdata)
+
+
+			#####
 
 			# Overflow tests.
 			if functype in codegen_common.signedint:
@@ -5532,6 +6047,8 @@ for func in funclist:
 			f.write(errors_templt % funcdata)
 
 
+			#####
+
 
 			# NaN, Inf tests are for floating point only.
 			if functype in codegen_common.floatarrays:
@@ -5560,6 +6077,8 @@ for func in funclist:
 				funcdata['errordata'] = '-inf'
 				f.write(testtemplate % funcdata)
 
+
+			#####
 
 		f.write(codegen_common.testendtemplate % funcname)
 

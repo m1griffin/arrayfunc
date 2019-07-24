@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,10 +51,10 @@ import arrayfunc
  
 
 ##############################################################################
-class mul_general_b(unittest.TestCase):
+class mul_general_even_arraysize_b(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3,-2,-1,0,1,2,3.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -79,15 +79,28 @@ class mul_general_b(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('b', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -105,7 +118,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -123,7 +136,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -144,7 +157,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -166,7 +179,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -185,7 +198,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -204,7 +217,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -226,7 +239,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datax)
@@ -249,7 +262,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -267,7 +280,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -285,7 +298,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -306,7 +319,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -328,7 +341,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -347,7 +360,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -366,7 +379,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -388,7 +401,7 @@ class mul_general_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('b', self.datay)
@@ -476,7 +489,7 @@ class mul_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code b.
 		"""
 		data1 = array.array('b', self.datax)
@@ -493,8 +506,8 @@ class mul_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code b.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code b.
 		"""
 		data1 = array.array('b', self.datax)
 		data2 = array.array('b', self.datay)
@@ -509,8 +522,8 @@ class mul_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code b.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
 		data1 = array.array('b', self.datax)
 		data2 = array.array('b', self.datay)
@@ -526,6 +539,1182 @@ class mul_general_b(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_b(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('b', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_b(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('b', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_b(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('b', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datax)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code b.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('b', self.datay)
+				dataout = array.array('b', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code b.
+		"""
+		data1 = array.array('b', self.datax)
+		data2 = array.array('b', self.datay)
+		dataout = array.array('b', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -846,7 +2035,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code b.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code b.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -855,7 +2044,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -875,7 +2064,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code b.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code b.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -885,7 +2074,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -906,7 +2095,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code b.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code b.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -916,7 +2105,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -936,7 +2125,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code b.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code b.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -945,7 +2134,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -964,7 +2153,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code b.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code b.
 		"""
 
 		# This version is expected to pass.
@@ -972,7 +2161,7 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -990,14 +2179,14 @@ class mul_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code b.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code b.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1011,6 +2200,121 @@ class mul_opt_param_errors_b(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_b(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('b', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('b', [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('b', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code b.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code b.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -1544,10 +2848,10 @@ class overflow_signed_min1neg_b(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_B(unittest.TestCase):
+class mul_general_even_arraysize_B(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data 0,1,2,3,4,5,6.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -1572,15 +2876,28 @@ class mul_general_B(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('B', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1598,7 +2915,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1616,7 +2933,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1637,7 +2954,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1659,7 +2976,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1678,7 +2995,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1697,7 +3014,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1719,7 +3036,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datax)
@@ -1742,7 +3059,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1760,7 +3077,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1778,7 +3095,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1799,7 +3116,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1821,7 +3138,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1840,7 +3157,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1859,7 +3176,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1881,7 +3198,7 @@ class mul_general_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('B', self.datay)
@@ -1969,7 +3286,7 @@ class mul_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code B.
 		"""
 		data1 = array.array('B', self.datax)
@@ -1986,8 +3303,8 @@ class mul_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code B.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code B.
 		"""
 		data1 = array.array('B', self.datax)
 		data2 = array.array('B', self.datay)
@@ -2002,8 +3319,8 @@ class mul_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code B.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
 		data1 = array.array('B', self.datax)
 		data2 = array.array('B', self.datay)
@@ -2019,6 +3336,1182 @@ class mul_general_B(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_B(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('B', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_B(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('B', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_B(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('B', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datax)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code B.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('B', self.datay)
+				dataout = array.array('B', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code B.
+		"""
+		data1 = array.array('B', self.datax)
+		data2 = array.array('B', self.datay)
+		dataout = array.array('B', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -2339,7 +4832,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code B.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code B.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -2348,7 +4841,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -2368,7 +4861,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code B.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code B.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -2378,7 +4871,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2399,7 +4892,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code B.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code B.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -2409,7 +4902,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -2429,7 +4922,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code B.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code B.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -2438,7 +4931,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2457,7 +4950,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code B.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code B.
 		"""
 
 		# This version is expected to pass.
@@ -2465,7 +4958,7 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -2483,14 +4976,14 @@ class mul_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code B.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code B.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2504,6 +4997,121 @@ class mul_opt_param_errors_B(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_B(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('B', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('B', [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('B', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code B.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code B.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -2613,10 +5221,10 @@ class overflow_signed_max2_B(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_h(unittest.TestCase):
+class mul_general_even_arraysize_h(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3,-2,-1,0,1,2,3.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -2641,15 +5249,28 @@ class mul_general_h(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('h', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2667,7 +5288,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2685,7 +5306,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2706,7 +5327,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2728,7 +5349,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2747,7 +5368,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2766,7 +5387,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2788,7 +5409,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datax)
@@ -2811,7 +5432,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2829,7 +5450,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2847,7 +5468,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2868,7 +5489,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2890,7 +5511,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2909,7 +5530,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2928,7 +5549,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -2950,7 +5571,7 @@ class mul_general_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('h', self.datay)
@@ -3038,7 +5659,7 @@ class mul_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code h.
 		"""
 		data1 = array.array('h', self.datax)
@@ -3055,8 +5676,8 @@ class mul_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code h.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code h.
 		"""
 		data1 = array.array('h', self.datax)
 		data2 = array.array('h', self.datay)
@@ -3071,8 +5692,8 @@ class mul_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code h.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
 		data1 = array.array('h', self.datax)
 		data2 = array.array('h', self.datay)
@@ -3088,6 +5709,1182 @@ class mul_general_h(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_h(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('h', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_h(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('h', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_h(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('h', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datax)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code h.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('h', self.datay)
+				dataout = array.array('h', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code h.
+		"""
+		data1 = array.array('h', self.datax)
+		data2 = array.array('h', self.datay)
+		dataout = array.array('h', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -3408,7 +7205,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code h.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code h.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -3417,7 +7214,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -3437,7 +7234,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code h.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code h.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -3447,7 +7244,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -3468,7 +7265,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code h.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code h.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -3478,7 +7275,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -3498,7 +7295,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code h.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code h.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -3507,7 +7304,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -3526,7 +7323,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code h.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code h.
 		"""
 
 		# This version is expected to pass.
@@ -3534,7 +7331,7 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -3552,14 +7349,14 @@ class mul_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code h.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code h.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -3573,6 +7370,121 @@ class mul_opt_param_errors_h(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_h(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('h', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('h', [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('h', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code h.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code h.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -4106,10 +8018,10 @@ class overflow_signed_min1neg_h(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_H(unittest.TestCase):
+class mul_general_even_arraysize_H(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data 0,1,2,3,4,5,6.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -4134,15 +8046,28 @@ class mul_general_H(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('H', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4160,7 +8085,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4178,7 +8103,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4199,7 +8124,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4221,7 +8146,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4240,7 +8165,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4259,7 +8184,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4281,7 +8206,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datax)
@@ -4304,7 +8229,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4322,7 +8247,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4340,7 +8265,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4361,7 +8286,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4383,7 +8308,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4402,7 +8327,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4421,7 +8346,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4443,7 +8368,7 @@ class mul_general_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('H', self.datay)
@@ -4531,7 +8456,7 @@ class mul_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code H.
 		"""
 		data1 = array.array('H', self.datax)
@@ -4548,8 +8473,8 @@ class mul_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code H.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code H.
 		"""
 		data1 = array.array('H', self.datax)
 		data2 = array.array('H', self.datay)
@@ -4564,8 +8489,8 @@ class mul_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code H.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
 		data1 = array.array('H', self.datax)
 		data2 = array.array('H', self.datay)
@@ -4581,6 +8506,1182 @@ class mul_general_H(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_H(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('H', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_H(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('H', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_H(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('H', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datax)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code H.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('H', self.datay)
+				dataout = array.array('H', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code H.
+		"""
+		data1 = array.array('H', self.datax)
+		data2 = array.array('H', self.datay)
+		dataout = array.array('H', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -4901,7 +10002,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code H.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code H.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -4910,7 +10011,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -4930,7 +10031,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code H.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code H.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -4940,7 +10041,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -4961,7 +10062,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code H.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code H.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -4971,7 +10072,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -4991,7 +10092,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code H.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code H.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -5000,7 +10101,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -5019,7 +10120,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code H.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code H.
 		"""
 
 		# This version is expected to pass.
@@ -5027,7 +10128,7 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -5045,14 +10146,14 @@ class mul_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code H.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code H.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -5066,6 +10167,121 @@ class mul_opt_param_errors_H(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_H(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('H', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('H', [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('H', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code H.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code H.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -5175,10 +10391,10 @@ class overflow_signed_max2_H(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_i(unittest.TestCase):
+class mul_general_even_arraysize_i(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3,-2,-1,0,1,2,3.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -5203,15 +10419,28 @@ class mul_general_i(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('i', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5229,7 +10458,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5247,7 +10476,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5268,7 +10497,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5290,7 +10519,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5309,7 +10538,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5328,7 +10557,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5350,7 +10579,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datax)
@@ -5373,7 +10602,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5391,7 +10620,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5409,7 +10638,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5430,7 +10659,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5452,7 +10681,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5471,7 +10700,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5490,7 +10719,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5512,7 +10741,7 @@ class mul_general_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('i', self.datay)
@@ -5600,7 +10829,7 @@ class mul_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code i.
 		"""
 		data1 = array.array('i', self.datax)
@@ -5617,8 +10846,8 @@ class mul_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code i.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code i.
 		"""
 		data1 = array.array('i', self.datax)
 		data2 = array.array('i', self.datay)
@@ -5633,8 +10862,8 @@ class mul_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code i.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
 		data1 = array.array('i', self.datax)
 		data2 = array.array('i', self.datay)
@@ -5650,6 +10879,1182 @@ class mul_general_i(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_i(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('i', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_i(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('i', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_i(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('i', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datax)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code i.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('i', self.datay)
+				dataout = array.array('i', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code i.
+		"""
+		data1 = array.array('i', self.datax)
+		data2 = array.array('i', self.datay)
+		dataout = array.array('i', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -5970,7 +12375,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code i.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code i.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -5979,7 +12384,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -5999,7 +12404,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code i.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code i.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -6009,7 +12414,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -6030,7 +12435,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code i.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code i.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -6040,7 +12445,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -6060,7 +12465,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code i.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code i.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -6069,7 +12474,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -6088,7 +12493,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code i.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code i.
 		"""
 
 		# This version is expected to pass.
@@ -6096,7 +12501,7 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -6114,14 +12519,14 @@ class mul_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code i.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code i.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -6135,6 +12540,121 @@ class mul_opt_param_errors_i(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_i(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('i', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('i', [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('i', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code i.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code i.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -6668,10 +13188,10 @@ class overflow_signed_min1neg_i(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_I(unittest.TestCase):
+class mul_general_even_arraysize_I(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data 0,1,2,3,4,5,6.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -6696,15 +13216,28 @@ class mul_general_I(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('I', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6722,7 +13255,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6740,7 +13273,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6761,7 +13294,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6783,7 +13316,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6802,7 +13335,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6821,7 +13354,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6843,7 +13376,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datax)
@@ -6866,7 +13399,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6884,7 +13417,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6902,7 +13435,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6923,7 +13456,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6945,7 +13478,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6964,7 +13497,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -6983,7 +13516,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -7005,7 +13538,7 @@ class mul_general_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('I', self.datay)
@@ -7093,7 +13626,7 @@ class mul_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code I.
 		"""
 		data1 = array.array('I', self.datax)
@@ -7110,8 +13643,8 @@ class mul_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code I.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code I.
 		"""
 		data1 = array.array('I', self.datax)
 		data2 = array.array('I', self.datay)
@@ -7126,8 +13659,8 @@ class mul_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code I.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
 		data1 = array.array('I', self.datax)
 		data2 = array.array('I', self.datay)
@@ -7143,6 +13676,1182 @@ class mul_general_I(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_I(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('I', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_I(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('I', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_I(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('I', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datax)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code I.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('I', self.datay)
+				dataout = array.array('I', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code I.
+		"""
+		data1 = array.array('I', self.datax)
+		data2 = array.array('I', self.datay)
+		dataout = array.array('I', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -7463,7 +15172,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code I.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code I.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -7472,7 +15181,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -7492,7 +15201,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code I.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code I.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -7502,7 +15211,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -7523,7 +15232,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code I.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code I.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -7533,7 +15242,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -7553,7 +15262,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code I.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code I.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -7562,7 +15271,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -7581,7 +15290,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code I.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code I.
 		"""
 
 		# This version is expected to pass.
@@ -7589,7 +15298,7 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -7607,14 +15316,14 @@ class mul_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code I.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code I.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -7628,6 +15337,121 @@ class mul_opt_param_errors_I(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_I(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('I', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('I', [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('I', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code I.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code I.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -7737,10 +15561,10 @@ class overflow_signed_max2_I(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_l(unittest.TestCase):
+class mul_general_even_arraysize_l(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3,-2,-1,0,1,2,3.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -7765,15 +15589,28 @@ class mul_general_l(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('l', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7791,7 +15628,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7809,7 +15646,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7830,7 +15667,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7852,7 +15689,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7871,7 +15708,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7890,7 +15727,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7912,7 +15749,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datax)
@@ -7935,7 +15772,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -7953,7 +15790,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -7971,7 +15808,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -7992,7 +15829,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -8014,7 +15851,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -8033,7 +15870,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -8052,7 +15889,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -8074,7 +15911,7 @@ class mul_general_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('l', self.datay)
@@ -8162,7 +15999,7 @@ class mul_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code l.
 		"""
 		data1 = array.array('l', self.datax)
@@ -8179,8 +16016,8 @@ class mul_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code l.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code l.
 		"""
 		data1 = array.array('l', self.datax)
 		data2 = array.array('l', self.datay)
@@ -8195,8 +16032,8 @@ class mul_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code l.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
 		data1 = array.array('l', self.datax)
 		data2 = array.array('l', self.datay)
@@ -8212,6 +16049,1182 @@ class mul_general_l(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_l(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('l', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_l(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('l', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_l(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('l', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datax)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code l.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('l', self.datay)
+				dataout = array.array('l', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code l.
+		"""
+		data1 = array.array('l', self.datax)
+		data2 = array.array('l', self.datay)
+		dataout = array.array('l', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -8532,7 +17545,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code l.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code l.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -8541,7 +17554,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -8561,7 +17574,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code l.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code l.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -8571,7 +17584,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -8592,7 +17605,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code l.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code l.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -8602,7 +17615,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -8622,7 +17635,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code l.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code l.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -8631,7 +17644,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -8650,7 +17663,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code l.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code l.
 		"""
 
 		# This version is expected to pass.
@@ -8658,7 +17671,7 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -8676,14 +17689,14 @@ class mul_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code l.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code l.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -8697,6 +17710,121 @@ class mul_opt_param_errors_l(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_l(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('l', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('l', [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('l', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code l.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code l.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -9230,10 +18358,10 @@ class overflow_signed_min1neg_l(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_L(unittest.TestCase):
+class mul_general_even_arraysize_L(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data 0,1,2,3,4,5,6.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -9258,15 +18386,28 @@ class mul_general_L(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('L', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9284,7 +18425,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9302,7 +18443,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9323,7 +18464,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9345,7 +18486,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9364,7 +18505,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9383,7 +18524,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9405,7 +18546,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datax)
@@ -9428,7 +18569,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9446,7 +18587,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9464,7 +18605,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9485,7 +18626,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9507,7 +18648,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9526,7 +18667,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9545,7 +18686,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9567,7 +18708,7 @@ class mul_general_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('L', self.datay)
@@ -9655,7 +18796,7 @@ class mul_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code L.
 		"""
 		data1 = array.array('L', self.datax)
@@ -9672,8 +18813,8 @@ class mul_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code L.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code L.
 		"""
 		data1 = array.array('L', self.datax)
 		data2 = array.array('L', self.datay)
@@ -9688,8 +18829,8 @@ class mul_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code L.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
 		data1 = array.array('L', self.datax)
 		data2 = array.array('L', self.datay)
@@ -9705,6 +18846,1182 @@ class mul_general_L(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_L(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('L', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_L(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('L', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_L(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('L', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datax)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code L.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('L', self.datay)
+				dataout = array.array('L', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code L.
+		"""
+		data1 = array.array('L', self.datax)
+		data2 = array.array('L', self.datay)
+		dataout = array.array('L', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -10025,7 +20342,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code L.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code L.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -10034,7 +20351,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -10054,7 +20371,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code L.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code L.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -10064,7 +20381,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -10085,7 +20402,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code L.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code L.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -10095,7 +20412,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -10115,7 +20432,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code L.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code L.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -10124,7 +20441,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -10143,7 +20460,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code L.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code L.
 		"""
 
 		# This version is expected to pass.
@@ -10151,7 +20468,7 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -10169,14 +20486,14 @@ class mul_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code L.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code L.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -10190,6 +20507,121 @@ class mul_opt_param_errors_L(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_L(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('L', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('L', [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('L', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code L.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code L.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -10299,10 +20731,10 @@ class overflow_signed_max2_L(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_q(unittest.TestCase):
+class mul_general_even_arraysize_q(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3,-2,-1,0,1,2,3.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -10327,15 +20759,28 @@ class mul_general_q(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('q', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10353,7 +20798,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10371,7 +20816,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10392,7 +20837,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10414,7 +20859,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10433,7 +20878,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10452,7 +20897,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10474,7 +20919,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datax)
@@ -10497,7 +20942,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10515,7 +20960,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10533,7 +20978,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10554,7 +20999,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10576,7 +21021,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10595,7 +21040,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10614,7 +21059,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10636,7 +21081,7 @@ class mul_general_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('q', self.datay)
@@ -10724,7 +21169,7 @@ class mul_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code q.
 		"""
 		data1 = array.array('q', self.datax)
@@ -10741,8 +21186,8 @@ class mul_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code q.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code q.
 		"""
 		data1 = array.array('q', self.datax)
 		data2 = array.array('q', self.datay)
@@ -10757,8 +21202,8 @@ class mul_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code q.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
 		data1 = array.array('q', self.datax)
 		data2 = array.array('q', self.datay)
@@ -10774,6 +21219,1182 @@ class mul_general_q(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3,-2,-1,0,1,2,3.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datax)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('q', self.datay)
+				dataout = array.array('q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code q.
+		"""
+		data1 = array.array('q', self.datax)
+		data2 = array.array('q', self.datay)
+		dataout = array.array('q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -11094,7 +22715,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code q.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code q.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -11103,7 +22724,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -11123,7 +22744,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code q.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code q.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -11133,7 +22754,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -11154,7 +22775,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code q.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code q.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -11164,7 +22785,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -11184,7 +22805,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code q.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code q.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -11193,7 +22814,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -11212,7 +22833,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code q.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code q.
 		"""
 
 		# This version is expected to pass.
@@ -11220,7 +22841,7 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -11238,14 +22859,14 @@ class mul_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code q.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -11259,6 +22880,121 @@ class mul_opt_param_errors_q(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_q(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('q', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('q', [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('q', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code q.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -11792,10 +23528,10 @@ class overflow_signed_min1neg_q(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_Q(unittest.TestCase):
+class mul_general_even_arraysize_Q(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data 0,1,2,3,4,5,6.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -11820,15 +23556,28 @@ class mul_general_Q(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0,1,2,3,4,5,6,7,8,9]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('Q', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11846,7 +23595,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11864,7 +23613,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11885,7 +23634,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11907,7 +23656,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11926,7 +23675,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11945,7 +23694,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11967,7 +23716,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datax)
@@ -11990,7 +23739,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12008,7 +23757,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12026,7 +23775,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12047,7 +23796,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12069,7 +23818,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12088,7 +23837,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12107,7 +23856,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12129,7 +23878,7 @@ class mul_general_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('Q', self.datay)
@@ -12217,7 +23966,7 @@ class mul_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code Q.
 		"""
 		data1 = array.array('Q', self.datax)
@@ -12234,8 +23983,8 @@ class mul_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code Q.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code Q.
 		"""
 		data1 = array.array('Q', self.datax)
 		data2 = array.array('Q', self.datay)
@@ -12250,8 +23999,8 @@ class mul_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code Q.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
 		data1 = array.array('Q', self.datax)
 		data2 = array.array('Q', self.datay)
@@ -12267,6 +24016,1182 @@ class mul_general_Q(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_Q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('Q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_Q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('Q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_Q(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data 0,1,2,3,4,5,6.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		self.datax = array.array('Q', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datax)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code Q.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('Q', self.datay)
+				dataout = array.array('Q', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code Q.
+		"""
+		data1 = array.array('Q', self.datax)
+		data2 = array.array('Q', self.datay)
+		dataout = array.array('Q', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -12587,7 +25512,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code Q.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code Q.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -12596,7 +25521,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -12616,7 +25541,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code Q.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code Q.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -12626,7 +25551,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -12647,7 +25572,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code Q.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code Q.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -12657,7 +25582,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -12677,7 +25602,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code Q.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code Q.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -12686,7 +25611,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -12705,7 +25630,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code Q.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code Q.
 		"""
 
 		# This version is expected to pass.
@@ -12713,7 +25638,7 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -12731,14 +25656,14 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code Q.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code Q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -12752,6 +25677,121 @@ class mul_opt_param_errors_Q(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_Q(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('Q', [0,1,2,3,4,5,6,7,8,9])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('Q', [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('Q', itertools.repeat(0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code Q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code Q.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -12861,10 +25901,10 @@ class overflow_signed_max2_Q(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_f(unittest.TestCase):
+class mul_general_even_arraysize_f(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -12889,15 +25929,28 @@ class mul_general_f(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -12915,7 +25968,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -12933,7 +25986,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -12954,7 +26007,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -12976,7 +26029,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -12995,7 +26048,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -13014,7 +26067,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -13036,7 +26089,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datax)
@@ -13059,7 +26112,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13077,7 +26130,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13095,7 +26148,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13116,7 +26169,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13138,7 +26191,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13157,7 +26210,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13176,7 +26229,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13198,7 +26251,7 @@ class mul_general_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('f', self.datay)
@@ -13286,7 +26339,7 @@ class mul_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code f.
 		"""
 		data1 = array.array('f', self.datax)
@@ -13303,8 +26356,8 @@ class mul_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code f.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code f.
 		"""
 		data1 = array.array('f', self.datax)
 		data2 = array.array('f', self.datay)
@@ -13319,8 +26372,8 @@ class mul_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code f.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
 		data1 = array.array('f', self.datax)
 		data2 = array.array('f', self.datay)
@@ -13336,6 +26389,1182 @@ class mul_general_f(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_f(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_f(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_f(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datax)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code f.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('f', self.datay)
+				dataout = array.array('f', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code f.
+		"""
+		data1 = array.array('f', self.datax)
+		data2 = array.array('f', self.datay)
+		dataout = array.array('f', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -13656,7 +27885,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code f.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code f.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -13665,7 +27894,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -13685,7 +27914,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code f.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code f.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -13695,7 +27924,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -13716,7 +27945,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code f.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code f.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -13726,7 +27955,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -13746,7 +27975,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code f.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code f.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -13755,7 +27984,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -13774,7 +28003,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code f.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code f.
 		"""
 
 		# This version is expected to pass.
@@ -13782,7 +28011,7 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -13800,14 +28029,14 @@ class mul_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code f.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -13821,6 +28050,121 @@ class mul_opt_param_errors_f(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_f(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('f', [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('f', itertools.repeat(0.0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code f.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code f.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 
@@ -14991,10 +29335,10 @@ class mul_ninf_errors_f(unittest.TestCase):
  
 
 ##############################################################################
-class mul_general_d(unittest.TestCase):
+class mul_general_even_arraysize_d(unittest.TestCase):
 	"""Test mul for basic general function operation using numeric 
 	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
-	test_template_op
+	test_op_templ
 	"""
 
 
@@ -15019,15 +29363,28 @@ class mul_general_d(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
 		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15045,7 +29402,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15063,7 +29420,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15084,7 +29441,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15106,7 +29463,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15125,7 +29482,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15144,7 +29501,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15166,7 +29523,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datay:
+		for testval in self.datayparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datax)
@@ -15189,7 +29546,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15207,7 +29564,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15225,7 +29582,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15246,7 +29603,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15268,7 +29625,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15287,7 +29644,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15306,7 +29663,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15328,7 +29685,7 @@ class mul_general_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datax:
+		for testval in self.dataxparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				data1 = array.array('d', self.datay)
@@ -15416,7 +29773,7 @@ class mul_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e5(self):
+	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code d.
 		"""
 		data1 = array.array('d', self.datax)
@@ -15433,8 +29790,8 @@ class mul_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e6(self):
-		"""Test mul as *array-array-array* for basic function - Array code d.
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code d.
 		"""
 		data1 = array.array('d', self.datax)
 		data2 = array.array('d', self.datay)
@@ -15449,8 +29806,8 @@ class mul_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_mul_basic_array_array_array_e7(self):
-		"""Test mul as *array-array-array* for basic function - Array code d.
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
 		data1 = array.array('d', self.datax)
 		data2 = array.array('d', self.datay)
@@ -15466,6 +29823,1182 @@ class mul_general_d(unittest.TestCase):
 		for dataoutitem, expecteditem in zip(dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_d(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with array limit - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a4(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with array limit - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b4(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [x * testval for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with array limit - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c4(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(data1)[limited:]
+
+				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with array limit - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d4(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				limited = len(data1) // 2
+
+				pydataout =  [testval * x for x in data1] 
+				expected = pydataout[0:limited] + list(dataout)[limited:]
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e3(self):
+		"""Test mul as *array-array-none* for basic function with array limit - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e4(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(data1)[limited:]
+
+		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f3(self):
+		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		limited = len(data1) // 2
+
+		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = pydataout[0:limited] + list(dataout)[limited:]
+
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_even_arraysize_simd_d(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class mul_general_odd_arraysize_simd_d(unittest.TestCase):
+	"""Test mul for basic general function operation using numeric 
+	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	test_op_simd_templ
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 10
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.dataxparam = self.datax[:paramitersize]
+		self.datayparam = self.datay[:paramitersize]
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a2(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_none_a3(self):
+		"""Test mul as *array-num-none* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for basic function - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b2(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_num_array_b3(self):
+		"""Test mul as *array-num-array* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.datayparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datax)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [x * testval for x in data1] 
+
+				arrayfunc.mul(data1, testval, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c2(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_none_c3(self):
+		"""Test mul as *num-array-none* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(data1, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for basic function - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d2(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_num_array_array_d3(self):
+		"""Test mul as *num-array-array* for basic function with matherrors=True and nosimd=True - Array code d.
+		"""
+		for testval in self.dataxparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				data1 = array.array('d', self.datay)
+				dataout = array.array('d', [0]*len(data1))
+
+				expected =  [testval * x for x in data1] 
+
+				arrayfunc.mul(testval, data1, dataout, matherrors=True, nosimd=True)
+
+				for dataoutitem, expecteditem in zip(dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_none_e2(self):
+		"""Test mul as *array-array-none* for basic function with matherrors=True and nosimd=Tru - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for basic function - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_mul_basic_array_array_array_f2(self):
+		"""Test mul as *array-array-array* for basic function and nosimd=True - Array code d.
+		"""
+		data1 = array.array('d', self.datax)
+		data2 = array.array('d', self.datay)
+		dataout = array.array('d', [0]*len(data1))
+
+		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		arrayfunc.mul(data1, data2, dataout, matherrors=True, nosimd=True)
+
+		for dataoutitem, expecteditem in zip(dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 
@@ -15786,7 +31319,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_none_a1(self):
-		"""Test mul as *array-num-none* for errors='a' - Array code d.
+		"""Test mul as *array-num-none* for matherrors='a' - Array code d.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -15795,7 +31328,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, matherrors='a')
 
 
 	########################################################
@@ -15815,7 +31348,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_num_array_b1(self):
-		"""Test mul as *array-num-array* for errors='a' - Array code d.
+		"""Test mul as *array-num-array* for matherrors='a' - Array code d.
 		"""
 		inpvalue = self.inparray2a[0]
 
@@ -15825,7 +31358,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -15846,7 +31379,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_none_c1(self):
-		"""Test mul as *num-array-none* for errors='a' - Array code d.
+		"""Test mul as *num-array-none* for matherrors='a' - Array code d.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -15856,7 +31389,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -15876,7 +31409,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_num_array_array_d1(self):
-		"""Test mul as *num-array-array* for errors='a' - Array code d.
+		"""Test mul as *num-array-array* for matherrors='a' - Array code d.
 		"""
 		inpvalue = self.inparray1a[0]
 
@@ -15885,7 +31418,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -15904,7 +31437,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_none_e1(self):
-		"""Test mul as *array-array-none* for errors='a' - Array code d.
+		"""Test mul as *array-array-none* for matherrors='a' - Array code d.
 		"""
 
 		# This version is expected to pass.
@@ -15912,7 +31445,7 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, matherrors='a')
 
 
 	########################################################
@@ -15930,14 +31463,14 @@ class mul_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_mul_array_array_array_f1(self):
-		"""Test mul as *array-array-array* for errors='a' - Array code d.
+		"""Test mul as *array-array-array* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, errors='a')
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -15951,6 +31484,121 @@ class mul_opt_param_errors_d(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, maxlen='a')
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class mul_opt_param_errors_d(unittest.TestCase):
+	"""Test mul for invalid errors for simd option.
+	param_invalid_opt_simd_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.inparray1a = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2a = array.array('d', [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.inparray1a)])
+		self.inparray2b = copy.copy(self.inparray2a)
+
+		arraysize = len(self.inparray1a)
+
+		self.dataout = array.array('d', itertools.repeat(0.0, arraysize))
+
+
+
+	########################################################
+	def test_mul_array_num_none_a1(self):
+		"""Test mul as *array-num-none* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_num_array_b1(self):
+		"""Test mul as *array-num-array* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, inpvalue, self.dataout, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, inpvalue, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_none_c1(self):
+		"""Test mul as *num-array-none* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_num_array_array_d1(self):
+		"""Test mul as *num-array-array* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.mul(inpvalue, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(inpvalue, self.inparray2b, self.dataout, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_none_e1(self):
+		"""Test mul as *array-array-none* for nosimd='a' - Array code d.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, nosimd='a')
+
+
+
+	########################################################
+	def test_mul_array_array_array_f1(self):
+		"""Test mul as *array-array-array* for nosimd='a' - Array code d.
+		"""
+		# This version is expected to pass.
+		arrayfunc.mul(self.inparray1a, self.inparray2a, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.mul(self.inparray1b, self.inparray2b, self.dataout, nosimd='a')
 
 
 

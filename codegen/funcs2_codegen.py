@@ -241,7 +241,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "%(funclabel)s");
+	arraydata = getparams_two(self, args, keywds, 1, 0, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

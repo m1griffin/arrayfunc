@@ -3,11 +3,11 @@
 // Module:   compress.c
 // Purpose:  Copy values from an array, using a selector array to filter values.
 // Language: C
-// Date:     10-May-2014
+// Date:     10-May-2014.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,268 +30,659 @@
 
 #include "Python.h"
 
-#include "arrayparams_base.h"
+#include <limits.h>
+#include <math.h>
+
 #include "arrayerrs.h"
 
+#include "arrayparams_base.h"
+#include "arrayops.h"
 
-#include "compress_common.h"
-
-/*--------------------------------------------------------------------------- */
-
-
-// Provide a struct for returning data from parsing Python arguments.
-struct args_param {
-	char array1type;
-	char array2type;
-	char array3type;
-	char error;
-};
-
-// The list of keyword arguments. All argument must be listed, whether we 
-// intend to use them for keywords or not. 
-static char *kwlist[] = {"data", "dataout", "selector", "maxlen", NULL};
-
-/*--------------------------------------------------------------------------- */
+#include "arrayparams_compress.h"
 
 
 /*--------------------------------------------------------------------------- */
-
-/* Parse the Python arguments to objects, and then extract the object parameters
- * to determine their types. This lets us handle different data types as 
- * parameters.
- * This version expects the following parameters:
- * args (PyObject) = The positional arguments.
- * Returns a structure containing the results of each parameter.
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
 */
-struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
+Py_ssize_t compress_signed_char(Py_ssize_t datalen, signed char *data, 
+			Py_ssize_t outlen, signed char *dataout, 
+			Py_ssize_t selectorlen, signed char *selector) { 
 
-	PyObject *dataobj, *dataoutobj, *selectorobj;
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
 
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
 
-	struct args_param argtypes = {' ', ' ', ' ', 0};
-	char arr1type, arr2type, arr3type;
-
-
-	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args,keywds, "OOO|l:compress", kwlist, 
-			&dataobj, &dataoutobj, &selectorobj, &arraymaxlen)) {
-		argtypes.error = 1;
-		return argtypes;
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
 	}
-
-
-	// Test if the first parameter is an array.
-	arr1type = lookuparraycode(dataobj);
-	if (!arr1type) {
-		argtypes.error = 2;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array1type = arr1type;
-	}
-
-
-	// Test if the second parameter is an array.
-	arr2type = lookuparraycode(dataoutobj);
-	if (!arr2type) {
-		argtypes.error = 3;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array2type = arr2type;
-	}
-
-
-	// Test if the third parameter is an array.
-	arr3type = lookuparraycode(selectorobj);
-	if (!arr3type) {
-		argtypes.error = 3;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array3type = arr3type;
-	}
-
-
-	return argtypes;
-
+	return outindex;
 }
 
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_unsigned_char(Py_ssize_t datalen, unsigned char *data, 
+			Py_ssize_t outlen, unsigned char *dataout, 
+			Py_ssize_t selectorlen, unsigned char *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
 
 /*--------------------------------------------------------------------------- */
 
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_signed_short(Py_ssize_t datalen, signed short *data, 
+			Py_ssize_t outlen, signed short *dataout, 
+			Py_ssize_t selectorlen, signed short *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_unsigned_short(Py_ssize_t datalen, unsigned short *data, 
+			Py_ssize_t outlen, unsigned short *dataout, 
+			Py_ssize_t selectorlen, unsigned short *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_signed_int(Py_ssize_t datalen, signed int *data, 
+			Py_ssize_t outlen, signed int *dataout, 
+			Py_ssize_t selectorlen, signed int *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_unsigned_int(Py_ssize_t datalen, unsigned int *data, 
+			Py_ssize_t outlen, unsigned int *dataout, 
+			Py_ssize_t selectorlen, unsigned int *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_signed_long(Py_ssize_t datalen, signed long *data, 
+			Py_ssize_t outlen, signed long *dataout, 
+			Py_ssize_t selectorlen, signed long *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_unsigned_long(Py_ssize_t datalen, unsigned long *data, 
+			Py_ssize_t outlen, unsigned long *dataout, 
+			Py_ssize_t selectorlen, unsigned long *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_signed_long_long(Py_ssize_t datalen, signed long long *data, 
+			Py_ssize_t outlen, signed long long *dataout, 
+			Py_ssize_t selectorlen, signed long long *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_unsigned_long_long(Py_ssize_t datalen, unsigned long long *data, 
+			Py_ssize_t outlen, unsigned long long *dataout, 
+			Py_ssize_t selectorlen, unsigned long long *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_float(Py_ssize_t datalen, float *data, 
+			Py_ssize_t outlen, float *dataout, 
+			Py_ssize_t selectorlen, float *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   datalen = The length of the input array.
+   data = The input data array.
+   outlen = The length of the output array.
+   dataout = The output data array.
+   selectorlen = The length of the selector array.
+   selector = The array of filter values.
+   Returns a positive integer indicating the number of input elements 
+         copied to the output array.
+*/
+Py_ssize_t compress_double(Py_ssize_t datalen, double *data, 
+			Py_ssize_t outlen, double *dataout, 
+			Py_ssize_t selectorlen, double *selector) { 
+
+	// Array index counter. 
+	Py_ssize_t index, outindex, selectorindex; 
+
+	// We need a separate index for the output array, because the input and
+	// output indexes may not be the same.
+	outindex = 0;
+	selectorindex = 0;
+
+	for(index = 0; index < datalen; index++) {
+		// Check if the output index is within bounds.
+		if (outindex >= outlen) {
+			break;
+		}
+		// If we reach the end of the selector array, start again from the start.
+		if (selectorindex >= selectorlen) {
+			selectorindex = 0;
+		}
+		// Copy the data.
+		if (selector[selectorindex]) {
+			dataout[outindex] = data[index];
+			outindex++;
+		}
+		// We need to advance the selector index for each input index.
+		selectorindex++;
+	}
+	return outindex;
+}
+
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
 
 /* The wrapper to the underlying C function */
 static PyObject *py_compress(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
-	// The array of data we work on. 
-	union dataarrays data, dataout, selector;
+	// The error code returned by the function.
+	Py_ssize_t resultcode = 0;
 
-	// The input buffers are arrays of bytes.
-	Py_buffer datapy, dataoutpy, selectorpy;
+	// This is used to hold the parsed parameters.
+	struct args_params_compress arraydata = ARGSINIT_COMPRESS;
+
+	// -----------------------------------------------------
+
+
+	// Get the parameters passed from Python.
+	arraydata = getparams_compress(self, args, keywds, "compress");
+
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
+		return NULL;
+	}
+
 
 	// The length of the data array.
-	Py_ssize_t databufflength, dataoutbufflength, selectorbufflength;
-
-	// This is used to hold the results from inspecting the Python args.
-	struct args_param argtypes;
-
-	// Codes indicating the type of array.
-	char itemcode;
-
-	// How long the array is, and the error code returned by the function.
-	Py_ssize_t datalen, outlen, selectorlen, resultcode;
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
-
-
-	// -------------------------------------------------------------------------
-
-
-	// Check the parameters to see what they are.
-	argtypes = parsepyargs_parm(args, keywds);
-
-
-	// There was an error reading the parameter types.
-	if (argtypes.error) {
-		ErrMsgParameterError();
+	if (arraydata.arraylength1 < 1) {
+		// Release the buffers. 
+		releasebuffers_compress(arraydata);
+		ErrMsgArrayLengthErr();
 		return NULL;
 	}
 
-	// All array types must be the same.
-	if ((argtypes.array1type != argtypes.array2type) || (argtypes.array1type != argtypes.array3type)) {
-		ErrMsgArrayTypeMismatch();
-		return NULL;
-	}
-
-
-	itemcode = argtypes.array1type;
-
-	// Now we will fetch the actual array data. Since all of these parameters
-	// are arrays, we don't have to worry about the data type at this point.
-	// The format string and parameter names depend on the expected data types.
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "y*y*y*|l:compress", kwlist, 
-		&datapy, &dataoutpy, &selectorpy, &arraymaxlen)) {
-		return NULL;
-	}
-
-	// Assign the buffer to a union which lets us get at them as typed data.
-	data.buf = datapy.buf;
-	dataout.buf = dataoutpy.buf;
-	selector.buf = selectorpy.buf;
-
-
-	// The length of the input data array.
-	databufflength = datapy.len;
-	dataoutbufflength = dataoutpy.len;
-	selectorbufflength = selectorpy.len;
-
-	datalen = calcarraylength(itemcode, databufflength);
-	if (datalen < 1) {
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
-		PyBuffer_Release(&selectorpy);
-		ErrMsgArrayLengthInput();
-		return NULL;
-	}
-
-	// The length of the output data array.
-	outlen = calcarraylength(itemcode, dataoutbufflength);
-	if (outlen < 1) {
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
-		PyBuffer_Release(&selectorpy);
-		ErrMsgArrayLengthOutput();
-		return NULL;
-	}
-
-	// The length of the selector data array.
-	selectorlen = calcarraylength(itemcode, selectorbufflength);
-	if (selectorlen < 1) {
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
-		PyBuffer_Release(&selectorpy);
-		ErrMsgArrayLengthSelector();
-		return NULL;
-	}
-
-
-	// Adjust the length of array being operated on, if necessary.
-	// We don't check the lengths of the output or selector arrays here, because
-	// we check for them as we go along during the conversion.
-	datalen = adjustarraymaxlen(datalen, arraymaxlen);
 
 
 	/* Call the C function */
-	switch(itemcode) {
+	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			resultcode = compress_signed_char(datalen, data.b, outlen, dataout.b, selectorlen, selector.b);
+			resultcode = compress_signed_char(arraydata.arraylength1, arraydata.array1.b, arraydata.arraylength2, arraydata.array2.b, arraydata.arraylength3, arraydata.array3.b);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultcode = compress_unsigned_char(datalen, data.B, outlen, dataout.B, selectorlen, selector.B);
+			resultcode = compress_unsigned_char(arraydata.arraylength1, arraydata.array1.B, arraydata.arraylength2, arraydata.array2.B, arraydata.arraylength3, arraydata.array3.B);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultcode = compress_signed_short(datalen, data.h, outlen, dataout.h, selectorlen, selector.h);
+			resultcode = compress_signed_short(arraydata.arraylength1, arraydata.array1.h, arraydata.arraylength2, arraydata.array2.h, arraydata.arraylength3, arraydata.array3.h);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultcode = compress_unsigned_short(datalen, data.H, outlen, dataout.H, selectorlen, selector.H);
+			resultcode = compress_unsigned_short(arraydata.arraylength1, arraydata.array1.H, arraydata.arraylength2, arraydata.array2.H, arraydata.arraylength3, arraydata.array3.H);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultcode = compress_signed_int(datalen, data.i, outlen, dataout.i, selectorlen, selector.i);
+			resultcode = compress_signed_int(arraydata.arraylength1, arraydata.array1.i, arraydata.arraylength2, arraydata.array2.i, arraydata.arraylength3, arraydata.array3.i);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultcode = compress_unsigned_int(datalen, data.I, outlen, dataout.I, selectorlen, selector.I);
+			resultcode = compress_unsigned_int(arraydata.arraylength1, arraydata.array1.I, arraydata.arraylength2, arraydata.array2.I, arraydata.arraylength3, arraydata.array3.I);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultcode = compress_signed_long(datalen, data.l, outlen, dataout.l, selectorlen, selector.l);
+			resultcode = compress_signed_long(arraydata.arraylength1, arraydata.array1.l, arraydata.arraylength2, arraydata.array2.l, arraydata.arraylength3, arraydata.array3.l);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultcode = compress_unsigned_long(datalen, data.L, outlen, dataout.L, selectorlen, selector.L);
+			resultcode = compress_unsigned_long(arraydata.arraylength1, arraydata.array1.L, arraydata.arraylength2, arraydata.array2.L, arraydata.arraylength3, arraydata.array3.L);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultcode = compress_signed_long_long(datalen, data.q, outlen, dataout.q, selectorlen, selector.q);
+			resultcode = compress_signed_long_long(arraydata.arraylength1, arraydata.array1.q, arraydata.arraylength2, arraydata.array2.q, arraydata.arraylength3, arraydata.array3.q);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultcode = compress_unsigned_long_long(datalen, data.Q, outlen, dataout.Q, selectorlen, selector.Q);
+			resultcode = compress_unsigned_long_long(arraydata.arraylength1, arraydata.array1.Q, arraydata.arraylength2, arraydata.array2.Q, arraydata.arraylength3, arraydata.array3.Q);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultcode = compress_float(datalen, data.f, outlen, dataout.f, selectorlen, selector.f);
+			resultcode = compress_float(arraydata.arraylength1, arraydata.array1.f, arraydata.arraylength2, arraydata.array2.f, arraydata.arraylength3, arraydata.array3.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = compress_double(datalen, data.d, outlen, dataout.d, selectorlen, selector.d);
+			resultcode = compress_double(arraydata.arraylength1, arraydata.array1.d, arraydata.arraylength2, arraydata.array2.d, arraydata.arraylength3, arraydata.array3.d);
 			break;
 		}
 		// We don't know this code.
 		default: {
-			PyBuffer_Release(&datapy);
-			PyBuffer_Release(&dataoutpy);
-			PyBuffer_Release(&selectorpy);
+			releasebuffers_compress(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
@@ -299,14 +690,24 @@ static PyObject *py_compress(PyObject *self, PyObject *args, PyObject *keywds) {
 	}
 
 	// Release the buffers. 
-	PyBuffer_Release(&datapy);
-	PyBuffer_Release(&dataoutpy);
-	PyBuffer_Release(&selectorpy);
+	releasebuffers_compress(arraydata);
 
+
+	// Signal the errors.
+	if (resultcode == ARR_ERR_INVALIDOP) {
+		ErrMsgOperatorNotValidforthisFunction();
+		return NULL;
+	}
+
+
+	// Adjust the result code if the data was not found, so that we don't leak
+	// internal error codes to user space (and cause problems if they change).
+	if (resultcode < 0) {
+		resultcode = -1;
+	}
 
 	// Return the number of items filtered through.
 	return PyLong_FromSsize_t(resultcode);
-
 
 }
 
@@ -316,33 +717,38 @@ static PyObject *py_compress(PyObject *self, PyObject *args, PyObject *keywds) {
 
 /* The module doc string */
 PyDoc_STRVAR(compress__doc__,
-"Select values from an array based on another array of integers values. \n\
+"compress \n\
+_____________________________ \n\
+\n\
+Select values from an array based on another array of integers values. \n\
 The selector array is interpreted as a set of boolean values, where any \n\
 value other than *0* causes the value in the input array to be selected \n\
 and copied to theoutput array, while a value of *0* causes the value to \n\
 be ignored.\n\
 \n\
-The input, selector, and output arrays need not be of the same length. \n\
-The copy operation will be terminated when the end of the input or \n\
-output array is reached. The selector array will be cycled through \n\
-repeatedly as many times as necessary until the end of the input or \n\
-output array is reached. \n\
+======================  ============================================== \n\
+Equivalent to:          itertools.compress(inparray, selectorarray) \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
+Exceptions raised:      None \n\
+======================  ============================================== \n\
 \n\
-x = compress(inparray, outparray, selectorarray)\n\
-x = compress(inparray, outparray, selectorarray, maxlen=y)\n\
+Call formats: \n\
 \n\
-* inparray - The input data array to be filtered.\n\
-* outparray - The output array.\n\
-* selectorarray - The selector array.\n\
+  x = compress(inparray, outparray, selectorarray) \n\
+  x = compress(inparray, outparray, selectorarray, maxlen=y) \n\
+\n\
+* inparray - The input data array to be filtered. \n\
+* outparray - The output array. \n\
+* selectorarray - The selector array. \n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\
-  parameter is ignored.\n\
-* x - An integer count of the number of items filtered into outparray.");
+  parameter is ignored. \n\
+* x - An integer count of the number of items filtered into outparray. \n\
+");
 
 
 /*--------------------------------------------------------------------------- */
-
 
 /* A list of all the methods defined by this module. 
  "compress" is the name seen inside of Python. 
@@ -350,7 +756,7 @@ x = compress(inparray, outparray, selectorarray, maxlen=y)\n\
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
 static PyMethodDef compress_methods[] = {
-	{"compress",  (PyCFunction) py_compress, METH_VARARGS | METH_KEYWORDS, compress__doc__}, 
+	{"compress",  (PyCFunction)py_compress, METH_VARARGS | METH_KEYWORDS, compress__doc__}, 
 	{NULL, NULL, 0, NULL}
 };
 
@@ -369,3 +775,4 @@ PyMODINIT_FUNC PyInit_compress(void)
 };
 
 /*--------------------------------------------------------------------------- */
+

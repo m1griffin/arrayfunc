@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      06-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class neg_general_b(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_b(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -77,7 +77,16 @@ class neg_general_b(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('b', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('b', xdata)
 		self.dataout = array.array('b', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -91,7 +100,7 @@ class neg_general_b(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -103,7 +112,7 @@ class neg_general_b(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code b.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -111,13 +120,13 @@ class neg_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code b.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code b.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -125,13 +134,13 @@ class neg_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code b.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code b.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -144,7 +153,7 @@ class neg_general_b(unittest.TestCase):
 		"""Test neg to output array - Array code b.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -156,7 +165,7 @@ class neg_general_b(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code b.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -164,13 +173,13 @@ class neg_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code b.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code b.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -178,13 +187,321 @@ class neg_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code b.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code b.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code b.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code b.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -279,14 +596,14 @@ class neg_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code b.
+		"""Test neg as *array-none* for matherrors='a' - Array code b.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -296,23 +613,34 @@ class neg_opt_param_errors_b(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code b.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code b.
+		"""Test neg as *array-array* for matherrors='a' - Array code b.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -322,19 +650,29 @@ class neg_opt_param_errors_b(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code b.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_h(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_h(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -360,7 +698,16 @@ class neg_general_h(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('h', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('h', xdata)
 		self.dataout = array.array('h', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -374,7 +721,7 @@ class neg_general_h(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -386,7 +733,7 @@ class neg_general_h(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code h.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -394,13 +741,13 @@ class neg_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code h.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code h.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -408,13 +755,13 @@ class neg_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code h.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code h.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -427,7 +774,7 @@ class neg_general_h(unittest.TestCase):
 		"""Test neg to output array - Array code h.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -439,7 +786,7 @@ class neg_general_h(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code h.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -447,13 +794,13 @@ class neg_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code h.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code h.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -461,13 +808,321 @@ class neg_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code h.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code h.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code h.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -562,14 +1217,14 @@ class neg_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code h.
+		"""Test neg as *array-none* for matherrors='a' - Array code h.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -579,23 +1234,34 @@ class neg_opt_param_errors_h(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code h.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code h.
+		"""Test neg as *array-array* for matherrors='a' - Array code h.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -605,19 +1271,29 @@ class neg_opt_param_errors_h(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code h.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_i(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_i(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -643,7 +1319,16 @@ class neg_general_i(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('i', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('i', xdata)
 		self.dataout = array.array('i', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -657,7 +1342,7 @@ class neg_general_i(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -669,7 +1354,7 @@ class neg_general_i(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code i.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -677,13 +1362,13 @@ class neg_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code i.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code i.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -691,13 +1376,13 @@ class neg_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code i.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code i.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -710,7 +1395,7 @@ class neg_general_i(unittest.TestCase):
 		"""Test neg to output array - Array code i.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -722,7 +1407,7 @@ class neg_general_i(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code i.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -730,13 +1415,13 @@ class neg_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code i.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code i.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -744,13 +1429,321 @@ class neg_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code i.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code i.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code i.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -845,14 +1838,14 @@ class neg_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code i.
+		"""Test neg as *array-none* for matherrors='a' - Array code i.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -862,23 +1855,34 @@ class neg_opt_param_errors_i(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code i.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code i.
+		"""Test neg as *array-array* for matherrors='a' - Array code i.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -888,19 +1892,29 @@ class neg_opt_param_errors_i(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code i.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_l(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_l(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -926,7 +1940,16 @@ class neg_general_l(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('l', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('l', xdata)
 		self.dataout = array.array('l', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -940,7 +1963,7 @@ class neg_general_l(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -952,7 +1975,7 @@ class neg_general_l(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code l.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -960,13 +1983,13 @@ class neg_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code l.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code l.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -974,13 +1997,13 @@ class neg_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code l.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code l.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -993,7 +2016,7 @@ class neg_general_l(unittest.TestCase):
 		"""Test neg to output array - Array code l.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1005,7 +2028,7 @@ class neg_general_l(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code l.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1013,13 +2036,13 @@ class neg_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code l.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code l.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1027,13 +2050,321 @@ class neg_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code l.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code l.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code l.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1128,14 +2459,14 @@ class neg_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code l.
+		"""Test neg as *array-none* for matherrors='a' - Array code l.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1145,23 +2476,34 @@ class neg_opt_param_errors_l(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code l.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code l.
+		"""Test neg as *array-array* for matherrors='a' - Array code l.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1171,19 +2513,29 @@ class neg_opt_param_errors_l(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code l.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_q(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_q(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -1209,7 +2561,16 @@ class neg_general_q(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('q', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('q', xdata)
 		self.dataout = array.array('q', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -1223,7 +2584,7 @@ class neg_general_q(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1235,7 +2596,7 @@ class neg_general_q(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code q.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1243,13 +2604,13 @@ class neg_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code q.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code q.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1257,13 +2618,13 @@ class neg_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code q.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code q.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1276,7 +2637,7 @@ class neg_general_q(unittest.TestCase):
 		"""Test neg to output array - Array code q.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1288,7 +2649,7 @@ class neg_general_q(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code q.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1296,13 +2657,13 @@ class neg_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code q.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code q.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1310,13 +2671,321 @@ class neg_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code q.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code q.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code q.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1411,14 +3080,14 @@ class neg_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code q.
+		"""Test neg as *array-none* for matherrors='a' - Array code q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1428,23 +3097,34 @@ class neg_opt_param_errors_q(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code q.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code q.
+		"""Test neg as *array-array* for matherrors='a' - Array code q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1454,19 +3134,29 @@ class neg_opt_param_errors_q(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code q.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_f(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_f(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -1492,7 +3182,16 @@ class neg_general_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('f', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('f', xdata)
 		self.dataout = array.array('f', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -1506,7 +3205,7 @@ class neg_general_f(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1518,7 +3217,7 @@ class neg_general_f(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code f.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1526,13 +3225,13 @@ class neg_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code f.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code f.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1540,13 +3239,13 @@ class neg_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code f.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code f.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1559,7 +3258,7 @@ class neg_general_f(unittest.TestCase):
 		"""Test neg to output array - Array code f.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1571,7 +3270,7 @@ class neg_general_f(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code f.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1579,13 +3278,13 @@ class neg_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code f.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code f.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1593,13 +3292,321 @@ class neg_general_f(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code f.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code f.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code f.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1694,14 +3701,14 @@ class neg_opt_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code f.
+		"""Test neg as *array-none* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1711,23 +3718,34 @@ class neg_opt_param_errors_f(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code f.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code f.
+		"""Test neg as *array-array* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1737,19 +3755,29 @@ class neg_opt_param_errors_f(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
 
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code f.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
 
 ##############################################################################
 
 
 
 ##############################################################################
-class neg_general_d(unittest.TestCase):
+class neg_general_even_arraysize_with_simd_d(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -1775,7 +3803,16 @@ class neg_general_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.data = array.array('d', [-5,-4,-3,-2,-1,0,1,2,3,4,5])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('d', xdata)
 		self.dataout = array.array('d', [0]*len(self.data))
 
 		self.expected = [-(x) for x in self.data]
@@ -1789,7 +3826,7 @@ class neg_general_d(unittest.TestCase):
 		"""
 		expected = [-(x) for x in self.data]
 
-		arrayfunc.neg(self.data)
+		arrayfunc.neg(self.data )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1801,7 +3838,7 @@ class neg_general_d(unittest.TestCase):
 		"""Test neg in place with matherrors=True  - Array code d.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, matherrors=True)
+		arrayfunc.neg(self.data, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1809,13 +3846,13 @@ class neg_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a3(self):
-		"""Test neg in place with array limit  - Array code d.
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code d.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, maxlen=self.limited)
+		arrayfunc.neg(self.data, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1823,13 +3860,13 @@ class neg_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a4(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code d.
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code d.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
 
-		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.data), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1842,7 +3879,7 @@ class neg_general_d(unittest.TestCase):
 		"""Test neg to output array - Array code d.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout)
+		arrayfunc.neg(self.data, self.dataout )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1854,7 +3891,7 @@ class neg_general_d(unittest.TestCase):
 		"""Test neg to output array with matherrors=True  - Array code d.
 		"""
 		expected = [-(x) for x in self.data]
-		arrayfunc.neg(self.data, self.dataout, matherrors=True)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1862,13 +3899,13 @@ class neg_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a7(self):
-		"""Test neg to output array with array limit  - Array code d.
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code d.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1876,13 +3913,321 @@ class neg_general_d(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a8(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code d.
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code d.
 		"""
 		pydataout = [-(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_odd_arraysize_with_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_general_even_arraysize_without_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+		self.expected = [-(x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace_a1(self):
+		"""Test neg in place - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+
+		arrayfunc.neg(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_a2(self):
+		"""Test neg in place with matherrors=True  - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a3(self):
+		"""Test neg in place with array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a4(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_neg_outputarray_a5(self):
+		"""Test neg to output array - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a6(self):
+		"""Test neg to output array with matherrors=True  - Array code d.
+		"""
+		expected = [-(x) for x in self.data]
+		arrayfunc.neg(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a7(self):
+		"""Test neg to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a8(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [-(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1977,14 +4322,14 @@ class neg_opt_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_neg_array_none_a1(self):
-		"""Test neg as *array-none* for errors='a' - Array code d.
+		"""Test neg as *array-none* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, errors='a')
+			arrayfunc.neg(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1994,23 +4339,34 @@ class neg_opt_param_errors_d(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, maxlen='a')
 
 
 	########################################################
+	def test_neg_array_none_a3(self):
+		"""Test neg as *array-none* for nosimd='a' - Array code d.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, nosimd='a')
+
+
+
+	########################################################
 	def test_neg_array_array_b1(self):
-		"""Test neg as *array-array* for errors='a' - Array code d.
+		"""Test neg as *array-array* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, matherrors=True)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.neg(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2020,11 +4376,106 @@ class neg_opt_param_errors_d(unittest.TestCase):
 		# This version is expected to pass.
 		arrayfunc.neg(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
 
-
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.inparray1b, self.dataout, maxlen='a')
 
+
+	########################################################
+	def test_neg_array_array_b3(self):
+		"""Test neg as *array-array* for nosimd='a' - Array code d.
+		"""
+		# This version is expected to pass.
+		arrayfunc.neg(self.inparray1a, self.dataout, nosimd=False)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.inparray1b, self.dataout, nosimd='a')
+
+
+##############################################################################
+
+
+
+##############################################################################
+class neg_invalidarray_B(unittest.TestCase):
+	"""Test for invalid arrays.
+	test_template_invalidarray
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('B', [5,4,3,2,1,0,1,2,3,4,5])
+		self.dataout = array.array('B', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_neg_inplace(self):
+		"""Test neg in place - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data)
+
+
+	########################################################
+	def test_neg_inplace_ov_a1(self):
+		"""Test neg in place with matherrors=True  - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, matherrors=True)
+
+
+	########################################################
+	def test_neg_inplace_maxlen_a2(self):
+		"""Test neg in place with array maxlen  - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, maxlen=self.limited)
+
+
+	########################################################
+	def test_neg_inplace_ov_maxlen_a3(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
+
+
+	########################################################
+	def test_neg_outputarray_a4(self):
+		"""Test neg to output array - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, self.dataout)
+
+
+	########################################################
+	def test_neg_outputarray_ov_a4(self):
+		"""Test neg to output array with matherrors=True  - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, self.dataout, matherrors=True)
+
+
+	########################################################
+	def test_neg_outputarray_maxlen_a5(self):
+		"""Test neg to output array with array maxlen  - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
+
+
+	########################################################
+	def test_neg_outputarray_ov_maxlen_a6(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code B.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
 
 
 ##############################################################################
@@ -2065,16 +4516,16 @@ class neg_invalidarray_H(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a2(self):
-		"""Test neg in place with array limit  - Array code H.
+	def test_neg_inplace_maxlen_a2(self):
+		"""Test neg in place with array maxlen  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a3(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code H.
+	def test_neg_inplace_ov_maxlen_a3(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
@@ -2097,16 +4548,16 @@ class neg_invalidarray_H(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a5(self):
-		"""Test neg to output array with array limit  - Array code H.
+	def test_neg_outputarray_maxlen_a5(self):
+		"""Test neg to output array with array maxlen  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a6(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code H.
+	def test_neg_outputarray_ov_maxlen_a6(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code H.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
@@ -2150,16 +4601,16 @@ class neg_invalidarray_I(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a2(self):
-		"""Test neg in place with array limit  - Array code I.
+	def test_neg_inplace_maxlen_a2(self):
+		"""Test neg in place with array maxlen  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a3(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code I.
+	def test_neg_inplace_ov_maxlen_a3(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
@@ -2182,16 +4633,16 @@ class neg_invalidarray_I(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a5(self):
-		"""Test neg to output array with array limit  - Array code I.
+	def test_neg_outputarray_maxlen_a5(self):
+		"""Test neg to output array with array maxlen  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a6(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code I.
+	def test_neg_outputarray_ov_maxlen_a6(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code I.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
@@ -2235,16 +4686,16 @@ class neg_invalidarray_L(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a2(self):
-		"""Test neg in place with array limit  - Array code L.
+	def test_neg_inplace_maxlen_a2(self):
+		"""Test neg in place with array maxlen  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a3(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code L.
+	def test_neg_inplace_ov_maxlen_a3(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
@@ -2267,16 +4718,16 @@ class neg_invalidarray_L(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a5(self):
-		"""Test neg to output array with array limit  - Array code L.
+	def test_neg_outputarray_maxlen_a5(self):
+		"""Test neg to output array with array maxlen  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a6(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code L.
+	def test_neg_outputarray_ov_maxlen_a6(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code L.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
@@ -2320,16 +4771,16 @@ class neg_invalidarray_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_inplace_lim_a2(self):
-		"""Test neg in place with array limit  - Array code Q.
+	def test_neg_inplace_maxlen_a2(self):
+		"""Test neg in place with array maxlen  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_inplace_ov_lim_a3(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code Q.
+	def test_neg_inplace_ov_maxlen_a3(self):
+		"""Test neg in place with matherrors=True and array maxlen  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
@@ -2352,101 +4803,16 @@ class neg_invalidarray_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_neg_outputarray_lim_a5(self):
-		"""Test neg to output array with array limit  - Array code Q.
+	def test_neg_outputarray_maxlen_a5(self):
+		"""Test neg to output array with array maxlen  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
 
 
 	########################################################
-	def test_neg_outputarray_ov_lim_a6(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code Q.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class neg_invalidarray_B(unittest.TestCase):
-	"""Test for invalid arrays.
-	test_template_invalidarray
-	"""
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.data = array.array('B', [5,4,3,2,1,0,1,2,3,4,5])
-		self.dataout = array.array('B', [0]*len(self.data))
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_neg_inplace(self):
-		"""Test neg in place - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data)
-
-
-	########################################################
-	def test_neg_inplace_ov_a1(self):
-		"""Test neg in place with matherrors=True  - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, matherrors=True)
-
-
-	########################################################
-	def test_neg_inplace_lim_a2(self):
-		"""Test neg in place with array limit  - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, maxlen=self.limited)
-
-
-	########################################################
-	def test_neg_inplace_ov_lim_a3(self):
-		"""Test neg in place with matherrors=True and array limit  - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, matherrors=True, maxlen=self.limited)
-
-
-	########################################################
-	def test_neg_outputarray_a4(self):
-		"""Test neg to output array - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, self.dataout)
-
-
-	########################################################
-	def test_neg_outputarray_ov_a4(self):
-		"""Test neg to output array with matherrors=True  - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, self.dataout, matherrors=True)
-
-
-	########################################################
-	def test_neg_outputarray_lim_a5(self):
-		"""Test neg to output array with array limit  - Array code B.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.neg(self.data, self.dataout, maxlen=self.limited)
-
-
-	########################################################
-	def test_neg_outputarray_ov_lim_a6(self):
-		"""Test neg to output array with matherrors=True and array limit - Array code B.
+	def test_neg_outputarray_ov_maxlen_a6(self):
+		"""Test neg to output array with matherrors=True and array maxlen - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.neg(self.data, self.dataout, matherrors=True, maxlen=self.limited)

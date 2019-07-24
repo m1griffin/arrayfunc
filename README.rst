@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 4.2.0 for 2018-12-22
-:Copyright: 2014 - 2018
+:Version: 4.3.1 for 2019-07-01
+:Copyright: 2014 - 2019
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
 
@@ -275,10 +275,10 @@ Arrayfunc supports all standard Python 3.x array types.
 Performance
 ===========
 
-Average performance increase on x86_64 Ubuntu with GCC is 100 times faster than 
-native Python. Performance will vary depending on the function, operation, array 
-data type used, and whether overflow checking is enabled, with the performance 
-increase ranging from 50% to 500 times. 
+Average performance increase on x86_64 Ubuntu with GCC is 100 times faster 
+than native Python. Performance will vary depending on the function, 
+operation, array data type used, and whether overflow checking is enabled, 
+with the performance increase ranging from 50% to 3000 times. 
 
 Other platforms show similar improvements.
 
@@ -298,8 +298,8 @@ OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Ubuntu 18.10       64 bit    GCC                         3.6
-Debian 9           32 bit    GCC                         3.5
-Debian 9           64 bit    GCC                         3.5
+Debian 10          32 bit    GCC                         3.6
+Debian 10          64 bit    GCC                         3.6
 OpenSuse 15        64 bit    GCC                         3.6
 Centos 7           64 bit    GCC                         3.6
 FreeBSD 12         64 bit    LLVM                        3.6
@@ -336,6 +336,13 @@ example::
 Release History
 ===============
 
+* 4.3.1 - Numerous performance inprovements through the use of SIMD
+          acceleration in many functions. See the documentation to
+          see which functions are affected. Restrictions on the use of 
+          non-finite data in parameters has been relaxed where possible. 
+          Repeat now allows non-finite data as fill values. For 
+          findindices, if no matches are found the result code is now 
+          0 (zero) instead of -1.
 * 4.2.0 - Added fma function. This has no equivalent in the Python 
           standard library but is equivalent to x * y + z. Also changed
           list of supported platforms to update FreeBSD to version 12

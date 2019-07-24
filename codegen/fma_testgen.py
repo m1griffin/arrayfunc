@@ -39,7 +39,7 @@ import codegen_common
 test_template_fma = '''
 
 ##############################################################################
-class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
+class fma_general_%(optlable)s_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.TestCase):
 	"""Test for basic general function operation using %(optdescription)s.
 	test_template_fma
 	"""
@@ -65,20 +65,38 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('%(typecode)s', [%(test_op_x)s])
-		self.datay = array.array('%(typecode)s', [x for (x,y) in zip(itertools.cycle([%(test_op_y)s]), self.datax)])
-		self.dataz = array.array('%(typecode)s', [x for (x,y) in zip(itertools.cycle([%(test_op_z)s]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		self.datax = array.array('%(typecode)s', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([%(test_op_y)s]), range(testdatasize))]
+		self.datay = array.array('%(typecode)s', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([%(test_op_z)s]), range(testdatasize))]
+		self.dataz = array.array('%(typecode)s', zdata)
+
 		self.dataout = array.array('%(typecode)s', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [%(test_op_y)s]
+		self.ziter = [%(test_op_z)s]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -98,8 +116,8 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					%(limexpected_b)s
@@ -115,7 +133,7 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -135,7 +153,7 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				%(limexpected_b)s
@@ -151,7 +169,7 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -171,7 +189,7 @@ class fma_general_%(optlable)s_%(typelabel)s(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - %(optdescription)s - Array code %(typelabel)s.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				%(limexpected_b)s
@@ -580,10 +598,6 @@ template_class_close = '''
 
 # ==============================================================================
 
-# These are all the test code templates. 
-test_templates = {'test_template_fma' : test_template_fma,
-			'nan_data_error_fma_template' : nan_data_error_fma_template,
-}
 
 
 # ==============================================================================
@@ -800,7 +814,7 @@ for func in funclist:
 
 		# Check each array type.
 		for functype in codegen_common.floatarrays:
-			testtemplate = test_templates[func['test_op_templ']]
+
 			# Basic tests.
 			funcdata = {'pyoperator' : func['pyoperator'],
 				'typelabel' : functype, 'typecode' : functype, 
@@ -816,8 +830,12 @@ for func in funclist:
 			funcdata['limexpected_b'] = '# No array limits used.'
 			funcdata['testoptions'] = ''
 
-			f.write(testtemplate % funcdata)
+			funcdata['arrayevenodd'] = 'even'
 
+			f.write(test_template_fma % funcdata)
+
+
+			#####
 
 			# With maxlen test option.
 			funcdata['optlable'] = 'optionsmaxlen'
@@ -826,8 +844,9 @@ for func in funclist:
 			funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
 			funcdata['testoptions'] = ', maxlen=self.limited'
 
-			f.write(testtemplate % funcdata)
+			f.write(test_template_fma % funcdata)
 
+			#####
 
 			# With matherror option.
 			funcdata['optlable'] = 'optionsmatherror'
@@ -836,8 +855,9 @@ for func in funclist:
 			funcdata['limexpected_b'] = '# No array limits used.'
 			funcdata['testoptions'] = ', matherrors=True'
 
-			f.write(testtemplate % funcdata)
+			f.write(test_template_fma % funcdata)
 
+			#####
 
 			# With maxlen and matherrors test options.
 			funcdata['optlable'] = 'optionsmaxlenmatherrors'
@@ -846,7 +866,29 @@ for func in funclist:
 			funcdata['limexpected_b'] = 'expected = expected[0:self.limited] + list(self.dataout)[self.limited:]'
 			funcdata['testoptions'] = ', maxlen=self.limited, matherrors=True'
 
-			f.write(testtemplate % funcdata)
+			f.write(test_template_fma % funcdata)
+
+
+			#####
+
+			# With matherror option.
+			funcdata['limexpected_a'] = '# No array limits used.'
+			funcdata['limexpected_b'] = '# No array limits used.'
+
+			# Test options.
+			funcdata['arrayevenodd'] = 'even'
+			funcdata['testoptions'] = ', matherrors=True'
+			f.write(test_template_fma % funcdata)
+
+			# Test options.
+			funcdata['arrayevenodd'] = 'odd'
+			funcdata['testoptions'] = ', matherrors=True'
+			f.write(test_template_fma % funcdata)
+
+			# Test options.
+			funcdata['arrayevenodd'] = 'even'
+			funcdata['testoptions'] = ''
+			f.write(test_template_fma % funcdata)
 
 
 			#############
@@ -859,10 +901,11 @@ for func in funclist:
 				'test_op_y' : func['test_op_y'],
 				'test_op_z' : func['test_op_z']}
 
-			#############
 
 			# Class start for integer tests.
 			f.write(param_int_invalid_template % funcdata)
+
+			#############
 
 			# Generate the individual integer tests.
 			for funcdata in genintarraytestdata():

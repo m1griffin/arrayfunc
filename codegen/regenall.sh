@@ -70,13 +70,6 @@ do
 done
 
 
-# TODO: Remove.
-# Documentation and op codes.
-#echo "Generating:  docsgen.py"
-#./docsgen.py
-#filecount=$(($filecount + 1))
-
-
 # Time at which the test sequence completed.
 endtime=$(date '+%s')
 elapsedtime=$(($endtime - $starttime))

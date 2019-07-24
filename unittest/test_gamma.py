@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class gamma_general_f(unittest.TestCase):
+class gamma_general_even_arraysize_without_simd_f(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_noparams
 	"""
@@ -77,146 +77,116 @@ class gamma_general_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), range(testdatasize))]
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+		# The expected results.
+		self.expected = [math.gamma(x) for x in self.data]
+
+		# The expected results when the maxlen parameter is used.
+		self.expectedlimiteddata = self.expected[0:self.limited] + list(self.data)[self.limited:]
+
+		# The same, but where dataout is used as one of the sources.
+		self.expectedlimiteddataout = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
 
 	########################################################
-	def test_gamma_outputarray(self):
-		"""Test gamma to output array - Array code f.
+	def test_gamma_basic_array_none_a1(self):
+		"""Test gamma as *array-none* for basic function - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data )
 
-		dataout = array.array('f', [0]*len(data))
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, dataout)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_ov(self):
-		"""Test gamma to output array with matherrors=True  - Array code f.
+	def test_gamma_basic_array_none_a2(self):
+		"""Test gamma as *array-none* for basic function with matherrors=True - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, matherrors=True )
 
-		dataout = array.array('f', [0]*len(data))
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, dataout, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_lim(self):
-		"""Test gamma to output array with array limit  - Array code f.
+	def test_gamma_basic_array_none_a3(self):
+		"""Test gamma as *array-none* for basic function with maxlen - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, maxlen=self.limited )
 
-		dataout = array.array('f', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.gamma(data, dataout, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_ov_lim(self):
-		"""Test gamma to output array with matherrors=True and array limit - Array code f.
+	def test_gamma_basic_array_none_a4(self):
+		"""Test gamma as *array-none* for basic function with maxlen and matherrors=True - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, maxlen=self.limited, matherrors=True )
 
-		dataout = array.array('f', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.gamma(data, dataout, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_gamma_inplace(self):
-		"""Test gamma in place - Array code f.
-		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_ov(self):
-		"""Test gamma in place with matherrors=True  - Array code f.
+	def test_gamma_basic_array_array_b1(self):
+		"""Test gamma as *array-array* for basic function - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout )
 
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_lim(self):
-		"""Test gamma in place with array limit  - Array code f.
+	def test_gamma_basic_array_array_b2(self):
+		"""Test gamma as *array-array* for basic function with matherrors=True - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout, matherrors=True )
 
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.gamma(data, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_ov_lim(self):
-		"""Test gamma in place with matherrors=True and array limit  - Array code f.
+	def test_gamma_basic_array_array_b3(self):
+		"""Test gamma as *array-array* for basic function with maxlen - Array code f.
 		"""
-		data = array.array('f', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout, maxlen=self.limited )
 
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.gamma(data, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_gamma_basic_array_array_b4(self):
+		"""Test gamma as *array-array* for basic function with maxlen and matherrors=True - Array code f.
+		"""
+		arrayfunc.gamma(self.data, self.dataout, maxlen=self.limited, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 ##############################################################################
@@ -261,7 +231,7 @@ class gamma_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_gamma_array_none_b1(self):
-		"""Test gamma as *array-none* for errors='a' - Array code f.
+		"""Test gamma as *array-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray = copy.copy(self.floatarray)
@@ -273,7 +243,7 @@ class gamma_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.gamma(floatarray, errors='a')
+			arrayfunc.gamma(floatarray, matherrors='a')
 
 
 	########################################################
@@ -333,14 +303,14 @@ class gamma_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_gamma_array_num_array_d1(self):
-		"""Test gamma as *array-num-array* for errors='a' - Array code f.
+		"""Test gamma as *array-num-array* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.gamma(self.floatarray, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.gamma(self.floatarray, self.dataout, errors='a')
+			arrayfunc.gamma(self.floatarray, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -373,7 +343,7 @@ class gamma_param_errors_f(unittest.TestCase):
 
 
 ##############################################################################
-class gamma_general_d(unittest.TestCase):
+class gamma_general_even_arraysize_without_simd_d(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_noparams
 	"""
@@ -399,146 +369,116 @@ class gamma_general_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0]), range(testdatasize))]
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+		# The expected results.
+		self.expected = [math.gamma(x) for x in self.data]
+
+		# The expected results when the maxlen parameter is used.
+		self.expectedlimiteddata = self.expected[0:self.limited] + list(self.data)[self.limited:]
+
+		# The same, but where dataout is used as one of the sources.
+		self.expectedlimiteddataout = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
 
 	########################################################
-	def test_gamma_outputarray(self):
-		"""Test gamma to output array - Array code d.
+	def test_gamma_basic_array_none_a1(self):
+		"""Test gamma as *array-none* for basic function - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data )
 
-		dataout = array.array('d', [0]*len(data))
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, dataout)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_ov(self):
-		"""Test gamma to output array with matherrors=True  - Array code d.
+	def test_gamma_basic_array_none_a2(self):
+		"""Test gamma as *array-none* for basic function with matherrors=True - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, matherrors=True )
 
-		dataout = array.array('d', [0]*len(data))
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, dataout, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_lim(self):
-		"""Test gamma to output array with array limit  - Array code d.
+	def test_gamma_basic_array_none_a3(self):
+		"""Test gamma as *array-none* for basic function with maxlen - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, maxlen=self.limited )
 
-		dataout = array.array('d', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.gamma(data, dataout, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_outputarray_ov_lim(self):
-		"""Test gamma to output array with matherrors=True and array limit - Array code d.
+	def test_gamma_basic_array_none_a4(self):
+		"""Test gamma as *array-none* for basic function with maxlen and matherrors=True - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, maxlen=self.limited, matherrors=True )
 
-		dataout = array.array('d', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.gamma(data, dataout, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_gamma_inplace(self):
-		"""Test gamma in place - Array code d.
-		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
-
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_ov(self):
-		"""Test gamma in place with matherrors=True  - Array code d.
+	def test_gamma_basic_array_array_b1(self):
+		"""Test gamma as *array-array* for basic function - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout )
 
-
-		expected = [math.gamma(x) for x in data]
-		arrayfunc.gamma(data, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_lim(self):
-		"""Test gamma in place with array limit  - Array code d.
+	def test_gamma_basic_array_array_b2(self):
+		"""Test gamma as *array-array* for basic function with matherrors=True - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout, matherrors=True )
 
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.gamma(data, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_gamma_inplace_ov_lim(self):
-		"""Test gamma in place with matherrors=True and array limit  - Array code d.
+	def test_gamma_basic_array_array_b3(self):
+		"""Test gamma as *array-array* for basic function with maxlen - Array code d.
 		"""
-		data = array.array('d', [1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+		arrayfunc.gamma(self.data, self.dataout, maxlen=self.limited )
 
-		limited = len(data) // 2
-
-		pydataout = [math.gamma(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.gamma(data, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_gamma_basic_array_array_b4(self):
+		"""Test gamma as *array-array* for basic function with maxlen and matherrors=True - Array code d.
+		"""
+		arrayfunc.gamma(self.data, self.dataout, maxlen=self.limited, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 ##############################################################################
@@ -583,7 +523,7 @@ class gamma_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_gamma_array_none_b1(self):
-		"""Test gamma as *array-none* for errors='a' - Array code d.
+		"""Test gamma as *array-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray = copy.copy(self.floatarray)
@@ -595,7 +535,7 @@ class gamma_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.gamma(floatarray, errors='a')
+			arrayfunc.gamma(floatarray, matherrors='a')
 
 
 	########################################################
@@ -655,14 +595,14 @@ class gamma_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_gamma_array_num_array_d1(self):
-		"""Test gamma as *array-num-array* for errors='a' - Array code d.
+		"""Test gamma as *array-num-array* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.gamma(self.floatarray, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.gamma(self.floatarray, self.dataout, errors='a')
+			arrayfunc.gamma(self.floatarray, self.dataout, matherrors='a')
 
 
 	########################################################

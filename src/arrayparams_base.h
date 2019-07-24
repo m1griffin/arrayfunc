@@ -124,9 +124,16 @@ char isfloatrange(double x);
 
 /*--------------------------------------------------------------------------- */
 
-int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer);
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer, char *paramoverflow);
 
 char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
+			struct paramsvals *checkedvalue, char *paramoverflow);
+
+/*--------------------------------------------------------------------------- */
+
+int get_paramdata_simple(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer);
+
+char get_numericparams_simple(char arraycode, struct paramsdata *paramobjdata,
 			struct paramsvals *checkedvalue);
 
 /*--------------------------------------------------------------------------- */

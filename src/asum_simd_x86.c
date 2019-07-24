@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   asum_simd_x86.c
-// Purpose:  Sum all the values in an array.
+// Purpose:  Calculate the asum of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      19-Jun-2018.
+// Ver:      04-Jun-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@
 #include "Python.h"
 
 #include "simddefs.h"
-#include "arrayops.h"
 
 #include "arrayerrs.h"
 
@@ -53,7 +52,7 @@
    Returns: The sum of the array.
 */
 #ifdef AF_HASSIMD
-float asum_float_simd(Py_ssize_t arraylen, float *data) { 
+double asum_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -74,7 +73,7 @@ float asum_float_simd(Py_ssize_t arraylen, float *data) {
 	// Use SIMD.
 	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
 		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
-		sumslice = __builtin_ia32_addps (sumslice, dataslice);
+		sumslice = sumslice + dataslice;
 	}
 
 	// Add up the values within the slice.
@@ -89,7 +88,7 @@ float asum_float_simd(Py_ssize_t arraylen, float *data) {
 	}
 
 
-	return partialsum;
+	return (double) partialsum;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -125,7 +124,7 @@ double asum_double_simd(Py_ssize_t arraylen, double *data) {
 	// Use SIMD.
 	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
 		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
-		sumslice = __builtin_ia32_addpd (sumslice, dataslice);
+		sumslice = sumslice + dataslice;
 	}
 
 	// Add up the values within the slice.

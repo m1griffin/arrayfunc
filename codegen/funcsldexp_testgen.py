@@ -326,7 +326,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_none_a4(self):
-		"""Test %(funclabel)s as *array-num-none* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-num-none* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -339,7 +339,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(floatarray1, testint, errors='a')
+			arrayfunc.%(funcname)s(floatarray1, testint, matherrors='a')
 
 
 	########################################################
@@ -434,7 +434,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_array_b5(self):
-		"""Test %(funclabel)s as *array-num-array* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-num-array* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -447,7 +447,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(floatarray1, testint, self.dataout, errors='a')
+			arrayfunc.%(funcname)s(floatarray1, testint, self.dataout, matherrors='a')
 
 
 	########################################################

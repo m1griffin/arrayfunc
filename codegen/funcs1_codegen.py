@@ -32,7 +32,7 @@ import codegen_common
 
 # ==============================================================================
 
-mathfunc1 = """//------------------------------------------------------------------------------
+mathfunc1_template = """//------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   %(funclabel)s.c
 // Purpose:  Calculate the %(funclabel)s of values in an array.
@@ -70,8 +70,8 @@ mathfunc1 = """//---------------------------------------------------------------
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
 
+%(includeoptions)s
 
 %(arithcalcs)s
 
@@ -82,12 +82,13 @@ mathfunc1 = """//---------------------------------------------------------------
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int %(funclabel)s_float(Py_ssize_t arraylen,%(nosimddecl)s float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+%(simd_call_f)s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
@@ -125,12 +126,13 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen, float *data, float *dataout,
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int %(funclabel)s_double(Py_ssize_t arraylen,%(nosimddecl)s double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+%(simd_call_d)s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
@@ -188,12 +190,12 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = %(funclabel)s_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = %(funclabel)s_float(arraydata.arraylength,%(nosimdparam)s arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = %(funclabel)s_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = %(funclabel)s_double(arraydata.arraylength,%(nosimdparam)s arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.
@@ -244,7 +246,7 @@ Call formats: \\n\\
     %(funclabel)s(array1, outparray) \\n\\
     %(funclabel)s(array1, maxlen=y) \\n\\
     %(funclabel)s(array1, matherrors=False)) \\n\\
-\\n\\
+%(helpsimd1)s\\n\\
 * array1 - The first input data array to be examined. If no output \\n\\
   array is provided the results will overwrite the input data. \\n\\
 * outparray - The output array. This parameter is optional. \\n\\
@@ -254,7 +256,7 @@ Call formats: \\n\\
   parameter is ignored. \\n\\
 * matherrors - If true, arithmetic error checking is disabled. The \\n\\
   default is false. \\n\\
-");
+%(helpsimd2)s");
 
 
 /*--------------------------------------------------------------------------- */
@@ -287,6 +289,118 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 """
 
+
+# ==============================================================================
+
+
+# The operations using SIMD.
+ops_simdsupport = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(simdload)s(&data[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		datasliceleft = %(simdop)s;
+		// Store the result.
+		%(simdstore)s(&data[x], datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data[x] = %(simdcleanup)s;
+	}
+
+}
+#endif
+
+
+// param_arr_arr
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(simdload)s(&data[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		datasliceleft = %(simdop)s;
+		// Store the result.
+		%(simdstore)s(&dataout[x], datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		dataout[x] = %(simdcleanup)s;
+	}
+
+}
+#endif
+
+"""
+
+
+# SIMD call template.
+SIMD_call = '''\n#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+		if (hasoutputarray) {
+			%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data, dataout);
+		} else {
+			%(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif\n'''
+
+SIMD_call_options = {'template_mathfunc_1' : '',
+	'template_mathfunc_1s' : '',
+	'template_mathfunc_1simd' : SIMD_call,
+}
+
+# The following are used to fill in template data which handles whether
+# a function requires SIMD related template data or not. 
+helpsimd1_template = '    %(funclabel)s(array, nosimd=False) \\n\\'
+
+helpsimd2_template = '''* nosimd - If True, SIMD acceleration is disabled. This parameter is \\n\\
+  optional. The default is FALSE.  \\n\\\n'''
+
+
 # ==============================================================================
 
 # Constants to use for degrees to radians and radians to degrees.
@@ -294,8 +408,8 @@ degtorad = """
 /*--------------------------------------------------------------------------- */
 
 // Used to calculate degrees to radians.
-const double degtorad_d = M_PI / 180.0;
-const float degtorad_f = (float) (M_PI / 180.0);
+#define DEGTORAD_D M_PI / 180.0
+#define DEGTORAD_F (float) (M_PI / 180.0)
 
 /*--------------------------------------------------------------------------- */
 """
@@ -304,30 +418,106 @@ radtodeg = """
 /*--------------------------------------------------------------------------- */
 
 // Used to calculate radians to degrees.
-const double radtodeg_d = 180.0 / M_PI;
-const float radtodeg_f = (float) (180.0 / M_PI);
+#define RADTODEG_D 180.0 / M_PI
+#define RADTODEG_F (float) (180.0 / M_PI)
 
 /*--------------------------------------------------------------------------- */
 """
+
+
+# Constants to use for degrees to radians and radians to degrees in vector format.
+degtorad_vec = """
+/*--------------------------------------------------------------------------- */
+
+#ifdef AF_HASSIMD
+// Used to calculate degrees to radians.
+const v2df DEGTORAD_D_VEC = {DEGTORAD_D, DEGTORAD_D};
+const v4sf DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F, DEGTORAD_F, DEGTORAD_F};
+#endif
+
+/*--------------------------------------------------------------------------- */
+"""
+
+radtodeg_vec = """
+/*--------------------------------------------------------------------------- */
+
+#ifdef AF_HASSIMD
+// Used to calculate radians to degrees in vector format.
+const v2df RADTODEG_D_VEC = {RADTODEG_D, RADTODEG_D};
+const v4sf RADTODEG_F_VEC = {RADTODEG_F, RADTODEG_F, RADTODEG_F, RADTODEG_F};
+#endif
+
+/*--------------------------------------------------------------------------- */
+"""
+
+
+degrad = {'degrees' : radtodeg, 'radians' : degtorad}
+
+degrad_vec = {'degrees' : radtodeg_vec, 'radians' : degtorad_vec}
+
 
 # For MSVS compatibility for Windows.
 MSVSCmath = """
 // This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
 // the M_PI constant. This must be immediately above <math.h>.
 #define _USE_MATH_DEFINES
+#include <math.h>
+
 """
+
+degradmsvc = {'degrees' : MSVSCmath, 'radians' : MSVSCmath}
 
 # ==============================================================================
 
-# These are used for most normal functions.
-floatfunctmpl = '%(c_operator_f)s(data[x])'
-doublefunctmpl = '%(c_operator_d)s(data[x])'
+includeoptions_nosimd = '#include "arrayparams_one.h"'
 
-# These are used for functions which do not follow the normal pattern.
-# The correct format is read from the spreadsheet.
-specialfloatfunctmpl = '%(c_operator_f)s'
-specialdoublefunctmpl = '%(c_operator_d)s'
+includeoptions_simd = '''#include "arrayparams_onesimd.h"
 
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "%(funclabel)s_simd_x86.h"
+#endif'''
+
+
+# ==============================================================================
+
+# This provides tje correct template for the C library function or
+# C operator equation for the appropriate style of function.
+cfunctmpl = {'template_mathfunc_1' : '%(c_operator)s(data[x])',
+	'template_mathfunc_1simd' : '%(c_operator)s(data[x])',
+	'template_mathfunc_1s' : '%(c_operator)s'
+}
+
+# ==============================================================================
+
+
+# Various SIMD instruction information which varies according to array type.
+simdvalues = {
+'f' : {'simdcast' : '', 'simdattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 
+		'simdload' : '__builtin_ia32_loadups', 'simdstore' : '__builtin_ia32_storeups'},
+'d' : {'simdcast' : '', 'simdattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 
+		'simdload' : '__builtin_ia32_loadupd', 'simdstore' : '__builtin_ia32_storeupd'},
+}
+
+
+# The SIMD operations used for each function.
+simdop = {
+'f' : {'ceil' : '__builtin_ia32_roundps (datasliceleft, 0b10)', 
+		'floor' : '__builtin_ia32_roundps (datasliceleft, 0b01)',
+		'trunc' : '__builtin_ia32_roundps (datasliceleft, 0b11)',
+		'degrees' : 'datasliceleft * RADTODEG_F_VEC',
+		'radians' : 'datasliceleft * DEGTORAD_F_VEC',
+		'sqrt' : '__builtin_ia32_sqrtps(datasliceleft)',
+		},
+'d' : {'ceil' : '__builtin_ia32_roundpd (datasliceleft, 0b10)', 
+		'floor' : '__builtin_ia32_roundpd (datasliceleft, 0b01)',
+		'trunc' : '__builtin_ia32_roundpd (datasliceleft, 0b11)',
+		'degrees' : 'datasliceleft * RADTODEG_D_VEC',
+		'radians' : 'datasliceleft * DEGTORAD_D_VEC',
+		'sqrt' : '__builtin_ia32_sqrtpd(datasliceleft)',
+		},
+}
 
 
 # ==============================================================================
@@ -337,48 +527,164 @@ oplist = codegen_common.ReadCSVData('funcs.csv')
 
 
 # Filter out the desired math functions.
+funclist = [x for x in oplist if x['c_code_template'] in ('template_mathfunc_1', 'template_mathfunc_1s', 'template_mathfunc_1simd')]
 
-funclist = [x for x in oplist if x['c_code_template'] in ('template_mathfunc_1', 'template_mathfunc_1s')]
+simdlist = [x for x in funclist if x['c_code_template'] in ('template_mathfunc_1s', 'template_mathfunc_1simd')]
 
 # ==============================================================================
 
 for func in funclist:
-	filename = func['funcname'] + '.c'
 
-	# There are two forms which the floating point functions can take.
-	if func['c_code_template'] == 'template_mathfunc_1':
-		floatfunc = floatfunctmpl % {'c_operator_f' : func['c_operator_f']}
-		doublefunc = doublefunctmpl % {'c_operator_d' : func['c_operator_d']}
+	funcname = func['funcname']
+	filename = funcname + '.c'
+
+
+	c_code_template = func['c_code_template']
+
+	# This flags which templates support SIMD.
+	hassimd = c_code_template in ('template_mathfunc_1s', 'template_mathfunc_1simd')
+
+
+	# Template data for functions with SIMD.
+	if hassimd:
+		nosimdparam = ' arraydata.nosimd,'
+		nosimddecl = ' int nosimd,'
+		helpsimd1 = helpsimd1_template % {'funclabel' : funcname}
+		helpsimd2 = helpsimd2_template
+
+		arraytype = codegen_common.arraytypes['f']
+		simdfunccall = {'simdwidth' : simdvalues['f']['simdwidth'], 
+			'funclabel' : funcname,
+			'funcmodifier' : arraytype.replace(' ', '_')}
+		simd_call_f = SIMD_call % simdfunccall
+
+		arraytype = codegen_common.arraytypes['d']
+		simdfunccall = {'simdwidth' : simdvalues['d']['simdwidth'], 
+			'funclabel' : funcname,
+			'funcmodifier' : arraytype.replace(' ', '_')}
+		simd_call_d = SIMD_call % simdfunccall
+
+		includeoptions = includeoptions_simd % {'funclabel' : funcname}
+
 	else:
-		floatfunc = specialfloatfunctmpl % {'c_operator_f' : func['c_operator_f']}
-		doublefunc = specialdoublefunctmpl % {'c_operator_d' : func['c_operator_d']}
+		nosimdparam = ''
+		nosimddecl = ''
+		helpsimd1 = ''
+		helpsimd2 = ''
+		simd_call_f = ''
+		simd_call_d = ''
+		includeoptions = includeoptions_nosimd
+
+
+	# Get the correct C template for the calculation, filled out for the appropriate type. 
+	floatfunc = cfunctmpl.get(c_code_template) % {'c_operator' : func['c_operator_f']}
+	doublefunc = cfunctmpl.get(c_code_template) % {'c_operator' : func['c_operator_d']}
+
 
 	supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-	# Insert the appropriate arithmetic constant or functions here.
-	if func['funcname'] == 'degrees':
-		arithcalcs = radtodeg
-		MSVSCcompat = MSVSCmath
-	elif func['funcname'] == 'radians':
-		arithcalcs = degtorad
-		MSVSCcompat = MSVSCmath
-	else:
-		arithcalcs = ''
-		MSVSCcompat = ''
-
-
-	funcdata = {'funclabel' : func['funcname'], 
-			'funcfloatname' : func['c_operator_f'], 'funcdoublename' : func['c_operator_d'],
-			'floatfunc' : floatfunc, 'doublefunc' : doublefunc,
+	funcdata = {'funclabel' : funcname, 
+			'funcfloatname' : func['c_operator_f'], 
+			'funcdoublename' : func['c_operator_d'],
+			'nosimdparam' : nosimdparam,
+			'nosimddecl' : nosimddecl,
+			'floatfunc' : floatfunc, 
+			'doublefunc' : doublefunc,
 			'opcodedocs' : func['opcodedocs'], 
 			'supportedarrays' : supportedarrays,
 			'matherrors' : ', '.join(func['matherrors'].split(',')),
-			'arithcalcs' : arithcalcs,
-			'MSVSCcompat' : MSVSCcompat}	
+			'arithcalcs' : degrad.get(funcname, ''),
+			'MSVSCcompat' : degradmsvc.get(funcname, ''),
+			'includeoptions' : includeoptions,
+			'simd_call_f' : simd_call_f,
+			'simd_call_d' : simd_call_d,
+			'helpsimd1' : helpsimd1,
+			'helpsimd2' : helpsimd2,
+			}	
 
 
 	with open(filename, 'w') as f:
-		f.write(mathfunc1 % funcdata)
+		f.write(mathfunc1_template % funcdata)
 
 
 # ==============================================================================
+
+
+
+# The original date of the SIMD C code.
+simdcodedate = '24-Mar-2019'
+simdfilename = '_simd_x86'
+
+# This outputs the SIMD version.
+
+for func in simdlist:
+
+	outputlist = []
+
+	funcname = func['funcname']
+	c_code_template = func['c_code_template']
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+	# Add the additional math and constant information required for
+	# degrees and radians.
+	outputlist.append(degradmsvc.get(funcname, ''))
+	outputlist.append(degrad.get(funcname, ''))
+	outputlist.append(degrad_vec.get(funcname, ''))
+
+
+	# Get the correct C template for the calculation, filled out for the appropriate type. 
+	floatfunc = cfunctmpl.get(c_code_template) % {'c_operator' : func['c_operator_f']}
+	doublefunc = cfunctmpl.get(c_code_template) % {'c_operator' : func['c_operator_d']}
+
+
+	# Output the generated code.
+	for arraycode in codegen_common.floatarrays:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+
+		if arraycode == 'f':
+			c_operator = floatfunc % {'c_operator' : func['c_operator_f']}
+		else:
+			c_operator = doublefunc % {'c_operator' : func['c_operator_d']}
+
+
+
+		# The compare_ops symbols is the same for integer and floating point.
+		datavals = {'funclabel' : funcname,
+					'arraytype' : arraytype, 
+					'funcmodifier' : arraytype.replace(' ', '_'),
+					'arraycode' : arraycode,
+					'arraytype' : codegen_common.arraytypes[arraycode],
+					'simdop' : simdop[arraycode][funcname],
+					'simdcleanup' : c_operator,
+					}
+
+
+		# Start of function definition.
+		datavals.update(simdvalues[arraycode])
+		outputlist.append(ops_simdsupport % datavals)
+
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================
+

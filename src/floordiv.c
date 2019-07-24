@@ -39,6 +39,8 @@
 
 #include "arrayparams_two.h"
 
+
+
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -1813,6 +1815,7 @@ signed int floordiv_float_1(Py_ssize_t arraylen, float *data1, float param, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / param);
 		}
@@ -1842,6 +1845,7 @@ signed int floordiv_float_2(Py_ssize_t arraylen, float *data1, float param, floa
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / param);
 		}
@@ -1871,6 +1875,7 @@ signed int floordiv_float_3(Py_ssize_t arraylen, float param, float *data2, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = floorf(param / data2[x]);
 		}
@@ -1901,6 +1906,7 @@ signed int floordiv_float_4(Py_ssize_t arraylen, float param, float *data2, floa
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floorf(param / data2[x]);
 		}
@@ -1930,6 +1936,7 @@ signed int floordiv_float_5(Py_ssize_t arraylen, float *data1, float *data2, uns
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / data2[x]);
 		}
@@ -1959,6 +1966,7 @@ signed int floordiv_float_6(Py_ssize_t arraylen, float *data1, float *data2, flo
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / data2[x]);
 		}
@@ -1996,6 +2004,7 @@ signed int floordiv_double_1(Py_ssize_t arraylen, double *data1, double param, u
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / param);
 		}
@@ -2025,6 +2034,7 @@ signed int floordiv_double_2(Py_ssize_t arraylen, double *data1, double param, d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / param);
 		}
@@ -2054,6 +2064,7 @@ signed int floordiv_double_3(Py_ssize_t arraylen, double param, double *data2, u
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = floor(param / data2[x]);
 		}
@@ -2084,6 +2095,7 @@ signed int floordiv_double_4(Py_ssize_t arraylen, double param, double *data2, d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floor(param / data2[x]);
 		}
@@ -2113,6 +2125,7 @@ signed int floordiv_double_5(Py_ssize_t arraylen, double *data1, double *data2, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / data2[x]);
 		}
@@ -2142,6 +2155,7 @@ signed int floordiv_double_6(Py_ssize_t arraylen, double *data1, double *data2, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / data2[x]);
 		}
@@ -2178,7 +2192,7 @@ static PyObject *py_floordiv(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "floordiv");
+	arraydata = getparams_two(self, args, keywds, 1, 0, "floordiv");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -2636,7 +2650,7 @@ Call formats: \n\
   parameter is ignored.  \n\
 * matherrors - If true, arithmetic error checking is disabled. The  \n\
   default is false. \n\
-\n");
+");
 
 /*--------------------------------------------------------------------------- */
 

@@ -35,20 +35,28 @@
 // This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
 // the M_PI constant. This must be immediately above <math.h>.
 #define _USE_MATH_DEFINES
+#include <math.h>
+
 
 #include <math.h>
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
 
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "degrees_simd_x86.h"
+#endif
 
 
 /*--------------------------------------------------------------------------- */
 
 // Used to calculate radians to degrees.
-const double radtodeg_d = 180.0 / M_PI;
-const float radtodeg_f = (float) (180.0 / M_PI);
+#define RADTODEG_D 180.0 / M_PI
+#define RADTODEG_F (float) (180.0 / M_PI)
 
 /*--------------------------------------------------------------------------- */
 
@@ -60,33 +68,46 @@ const float radtodeg_f = (float) (180.0 / M_PI);
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int degrees_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int degrees_float(Py_ssize_t arraylen, int nosimd, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			degrees_float_2_simd(arraylen, data, dataout);
+		} else {
+			degrees_float_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
+
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = radtodeg_f * data[x];
+				dataout[x] = RADTODEG_F * data[x];
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = radtodeg_f * data[x];
+				data[x] = RADTODEG_F * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = radtodeg_f * data[x];
+				dataout[x] = RADTODEG_F * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = radtodeg_f * data[x];
+				data[x] = RADTODEG_F * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
@@ -103,33 +124,46 @@ signed int degrees_float(Py_ssize_t arraylen, float *data, float *dataout, unsig
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int degrees_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int degrees_double(Py_ssize_t arraylen, int nosimd, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			degrees_double_2_simd(arraylen, data, dataout);
+		} else {
+			degrees_double_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
+
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = radtodeg_d * data[x];
+				dataout[x] = RADTODEG_D * data[x];
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = radtodeg_d * data[x];
+				data[x] = RADTODEG_D * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = radtodeg_d * data[x];
+				dataout[x] = RADTODEG_D * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = radtodeg_d * data[x];
+				data[x] = RADTODEG_D * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
@@ -166,12 +200,12 @@ static PyObject *py_degrees(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = degrees_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = degrees_float(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = degrees_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = degrees_double(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.
@@ -222,7 +256,7 @@ Call formats: \n\
     degrees(array1, outparray) \n\
     degrees(array1, maxlen=y) \n\
     degrees(array1, matherrors=False)) \n\
-\n\
+    degrees(array, nosimd=False) \n\\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
 * outparray - The output array. This parameter is optional. \n\
@@ -232,6 +266,8 @@ Call formats: \n\
   parameter is ignored. \n\
 * matherrors - If true, arithmetic error checking is disabled. The \n\
   default is false. \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

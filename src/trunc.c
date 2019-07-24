@@ -36,8 +36,14 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
 
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "trunc_simd_x86.h"
+#endif
 
 
 
@@ -48,11 +54,24 @@
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int trunc_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int trunc_float(Py_ssize_t arraylen, int nosimd, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			trunc_float_2_simd(arraylen, data, dataout);
+		} else {
+			trunc_float_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
@@ -91,11 +110,24 @@ signed int trunc_float(Py_ssize_t arraylen, float *data, float *dataout, unsigne
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int trunc_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int trunc_double(Py_ssize_t arraylen, int nosimd, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			trunc_double_2_simd(arraylen, data, dataout);
+		} else {
+			trunc_double_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
@@ -154,12 +186,12 @@ static PyObject *py_trunc(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = trunc_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = trunc_float(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = trunc_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = trunc_double(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.
@@ -210,7 +242,7 @@ Call formats: \n\
     trunc(array1, outparray) \n\
     trunc(array1, maxlen=y) \n\
     trunc(array1, matherrors=False)) \n\
-\n\
+    trunc(array, nosimd=False) \n\\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
 * outparray - The output array. This parameter is optional. \n\
@@ -220,6 +252,8 @@ Call formats: \n\
   parameter is ignored. \n\
 * matherrors - If true, arithmetic error checking is disabled. The \n\
   default is false. \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

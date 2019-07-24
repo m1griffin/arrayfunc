@@ -63,7 +63,7 @@ doctempl2a = '''
 
 '''
 
-doctempl2b = '''
+doctemplbinops2a = '''
   %(funcname)s(array1, param)
   %(funcname)s(array1, param, outparray)
   %(funcname)s(param, array1)
@@ -74,11 +74,25 @@ doctempl2b = '''
 
 '''
 
+doctemplbinops2b = '''
+  %(funcname)s(array1, param)
+  %(funcname)s(array1, param, outparray)
+  %(funcname)s(param, array1)
+  %(funcname)s(param, array1, outparray)
+  %(funcname)s(array1, array2)
+  %(funcname)s(array1, array2, outparray)
+  %(funcname)s(array1, param, maxlen=y)
+  %(funcname)s(array1, param, nosimd=False)
+
+'''
+
+
 doctempl2c = '''
   result = %(funcname)s(array1, param)
   result = %(funcname)s(param, array1)
   result = %(funcname)s(array1, array2)
   result = %(funcname)s(array1, param, maxlen=y)
+  result = %(funcname)s(array1, param, nosimd=False)
 
 '''
 
@@ -89,6 +103,7 @@ doctempl2d = '''
     %(funcname)s(array1, matherrors=False))
 
 '''
+
 
 doctempl2e = '''
     %(funcname)s(array1)
@@ -108,6 +123,29 @@ doctempl2f = '''
     %(funcname)s(array1, param2, param3, outparray) 
     %(funcname)s(array1, array2, array3, maxlen=y) 
     %(funcname)s(array1, array2, array3, matherrors=False) 
+
+'''
+
+
+doctempl2g = '''
+    %(funcname)s(array1)
+    %(funcname)s(array1, outparray)
+    %(funcname)s(array1, maxlen=y)
+    %(funcname)s(array1, matherrors=False))
+    %(funcname)s(array1, nosimd=False))
+
+'''
+
+doctempl2h = '''
+  %(funcname)s(array1, param)
+  %(funcname)s(array1, param, outparray)
+  %(funcname)s(param, array1)
+  %(funcname)s(param, array1, outparray)
+  %(funcname)s(array1, array2)
+  %(funcname)s(array1, array2, outparray)
+  %(funcname)s(array1, param, maxlen=y)
+  %(funcname)s(array1, param, matherrors=False)
+  %(funcname)s(array1, param, nosimd=False)
 
 '''
 
@@ -184,6 +222,10 @@ doctempl3resultnan = '''* result - A boolean value corresponding to the result o
   value will be false.
 '''
 
+doctempl3simd = '''* nosimd - If True, SIMD acceleration is disabled. This parameter is
+  optional. The default is FALSE.
+'''
+
 
 # ==============================================================================
 
@@ -192,13 +234,23 @@ template_mathop = [doctempl1, doctempl2a,
 	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
 	doctempl3maxlen, doctempl3err]
 
-template_binop = [doctempl1, doctempl2b, 
+template_mathop_simd = [doctempl1, doctempl2h, 
+	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
+	doctempl3maxlen, doctempl3err, doctempl3simd]
+
+
+template_binop = [doctempl1, doctemplbinops2a, 
 	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
 	doctempl3maxlen]
 
+template_binop2 = [doctempl1, doctemplbinops2b, 
+	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
+	doctempl3maxlen, doctempl3simd]
+
+
 template_comp = [doctempl1, doctempl2c, 
 	doctempl3arr1, doctempl3param, doctempl3arr2, 
-	doctempl3maxlen, doctempl3resultcomp]
+	doctempl3maxlen, doctempl3resultcomp, doctempl3simd]
 
 template_mathfunc_2 = template_mathop
 
@@ -211,10 +263,19 @@ template_mathfunc_3 = [doctempl1, doctempl2f,
 template_mathfunc_1 = [doctempl1, doctempl2d, 
 	doctempl3arr1, doctempl3arrout, doctempl3maxlen, doctempl3err]
 
-template_mathfunc_1s = template_mathfunc_1
+template_mathfunc_1s = [doctempl1, doctempl2g, 
+	doctempl3arr1, doctempl3arrout, doctempl3maxlen, doctempl3err, doctempl3simd]
 
-template_uniop = [doctempl1, doctempl2d, 
+
+template_mathfunc_1simd = template_mathfunc_1s
+
+
+template_uniop = [doctempl1, doctempl2g, 
+	doctempl3arr1, doctempl3maxlen, doctempl3err, doctempl3simd]
+
+template_factorial = [doctempl1, doctempl2d, 
 	doctempl3arr1, doctempl3maxlen, doctempl3err]
+
 
 template_ldexpfunc_2 = [doctempl1, doctempl2ldexp, 
 	doctempl3arr1, doctempl3exp, doctempl3arrout, 
@@ -232,14 +293,18 @@ template_invert = [doctempl1, doctempl2e,
 doctemplates = {
 	'template_invert' : template_invert, 
 	'template_mathfunc_1s' : template_mathfunc_1s, 
+	'template_mathfunc_1simd' : template_mathfunc_1simd, 
 	'template_mathfuncnan' : template_mathfuncnan, 
 	'template_ldexpfunc_2' : template_ldexpfunc_2, 
 	'template_uniop' : template_uniop,
+	'template_factorial' : template_factorial,
 	'template_mathfunc_1' : template_mathfunc_1,
 	'template_mathfunc_2' : template_mathfunc_2, 
 	'template_comp' : template_comp, 
 	'template_binop' : template_binop, 
+	'template_binop2' : template_binop2, 
 	'template_mathop' : template_mathop, 
+	'template_mathop_simd' : template_mathop_simd, 
 	'template_mathfunc_3' : template_mathfunc_3 
 }
 
@@ -290,7 +355,14 @@ def WriteTableSIMD(cheaderdata, outputfile):
 	TableData = []
 	for func, arrstat in cheaderdata:
 		arrformat = dict([(x, 'X' if y else ' ') for x,y in arrstat.items()])
-		arrformat['func'] = func
+
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character. 
+		if func.endswith('_'):
+			arrformat['func'] = func.rstrip('_') + '\_'
+		else:
+			arrformat['func'] = func
+		
 		TableData.append(tableformat % arrformat)
 
 

@@ -2,12 +2,12 @@
 ##############################################################################
 # Project:  arrayfunc
 # Purpose:  Generate the unit tests for asum.
-# Language: Python 3.4
-# Date:     13-Jun-2014
+# Language: Python 3.6
+# Date:     21-May-2014
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -23,156 +23,166 @@
 #
 ##############################################################################
 
-
 # ==============================================================================
 
-import copy
-
+import itertools
 import codegen_common
 
 # ==============================================================================
 
-signedtestdata = {'gentest' : 'itertools.chain(range(1,10,2), range(11,-88,-3))',
-			'maxval' : 'itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))',
-			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)'}
-
-unsignedtestdata = {'gentest' : 'itertools.chain(range(1,10,2), range(88,12,-3))',
-			'maxval' : 'itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(88,12,-3))',
-			'minval' : 'itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10)'}
-
-floattestdata = {'gentest' : '[float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))]',
-			'maxval' : '[float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))]',
-			'minval' : '[float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)]'}
-
-testdata = {
-	'b' : signedtestdata, 'B' : unsignedtestdata,
-	'h' : signedtestdata, 'H' : unsignedtestdata,
-	'i' : signedtestdata, 'I' : unsignedtestdata,
-	'l' : signedtestdata, 'L' : unsignedtestdata,
-	'q' : copy.copy(signedtestdata), 'Q' : copy.copy(unsignedtestdata),
-	'f' : floattestdata, 'd' : floattestdata,
-	}
-
-
-
-# This defines how to test with and without SIMD.
-simdon = {'simdlabel' : 'with_SIMD', 'simdstatus' : 'with', 'simdtest' : ''}
-simdoff = {'simdlabel' : 'without_SIMD', 'simdstatus' : 'without SIMD', 'simdtest' : ', nosimd=True'}
-simdtests = [simdoff, simdon]
-simdnone = {'simdlabel' : '', 'simdstatus' : '', 'simdtest' : ''}
-
 # ==============================================================================
 
 # The basic template for testing each array type for operator function.
-op_template = '''
+op_template_general = '''
+
 ##############################################################################
-class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_general_%(typecode)s(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = '%(typecode)s'
 
-		self.MaxVal = arrayfunc.arraylimits.%(typecode)s_max
-		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if '%(typecode)s' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.%(typecode)s_max
+			MinVal = arrayfunc.arraylimits.%(typecode)s_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if '%(typecode)s' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('%(typecode)s', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
 
 
 	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code %(typelabel)s. General test %(simdstatus)s.
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code %(typecode)s. General test.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data %(simdtest)s)
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code %(typelabel)s. General test with overflow checking on %(simdstatus)s.
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code %(typecode)s. Test optional maxlen parameter.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, matherrors=False %(simdtest)s)
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code %(typelabel)s. General test with overflow checking off %(simdstatus)s.
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code %(typecode)s. Test optional matherrors parameter.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, matherrors=True %(simdtest)s)
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code %(typelabel)s. General test with array limit applied %(simdstatus)s.
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code %(typecode)s. Test optional nosimd parameter.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, maxlen=10 %(simdtest)s)
-		self.assertEqual(result, sum(data[:10]))
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking on %(simdstatus)s.
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code %(typecode)s. Test optional maxlen, matherrors, nosimd parameters together.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 %(simdtest)s)
-		self.assertEqual(result, sum(data[:10]))
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
 
+
+
+##############################################################################
+
+'''
+
+# ==============================================================================
+
+
+# The basic template for testing each array type for parameter errors.
+op_template_params = '''
+
+##############################################################################
+class asum_parameter_%(typecode)s(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
 
 	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code %(typelabel)s. General test with array limit applied and overflow checking off %(simdstatus)s.
+	def setUp(self):
+		"""Initialise.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 %(simdtest)s)
-		self.assertEqual(result, sum(data[:10]))
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.%(typecode)s_max
+		MinVal = arrayfunc.arraylimits.%(typecode)s_min
+
+		self.gentest = array.array('%(typecode)s', [100] * arraylength)
 
 
 	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code %(typelabel)s. Test invalid parameter type for array data %(simdstatus)s.
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 %(simdtest)s)
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code %(typelabel)s. Test invalid parameter type for overflow flag %(simdstatus)s.
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid parameter type.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' %(simdtest)s)
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code %(typelabel)s. Test invalid parameter type for limit %(simdstatus)s.
-		"""
-		data = array.array('%(typecode)s', %(gentest)s)
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' %(simdtest)s)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code %(typelabel)s. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code %(typecode)s. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -183,214 +193,150 @@ class asum_operator_%(typelabel)s_%(simdlabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code %(typelabel)s. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code %(typecode)s. Test excess parameters.
 		"""
-		data = array.array('%(typecode)s', %(gentest)s)
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
 
-'''
-
-
-# Overflow check for positive numbers. Smaller numbers cannot overflow in a reasonable amount of RAM.
-maxovlf_template = '''
 	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code %(typelabel)s. Arithmetic positive overflow expected.
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid keyword parameter name.
 		"""
-		data = array.array('%(typecode)s', %(maxval)s)
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data %(simdtest)s)
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
 
-'''
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
 
 
-# Overflow check for negative numbers. Smaller numbers cannot overflow in a reasonable amount of RAM.
-minovlf_template = '''
 	########################################################
-	def test_function_13(self):
-		"""Test asum  - Array code %(typelabel)s. Arithmetic overflow expected for negative numbers.
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid maxlen keyword type.
 		"""
-		data = array.array('%(typecode)s', %(minval)s)
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data %(simdtest)s)
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
 
-'''
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
-endclass_template = '''
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code %(typecode)s. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
 ##############################################################################
-'''
 
+'''
 
 # ==============================================================================
 
+# ==============================================================================
 
-# The basic template for testing floating point arrays with nan, inf, -inf.
-nan_template = '''
+# The basic template for testing for numeric overflow.
+op_template_overflow = '''
+
 ##############################################################################
-class asum_nan_%(typelabel)s(unittest.TestCase):
-	"""Test with floating point nan inf, and -inf.
+class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
+
+		arraylength = 96
+
 		self.MaxVal = arrayfunc.arraylimits.%(typecode)s_max
 		self.MinVal = arrayfunc.arraylimits.%(typecode)s_min
 
-		self.data_nan = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_inf = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_ninf = array.array('%(typecode)s', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5] * 10)
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = %(rotplaces)s
+		basedata = ([1] * arraylength) + [self.%(testval)s, self.%(testval)s] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('%(typecode)s', testbasedata)
 
 
 	########################################################
-	def test_nan_01(self):
-		"""Test array with nan - Array code %(typelabel)s, default SIMD state.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if '%(typecode)s' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif '%(typecode)s' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val %% (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking enabled, array data shifted %(rotplaces)s.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_nan)
+			result = arrayfunc.asum(self.testdata)
+
 
 	########################################################
-	def test_nan_02(self):
-		"""Test array with infinity - Array code %(typelabel)s, default SIMD state.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted %(rotplaces)s.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_inf)
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
 
 	########################################################
-	def test_nan_03(self):
-		"""Test array with negative infinity - Array code %(typelabel)s, default SIMD state.
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted %(rotplaces)s.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_ninf)
-
-	########################################################
-	def test_nan_04(self):
-		"""Test array with nan - Array code %(typelabel)s, overflow disabled.
-		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_05(self):
-		"""Test array with infinity - Array code %(typelabel)s, overflow disabled.
-		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_06(self):
-		"""Test array with negative infinity - Array code %(typelabel)s, overflow disabled.
-		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_07(self):
-		"""Test array with nan - Array code %(typelabel)s, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_08(self):
-		"""Test array with infinity - Array code %(typelabel)s, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_09(self):
-		"""Test array with negative infinity - Array code %(typelabel)s, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
@@ -399,60 +345,298 @@ class asum_nan_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
-# Data for the copyright header files.
-headerdate = codegen_common.FormatHeaderData('test_asum', '11-Jun-2014', 'asum')
+# The basic template for testing floating point arrays with nan, inf -inf.
+nonfinite_template = '''
+##############################################################################
+class asum_nonfinite_%(rotplaces)s_%(arrayevenodd)s_arraysize_%(typecode)s(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%%0.3f != %%0.3f' %% (expecteditem, dataoutitem))
 
 
-with open('test_asum.py', 'w') as f:
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if '%(arrayevenodd)s' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = %(rotplaces)s
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('%(typecode)s', nanvaldatabase)
+		self.data_inf = array.array('%(typecode)s',  infvaldatabase)
+		self.data_ninf = array.array('%(typecode)s',  ninfvaldatabase)
+		self.data_mixed = array.array('%(typecode)s',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code %(typecode)s. Test NaN data with error checking on, %(arrayevenodd)s length, array data shifted %(rotplaces)s.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code %(typecode)s. Test NaN data with error checking off, no SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code %(typecode)s. Test NaN data with error checking off, with SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code %(typecode)s. Test inf data with error checking on, %(arrayevenodd)s length, array data shifted %(rotplaces)s.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code %(typecode)s. Test inf data with error checking off, no SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code %(typecode)s. Test inf data with error checking off, with SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code %(typecode)s. Test Negative Inf data with error checking on, %(arrayevenodd)s length, array data shifted %(rotplaces)s.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code %(typecode)s. Test Negative Inf data with error checking off, no SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code %(typecode)s. Test Negative Inf data with error checking off, with SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code %(typecode)s. Test Mixed data with error checking on, %(arrayevenodd)s length, array data shifted %(rotplaces)s.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code %(typecode)s. Test Mixed data with error checking off, no SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code %(typecode)s. Test Mixed data with error checking off, with SIMD, %(arrayevenodd)s length array data shifted %(rotplaces)s.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+'''
+
+
+# ==============================================================================
+
+
+# ==============================================================================
+
+# This is used to generate test template data for non-finite tests.
+def gennonfinitetestdata():
+	""" Generate test template data for non-finite tests.
+	Returns: (list) - A list of dictionaries containing the keys and
+		values to generate individual test functions.
+	"""
+
+	# These are the different test values we will combine in various ways.
+	arraycode = [('typecode', x) for x in codegen_common.floatarrays]
+	arraylen = (('arrayevenodd', 'even'), ('arrayevenodd', 'odd'))
+	datarot = [('rotplaces', x) for x in range(5)]
+
+	# The product function produces all possible combinations.
+	combos = list(itertools.product(arraycode, arraylen, datarot))
+
+
+	# Convert the data into a list of dictionaries.
+	testdata = [dict(x) for x in combos]
+
+
+	return testdata
+
+# ==============================================================================
+
+
+# This is used to generate test template data for overflow tests.
+def genoverflowtestdata(arraystested, maxormin):
+	""" Generate test template data for overflow tests.
+	arraystested (list) - A list of the array codes to be tested.
+	maxormin (string) - Either MaxVal or MinVal.
+	Returns: (list) - A list of dictionaries containing the keys and
+		values to generate individual test functions.
+	"""
+
+	# These are the different test values we will combine in various ways.
+	arraycode = [('typecode', x) for x in arraystested]
+	testval = [('testval',  maxormin)]
+	datarot = [('rotplaces', x) for x in range(5)]
+
+	# The product function produces all possible combinations.
+	combos = list(itertools.product(arraycode, testval, datarot))
+
+
+	# Convert the data into a list of dictionaries.
+	testdata = [dict(x) for x in combos]
+
+
+	return testdata
+
+# ==============================================================================
+
+funcname = 'asum'
+
+filenamebase = 'test_' + funcname
+filename = filenamebase + '.py'
+headerdate = codegen_common.FormatHeaderData(filenamebase, '11-Jun-2014', funcname)
+
+
+with open(filename, 'w') as f:
 	# The copyright header.
 	f.write(codegen_common.HeaderTemplate % headerdate)
 
-	# Output the generated code for basic operator tests.
-	for funtypes in codegen_common.arraycodes:
-		datarec = copy.deepcopy(testdata[funtypes])
-		datarec['typecode'] = funtypes
-		datarec['typelabel'] = funtypes
-		# SIMD is only implemented for floating point, turn it off.
-		if funtypes in codegen_common.floatarrays:
-			datarec.update(simdoff)
-			f.write(op_template % datarec)
-		else:
-			datarec.update(simdnone)
-			f.write(op_template % datarec)
+	# Check each array type.
+	for arraycode in codegen_common.arraycodes:
 
-		# Smaller numbers cannot overflow in a reasonable amount of RAM.
-		# Overflow for positive numbers.
-		if funtypes in ('l', 'L', 'q', 'Q', 'f', 'd'):
-			f.write(maxovlf_template % datarec)
+		f.write(op_template_general % {'typecode' : arraycode})
+
+	# Check parameters.
+	for arraycode in codegen_common.arraycodes:
+		f.write(op_template_params % {'typecode' : arraycode})
 
 
-		# Overflow for negative numbers.
-		if funtypes in ('l', 'q', 'f', 'd'):
-			f.write(minovlf_template % datarec)
+	# Output the generated code for non-finite data tests.
+	for datarec in gennonfinitetestdata():
+		f.write(nonfinite_template % datarec)
 
 
-		f.write(endclass_template)
+	# Test for positive overflow. We don't check the smaller integer types 
+	# because we cannot cause an overflow in a reasonable amount of RAM.
+	for datarec in genoverflowtestdata(('l', 'L', 'q', 'Q', 'f', 'd'), 'MaxVal'):
+		f.write(op_template_overflow % datarec)
+
+	# Test for negative overflow. This can only happen with signed data.
+	for datarec in genoverflowtestdata(('l', 'q', 'f', 'd'), 'MinVal'):
+		f.write(op_template_overflow % datarec)
 
 
-	# Repeat for SIMD enabled.
-	for funtypes in codegen_common.floatarrays:
-		datarec = copy.deepcopy(testdata[funtypes])
-		datarec['typecode'] = funtypes
-		datarec['typelabel'] = funtypes
-		datarec.update(simdon)
-		f.write(op_template % datarec)
-		f.write(endclass_template)
+	#####
+	# The code which initiates the unit test.
 
-
-
-	# Output the generated code for nan and inf.
-	datarec = {}
-	for funtypes in codegen_common.floatarrays:
-		datarec['typecode'] = funtypes
-		datarec['typelabel'] = funtypes
-		f.write(nan_template % datarec)
-
-
-	f.write(codegen_common.testendtemplate % 'asum')
-
+	f.write(codegen_common.testendtemplate % funcname)
 

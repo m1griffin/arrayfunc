@@ -47,9 +47,9 @@ class %(funclabel)s_general_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		xdata = [%(test_op_x)s]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 		self.data = array.array('%(typecode)s', xdata + data%(testlabel)s + xdata)
 
@@ -81,7 +81,7 @@ class %(funclabel)s_general_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_b1(self):
-		"""Test %(funclabel)s with array limit  - Array code %(typelabel)s.
+		"""Test %(funclabel)s with array maxlen  - Array code %(typelabel)s.
 		"""
 		result = arrayfunc.%(funcname)s(self.data, maxlen=self.limited)
 
@@ -112,9 +112,9 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		xdata = [%(test_op_x)s]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 
 		self.cleandata = array.array('%(typecode)s', xdata + xdata)
@@ -173,7 +173,7 @@ class %(funclabel)s_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_b1(self):
-		"""Test %(funclabel)s value to find beyond limit parameter - Array code %(typelabel)s.
+		"""Test %(funclabel)s value to find beyond maxlen parameter - Array code %(typelabel)s.
 		"""
 		result = arrayfunc.%(funcname)s(self.testdataend, maxlen=len(self.testdataend) - 1)
 
@@ -209,9 +209,9 @@ class %(funclabel)s_param_errors_%(testlabel)s_%(typelabel)s(unittest.TestCase):
 		"""
 		xdata = [%(test_op_x)s]
 
-		datanan = [float('nan')] * len(xdata)
-		datainf = [float('inf')] * len(xdata)
-		dataninf = [float('-inf')] * len(xdata)
+		datanan = [math.nan] * len(xdata)
+		datainf = [math.inf] * len(xdata)
+		dataninf = [-math.inf] * len(xdata)
 
 		self.floatarray = array.array('%(typecode)s', xdata + data%(testlabel)s)
 		self.floatarray2 = copy.copy(self.floatarray)

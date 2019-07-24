@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     05-Apr-2018.
-# Ver:      19-Jun-2018.
+# Ver:      20-Mar-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
  
 
 ##############################################################################
-class lshift_general_b(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_b(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -80,29 +80,41 @@ class lshift_general_b(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('b', self.xvalues)
-		self.datay = array.array('b', self.yvalues)
-		self.dataout = array.array('b', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.dataout = array.array('b', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code b.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -113,16 +125,16 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -134,15 +146,15 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code b.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -153,16 +165,16 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -173,15 +185,15 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code b.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -192,16 +204,16 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -212,15 +224,15 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code b.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -231,16 +243,16 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -251,11 +263,11 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code b.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -264,12 +276,12 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code b.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -278,8 +290,8 @@ class lshift_general_b(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code b.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -783,10 +795,128 @@ class lshift_opt_param_errors_b(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_b(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('b', self.inpdata1a)
+		self.inparray2a = array.array('b', self.inpdata2a)
+		self.dataout = array.array('b', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code b.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code b.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code b.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code b.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code b.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code b.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_B(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_B(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -815,29 +945,41 @@ class lshift_general_B(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('B', self.xvalues)
-		self.datay = array.array('B', self.yvalues)
-		self.dataout = array.array('B', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.dataout = array.array('B', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code B.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -848,16 +990,16 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -869,15 +1011,15 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code B.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -888,16 +1030,16 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -908,15 +1050,15 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code B.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -927,16 +1069,16 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -947,15 +1089,15 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code B.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -966,16 +1108,16 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -986,11 +1128,11 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code B.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -999,12 +1141,12 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code B.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -1013,8 +1155,8 @@ class lshift_general_B(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code B.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1518,10 +1660,128 @@ class lshift_opt_param_errors_B(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_B(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('B', self.inpdata1a)
+		self.inparray2a = array.array('B', self.inpdata2a)
+		self.dataout = array.array('B', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code B.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code B.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code B.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code B.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code B.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code B.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_h(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_h(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -1550,29 +1810,41 @@ class lshift_general_h(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('h', self.xvalues)
-		self.datay = array.array('h', self.yvalues)
-		self.dataout = array.array('h', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.dataout = array.array('h', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code h.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1583,16 +1855,16 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1604,15 +1876,15 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code h.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1623,16 +1895,16 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1643,15 +1915,15 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code h.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1662,16 +1934,16 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1682,15 +1954,15 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code h.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1701,16 +1973,16 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1721,11 +1993,11 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code h.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -1734,12 +2006,12 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code h.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -1748,8 +2020,8 @@ class lshift_general_h(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code h.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2253,10 +2525,128 @@ class lshift_opt_param_errors_h(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_h(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('h', self.inpdata1a)
+		self.inparray2a = array.array('h', self.inpdata2a)
+		self.dataout = array.array('h', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code h.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code h.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code h.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code h.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code h.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code h.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_H(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_H(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -2285,29 +2675,41 @@ class lshift_general_H(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('H', self.xvalues)
-		self.datay = array.array('H', self.yvalues)
-		self.dataout = array.array('H', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.dataout = array.array('H', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code H.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2318,16 +2720,16 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2339,15 +2741,15 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code H.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2358,16 +2760,16 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2378,15 +2780,15 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code H.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2397,16 +2799,16 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2417,15 +2819,15 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code H.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2436,16 +2838,16 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2456,11 +2858,11 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code H.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -2469,12 +2871,12 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code H.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -2483,8 +2885,8 @@ class lshift_general_H(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code H.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -2988,10 +3390,128 @@ class lshift_opt_param_errors_H(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_H(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('H', self.inpdata1a)
+		self.inparray2a = array.array('H', self.inpdata2a)
+		self.dataout = array.array('H', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code H.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code H.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code H.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code H.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code H.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code H.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_i(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_i(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -3020,29 +3540,41 @@ class lshift_general_i(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('i', self.xvalues)
-		self.datay = array.array('i', self.yvalues)
-		self.dataout = array.array('i', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.dataout = array.array('i', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code i.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3053,16 +3585,16 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3074,15 +3606,15 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code i.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3093,16 +3625,16 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3113,15 +3645,15 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code i.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3132,16 +3664,16 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3152,15 +3684,15 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code i.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3171,16 +3703,16 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3191,11 +3723,11 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code i.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -3204,12 +3736,12 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code i.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -3218,8 +3750,8 @@ class lshift_general_i(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code i.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3723,10 +4255,128 @@ class lshift_opt_param_errors_i(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_i(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('i', self.inpdata1a)
+		self.inparray2a = array.array('i', self.inpdata2a)
+		self.dataout = array.array('i', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code i.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code i.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code i.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code i.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code i.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code i.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_I(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_I(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -3755,29 +4405,41 @@ class lshift_general_I(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('I', self.xvalues)
-		self.datay = array.array('I', self.yvalues)
-		self.dataout = array.array('I', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.dataout = array.array('I', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code I.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3788,16 +4450,16 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3809,15 +4471,15 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code I.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3828,16 +4490,16 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3848,15 +4510,15 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code I.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3867,16 +4529,16 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3887,15 +4549,15 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code I.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3906,16 +4568,16 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -3926,11 +4588,11 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code I.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -3939,12 +4601,12 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code I.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -3953,8 +4615,8 @@ class lshift_general_I(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code I.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4458,10 +5120,128 @@ class lshift_opt_param_errors_I(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_I(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('I', self.inpdata1a)
+		self.inparray2a = array.array('I', self.inpdata2a)
+		self.dataout = array.array('I', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code I.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code I.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code I.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code I.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code I.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code I.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_l(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_l(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -4490,29 +5270,41 @@ class lshift_general_l(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('l', self.xvalues)
-		self.datay = array.array('l', self.yvalues)
-		self.dataout = array.array('l', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.dataout = array.array('l', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code l.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4523,16 +5315,16 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4544,15 +5336,15 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code l.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4563,16 +5355,16 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4583,15 +5375,15 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code l.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4602,16 +5394,16 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4622,15 +5414,15 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code l.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4641,16 +5433,16 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -4661,11 +5453,11 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code l.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -4674,12 +5466,12 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code l.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -4688,8 +5480,8 @@ class lshift_general_l(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code l.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5193,10 +5985,128 @@ class lshift_opt_param_errors_l(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_l(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('l', self.inpdata1a)
+		self.inparray2a = array.array('l', self.inpdata2a)
+		self.dataout = array.array('l', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code l.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code l.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code l.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code l.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code l.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code l.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_L(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_L(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -5225,29 +6135,41 @@ class lshift_general_L(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('L', self.xvalues)
-		self.datay = array.array('L', self.yvalues)
-		self.dataout = array.array('L', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.dataout = array.array('L', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code L.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5258,16 +6180,16 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5279,15 +6201,15 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code L.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5298,16 +6220,16 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5318,15 +6240,15 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code L.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5337,16 +6259,16 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5357,15 +6279,15 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code L.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5376,16 +6298,16 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5396,11 +6318,11 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code L.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -5409,12 +6331,12 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code L.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -5423,8 +6345,8 @@ class lshift_general_L(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code L.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5928,10 +6850,128 @@ class lshift_opt_param_errors_L(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_L(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('L', self.inpdata1a)
+		self.inparray2a = array.array('L', self.inpdata2a)
+		self.dataout = array.array('L', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code L.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code L.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code L.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code L.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code L.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code L.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_q(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_q(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -5960,29 +7000,41 @@ class lshift_general_q(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('q', self.xvalues)
-		self.datay = array.array('q', self.yvalues)
-		self.dataout = array.array('q', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.dataout = array.array('q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -5993,16 +7045,16 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6014,15 +7066,15 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6033,16 +7085,16 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6053,15 +7105,15 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6072,16 +7124,16 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6092,15 +7144,15 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6111,16 +7163,16 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6131,11 +7183,11 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code q.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -6144,12 +7196,12 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code q.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -6158,8 +7210,8 @@ class lshift_general_q(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code q.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6663,10 +7715,128 @@ class lshift_opt_param_errors_q(unittest.TestCase):
 
 ##############################################################################
 
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_q(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('q', self.inpdata1a)
+		self.inparray2a = array.array('q', self.inpdata2a)
+		self.dataout = array.array('q', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code q.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
+
+
+
+##############################################################################
+
  
 
 ##############################################################################
-class lshift_general_Q(unittest.TestCase):
+class lshift_general_even_arraysize_without_simd_Q(unittest.TestCase):
 	"""Test lshift for basic general function operation using numeric 
 	data 0, 1, 2.
 	test_template_binop
@@ -6695,29 +7865,41 @@ class lshift_general_Q(unittest.TestCase):
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.xvalues = [0,1,2,3,4,5,6,7,8,9]
-		self.yvalues = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.xvalues)]
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.limited = len(self.xvalues) // 2
 
-		self.datax = array.array('Q', self.xvalues)
-		self.datay = array.array('Q', self.yvalues)
-		self.dataout = array.array('Q', [0]*len(self.xvalues))
+		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([0, 1, 2]), range(testdatasize))]
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.dataout = array.array('Q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
 
 
 	########################################################
 	def test_lshift_basic_array_num_none_a1(self):
 		"""Test lshift as *array-num-none* for basic function - Array code Q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval)
+				arrayfunc.lshift(datax, testval )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6728,16 +7910,16 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_num_none_a2(self):
 		"""Test lshift as *array-num-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datax, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6749,15 +7931,15 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b1(self):
 		"""Test lshift as *array-num-array* for basic function - Array code Q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				expected = [x << testval for x in datax]
 
-				arrayfunc.lshift(datax, testval, self.dataout)
+				arrayfunc.lshift(datax, testval, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6768,16 +7950,16 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_num_array_b2(self):
 		"""Test lshift as *array-num-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.yvalues:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.datax)
+				datax = copy.copy(self.data1)
 
 				pydataout = [x << testval for x in datax]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(datax, testval, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6788,15 +7970,15 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c1(self):
 		"""Test lshift as *num-array-none* for basic function - Array code Q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay)
+				arrayfunc.lshift(testval, datay )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6807,16 +7989,16 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_num_array_none_c2(self):
 		"""Test lshift as *num-array-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(datay, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6827,15 +8009,15 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d1(self):
 		"""Test lshift as *num-array-array* for basic function - Array code Q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				expected = [testval << x for x in datay]
 
-				arrayfunc.lshift(testval, datay, self.dataout)
+				arrayfunc.lshift(testval, datay, self.dataout )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6846,16 +8028,16 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_num_array_array_d2(self):
 		"""Test lshift as *num-array-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.xvalues:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.datay)
+				datay = copy.copy(self.data2)
 
 				pydataout = [testval << x for x in datay]
 				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
-				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited)
+				arrayfunc.lshift(testval, datay, self.dataout, maxlen=self.limited )
 
 				for dataoutitem, expecteditem in zip(self.dataout, expected):
 					# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -6866,11 +8048,11 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e1(self):
 		"""Test lshift as *array-array-none* for basic function - Array code Q.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
 
-		arrayfunc.lshift(self.datax, self.datay)
+		arrayfunc.lshift(self.data1, self.data2 )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -6879,12 +8061,12 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_array_none_e2(self):
 		"""Test lshift as *array-array-none* for basic function with array limit - Array code Q.
 		"""
-		pydataout = [x << y for (x, y) in zip(self.datax, self.datay)]
-		expected = pydataout[0:self.limited] + list(self.datax)[self.limited:]
+		pydataout = [x << y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
 
-		arrayfunc.lshift(self.datax, self.datay, maxlen=self.limited)
+		arrayfunc.lshift(self.data1, self.data2, maxlen=self.limited )
 
-		for dataoutitem, expecteditem in zip(self.datax, expected):
+		for dataoutitem, expecteditem in zip(self.data1, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
@@ -6893,8 +8075,8 @@ class lshift_general_Q(unittest.TestCase):
 	def test_lshift_basic_array_array_array_e3(self):
 		"""Test lshift as *array-array-array* for basic function - Array code Q.
 		"""
-		expected = [x << y for (x, y) in zip(self.datax, self.datay)]
-		arrayfunc.lshift(self.datax, self.datay, self.dataout)
+		expected = [x << y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.lshift(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -7393,6 +8575,124 @@ class lshift_opt_param_errors_Q(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, matherrors=True)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class lshift_opt_nosimd_param_errors_Q(unittest.TestCase):
+	"""Test lshift for invalid nosimd parameter.
+	param_invalid_opt_nosimd_notpresent_template
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.inpdata1a = [0,1,2,3,4,5,6,7,8,9]
+		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0, 1, 2]), self.inpdata1a)]
+
+		arraysize = len(self.inpdata1a)
+		self.outpdata = itertools.repeat(0, arraysize)
+
+
+		self.inparray1a = array.array('Q', self.inpdata1a)
+		self.inparray2a = array.array('Q', self.inpdata2a)
+		self.dataout = array.array('Q', self.outpdata)
+
+
+		self.inparray1b = copy.copy(self.inparray1a)
+		self.inparray2b = copy.copy(self.inparray2a)
+
+
+
+	########################################################
+	def test_lshift_array_num_none_a1(self):
+		"""Test lshift as *array-num-none* for nosimd=True (unsupported option) - Array code Q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_num_array_b1(self):
+		"""Test lshift as *array-num-array* for nosimd=True (unsupported option) - Array code Q.
+		"""
+		# Copy the array so we don't change the original data.
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, inpvalue, self.dataout)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, inpvalue, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_none_c1(self):
+		"""Test lshift as *num-array-none* for nosimd=True (unsupported option) - Array code Q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_num_array_array_d1(self):
+		"""Test lshift as *num-array-array* for nosimd=True (unsupported option) - Array code Q.
+		"""
+		inpvalue = self.inparray1a[0]
+
+		# This version is expected to pass.
+		arrayfunc.lshift(inpvalue, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(inpvalue, self.inparray2b, self.dataout, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_none_e1(self):
+		"""Test lshift as *array-array-none* for nosimd=True (unsupported option) - Array code Q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, nosimd=True)
+
+
+	########################################################
+	def test_lshift_array_array_array_f1(self):
+		"""Test lshift as *array-array-array* for nosimd=True (unsupported option) - Array code Q.
+		"""
+
+		# This version is expected to pass.
+		arrayfunc.lshift(self.inparray1a, self.inparray2a, self.dataout)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.lshift(self.inparray1b, self.inparray2b, self.dataout, nosimd=True)
 
 
 

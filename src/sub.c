@@ -39,6 +39,12 @@
 
 #include "arrayparams_two.h"
 
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "sub_simd_x86.h"
+#endif
+
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
@@ -51,7 +57,7 @@
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed char param, unsigned int ignoreerrors) {
+signed int sub_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -59,6 +65,15 @@ signed int sub_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -88,7 +103,7 @@ signed int sub_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed cha
 }
 
 // param_arr_num_arr
-signed int sub_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3, unsigned int ignoreerrors) {
+signed int sub_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char param, signed char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -96,6 +111,15 @@ signed int sub_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -126,7 +150,7 @@ signed int sub_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed cha
 }
 
 // param_num_arr_none
-signed int sub_signed_char_3(Py_ssize_t arraylen, signed char param, signed char *data2, unsigned int ignoreerrors) {
+signed int sub_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signed char *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -134,6 +158,15 @@ signed int sub_signed_char_3(Py_ssize_t arraylen, signed char param, signed char
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -166,7 +199,7 @@ signed int sub_signed_char_3(Py_ssize_t arraylen, signed char param, signed char
 }
 
 // param_num_arr_arr
-signed int sub_signed_char_4(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3, unsigned int ignoreerrors) {
+signed int sub_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param, signed char *data2, signed char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -174,6 +207,15 @@ signed int sub_signed_char_4(Py_ssize_t arraylen, signed char param, signed char
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -208,13 +250,22 @@ signed int sub_signed_char_4(Py_ssize_t arraylen, signed char param, signed char
 
 
 // param_arr_arr_none
-signed int sub_signed_char_5(Py_ssize_t arraylen, signed char *data1, signed char *data2, unsigned int ignoreerrors) {
+signed int sub_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -231,13 +282,22 @@ signed int sub_signed_char_5(Py_ssize_t arraylen, signed char *data1, signed cha
 }
 
 // param_arr_arr_arr
-signed int sub_signed_char_6(Py_ssize_t arraylen, signed char *data1, signed char *data2, signed char *data3, unsigned int ignoreerrors) {
+signed int sub_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char *data2, signed char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_signed_char_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -263,13 +323,22 @@ signed int sub_signed_char_6(Py_ssize_t arraylen, signed char *data1, signed cha
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -285,13 +354,22 @@ signed int sub_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsign
 }
 
 // param_arr_num_arr
-signed int sub_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned char *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char param, unsigned char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -307,13 +385,22 @@ signed int sub_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsign
 }
 
 // param_num_arr_none
-signed int sub_unsigned_char_3(Py_ssize_t arraylen, unsigned char param, unsigned char *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, unsigned char *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -329,13 +416,22 @@ signed int sub_unsigned_char_3(Py_ssize_t arraylen, unsigned char param, unsigne
 }
 
 // param_num_arr_arr
-signed int sub_unsigned_char_4(Py_ssize_t arraylen, unsigned char param, unsigned char *data2, unsigned char *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char param, unsigned char *data2, unsigned char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -353,13 +449,22 @@ signed int sub_unsigned_char_4(Py_ssize_t arraylen, unsigned char param, unsigne
 
 
 // param_arr_arr_none
-signed int sub_unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -375,13 +480,22 @@ signed int sub_unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, unsign
 }
 
 // param_arr_arr_arr
-signed int sub_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2, unsigned char *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char *data2, unsigned char *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+			sub_unsigned_char_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -406,7 +520,7 @@ signed int sub_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsign
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_signed_short_1(Py_ssize_t arraylen, signed short *data1, signed short param, unsigned int ignoreerrors) {
+signed int sub_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -414,6 +528,15 @@ signed int sub_signed_short_1(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -443,7 +566,7 @@ signed int sub_signed_short_1(Py_ssize_t arraylen, signed short *data1, signed s
 }
 
 // param_arr_num_arr
-signed int sub_signed_short_2(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3, unsigned int ignoreerrors) {
+signed int sub_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short param, signed short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -451,6 +574,15 @@ signed int sub_signed_short_2(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -481,7 +613,7 @@ signed int sub_signed_short_2(Py_ssize_t arraylen, signed short *data1, signed s
 }
 
 // param_num_arr_none
-signed int sub_signed_short_3(Py_ssize_t arraylen, signed short param, signed short *data2, unsigned int ignoreerrors) {
+signed int sub_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, signed short *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -489,6 +621,15 @@ signed int sub_signed_short_3(Py_ssize_t arraylen, signed short param, signed sh
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -521,7 +662,7 @@ signed int sub_signed_short_3(Py_ssize_t arraylen, signed short param, signed sh
 }
 
 // param_num_arr_arr
-signed int sub_signed_short_4(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3, unsigned int ignoreerrors) {
+signed int sub_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short param, signed short *data2, signed short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -529,6 +670,15 @@ signed int sub_signed_short_4(Py_ssize_t arraylen, signed short param, signed sh
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -563,13 +713,22 @@ signed int sub_signed_short_4(Py_ssize_t arraylen, signed short param, signed sh
 
 
 // param_arr_arr_none
-signed int sub_signed_short_5(Py_ssize_t arraylen, signed short *data1, signed short *data2, unsigned int ignoreerrors) {
+signed int sub_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -586,13 +745,22 @@ signed int sub_signed_short_5(Py_ssize_t arraylen, signed short *data1, signed s
 }
 
 // param_arr_arr_arr
-signed int sub_signed_short_6(Py_ssize_t arraylen, signed short *data1, signed short *data2, signed short *data3, unsigned int ignoreerrors) {
+signed int sub_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short *data2, signed short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_signed_short_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -618,13 +786,22 @@ signed int sub_signed_short_6(Py_ssize_t arraylen, signed short *data1, signed s
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -640,13 +817,22 @@ signed int sub_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsi
 }
 
 // param_arr_num_arr
-signed int sub_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short param, unsigned short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -662,13 +848,22 @@ signed int sub_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsi
 }
 
 // param_num_arr_none
-signed int sub_unsigned_short_3(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param, unsigned short *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -684,13 +879,22 @@ signed int sub_unsigned_short_3(Py_ssize_t arraylen, unsigned short param, unsig
 }
 
 // param_num_arr_arr
-signed int sub_unsigned_short_4(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short param, unsigned short *data2, unsigned short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -708,13 +912,22 @@ signed int sub_unsigned_short_4(Py_ssize_t arraylen, unsigned short param, unsig
 
 
 // param_arr_arr_none
-signed int sub_unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -730,13 +943,22 @@ signed int sub_unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, unsi
 }
 
 // param_arr_arr_arr
-signed int sub_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned short *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short *data2, unsigned short *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+			sub_unsigned_short_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -761,7 +983,7 @@ signed int sub_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, unsi
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int param, unsigned int ignoreerrors) {
+signed int sub_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -769,6 +991,15 @@ signed int sub_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -798,7 +1029,7 @@ signed int sub_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int p
 }
 
 // param_arr_num_arr
-signed int sub_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3, unsigned int ignoreerrors) {
+signed int sub_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -806,6 +1037,15 @@ signed int sub_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -836,7 +1076,7 @@ signed int sub_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 }
 
 // param_num_arr_none
-signed int sub_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *data2, unsigned int ignoreerrors) {
+signed int sub_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -844,6 +1084,15 @@ signed int sub_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -876,7 +1125,7 @@ signed int sub_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *d
 }
 
 // param_num_arr_arr
-signed int sub_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
+signed int sub_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -884,6 +1133,15 @@ signed int sub_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -918,13 +1176,22 @@ signed int sub_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *d
 
 
 // param_arr_arr_none
-signed int sub_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *data2, unsigned int ignoreerrors) {
+signed int sub_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -941,13 +1208,22 @@ signed int sub_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *
 }
 
 // param_arr_arr_arr
-signed int sub_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
+signed int sub_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_signed_int_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -973,13 +1249,22 @@ signed int sub_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -995,13 +1280,22 @@ signed int sub_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_num_arr
-signed int sub_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1017,13 +1311,22 @@ signed int sub_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_num_arr_none
-signed int sub_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1039,13 +1342,22 @@ signed int sub_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 }
 
 // param_num_arr_arr
-signed int sub_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1063,13 +1375,22 @@ signed int sub_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 
 // param_arr_arr_none
-signed int sub_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1085,13 +1406,22 @@ signed int sub_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_arr_arr
-signed int sub_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			sub_unsigned_int_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1124,6 +1454,7 @@ signed int sub_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1161,6 +1492,7 @@ signed int sub_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1199,6 +1531,7 @@ signed int sub_signed_long_3(Py_ssize_t arraylen, signed long param, signed long
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1239,6 +1572,7 @@ signed int sub_signed_long_4(Py_ssize_t arraylen, signed long param, signed long
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1280,6 +1614,7 @@ signed int sub_signed_long_5(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1303,6 +1638,7 @@ signed int sub_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1335,6 +1671,7 @@ signed int sub_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1357,6 +1694,7 @@ signed int sub_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1379,6 +1717,7 @@ signed int sub_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1401,6 +1740,7 @@ signed int sub_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1425,6 +1765,7 @@ signed int sub_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1447,6 +1788,7 @@ signed int sub_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1479,6 +1821,7 @@ signed int sub_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1516,6 +1859,7 @@ signed int sub_signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1554,6 +1898,7 @@ signed int sub_signed_long_long_3(Py_ssize_t arraylen, signed long long param, s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1594,6 +1939,7 @@ signed int sub_signed_long_long_4(Py_ssize_t arraylen, signed long long param, s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1635,6 +1981,7 @@ signed int sub_signed_long_long_5(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1658,6 +2005,7 @@ signed int sub_signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1690,6 +2038,7 @@ signed int sub_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1712,6 +2061,7 @@ signed int sub_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1734,6 +2084,7 @@ signed int sub_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long para
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1756,6 +2107,7 @@ signed int sub_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long para
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1780,6 +2132,7 @@ signed int sub_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1802,6 +2155,7 @@ signed int sub_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1826,13 +2180,22 @@ signed int sub_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned int ignoreerrors) {
+signed int sub_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1848,13 +2211,22 @@ signed int sub_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned 
 }
 
 // param_arr_num_arr
-signed int sub_float_2(Py_ssize_t arraylen, float *data1, float param, float *data3, unsigned int ignoreerrors) {
+signed int sub_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float param, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -1870,13 +2242,22 @@ signed int sub_float_2(Py_ssize_t arraylen, float *data1, float param, float *da
 }
 
 // param_num_arr_none
-signed int sub_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned int ignoreerrors) {
+signed int sub_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -1892,13 +2273,22 @@ signed int sub_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned 
 }
 
 // param_num_arr_arr
-signed int sub_float_4(Py_ssize_t arraylen, float param, float *data2, float *data3, unsigned int ignoreerrors) {
+signed int sub_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data2, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -1916,13 +2306,22 @@ signed int sub_float_4(Py_ssize_t arraylen, float param, float *data2, float *da
 
 
 // param_arr_arr_none
-signed int sub_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned int ignoreerrors) {
+signed int sub_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1938,13 +2337,22 @@ signed int sub_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned
 }
 
 // param_arr_arr_arr
-signed int sub_float_6(Py_ssize_t arraylen, float *data1, float *data2, float *data3, unsigned int ignoreerrors) {
+signed int sub_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *data2, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			sub_float_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1969,13 +2377,22 @@ signed int sub_float_6(Py_ssize_t arraylen, float *data1, float *data2, float *d
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_double_1(Py_ssize_t arraylen, double *data1, double param, unsigned int ignoreerrors) {
+signed int sub_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
@@ -1991,13 +2408,22 @@ signed int sub_double_1(Py_ssize_t arraylen, double *data1, double param, unsign
 }
 
 // param_arr_num_arr
-signed int sub_double_2(Py_ssize_t arraylen, double *data1, double param, double *data3, unsigned int ignoreerrors) {
+signed int sub_double_2(Py_ssize_t arraylen, int nosimd, double *data1, double param, double *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
@@ -2013,13 +2439,22 @@ signed int sub_double_2(Py_ssize_t arraylen, double *data1, double param, double
 }
 
 // param_num_arr_none
-signed int sub_double_3(Py_ssize_t arraylen, double param, double *data2, unsigned int ignoreerrors) {
+signed int sub_double_3(Py_ssize_t arraylen, int nosimd, double param, double *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
@@ -2035,13 +2470,22 @@ signed int sub_double_3(Py_ssize_t arraylen, double param, double *data2, unsign
 }
 
 // param_num_arr_arr
-signed int sub_double_4(Py_ssize_t arraylen, double param, double *data2, double *data3, unsigned int ignoreerrors) {
+signed int sub_double_4(Py_ssize_t arraylen, int nosimd, double param, double *data2, double *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
@@ -2059,13 +2503,22 @@ signed int sub_double_4(Py_ssize_t arraylen, double param, double *data2, double
 
 
 // param_arr_arr_none
-signed int sub_double_5(Py_ssize_t arraylen, double *data1, double *data2, unsigned int ignoreerrors) {
+signed int sub_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
@@ -2081,13 +2534,22 @@ signed int sub_double_5(Py_ssize_t arraylen, double *data1, double *data2, unsig
 }
 
 // param_arr_arr_arr
-signed int sub_double_6(Py_ssize_t arraylen, double *data1, double *data2, double *data3, unsigned int ignoreerrors) {
+signed int sub_double_6(Py_ssize_t arraylen, int nosimd, double *data1, double *data2, double *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+			sub_double_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
@@ -2118,7 +2580,7 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "sub");
+	arraydata = getparams_two(self, args, keywds, 1, 1, "sub");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -2133,27 +2595,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'b' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_signed_char_1(arraydata.arraylength, arraydata.array1.b, arraydata.param.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.param.b, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_signed_char_2(arraydata.arraylength, arraydata.array1.b, arraydata.param.b, arraydata.array3.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.param.b, arraydata.array3.b, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_signed_char_3(arraydata.arraylength, arraydata.param.b, arraydata.array2.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.b, arraydata.array2.b, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_signed_char_4(arraydata.arraylength, arraydata.param.b, arraydata.array2.b, arraydata.array3.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.b, arraydata.array2.b, arraydata.array3.b, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_signed_char_5(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_signed_char_6(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.array3.b, arraydata.ignoreerrors);
+					resultcode = sub_signed_char_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b, arraydata.array3.b, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2164,27 +2626,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'B' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_unsigned_char_1(arraydata.arraylength, arraydata.array1.B, arraydata.param.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.param.B, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_unsigned_char_2(arraydata.arraylength, arraydata.array1.B, arraydata.param.B, arraydata.array3.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.param.B, arraydata.array3.B, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_unsigned_char_3(arraydata.arraylength, arraydata.param.B, arraydata.array2.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.B, arraydata.array2.B, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_unsigned_char_4(arraydata.arraylength, arraydata.param.B, arraydata.array2.B, arraydata.array3.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.B, arraydata.array2.B, arraydata.array3.B, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_unsigned_char_5(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.array2.B, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_unsigned_char_6(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.array3.B, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_char_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.array2.B, arraydata.array3.B, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2195,27 +2657,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'h' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_signed_short_1(arraydata.arraylength, arraydata.array1.h, arraydata.param.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.param.h, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_signed_short_2(arraydata.arraylength, arraydata.array1.h, arraydata.param.h, arraydata.array3.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.param.h, arraydata.array3.h, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_signed_short_3(arraydata.arraylength, arraydata.param.h, arraydata.array2.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.h, arraydata.array2.h, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_signed_short_4(arraydata.arraylength, arraydata.param.h, arraydata.array2.h, arraydata.array3.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.h, arraydata.array2.h, arraydata.array3.h, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_signed_short_5(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_signed_short_6(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.array3.h, arraydata.ignoreerrors);
+					resultcode = sub_signed_short_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h, arraydata.array3.h, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2226,27 +2688,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'H' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_unsigned_short_1(arraydata.arraylength, arraydata.array1.H, arraydata.param.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.param.H, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_unsigned_short_2(arraydata.arraylength, arraydata.array1.H, arraydata.param.H, arraydata.array3.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.param.H, arraydata.array3.H, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_unsigned_short_3(arraydata.arraylength, arraydata.param.H, arraydata.array2.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.H, arraydata.array2.H, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_unsigned_short_4(arraydata.arraylength, arraydata.param.H, arraydata.array2.H, arraydata.array3.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.H, arraydata.array2.H, arraydata.array3.H, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_unsigned_short_5(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.array2.H, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_unsigned_short_6(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.array3.H, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_short_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.array2.H, arraydata.array3.H, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2257,27 +2719,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'i' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_signed_int_1(arraydata.arraylength, arraydata.array1.i, arraydata.param.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_signed_int_2(arraydata.arraylength, arraydata.array1.i, arraydata.param.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_signed_int_3(arraydata.arraylength, arraydata.param.i, arraydata.array2.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_signed_int_4(arraydata.arraylength, arraydata.param.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_signed_int_5(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_signed_int_6(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = sub_signed_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2288,27 +2750,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'I' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_unsigned_int_1(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_unsigned_int_2(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_unsigned_int_3(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_unsigned_int_4(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_unsigned_int_5(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_unsigned_int_6(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2443,27 +2905,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'f' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_float_1(arraydata.arraylength, arraydata.array1.f, arraydata.param.f, arraydata.ignoreerrors);
+					resultcode = sub_float_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.param.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_float_2(arraydata.arraylength, arraydata.array1.f, arraydata.param.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = sub_float_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.param.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_float_3(arraydata.arraylength, arraydata.param.f, arraydata.array2.f, arraydata.ignoreerrors);
+					resultcode = sub_float_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.f, arraydata.array2.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_float_4(arraydata.arraylength, arraydata.param.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = sub_float_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_float_5(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors);
+					resultcode = sub_float_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_float_6(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = sub_float_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2474,27 +2936,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'd' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_double_1(arraydata.arraylength, arraydata.array1.d, arraydata.param.d, arraydata.ignoreerrors);
+					resultcode = sub_double_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.param.d, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_double_2(arraydata.arraylength, arraydata.array1.d, arraydata.param.d, arraydata.array3.d, arraydata.ignoreerrors);
+					resultcode = sub_double_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.param.d, arraydata.array3.d, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_double_3(arraydata.arraylength, arraydata.param.d, arraydata.array2.d, arraydata.ignoreerrors);
+					resultcode = sub_double_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.d, arraydata.array2.d, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_double_4(arraydata.arraylength, arraydata.param.d, arraydata.array2.d, arraydata.array3.d, arraydata.ignoreerrors);
+					resultcode = sub_double_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.d, arraydata.array2.d, arraydata.array3.d, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_double_5(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors);
+					resultcode = sub_double_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_double_6(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.array3.d, arraydata.ignoreerrors);
+					resultcode = sub_double_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.array3.d, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2563,7 +3025,7 @@ Call formats: \n\
   sub(array1, array2, outparray) \n\
   sub(array1, param, maxlen=y) \n\
   sub(array1, param, matherrors=False) \n\
-\n\
+  sub(array, param, nosimd=False)\n\
 * array1 - The first input data array to be examined. If no output  \n\
   array is provided the results will overwrite the input data.  \n\
 * param - A non-array numeric parameter.  \n\
@@ -2576,7 +3038,8 @@ Call formats: \n\
   parameter is ignored.  \n\
 * matherrors - If true, arithmetic error checking is disabled. The  \n\
   default is false. \n\
-\n");
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE. \n\n");
 
 /*--------------------------------------------------------------------------- */
 

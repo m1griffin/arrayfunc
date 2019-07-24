@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   amin_simd_x86.c
-// Purpose:  Find the minimum value in an array.
+// Purpose:  Calculate the amin of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     01-May-2017
-// Ver:      19-Jun-2018.
+// Date:     16-Apr-2019
+// Ver:      24-Jul-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@
 #include "Python.h"
 
 #include "simddefs.h"
-#include "arrayops.h"
 
 #include "arrayerrs.h"
 
@@ -47,11 +46,10 @@
 /* For array code: b
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-signed char amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
+signed long long amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -67,7 +65,7 @@ signed char amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v16qi) __builtin_ia32_lddqu((char *) data);
+	minslice = (v16qi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = CHARSIMDSIZE; x < alignedlength; x += CHARSIMDSIZE) {
@@ -91,8 +89,7 @@ signed char amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 		}
 	}
 
-
-	return minfound;
+	return (signed long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -102,11 +99,10 @@ signed char amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 /* For array code: B
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-unsigned char amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
+unsigned long long amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -122,7 +118,7 @@ unsigned char amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v16qi) __builtin_ia32_lddqu((char *) data);
+	minslice = (v16qi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = CHARSIMDSIZE; x < alignedlength; x += CHARSIMDSIZE) {
@@ -146,8 +142,7 @@ unsigned char amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
 		}
 	}
 
-
-	return minfound;
+	return (unsigned long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -157,11 +152,10 @@ unsigned char amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
 /* For array code: h
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-signed short amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
+signed long long amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -177,7 +171,7 @@ signed short amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v8hi) __builtin_ia32_lddqu((char *) data);
+	minslice = (v8hi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = SHORTSIMDSIZE; x < alignedlength; x += SHORTSIMDSIZE) {
@@ -201,8 +195,7 @@ signed short amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
 		}
 	}
 
-
-	return minfound;
+	return (signed long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -212,11 +205,10 @@ signed short amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
 /* For array code: H
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-unsigned short amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
+unsigned long long amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -232,7 +224,7 @@ unsigned short amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v8hi) __builtin_ia32_lddqu((char *) data);
+	minslice = (v8hi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = SHORTSIMDSIZE; x < alignedlength; x += SHORTSIMDSIZE) {
@@ -256,8 +248,7 @@ unsigned short amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
 		}
 	}
 
-
-	return minfound;
+	return (unsigned long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -267,11 +258,10 @@ unsigned short amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
 /* For array code: i
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-signed int amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
+signed long long amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -287,7 +277,7 @@ signed int amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v4si) __builtin_ia32_lddqu((char *) data);
+	minslice = (v4si) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = INTSIMDSIZE; x < alignedlength; x += INTSIMDSIZE) {
@@ -311,8 +301,7 @@ signed int amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 		}
 	}
 
-
-	return minfound;
+	return (signed long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -322,11 +311,10 @@ signed int amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 /* For array code: I
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-unsigned int amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
+unsigned long long amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -342,7 +330,7 @@ unsigned int amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v4si) __builtin_ia32_lddqu((char *) data);
+	minslice = (v4si) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = INTSIMDSIZE; x < alignedlength; x += INTSIMDSIZE) {
@@ -366,8 +354,7 @@ unsigned int amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
 		}
 	}
 
-
-	return minfound;
+	return (unsigned long long) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -377,11 +364,10 @@ unsigned int amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
 /* For array code: f
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
-float amin_float_simd(Py_ssize_t arraylen, float *data) { 
+double amin_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -397,7 +383,7 @@ float amin_float_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v4sf) __builtin_ia32_loadups(data);
+	minslice = (v4sf) __builtin_ia32_loadups(&data[0]);
 
 	// Use SIMD.
 	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
@@ -421,8 +407,7 @@ float amin_float_simd(Py_ssize_t arraylen, float *data) {
 		}
 	}
 
-
-	return minfound;
+	return (double) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -432,7 +417,6 @@ float amin_float_simd(Py_ssize_t arraylen, float *data) {
 /* For array code: d
    arraylen = The length of the data arrays.
    data = The input data array.
-   nosimd = If true, disable SIMD.
    Returns: The minimum value found.
 */
 #ifdef AF_HASSIMD
@@ -452,7 +436,7 @@ double amin_double_simd(Py_ssize_t arraylen, double *data) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v2df) __builtin_ia32_loadupd(data);
+	minslice = (v2df) __builtin_ia32_loadupd(&data[0]);
 
 	// Use SIMD.
 	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
@@ -476,8 +460,7 @@ double amin_double_simd(Py_ssize_t arraylen, double *data) {
 		}
 	}
 
-
-	return minfound;
+	return (double) minfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */

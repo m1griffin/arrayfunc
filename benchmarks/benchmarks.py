@@ -5,11 +5,11 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      22-Dec-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,6 +41,12 @@ ARRAYSIZE = 100000
 # The width of the function name column in the output report.
 FCOLWIDTH = 12
 
+# The width of data columns for absolute (actual time) data.
+ABSCOLWIDTH=10
+
+# The width of data columns for relative time data.
+RELCOLWIDTH=5
+
 ##############################################################################
 
 # These limits are used with the invert operator. These will NOT produce the
@@ -69,13 +75,36 @@ allinvertlimits = {
 # header files which must be present in the expected place when the 
 # benchmark program is generated.
 
-SIMDFuncs = {'aall': {'b': True, 'B': False, 'h': True, 'H': False, 'i': True, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
- 'aany': {'b': True, 'B': False, 'h': True, 'H': False, 'i': True, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+SIMDFuncs = {'aall': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'aany': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'abs_': {'b': True, 'B': False, 'h': True, 'H': False, 'i': True, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False},
+ 'add': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
  'amax': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
  'amin': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'and_': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False},
  'asum': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
- 'findindex': {'b': True, 'B': False, 'h': True, 'H': False, 'i': True, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True}}
+ 'ceil': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'degrees': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'eq': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'findindex': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'floor': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'ge': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'gt': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'invert': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False},
+ 'le': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'lt': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'mul': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'ne': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'neg': {'b': True, 'B': False, 'h': True, 'H': False, 'i': True, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False},
+ 'or_': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False},
+ 'radians': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'sqrt': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'sub': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'trunc': {'b': False, 'B': False, 'h': False, 'H': False, 'i': False, 'I': False, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': True, 'd': True},
+ 'xor': {'b': True, 'B': True, 'h': True, 'H': True, 'i': True, 'I': True, 'l': False, 'L': False, 'q': False, 'Q': False, 'f': False, 'd': False}}
 
+# This one is a list of functions which use the 'matherrors' option.
+OptFuncs = ['asum', 'add', 'truediv', 'floordiv', 'mod', 'mul', 'neg', 'pow', 'sub', 'abs_', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atan2', 'atanh', 'ceil', 'copysign', 'cos', 'cosh', 'degrees', 'erf', 'erfc', 'exp', 'expm1', 'fabs', 'factorial', 'floor', 'fma', 'fmod', 'gamma', 'hypot', 'ldexp', 'lgamma', 'log', 'log10', 'log1p', 'log2', 'radians', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc']
 
 ##############################################################################
 
@@ -160,6 +189,14 @@ class benchmark_aall:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -262,15 +299,18 @@ class benchmark_aall:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -278,6 +318,8 @@ class benchmark_aall:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -286,12 +328,12 @@ class benchmark_aall:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -299,9 +341,9 @@ class benchmark_aall:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -335,6 +377,38 @@ class benchmark_aall:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -358,6 +432,12 @@ class benchmark_aall:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -365,57 +445,65 @@ class benchmark_aall:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -514,6 +602,36 @@ class benchmark_aall:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.aall('>', datax, self.compval, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.aall('>', datax, self.compval)
 		endtime = time.perf_counter()
 
@@ -541,6 +659,14 @@ class benchmark_aany:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -643,15 +769,18 @@ class benchmark_aany:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -659,6 +788,8 @@ class benchmark_aany:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -667,12 +798,12 @@ class benchmark_aany:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -680,9 +811,9 @@ class benchmark_aany:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -716,6 +847,38 @@ class benchmark_aany:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -739,6 +902,12 @@ class benchmark_aany:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -746,57 +915,65 @@ class benchmark_aany:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -895,6 +1072,36 @@ class benchmark_aany:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.aany('>', datax, self.compval, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.aany('>', datax, self.compval)
 		endtime = time.perf_counter()
 
@@ -922,6 +1129,14 @@ class benchmark_afilter:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -1024,15 +1239,18 @@ class benchmark_afilter:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -1040,6 +1258,8 @@ class benchmark_afilter:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -1048,12 +1268,12 @@ class benchmark_afilter:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -1061,9 +1281,9 @@ class benchmark_afilter:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -1097,6 +1317,38 @@ class benchmark_afilter:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -1120,6 +1372,12 @@ class benchmark_afilter:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -1127,57 +1385,65 @@ class benchmark_afilter:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -1284,6 +1550,36 @@ class benchmark_afilter:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.afilter('<', datax, datay, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -1303,6 +1599,14 @@ class benchmark_amax:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -1405,15 +1709,18 @@ class benchmark_amax:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -1421,6 +1728,8 @@ class benchmark_amax:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -1429,12 +1738,12 @@ class benchmark_amax:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -1442,9 +1751,9 @@ class benchmark_amax:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -1478,6 +1787,38 @@ class benchmark_amax:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -1501,6 +1842,12 @@ class benchmark_amax:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -1508,57 +1855,65 @@ class benchmark_amax:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -1657,6 +2012,36 @@ class benchmark_amax:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.amax(datax, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.amax(datax)
 		endtime = time.perf_counter()
 
@@ -1684,6 +2069,14 @@ class benchmark_amin:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -1786,15 +2179,18 @@ class benchmark_amin:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -1802,6 +2198,8 @@ class benchmark_amin:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -1810,12 +2208,12 @@ class benchmark_amin:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -1823,9 +2221,9 @@ class benchmark_amin:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -1859,6 +2257,38 @@ class benchmark_amin:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -1882,6 +2312,12 @@ class benchmark_amin:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -1889,57 +2325,65 @@ class benchmark_amin:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -2038,6 +2482,36 @@ class benchmark_amin:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.amin(datax, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.amin(datax)
 		endtime = time.perf_counter()
 
@@ -2065,6 +2539,14 @@ class benchmark_asum:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -2167,15 +2649,18 @@ class benchmark_asum:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -2183,6 +2668,8 @@ class benchmark_asum:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -2191,12 +2678,12 @@ class benchmark_asum:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -2204,9 +2691,9 @@ class benchmark_asum:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -2240,6 +2727,38 @@ class benchmark_asum:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -2263,6 +2782,12 @@ class benchmark_asum:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -2270,57 +2795,65 @@ class benchmark_asum:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -2419,6 +2952,36 @@ class benchmark_asum:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.asum(datax, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.asum(datax, matherrors=True)
 		endtime = time.perf_counter()
 
@@ -2446,6 +3009,14 @@ class benchmark_compress:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -2548,15 +3119,18 @@ class benchmark_compress:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -2564,6 +3138,8 @@ class benchmark_compress:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -2572,12 +3148,12 @@ class benchmark_compress:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -2585,9 +3161,9 @@ class benchmark_compress:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -2621,6 +3197,38 @@ class benchmark_compress:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -2644,6 +3252,12 @@ class benchmark_compress:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -2651,57 +3265,65 @@ class benchmark_compress:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -2808,6 +3430,36 @@ class benchmark_compress:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.compress(self.pycomp, dataout, self.compdata)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -2827,6 +3479,14 @@ class benchmark_count:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -2929,15 +3589,18 @@ class benchmark_count:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -2945,6 +3608,8 @@ class benchmark_count:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -2953,12 +3618,12 @@ class benchmark_count:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -2966,9 +3631,9 @@ class benchmark_count:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -3002,6 +3667,38 @@ class benchmark_count:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -3025,6 +3722,12 @@ class benchmark_count:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -3032,57 +3735,65 @@ class benchmark_count:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -3189,6 +3900,36 @@ class benchmark_count:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.count(datax, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -3208,6 +3949,14 @@ class benchmark_cycle:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -3310,15 +4059,18 @@ class benchmark_cycle:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -3326,6 +4078,8 @@ class benchmark_cycle:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -3334,12 +4088,12 @@ class benchmark_cycle:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -3347,9 +4101,9 @@ class benchmark_cycle:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -3383,6 +4137,38 @@ class benchmark_cycle:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -3406,6 +4192,12 @@ class benchmark_cycle:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -3413,57 +4205,65 @@ class benchmark_cycle:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -3570,6 +4370,36 @@ class benchmark_cycle:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.cycle(datax, self.startcycle, self.endcycle)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -3589,6 +4419,14 @@ class benchmark_dropwhile:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -3691,15 +4529,18 @@ class benchmark_dropwhile:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -3707,6 +4548,8 @@ class benchmark_dropwhile:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -3715,12 +4558,12 @@ class benchmark_dropwhile:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -3728,9 +4571,9 @@ class benchmark_dropwhile:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -3764,6 +4607,38 @@ class benchmark_dropwhile:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -3787,6 +4662,12 @@ class benchmark_dropwhile:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -3794,57 +4675,65 @@ class benchmark_dropwhile:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -3951,6 +4840,36 @@ class benchmark_dropwhile:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.dropwhile('<', datax, dataout, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -3970,6 +4889,14 @@ class benchmark_findindex:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -4072,15 +4999,18 @@ class benchmark_findindex:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -4088,6 +5018,8 @@ class benchmark_findindex:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -4096,12 +5028,12 @@ class benchmark_findindex:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -4109,9 +5041,9 @@ class benchmark_findindex:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -4145,6 +5077,38 @@ class benchmark_findindex:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -4168,6 +5132,12 @@ class benchmark_findindex:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -4175,57 +5145,65 @@ class benchmark_findindex:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -4324,6 +5302,36 @@ class benchmark_findindex:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
+			result = arrayfunc.findindex('==', self.datax, self.compval, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
 			result = arrayfunc.findindex('==', self.datax, self.compval)
 		endtime = time.perf_counter()
 
@@ -4351,6 +5359,14 @@ class benchmark_findindices:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -4453,15 +5469,18 @@ class benchmark_findindices:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -4469,6 +5488,8 @@ class benchmark_findindices:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -4477,12 +5498,12 @@ class benchmark_findindices:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -4490,9 +5511,9 @@ class benchmark_findindices:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -4526,6 +5547,38 @@ class benchmark_findindices:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -4549,6 +5602,12 @@ class benchmark_findindices:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -4556,57 +5615,65 @@ class benchmark_findindices:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -4713,6 +5780,36 @@ class benchmark_findindices:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.findindices('==', datax, self.fidataout, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -4732,6 +5829,14 @@ class benchmark_repeat:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -4834,15 +5939,18 @@ class benchmark_repeat:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -4850,6 +5958,8 @@ class benchmark_repeat:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -4858,12 +5968,12 @@ class benchmark_repeat:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -4871,9 +5981,9 @@ class benchmark_repeat:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -4907,6 +6017,38 @@ class benchmark_repeat:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -4930,6 +6072,12 @@ class benchmark_repeat:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -4937,57 +6085,65 @@ class benchmark_repeat:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -5094,6 +6250,36 @@ class benchmark_repeat:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.repeat(datax, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -5113,6 +6299,14 @@ class benchmark_takewhile:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -5215,15 +6409,18 @@ class benchmark_takewhile:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -5231,6 +6428,8 @@ class benchmark_takewhile:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -5239,12 +6438,12 @@ class benchmark_takewhile:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -5252,9 +6451,9 @@ class benchmark_takewhile:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -5288,6 +6487,38 @@ class benchmark_takewhile:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -5311,6 +6542,12 @@ class benchmark_takewhile:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -5318,57 +6555,65 @@ class benchmark_takewhile:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -5475,6 +6720,36 @@ class benchmark_takewhile:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.takewhile('<', datax, dataout, self.compval)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -5494,6 +6769,14 @@ class benchmark_add:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -5596,15 +6879,18 @@ class benchmark_add:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -5612,6 +6898,8 @@ class benchmark_add:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -5620,12 +6908,12 @@ class benchmark_add:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -5633,9 +6921,9 @@ class benchmark_add:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -5669,6 +6957,38 @@ class benchmark_add:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -5692,6 +7012,12 @@ class benchmark_add:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -5699,57 +7025,65 @@ class benchmark_add:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -5818,7 +7152,7 @@ class benchmark_add:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.add(datax, datay, dataout)
+			arrayfunc.add(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -5830,6 +7164,36 @@ class benchmark_add:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.add(datax, yvalue, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -5875,6 +7239,14 @@ class benchmark_truediv:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -5977,15 +7349,18 @@ class benchmark_truediv:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -5993,6 +7368,8 @@ class benchmark_truediv:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -6001,12 +7378,12 @@ class benchmark_truediv:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -6014,9 +7391,9 @@ class benchmark_truediv:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -6050,6 +7427,38 @@ class benchmark_truediv:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -6073,6 +7482,12 @@ class benchmark_truediv:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -6080,57 +7495,65 @@ class benchmark_truediv:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -6237,6 +7660,36 @@ class benchmark_truediv:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.truediv(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -6256,6 +7709,14 @@ class benchmark_floordiv:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -6358,15 +7819,18 @@ class benchmark_floordiv:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -6374,6 +7838,8 @@ class benchmark_floordiv:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -6382,12 +7848,12 @@ class benchmark_floordiv:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -6395,9 +7861,9 @@ class benchmark_floordiv:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -6431,6 +7897,38 @@ class benchmark_floordiv:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -6454,6 +7952,12 @@ class benchmark_floordiv:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -6461,57 +7965,65 @@ class benchmark_floordiv:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -6618,6 +8130,36 @@ class benchmark_floordiv:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.floordiv(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -6637,6 +8179,14 @@ class benchmark_mod:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -6739,15 +8289,18 @@ class benchmark_mod:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -6755,6 +8308,8 @@ class benchmark_mod:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -6763,12 +8318,12 @@ class benchmark_mod:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -6776,9 +8331,9 @@ class benchmark_mod:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -6812,6 +8367,38 @@ class benchmark_mod:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -6835,6 +8422,12 @@ class benchmark_mod:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -6842,57 +8435,65 @@ class benchmark_mod:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -6999,6 +8600,36 @@ class benchmark_mod:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.mod(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -7018,6 +8649,14 @@ class benchmark_mul:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -7120,15 +8759,18 @@ class benchmark_mul:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -7136,6 +8778,8 @@ class benchmark_mul:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -7144,12 +8788,12 @@ class benchmark_mul:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -7157,9 +8801,9 @@ class benchmark_mul:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -7193,6 +8837,38 @@ class benchmark_mul:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -7216,6 +8892,12 @@ class benchmark_mul:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -7223,57 +8905,65 @@ class benchmark_mul:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -7342,7 +9032,7 @@ class benchmark_mul:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.mul(datax, datay, dataout)
+			arrayfunc.mul(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -7354,6 +9044,36 @@ class benchmark_mul:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.mul(datax, yvalue, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -7399,6 +9119,14 @@ class benchmark_neg:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -7501,15 +9229,18 @@ class benchmark_neg:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -7517,6 +9248,8 @@ class benchmark_neg:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -7525,12 +9258,12 @@ class benchmark_neg:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -7538,9 +9271,9 @@ class benchmark_neg:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -7574,6 +9307,38 @@ class benchmark_neg:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -7597,6 +9362,12 @@ class benchmark_neg:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -7604,57 +9375,65 @@ class benchmark_neg:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -7723,7 +9502,7 @@ class benchmark_neg:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.neg(datax, dataout)
+			arrayfunc.neg(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -7735,6 +9514,36 @@ class benchmark_neg:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.neg(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -7780,6 +9589,14 @@ class benchmark_pow:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -7882,15 +9699,18 @@ class benchmark_pow:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -7898,6 +9718,8 @@ class benchmark_pow:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -7906,12 +9728,12 @@ class benchmark_pow:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -7919,9 +9741,9 @@ class benchmark_pow:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -7955,6 +9777,38 @@ class benchmark_pow:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -7978,6 +9832,12 @@ class benchmark_pow:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -7985,57 +9845,65 @@ class benchmark_pow:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -8142,6 +10010,36 @@ class benchmark_pow:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.pow(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -8161,6 +10059,14 @@ class benchmark_sub:
 		self.runtimetarget = 0.1
 		self.needsydatafix = True
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -8263,15 +10169,18 @@ class benchmark_sub:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -8279,6 +10188,8 @@ class benchmark_sub:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -8287,12 +10198,12 @@ class benchmark_sub:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -8300,9 +10211,9 @@ class benchmark_sub:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -8336,6 +10247,38 @@ class benchmark_sub:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -8359,6 +10302,12 @@ class benchmark_sub:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -8366,57 +10315,65 @@ class benchmark_sub:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -8485,7 +10442,7 @@ class benchmark_sub:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.sub(datax, datay, dataout)
+			arrayfunc.sub(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -8497,6 +10454,36 @@ class benchmark_sub:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.sub(datax, yvalue, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -8542,6 +10529,14 @@ class benchmark_and_:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -8644,15 +10639,18 @@ class benchmark_and_:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -8660,6 +10658,8 @@ class benchmark_and_:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -8668,12 +10668,12 @@ class benchmark_and_:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -8681,9 +10681,9 @@ class benchmark_and_:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -8717,6 +10717,38 @@ class benchmark_and_:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -8740,6 +10772,12 @@ class benchmark_and_:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -8747,57 +10785,65 @@ class benchmark_and_:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -8866,7 +10912,7 @@ class benchmark_and_:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.and_(datax, datay, dataout)
+			arrayfunc.and_(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -8878,6 +10924,36 @@ class benchmark_and_:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.and_(datax, yvalue, dataout, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -8923,6 +10999,14 @@ class benchmark_or_:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -9025,15 +11109,18 @@ class benchmark_or_:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -9041,6 +11128,8 @@ class benchmark_or_:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -9049,12 +11138,12 @@ class benchmark_or_:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -9062,9 +11151,9 @@ class benchmark_or_:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -9098,6 +11187,38 @@ class benchmark_or_:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -9121,6 +11242,12 @@ class benchmark_or_:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -9128,57 +11255,65 @@ class benchmark_or_:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -9247,7 +11382,7 @@ class benchmark_or_:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.or_(datax, datay, dataout)
+			arrayfunc.or_(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -9259,6 +11394,36 @@ class benchmark_or_:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.or_(datax, yvalue, dataout, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -9304,6 +11469,14 @@ class benchmark_xor:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -9406,15 +11579,18 @@ class benchmark_xor:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -9422,6 +11598,8 @@ class benchmark_xor:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -9430,12 +11608,12 @@ class benchmark_xor:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -9443,9 +11621,9 @@ class benchmark_xor:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -9479,6 +11657,38 @@ class benchmark_xor:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -9502,6 +11712,12 @@ class benchmark_xor:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -9509,57 +11725,65 @@ class benchmark_xor:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -9628,7 +11852,7 @@ class benchmark_xor:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.xor(datax, datay, dataout)
+			arrayfunc.xor(datax, datay, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -9640,6 +11864,36 @@ class benchmark_xor:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.xor(datax, yvalue, dataout, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -9685,6 +11939,14 @@ class benchmark_invert:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -9787,15 +12049,18 @@ class benchmark_invert:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -9803,6 +12068,8 @@ class benchmark_invert:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -9811,12 +12078,12 @@ class benchmark_invert:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -9824,9 +12091,9 @@ class benchmark_invert:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -9860,6 +12127,38 @@ class benchmark_invert:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -9883,6 +12182,12 @@ class benchmark_invert:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -9890,57 +12195,65 @@ class benchmark_invert:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -10009,7 +12322,7 @@ class benchmark_invert:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.invert(datax, dataout)
+			arrayfunc.invert(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -10021,6 +12334,36 @@ class benchmark_invert:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.invert(datax, dataout, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -10066,6 +12409,14 @@ class benchmark_eq:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -10168,15 +12519,18 @@ class benchmark_eq:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -10184,6 +12538,8 @@ class benchmark_eq:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -10192,12 +12548,12 @@ class benchmark_eq:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -10205,9 +12561,9 @@ class benchmark_eq:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -10241,6 +12597,38 @@ class benchmark_eq:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -10264,6 +12652,12 @@ class benchmark_eq:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -10271,57 +12665,65 @@ class benchmark_eq:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -10390,7 +12792,7 @@ class benchmark_eq:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.eq(datax, datay)
+			result = arrayfunc.eq(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -10402,6 +12804,36 @@ class benchmark_eq:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.eq(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -10447,6 +12879,14 @@ class benchmark_gt:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -10549,15 +12989,18 @@ class benchmark_gt:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -10565,6 +13008,8 @@ class benchmark_gt:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -10573,12 +13018,12 @@ class benchmark_gt:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -10586,9 +13031,9 @@ class benchmark_gt:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -10622,6 +13067,38 @@ class benchmark_gt:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -10645,6 +13122,12 @@ class benchmark_gt:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -10652,57 +13135,65 @@ class benchmark_gt:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -10771,7 +13262,7 @@ class benchmark_gt:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.gt(datax, datay)
+			result = arrayfunc.gt(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -10783,6 +13274,36 @@ class benchmark_gt:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.gt(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -10828,6 +13349,14 @@ class benchmark_ge:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -10930,15 +13459,18 @@ class benchmark_ge:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -10946,6 +13478,8 @@ class benchmark_ge:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -10954,12 +13488,12 @@ class benchmark_ge:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -10967,9 +13501,9 @@ class benchmark_ge:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -11003,6 +13537,38 @@ class benchmark_ge:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -11026,6 +13592,12 @@ class benchmark_ge:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -11033,57 +13605,65 @@ class benchmark_ge:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -11152,7 +13732,7 @@ class benchmark_ge:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.ge(datax, datay)
+			result = arrayfunc.ge(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -11164,6 +13744,36 @@ class benchmark_ge:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.ge(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -11209,6 +13819,14 @@ class benchmark_lt:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -11311,15 +13929,18 @@ class benchmark_lt:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -11327,6 +13948,8 @@ class benchmark_lt:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -11335,12 +13958,12 @@ class benchmark_lt:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -11348,9 +13971,9 @@ class benchmark_lt:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -11384,6 +14007,38 @@ class benchmark_lt:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -11407,6 +14062,12 @@ class benchmark_lt:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -11414,57 +14075,65 @@ class benchmark_lt:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -11533,7 +14202,7 @@ class benchmark_lt:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.lt(datax, datay)
+			result = arrayfunc.lt(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -11545,6 +14214,36 @@ class benchmark_lt:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.lt(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -11590,6 +14289,14 @@ class benchmark_le:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -11692,15 +14399,18 @@ class benchmark_le:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -11708,6 +14418,8 @@ class benchmark_le:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -11716,12 +14428,12 @@ class benchmark_le:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -11729,9 +14441,9 @@ class benchmark_le:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -11765,6 +14477,38 @@ class benchmark_le:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -11788,6 +14532,12 @@ class benchmark_le:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -11795,57 +14545,65 @@ class benchmark_le:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -11914,7 +14672,7 @@ class benchmark_le:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.le(datax, datay)
+			result = arrayfunc.le(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -11926,6 +14684,36 @@ class benchmark_le:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.le(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -11971,6 +14759,14 @@ class benchmark_ne:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -12073,15 +14869,18 @@ class benchmark_ne:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -12089,6 +14888,8 @@ class benchmark_ne:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -12097,12 +14898,12 @@ class benchmark_ne:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -12110,9 +14911,9 @@ class benchmark_ne:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -12146,6 +14947,38 @@ class benchmark_ne:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -12169,6 +15002,12 @@ class benchmark_ne:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -12176,57 +15015,65 @@ class benchmark_ne:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -12295,7 +15142,7 @@ class benchmark_ne:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			result = arrayfunc.ne(datax, datay)
+			result = arrayfunc.ne(datax, datay, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -12307,6 +15154,36 @@ class benchmark_ne:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.ne(datax, yvalue, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -12352,6 +15229,14 @@ class benchmark_lshift:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -12454,15 +15339,18 @@ class benchmark_lshift:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -12470,6 +15358,8 @@ class benchmark_lshift:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -12478,12 +15368,12 @@ class benchmark_lshift:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -12491,9 +15381,9 @@ class benchmark_lshift:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -12527,6 +15417,38 @@ class benchmark_lshift:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -12550,6 +15472,12 @@ class benchmark_lshift:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -12557,57 +15485,65 @@ class benchmark_lshift:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -12714,6 +15650,36 @@ class benchmark_lshift:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.lshift(datax, yvalue, dataout)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -12733,6 +15699,14 @@ class benchmark_rshift:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -12835,15 +15809,18 @@ class benchmark_rshift:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -12851,6 +15828,8 @@ class benchmark_rshift:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -12859,12 +15838,12 @@ class benchmark_rshift:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -12872,9 +15851,9 @@ class benchmark_rshift:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -12908,6 +15887,38 @@ class benchmark_rshift:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -12931,6 +15942,12 @@ class benchmark_rshift:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -12938,57 +15955,65 @@ class benchmark_rshift:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -13095,6 +16120,36 @@ class benchmark_rshift:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.rshift(datax, yvalue, dataout)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -13114,6 +16169,14 @@ class benchmark_abs_:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -13216,15 +16279,18 @@ class benchmark_abs_:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -13232,6 +16298,8 @@ class benchmark_abs_:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -13240,12 +16308,12 @@ class benchmark_abs_:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -13253,9 +16321,9 @@ class benchmark_abs_:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -13289,6 +16357,38 @@ class benchmark_abs_:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -13312,6 +16412,12 @@ class benchmark_abs_:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -13319,57 +16425,65 @@ class benchmark_abs_:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -13438,7 +16552,7 @@ class benchmark_abs_:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.abs_(datax, dataout)
+			arrayfunc.abs_(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -13450,6 +16564,36 @@ class benchmark_abs_:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.abs_(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -13495,6 +16639,14 @@ class benchmark_acos:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -13597,15 +16749,18 @@ class benchmark_acos:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -13613,6 +16768,8 @@ class benchmark_acos:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -13621,12 +16778,12 @@ class benchmark_acos:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -13634,9 +16791,9 @@ class benchmark_acos:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -13670,6 +16827,38 @@ class benchmark_acos:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -13693,6 +16882,12 @@ class benchmark_acos:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -13700,57 +16895,65 @@ class benchmark_acos:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -13857,6 +17060,36 @@ class benchmark_acos:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.acos(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -13876,6 +17109,14 @@ class benchmark_acosh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -13978,15 +17219,18 @@ class benchmark_acosh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -13994,6 +17238,8 @@ class benchmark_acosh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -14002,12 +17248,12 @@ class benchmark_acosh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -14015,9 +17261,9 @@ class benchmark_acosh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -14051,6 +17297,38 @@ class benchmark_acosh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -14074,6 +17352,12 @@ class benchmark_acosh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -14081,57 +17365,65 @@ class benchmark_acosh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -14238,6 +17530,36 @@ class benchmark_acosh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.acosh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -14257,6 +17579,14 @@ class benchmark_asin:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -14359,15 +17689,18 @@ class benchmark_asin:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -14375,6 +17708,8 @@ class benchmark_asin:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -14383,12 +17718,12 @@ class benchmark_asin:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -14396,9 +17731,9 @@ class benchmark_asin:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -14432,6 +17767,38 @@ class benchmark_asin:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -14455,6 +17822,12 @@ class benchmark_asin:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -14462,57 +17835,65 @@ class benchmark_asin:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -14619,6 +18000,36 @@ class benchmark_asin:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.asin(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -14638,6 +18049,14 @@ class benchmark_asinh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -14740,15 +18159,18 @@ class benchmark_asinh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -14756,6 +18178,8 @@ class benchmark_asinh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -14764,12 +18188,12 @@ class benchmark_asinh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -14777,9 +18201,9 @@ class benchmark_asinh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -14813,6 +18237,38 @@ class benchmark_asinh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -14836,6 +18292,12 @@ class benchmark_asinh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -14843,57 +18305,65 @@ class benchmark_asinh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -15000,6 +18470,36 @@ class benchmark_asinh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.asinh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -15019,6 +18519,14 @@ class benchmark_atan:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -15121,15 +18629,18 @@ class benchmark_atan:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -15137,6 +18648,8 @@ class benchmark_atan:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -15145,12 +18658,12 @@ class benchmark_atan:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -15158,9 +18671,9 @@ class benchmark_atan:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -15194,6 +18707,38 @@ class benchmark_atan:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -15217,6 +18762,12 @@ class benchmark_atan:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -15224,57 +18775,65 @@ class benchmark_atan:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -15381,6 +18940,36 @@ class benchmark_atan:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.atan(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -15400,6 +18989,14 @@ class benchmark_atan2:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -15502,15 +19099,18 @@ class benchmark_atan2:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -15518,6 +19118,8 @@ class benchmark_atan2:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -15526,12 +19128,12 @@ class benchmark_atan2:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -15539,9 +19141,9 @@ class benchmark_atan2:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -15575,6 +19177,38 @@ class benchmark_atan2:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -15598,6 +19232,12 @@ class benchmark_atan2:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -15605,57 +19245,65 @@ class benchmark_atan2:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -15762,6 +19410,36 @@ class benchmark_atan2:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.atan2(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -15781,6 +19459,14 @@ class benchmark_atanh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -15883,15 +19569,18 @@ class benchmark_atanh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -15899,6 +19588,8 @@ class benchmark_atanh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -15907,12 +19598,12 @@ class benchmark_atanh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -15920,9 +19611,9 @@ class benchmark_atanh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -15956,6 +19647,38 @@ class benchmark_atanh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -15979,6 +19702,12 @@ class benchmark_atanh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -15986,57 +19715,65 @@ class benchmark_atanh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -16143,6 +19880,36 @@ class benchmark_atanh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.atanh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -16162,6 +19929,14 @@ class benchmark_ceil:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -16264,15 +20039,18 @@ class benchmark_ceil:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -16280,6 +20058,8 @@ class benchmark_ceil:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -16288,12 +20068,12 @@ class benchmark_ceil:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -16301,9 +20081,9 @@ class benchmark_ceil:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -16337,6 +20117,38 @@ class benchmark_ceil:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -16360,6 +20172,12 @@ class benchmark_ceil:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -16367,57 +20185,65 @@ class benchmark_ceil:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -16486,7 +20312,7 @@ class benchmark_ceil:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.ceil(datax, dataout)
+			arrayfunc.ceil(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -16498,6 +20324,36 @@ class benchmark_ceil:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.ceil(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -16543,6 +20399,14 @@ class benchmark_copysign:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -16645,15 +20509,18 @@ class benchmark_copysign:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -16661,6 +20528,8 @@ class benchmark_copysign:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -16669,12 +20538,12 @@ class benchmark_copysign:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -16682,9 +20551,9 @@ class benchmark_copysign:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -16718,6 +20587,38 @@ class benchmark_copysign:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -16741,6 +20642,12 @@ class benchmark_copysign:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -16748,57 +20655,65 @@ class benchmark_copysign:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -16905,6 +20820,36 @@ class benchmark_copysign:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.copysign(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -16924,6 +20869,14 @@ class benchmark_cos:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -17026,15 +20979,18 @@ class benchmark_cos:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -17042,6 +20998,8 @@ class benchmark_cos:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -17050,12 +21008,12 @@ class benchmark_cos:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -17063,9 +21021,9 @@ class benchmark_cos:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -17099,6 +21057,38 @@ class benchmark_cos:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -17122,6 +21112,12 @@ class benchmark_cos:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -17129,57 +21125,65 @@ class benchmark_cos:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -17286,6 +21290,36 @@ class benchmark_cos:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.cos(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -17305,6 +21339,14 @@ class benchmark_cosh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -17407,15 +21449,18 @@ class benchmark_cosh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -17423,6 +21468,8 @@ class benchmark_cosh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -17431,12 +21478,12 @@ class benchmark_cosh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -17444,9 +21491,9 @@ class benchmark_cosh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -17480,6 +21527,38 @@ class benchmark_cosh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -17503,6 +21582,12 @@ class benchmark_cosh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -17510,57 +21595,65 @@ class benchmark_cosh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -17667,6 +21760,36 @@ class benchmark_cosh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.cosh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -17686,6 +21809,14 @@ class benchmark_degrees:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -17788,15 +21919,18 @@ class benchmark_degrees:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -17804,6 +21938,8 @@ class benchmark_degrees:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -17812,12 +21948,12 @@ class benchmark_degrees:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -17825,9 +21961,9 @@ class benchmark_degrees:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -17861,6 +21997,38 @@ class benchmark_degrees:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -17884,6 +22052,12 @@ class benchmark_degrees:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -17891,57 +22065,65 @@ class benchmark_degrees:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -18010,7 +22192,7 @@ class benchmark_degrees:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.degrees(datax, dataout)
+			arrayfunc.degrees(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -18022,6 +22204,36 @@ class benchmark_degrees:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.degrees(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -18067,6 +22279,14 @@ class benchmark_erf:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -18169,15 +22389,18 @@ class benchmark_erf:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -18185,6 +22408,8 @@ class benchmark_erf:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -18193,12 +22418,12 @@ class benchmark_erf:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -18206,9 +22431,9 @@ class benchmark_erf:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -18242,6 +22467,38 @@ class benchmark_erf:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -18265,6 +22522,12 @@ class benchmark_erf:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -18272,57 +22535,65 @@ class benchmark_erf:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -18429,6 +22700,36 @@ class benchmark_erf:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.erf(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -18448,6 +22749,14 @@ class benchmark_erfc:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -18550,15 +22859,18 @@ class benchmark_erfc:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -18566,6 +22878,8 @@ class benchmark_erfc:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -18574,12 +22888,12 @@ class benchmark_erfc:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -18587,9 +22901,9 @@ class benchmark_erfc:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -18623,6 +22937,38 @@ class benchmark_erfc:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -18646,6 +22992,12 @@ class benchmark_erfc:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -18653,57 +23005,65 @@ class benchmark_erfc:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -18810,6 +23170,36 @@ class benchmark_erfc:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.erfc(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -18829,6 +23219,14 @@ class benchmark_exp:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -18931,15 +23329,18 @@ class benchmark_exp:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -18947,6 +23348,8 @@ class benchmark_exp:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -18955,12 +23358,12 @@ class benchmark_exp:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -18968,9 +23371,9 @@ class benchmark_exp:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -19004,6 +23407,38 @@ class benchmark_exp:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -19027,6 +23462,12 @@ class benchmark_exp:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -19034,57 +23475,65 @@ class benchmark_exp:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -19191,6 +23640,36 @@ class benchmark_exp:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.exp(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -19210,6 +23689,14 @@ class benchmark_expm1:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -19312,15 +23799,18 @@ class benchmark_expm1:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -19328,6 +23818,8 @@ class benchmark_expm1:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -19336,12 +23828,12 @@ class benchmark_expm1:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -19349,9 +23841,9 @@ class benchmark_expm1:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -19385,6 +23877,38 @@ class benchmark_expm1:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -19408,6 +23932,12 @@ class benchmark_expm1:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -19415,57 +23945,65 @@ class benchmark_expm1:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -19572,6 +24110,36 @@ class benchmark_expm1:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.expm1(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -19591,6 +24159,14 @@ class benchmark_fabs:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -19693,15 +24269,18 @@ class benchmark_fabs:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -19709,6 +24288,8 @@ class benchmark_fabs:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -19717,12 +24298,12 @@ class benchmark_fabs:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -19730,9 +24311,9 @@ class benchmark_fabs:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -19766,6 +24347,38 @@ class benchmark_fabs:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -19789,6 +24402,12 @@ class benchmark_fabs:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -19796,57 +24415,65 @@ class benchmark_fabs:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -19953,6 +24580,36 @@ class benchmark_fabs:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.fabs(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -19972,6 +24629,14 @@ class benchmark_factorial:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -20074,15 +24739,18 @@ class benchmark_factorial:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -20090,6 +24758,8 @@ class benchmark_factorial:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -20098,12 +24768,12 @@ class benchmark_factorial:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -20111,9 +24781,9 @@ class benchmark_factorial:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -20147,6 +24817,38 @@ class benchmark_factorial:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -20170,6 +24872,12 @@ class benchmark_factorial:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -20177,57 +24885,65 @@ class benchmark_factorial:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -20334,6 +25050,36 @@ class benchmark_factorial:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.factorial(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -20353,6 +25099,14 @@ class benchmark_floor:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -20455,15 +25209,18 @@ class benchmark_floor:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -20471,6 +25228,8 @@ class benchmark_floor:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -20479,12 +25238,12 @@ class benchmark_floor:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -20492,9 +25251,9 @@ class benchmark_floor:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -20528,6 +25287,38 @@ class benchmark_floor:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -20551,6 +25342,12 @@ class benchmark_floor:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -20558,57 +25355,65 @@ class benchmark_floor:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -20677,7 +25482,7 @@ class benchmark_floor:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.floor(datax, dataout)
+			arrayfunc.floor(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -20689,6 +25494,36 @@ class benchmark_floor:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.floor(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -20734,6 +25569,14 @@ class benchmark_fma:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -20836,15 +25679,18 @@ class benchmark_fma:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -20852,6 +25698,8 @@ class benchmark_fma:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -20860,12 +25708,12 @@ class benchmark_fma:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -20873,9 +25721,9 @@ class benchmark_fma:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -20909,6 +25757,38 @@ class benchmark_fma:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -20932,6 +25812,12 @@ class benchmark_fma:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -20939,57 +25825,65 @@ class benchmark_fma:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -21096,6 +25990,36 @@ class benchmark_fma:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.fma(datax, datay, dataz, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -21115,6 +26039,14 @@ class benchmark_fmod:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -21217,15 +26149,18 @@ class benchmark_fmod:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -21233,6 +26168,8 @@ class benchmark_fmod:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -21241,12 +26178,12 @@ class benchmark_fmod:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -21254,9 +26191,9 @@ class benchmark_fmod:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -21290,6 +26227,38 @@ class benchmark_fmod:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -21313,6 +26282,12 @@ class benchmark_fmod:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -21320,57 +26295,65 @@ class benchmark_fmod:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -21477,6 +26460,36 @@ class benchmark_fmod:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.fmod(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -21496,6 +26509,14 @@ class benchmark_gamma:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -21598,15 +26619,18 @@ class benchmark_gamma:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -21614,6 +26638,8 @@ class benchmark_gamma:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -21622,12 +26648,12 @@ class benchmark_gamma:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -21635,9 +26661,9 @@ class benchmark_gamma:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -21671,6 +26697,38 @@ class benchmark_gamma:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -21694,6 +26752,12 @@ class benchmark_gamma:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -21701,57 +26765,65 @@ class benchmark_gamma:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -21858,6 +26930,36 @@ class benchmark_gamma:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.gamma(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -21877,6 +26979,14 @@ class benchmark_hypot:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -21979,15 +27089,18 @@ class benchmark_hypot:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -21995,6 +27108,8 @@ class benchmark_hypot:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -22003,12 +27118,12 @@ class benchmark_hypot:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -22016,9 +27131,9 @@ class benchmark_hypot:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -22052,6 +27167,38 @@ class benchmark_hypot:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -22075,6 +27222,12 @@ class benchmark_hypot:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -22082,57 +27235,65 @@ class benchmark_hypot:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -22239,6 +27400,36 @@ class benchmark_hypot:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.hypot(datax, yvalue, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -22258,6 +27449,14 @@ class benchmark_isfinite:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -22360,15 +27559,18 @@ class benchmark_isfinite:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -22376,6 +27578,8 @@ class benchmark_isfinite:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -22384,12 +27588,12 @@ class benchmark_isfinite:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -22397,9 +27601,9 @@ class benchmark_isfinite:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -22433,6 +27637,38 @@ class benchmark_isfinite:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -22456,6 +27692,12 @@ class benchmark_isfinite:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -22463,57 +27705,65 @@ class benchmark_isfinite:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -22620,6 +27870,36 @@ class benchmark_isfinite:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.isfinite(datax)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -22639,6 +27919,14 @@ class benchmark_isinf:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -22741,15 +28029,18 @@ class benchmark_isinf:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -22757,6 +28048,8 @@ class benchmark_isinf:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -22765,12 +28058,12 @@ class benchmark_isinf:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -22778,9 +28071,9 @@ class benchmark_isinf:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -22814,6 +28107,38 @@ class benchmark_isinf:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -22837,6 +28162,12 @@ class benchmark_isinf:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -22844,57 +28175,65 @@ class benchmark_isinf:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -23001,6 +28340,36 @@ class benchmark_isinf:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.isinf(datax)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -23020,6 +28389,14 @@ class benchmark_isnan:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -23122,15 +28499,18 @@ class benchmark_isnan:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -23138,6 +28518,8 @@ class benchmark_isnan:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -23146,12 +28528,12 @@ class benchmark_isnan:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -23159,9 +28541,9 @@ class benchmark_isnan:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -23195,6 +28577,38 @@ class benchmark_isnan:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -23218,6 +28632,12 @@ class benchmark_isnan:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -23225,57 +28645,65 @@ class benchmark_isnan:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -23382,6 +28810,36 @@ class benchmark_isnan:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			result = arrayfunc.isnan(datax)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -23401,6 +28859,14 @@ class benchmark_ldexp:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -23503,15 +28969,18 @@ class benchmark_ldexp:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -23519,6 +28988,8 @@ class benchmark_ldexp:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -23527,12 +28998,12 @@ class benchmark_ldexp:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -23540,9 +29011,9 @@ class benchmark_ldexp:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -23576,6 +29047,38 @@ class benchmark_ldexp:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -23599,6 +29102,12 @@ class benchmark_ldexp:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -23606,57 +29115,65 @@ class benchmark_ldexp:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -23763,6 +29280,36 @@ class benchmark_ldexp:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.ldexp(datax, ldexp_y, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -23782,6 +29329,14 @@ class benchmark_lgamma:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -23884,15 +29439,18 @@ class benchmark_lgamma:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -23900,6 +29458,8 @@ class benchmark_lgamma:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -23908,12 +29468,12 @@ class benchmark_lgamma:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -23921,9 +29481,9 @@ class benchmark_lgamma:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -23957,6 +29517,38 @@ class benchmark_lgamma:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -23980,6 +29572,12 @@ class benchmark_lgamma:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -23987,57 +29585,65 @@ class benchmark_lgamma:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -24144,6 +29750,36 @@ class benchmark_lgamma:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.lgamma(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -24163,6 +29799,14 @@ class benchmark_log:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -24265,15 +29909,18 @@ class benchmark_log:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -24281,6 +29928,8 @@ class benchmark_log:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -24289,12 +29938,12 @@ class benchmark_log:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -24302,9 +29951,9 @@ class benchmark_log:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -24338,6 +29987,38 @@ class benchmark_log:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -24361,6 +30042,12 @@ class benchmark_log:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -24368,57 +30055,65 @@ class benchmark_log:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -24525,6 +30220,36 @@ class benchmark_log:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.log(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -24544,6 +30269,14 @@ class benchmark_log10:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -24646,15 +30379,18 @@ class benchmark_log10:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -24662,6 +30398,8 @@ class benchmark_log10:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -24670,12 +30408,12 @@ class benchmark_log10:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -24683,9 +30421,9 @@ class benchmark_log10:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -24719,6 +30457,38 @@ class benchmark_log10:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -24742,6 +30512,12 @@ class benchmark_log10:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -24749,57 +30525,65 @@ class benchmark_log10:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -24906,6 +30690,36 @@ class benchmark_log10:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.log10(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -24925,6 +30739,14 @@ class benchmark_log1p:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -25027,15 +30849,18 @@ class benchmark_log1p:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -25043,6 +30868,8 @@ class benchmark_log1p:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -25051,12 +30878,12 @@ class benchmark_log1p:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -25064,9 +30891,9 @@ class benchmark_log1p:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -25100,6 +30927,38 @@ class benchmark_log1p:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -25123,6 +30982,12 @@ class benchmark_log1p:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -25130,57 +30995,65 @@ class benchmark_log1p:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -25287,6 +31160,36 @@ class benchmark_log1p:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.log1p(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -25306,6 +31209,14 @@ class benchmark_log2:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -25408,15 +31319,18 @@ class benchmark_log2:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -25424,6 +31338,8 @@ class benchmark_log2:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -25432,12 +31348,12 @@ class benchmark_log2:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -25445,9 +31361,9 @@ class benchmark_log2:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -25481,6 +31397,38 @@ class benchmark_log2:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -25504,6 +31452,12 @@ class benchmark_log2:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -25511,57 +31465,65 @@ class benchmark_log2:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -25668,6 +31630,36 @@ class benchmark_log2:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.log2(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -25687,6 +31679,14 @@ class benchmark_radians:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -25789,15 +31789,18 @@ class benchmark_radians:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -25805,6 +31808,8 @@ class benchmark_radians:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -25813,12 +31818,12 @@ class benchmark_radians:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -25826,9 +31831,9 @@ class benchmark_radians:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -25862,6 +31867,38 @@ class benchmark_radians:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -25885,6 +31922,12 @@ class benchmark_radians:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -25892,57 +31935,65 @@ class benchmark_radians:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -26011,7 +32062,7 @@ class benchmark_radians:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.radians(datax, dataout)
+			arrayfunc.radians(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -26023,6 +32074,36 @@ class benchmark_radians:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.radians(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -26068,6 +32149,14 @@ class benchmark_sin:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -26170,15 +32259,18 @@ class benchmark_sin:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -26186,6 +32278,8 @@ class benchmark_sin:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -26194,12 +32288,12 @@ class benchmark_sin:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -26207,9 +32301,9 @@ class benchmark_sin:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -26243,6 +32337,38 @@ class benchmark_sin:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -26266,6 +32392,12 @@ class benchmark_sin:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -26273,57 +32405,65 @@ class benchmark_sin:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -26430,6 +32570,36 @@ class benchmark_sin:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.sin(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -26449,6 +32619,14 @@ class benchmark_sinh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -26551,15 +32729,18 @@ class benchmark_sinh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -26567,6 +32748,8 @@ class benchmark_sinh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -26575,12 +32758,12 @@ class benchmark_sinh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -26588,9 +32771,9 @@ class benchmark_sinh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -26624,6 +32807,38 @@ class benchmark_sinh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -26647,6 +32862,12 @@ class benchmark_sinh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -26654,57 +32875,65 @@ class benchmark_sinh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -26811,6 +33040,36 @@ class benchmark_sinh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.sinh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -26830,6 +33089,14 @@ class benchmark_sqrt:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -26932,15 +33199,18 @@ class benchmark_sqrt:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -26948,6 +33218,8 @@ class benchmark_sqrt:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -26956,12 +33228,12 @@ class benchmark_sqrt:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -26969,9 +33241,9 @@ class benchmark_sqrt:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -27005,6 +33277,38 @@ class benchmark_sqrt:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -27028,6 +33332,12 @@ class benchmark_sqrt:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -27035,57 +33345,65 @@ class benchmark_sqrt:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -27154,7 +33472,7 @@ class benchmark_sqrt:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.sqrt(datax, dataout)
+			arrayfunc.sqrt(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -27166,6 +33484,36 @@ class benchmark_sqrt:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.sqrt(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -27211,6 +33559,14 @@ class benchmark_tan:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -27313,15 +33669,18 @@ class benchmark_tan:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -27329,6 +33688,8 @@ class benchmark_tan:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -27337,12 +33698,12 @@ class benchmark_tan:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -27350,9 +33711,9 @@ class benchmark_tan:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -27386,6 +33747,38 @@ class benchmark_tan:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -27409,6 +33802,12 @@ class benchmark_tan:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -27416,57 +33815,65 @@ class benchmark_tan:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -27573,6 +33980,36 @@ class benchmark_tan:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.tan(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -27592,6 +34029,14 @@ class benchmark_tanh:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -27694,15 +34139,18 @@ class benchmark_tanh:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -27710,6 +34158,8 @@ class benchmark_tanh:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -27718,12 +34168,12 @@ class benchmark_tanh:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -27731,9 +34181,9 @@ class benchmark_tanh:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -27767,6 +34217,38 @@ class benchmark_tanh:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -27790,6 +34272,12 @@ class benchmark_tanh:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -27797,57 +34285,65 @@ class benchmark_tanh:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -27954,6 +34450,36 @@ class benchmark_tanh:
 		return aftime
 
 
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.tanh(datax, dataout, matherrors=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
 ##############################################################################
 
 ##############################################################################
@@ -27973,6 +34499,14 @@ class benchmark_trunc:
 		self.runtimetarget = 0.1
 		self.needsydatafix = False
 
+		# We need to escape any function names ending with an underscore to 
+		# prevent it being interpreted as a formatting character in restructured
+		# text input. 
+		if self.funcname.endswith('_'):
+			funcesc = self.funcname.rstrip('_') + '\_'
+		else:
+			funcesc = self.funcname
+		self.escfname = funcesc.rjust(FCOLWIDTH)
 
 
 	########################################################
@@ -28075,15 +34609,18 @@ class benchmark_trunc:
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
 		self.AfDataFast = dict.fromkeys(arraycodes, None)
 		self.RelDataFast = dict.fromkeys(arraycodes, None)
-
+		self.RelDataOpt = dict.fromkeys(arraycodes, None)
+		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
 
 		self.PyResults = ''
 		self.AfResults = ''
 		self.RelativeResults = ''
 
-		self.PyResultsFast = ''
 		self.AfResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.RelativeResultsSIMD = ''
+		self.RelOpt = ''
 		self.RelSIMD = ''
 
 
@@ -28091,6 +34628,8 @@ class benchmark_trunc:
 		self.aftime = []
 		self.relativetime = []
 		self.relativetimefast = []
+		self.relativetimesimd = []
+		self.relativetimeopt = []
 
 
 
@@ -28099,12 +34638,12 @@ class benchmark_trunc:
 		"""Format the output data for relative performance.
 		"""
 		if val == None:
-			return ' '.rjust(5)
+			return ' '.rjust(RELCOLWIDTH)
 
 		if val >= 10.0:
-			return ('%0.0f' % val).rjust(5)
+			return ('%0.0f' % val).rjust(RELCOLWIDTH)
 		else:
-			return ('%0.1f' % val).rjust(5)
+			return ('%0.1f' % val).rjust(RELCOLWIDTH)
 
 
 	########################################################
@@ -28112,9 +34651,9 @@ class benchmark_trunc:
 		"""Format the output data for micro-second results.
 		"""
 		if val == None:
-			return ' '.rjust(8)
+			return ' '.rjust(ABSCOLWIDTH)
 		else:
-			return ('%d' % (val * 1000000.0)).rjust(8)
+			return ('%0.1f' % (val * 1000000.0)).rjust(ABSCOLWIDTH)
 
 
 	##############################################################################
@@ -28148,6 +34687,38 @@ class benchmark_trunc:
 		return self.fmtreldata(calcval)
 
 
+	##############################################################################
+	def comparedata(self, refdata, testdata):
+		"""Compare the resulting test data.
+				refdata (dict): The reference the new test data is being compared to.
+				testdata (dict): The new test data which is being compared.
+			Returns: reldata (dict) = The speed of the test data compared to the reference data.
+					relativetime (list) = The speed of the test data compared to the reference data.
+		"""
+		reldata = dict([(x, refdata[x] / y) for x,y in testdata.items() if y != None])
+		relativetime = [refdata[x] / testdata[x] for x in self.supportedarrays] 
+		return reldata, relativetime
+
+
+
+	########################################################
+	def formattimedata(self, testdata):
+		"""Format the data for test data as time in microseconds.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtabsdata(testdata[x]) for x in arraycodes])
+
+
+	########################################################
+	def formatreldata(self, testdata):
+		"""Format the data for test data relative to a reference data set.
+			testdata (dict) : The unformatted test data. 
+		Returns : A string formatted into columns.
+		"""
+		return self.escfname + ' '.join([self.fmtreldata(testdata[x]) for x in arraycodes])
+
+
 	########################################################
 	def RunTests(self):
 		"""Run all the tests.
@@ -28171,6 +34742,12 @@ class benchmark_trunc:
 		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
 		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
 
+		# Make sure we don't do so few iterations that test results
+		# vary too much due to quantization errors. 
+		if self.pyitercounts < 10:
+			self.pyitercounts = 20
+		if self.afitercounts < 100:
+			self.afitercounts = 100
 
 		# Clear the results from the calibration run.
 		self.InitResults()
@@ -28178,57 +34755,65 @@ class benchmark_trunc:
 		# Now repeat using the stabilized timing calibration data.
 		# Python native time.
 		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.PyData[arraycode] = pytime
-			self.pythontime.append(pytime)
+			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.AfData[arraycode] = aftime
-			self.aftime.append(aftime)
-
-		# Relative time.
-		reldata = dict([(x, self.PyData[x] / y) for x,y in self.AfData.items() if y != None])
-		self.RelData.update(reldata)
-		self.relativetime = [self.PyData[x] / self.AfData[x] for x in self.supportedarrays] 
-
-
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character in restructured
-		# text input. 
-		if self.funcname.endswith('_'):
-			funcesc = self.funcname.rstrip('_') + '\_'
-		else:
-			funcesc = self.funcname
-		fname = funcesc.rjust(FCOLWIDTH)
-
-		# Format the results strings.
-		self.PyResults = fname + ' '.join([self.fmtabsdata(self.PyData[x]) for x in arraycodes])
-		self.FuncResults = fname + ' '.join([self.fmtabsdata(self.AfData[x]) for x in arraycodes])
-		self.RelativeResults = fname + ' '.join([self.fmtreldata(self.RelData[x]) for x in arraycodes])
-
+			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
 
 		# Repeat using optimised options and call forms.
 		# Arrayfunc time.
 		for arraycode in self.supportedarrays:
 			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
 
-		# Relative time.
-		reldatafast = dict([(x, self.PyData[x] / y) for x,y in self.AfDataFast.items() if y != None])
+
+		# Repeat using SIMD options and call forms.
+		# Arrayfunc time.
+		for arraycode in self.supportedarrays:
+			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+
+
+		# Relative time, Python versus Arrayfunc.
+		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
+		self.RelData.update(reldata)
+
+
+		# Relative time, Python versus optimised Arrayfunc.
+		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
 		self.RelDataFast.update(reldatafast)
-		self.relativetimefast = [self.PyData[x] / self.AfDataFast[x] for x in self.supportedarrays] 
+
+		# Relative time, Python versus SIMD optimised Arrayfunc.
+		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+		self.RelDataSIMD.update(reldatasimd)
+
+		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
+		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
+		self.RelDataOpt.update(reldataopt)
+
+
+		# Format the results strings.
+		self.PyResults = self.formattimedata(self.PyData)
+		self.FuncResults = self.formattimedata(self.AfData)
+		self.RelativeResults = self.formatreldata(self.RelData)
 
 
 		# Format the fast result strings.
-		self.PyResultsFast = self.PyResults
-		self.FuncResultsFast = fname + ' '.join([self.fmtabsdata(self.AfDataFast[x]) for x in arraycodes])
-		self.RelativeResultsFast = fname + ' '.join([self.fmtreldata(self.RelDataFast[x]) for x in arraycodes])
+		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
+		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
+
+
+		# Format the fast result strings.
+		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+		# Format the optimised versus not optimsed result strings.
+		if self.funcname in OptFuncs:
+			self.RelOpt = self.formatreldata(self.RelDataOpt)
 
 		# Calculate and format the results comparing the non-SIMD and SIMD results
 		# for functions with SIMD support.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = fname + ' '.join([self.simdcalc(x, self.AfData[x], self.AfDataFast[x]) for x in arraycodes])
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
 
 
 	########################################################
@@ -28297,7 +34882,7 @@ class benchmark_trunc:
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
 		for i in range(self.afitercounts):
-			arrayfunc.trunc(datax, dataout)
+			arrayfunc.trunc(datax, dataout, nosimd=True)
 		endtime = time.perf_counter()
 
 		aftime = (endtime - starttime) / self.afitercounts
@@ -28309,6 +34894,36 @@ class benchmark_trunc:
 	########################################################
 	def BenchmarkAFFast(self, arraycode):
 		"""Measure execution time for arrayfunc with optimised calls.
+		"""
+		# This is used for some tests only. 
+		result = True
+
+		# Initialise the test data arrays again with fresh data. 
+		self.InitDataArrays(arraycode)
+		datax = self.datax
+		datay = self.datay
+		dataz = self.dataz
+		dataout = self.dataout
+		yvalue = self.yvalue
+		# Used for ldexp only.
+		ldexp_y = self.ldexp_y
+
+
+		# Time for arrayfunc version.
+		starttime = time.perf_counter()
+		for i in range(self.afitercounts):
+			arrayfunc.trunc(datax, dataout, matherrors=True, nosimd=True)
+		endtime = time.perf_counter()
+
+		aftime = (endtime - starttime) / self.afitercounts
+
+		return aftime
+
+
+
+	########################################################
+	def BenchmarkAFSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD.
 		"""
 		# This is used for some tests only. 
 		result = True
@@ -28387,14 +35002,19 @@ def WritePlatformSignature(f):
 
 PyResults = []
 FuncResults = []
+FuncResultsFast = []
+FuncResultsSIMD = []
+
 RelativeResults = []
 RelativeResultsFast = []
+RelativeResultsSIMD = []
+
 numstats = []
 numstatsfast = []
+numstatssimd = []
+OptResults = []
 SIMDResults = []
 
-CalDataPy = {}
-CalDataAF = {}
 
 # Run the tests.
 for benchcode, funcname in BenchClasses:
@@ -28405,16 +35025,17 @@ for benchcode, funcname in BenchClasses:
 	
 	RelativeResults.append(bc.RelativeResults)
 	RelativeResultsFast.append(bc.RelativeResultsFast)
+	RelativeResultsSIMD.append(bc.RelativeResultsSIMD)
 	PyResults.append(bc.PyResults)
 	FuncResults.append(bc.FuncResults)
+	FuncResultsFast.append(bc.FuncResultsFast)
+	FuncResultsSIMD.append(bc.FuncResultsSIMD)
+	OptResults.append(bc.RelOpt)
 	SIMDResults.append(bc.RelSIMD)
 
 	numstats.extend(bc.relativetime)
 	numstatsfast.extend(bc.relativetimefast)
-
-
-	CalDataPy[funcname] = sum(bc.pythontime) / len(bc.pythontime)
-	CalDataAF[funcname] = sum(bc.aftime) / len(bc.aftime)
+	numstatssimd.extend(bc.relativetimesimd)
 
 
 ##############################################################################
@@ -28433,13 +35054,13 @@ with open('benchmarkdata.txt', 'w') as f:
 	# The relative performance stats in default configuration.
 
 	f.write('Relative Performance - Python Time / Arrayfunc Time.\n')
-	f.write(FormatTableSep(5))
-	f.write(FormatHeaderLabels(5))
-	f.write(FormatTableSep(5))
+	f.write(FormatTableSep(RELCOLWIDTH))
+	f.write(FormatHeaderLabels(RELCOLWIDTH))
+	f.write(FormatTableSep(RELCOLWIDTH))
 	
 	f.write('\n'.join(RelativeResults) + '\n')
 
-	f.write(FormatTableSep(5))
+	f.write(FormatTableSep(RELCOLWIDTH))
 
 	avgval = sum(numstats) / len(numstats)
 	maxval = max(numstats)
@@ -28464,13 +35085,13 @@ with open('benchmarkdata.txt', 'w') as f:
 	# The relative performance stats in optimised configuration.
 
 	f.write('Relative Performance with Optimisations - Python Time / Arrayfunc Time.\n')
-	f.write(FormatTableSep(5))
-	f.write(FormatHeaderLabels(5))
-	f.write(FormatTableSep(5))
+	f.write(FormatTableSep(RELCOLWIDTH))
+	f.write(FormatHeaderLabels(RELCOLWIDTH))
+	f.write(FormatTableSep(RELCOLWIDTH))
 	
 	f.write('\n'.join(RelativeResultsFast) + '\n')
 
-	f.write(FormatTableSep(5))
+	f.write(FormatTableSep(RELCOLWIDTH))
 
 
 	avgvalfast = sum(numstatsfast) / len(numstatsfast)
@@ -28493,14 +35114,60 @@ with open('benchmarkdata.txt', 'w') as f:
 
 	f.write('\n\n\n')
 
-	f.write('Relative Performance with and without SIMD Optimisations - Unoptimsed / Optimised Time.\n')
-	f.write(FormatTableSep(5))
-	f.write(FormatHeaderLabels(5))
-	f.write(FormatTableSep(5))
+
+	# The relative performance stats in SIMD optimised configuration.
+
+	f.write('Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.\n')
+	f.write(FormatTableSep(RELCOLWIDTH))
+	f.write(FormatHeaderLabels(RELCOLWIDTH))
+	f.write(FormatTableSep(RELCOLWIDTH))
+	
+	f.write('\n'.join(RelativeResultsSIMD) + '\n')
+
+	f.write(FormatTableSep(RELCOLWIDTH))
+
+
+	avgvalsimd = sum(numstatssimd) / len(numstatssimd)
+	maxvalsimd = max(numstatssimd)
+	minvalsimd = min(numstatssimd)
+
+
+	f.write('\n\n\n')
+	f.write('=========== ========\n')
+	f.write('Stat         Value\n')
+	f.write('=========== ========\n')
+	f.write('Average:    %0.0f\n' % avgvalsimd)
+	f.write('Maximum:    %0.0f\n' % maxvalsimd)
+	f.write('Minimum:    %0.1f\n' % minvalsimd)
+	f.write('Array size: %d\n' % ARRAYSIZE)
+	f.write('=========== ========\n')
+
+
+	##########################################################################
+
+	f.write('\n\n\n')
+
+	f.write('Relative Performance with and without math Optimisations - Unoptimsed / Optimised Time.\n')
+	f.write(FormatTableSep(RELCOLWIDTH))
+	f.write(FormatHeaderLabels(RELCOLWIDTH))
+	f.write(FormatTableSep(RELCOLWIDTH))
+	
+	f.write('\n'.join([x for x in OptResults if x]) + '\n')
+
+	f.write(FormatTableSep(RELCOLWIDTH))
+
+	##########################################################################
+
+	f.write('\n\n\n')
+
+	f.write('Relative Performance with and without SIMD Optimisations - Optimsed / SIMD Time.\n')
+	f.write(FormatTableSep(RELCOLWIDTH))
+	f.write(FormatHeaderLabels(RELCOLWIDTH))
+	f.write(FormatTableSep(RELCOLWIDTH))
 	
 	f.write('\n'.join([x for x in SIMDResults if x]) + '\n')
 
-	f.write(FormatTableSep(5))
+	f.write(FormatTableSep(RELCOLWIDTH))
 
 
 	##########################################################################
@@ -28508,25 +35175,45 @@ with open('benchmarkdata.txt', 'w') as f:
 	f.write('\n\n\n')
 
 	f.write('Python native time in micro-seconds.\n')
-	f.write(FormatTableSep(8))
-	f.write(FormatHeaderLabels(8))
-	f.write(FormatTableSep(8))
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	f.write(FormatHeaderLabels(ABSCOLWIDTH))
+	f.write(FormatTableSep(ABSCOLWIDTH))
 	
 	f.write('\n'.join(PyResults) + '\n')
 
-	f.write(FormatTableSep(8))
+	f.write(FormatTableSep(ABSCOLWIDTH))
 
 
 
 	f.write('\n\nArrayfunc time in micro-seconds.\n')
-	f.write(FormatTableSep(8))
-	f.write(FormatHeaderLabels(8))
-	f.write(FormatTableSep(8))
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	f.write(FormatHeaderLabels(ABSCOLWIDTH))
+	f.write(FormatTableSep(ABSCOLWIDTH))
 	
 	f.write('\n'.join(FuncResults) + '\n')
 
-	f.write(FormatTableSep(8))
+	f.write(FormatTableSep(ABSCOLWIDTH))
 
+
+
+	f.write('\n\nOptimised time in micro-seconds.\n')
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	f.write(FormatHeaderLabels(ABSCOLWIDTH))
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	
+	f.write('\n'.join(FuncResultsFast) + '\n')
+
+	f.write(FormatTableSep(ABSCOLWIDTH))
+
+
+	f.write('\n\nSIMD Optimised time in micro-seconds.\n')
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	f.write(FormatHeaderLabels(ABSCOLWIDTH))
+	f.write(FormatTableSep(ABSCOLWIDTH))
+	
+	f.write('\n'.join(FuncResultsSIMD) + '\n')
+
+	f.write(FormatTableSep(ABSCOLWIDTH))
 
 
 ##############################################################################

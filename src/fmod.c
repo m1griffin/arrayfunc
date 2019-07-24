@@ -343,7 +343,7 @@ static PyObject *py_fmod(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "fmod");
+	arraydata = getparams_two(self, args, keywds, 1, 0, "fmod");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.

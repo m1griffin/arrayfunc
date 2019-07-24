@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   findindex_simd_x86.c
-// Purpose:  Returns the index of the first value in an array to meet the specified criteria.
+// Purpose:  Calculate the findindex of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     10-May-2017
-// Ver:      19-Jun-2018.
+// Date:     16-Apr-2019
+// Ver:      06-Jul-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@
 #include "Python.h"
 
 #include "simddefs.h"
-#include "arrayops.h"
 
 #include "arrayerrs.h"
 
@@ -50,197 +49,753 @@
    data = The input data array.
    param1 = The parameter to be applied to each array element.
    nosimd = If true, disable SIMD.
-   Returns 0 or a positive integer indicating the array index of the found item, 
-	or a negative integer as an error code.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
 #ifdef AF_HASSIMD
-Py_ssize_t findindex_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1) { 
+Py_ssize_t findindex_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
-	Py_ssize_t index, fineindex, alignedlength; 
+	Py_ssize_t index, fineindex; 
 
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi compslice, dataslice, eqslice, gtslice;
+	v16qi datasliceleft, datasliceright, resultslice;
 	signed char compvals[CHARSIMDSIZE];
-
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	compslice = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
-
-	switch(opcode) {
-		// AF_EQ
-		case OP_AF_EQ: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqb128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] == param1) {
-							return fineindex;
-						}
-					}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
 				}
 			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GT
-		case OP_AF_GT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtb128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] > param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GTE
-		case OP_AF_GTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqb128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtb128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] >= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LT
-		case OP_AF_LT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqb128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtb128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] < param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LTE
-		case OP_AF_LTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtb128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] <= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_NE
-		case OP_AF_NE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-				dataslice = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqb128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] != param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
 		}
 	}
-	// The operation code is unknown.
-	return ARR_ERR_INVALIDOP;
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
 }
+
 #endif
+
+
 /*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	signed char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	signed char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	signed char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	signed char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	signed char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v16qi datasliceleft, datasliceright, resultslice;
+	unsigned char compvals[CHARSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
 
 
 /*--------------------------------------------------------------------------- */
@@ -250,197 +805,753 @@ Py_ssize_t findindex_signed_char_simd(signed int opcode, Py_ssize_t arraylen, si
    data = The input data array.
    param1 = The parameter to be applied to each array element.
    nosimd = If true, disable SIMD.
-   Returns 0 or a positive integer indicating the array index of the found item, 
-	or a negative integer as an error code.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
 #ifdef AF_HASSIMD
-Py_ssize_t findindex_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1) { 
+Py_ssize_t findindex_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
-	Py_ssize_t index, fineindex, alignedlength; 
+	Py_ssize_t index, fineindex; 
 
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi compslice, dataslice, eqslice, gtslice;
+	v8hi datasliceleft, datasliceright, resultslice;
 	signed short compvals[SHORTSIMDSIZE];
-
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	compslice = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
-
-	switch(opcode) {
-		// AF_EQ
-		case OP_AF_EQ: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqw128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] == param1) {
-							return fineindex;
-						}
-					}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
 				}
 			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GT
-		case OP_AF_GT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtw128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] > param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GTE
-		case OP_AF_GTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqw128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtw128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] >= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LT
-		case OP_AF_LT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqw128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtw128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] < param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LTE
-		case OP_AF_LTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtw128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] <= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_NE
-		case OP_AF_NE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-				dataslice = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqw128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] != param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
 		}
 	}
-	// The operation code is unknown.
-	return ARR_ERR_INVALIDOP;
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
 }
+
 #endif
+
+
 /*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	signed short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	signed short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	signed short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	signed short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	signed short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v8hi datasliceleft, datasliceright, resultslice;
+	unsigned short compvals[SHORTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
 
 
 /*--------------------------------------------------------------------------- */
@@ -450,197 +1561,753 @@ Py_ssize_t findindex_signed_short_simd(signed int opcode, Py_ssize_t arraylen, s
    data = The input data array.
    param1 = The parameter to be applied to each array element.
    nosimd = If true, disable SIMD.
-   Returns 0 or a positive integer indicating the array index of the found item, 
-	or a negative integer as an error code.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
 #ifdef AF_HASSIMD
-Py_ssize_t findindex_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1) { 
+Py_ssize_t findindex_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
-	Py_ssize_t index, fineindex, alignedlength; 
+	Py_ssize_t index, fineindex; 
 
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si compslice, dataslice, eqslice, gtslice;
+	v4si datasliceleft, datasliceright, resultslice;
 	signed int compvals[INTSIMDSIZE];
-
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	compslice = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
-
-	switch(opcode) {
-		// AF_EQ
-		case OP_AF_EQ: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqd128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] == param1) {
-							return fineindex;
-						}
-					}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
 				}
 			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GT
-		case OP_AF_GT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtd128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] > param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GTE
-		case OP_AF_GTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqd128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtd128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] >= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LT
-		case OP_AF_LT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqd128(dataslice, compslice);
-					gtslice = __builtin_ia32_pcmpgtd128(dataslice, compslice);
-				// Find the rough location.
-				if ((__builtin_ia32_pmovmskb128((v16qi) gtslice) | __builtin_ia32_pmovmskb128((v16qi) eqslice)) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] < param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LTE
-		case OP_AF_LTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				gtslice = __builtin_ia32_pcmpgtd128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) gtslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] <= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_NE
-		case OP_AF_NE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-				dataslice = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
-				eqslice = __builtin_ia32_pcmpeqd128(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) eqslice) != 0xffff) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] != param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
 		}
 	}
-	// The operation code is unknown.
-	return ARR_ERR_INVALIDOP;
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
 }
+
 #endif
+
+
 /*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	signed int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	signed int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	signed int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	signed int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	signed int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4si datasliceleft, datasliceright, resultslice;
+	unsigned int compvals[INTSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
 
 
 /*--------------------------------------------------------------------------- */
@@ -650,195 +2317,375 @@ Py_ssize_t findindex_signed_int_simd(signed int opcode, Py_ssize_t arraylen, sig
    data = The input data array.
    param1 = The parameter to be applied to each array element.
    nosimd = If true, disable SIMD.
-   Returns 0 or a positive integer indicating the array index of the found item, 
-	or a negative integer as an error code.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
 #ifdef AF_HASSIMD
-Py_ssize_t findindex_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, float param1) { 
+Py_ssize_t findindex_eq_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
-	Py_ssize_t index, fineindex, alignedlength; 
+	Py_ssize_t index, fineindex; 
 
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf compslice, dataslice, resultslice;
+	v4sf datasliceleft, datasliceright, resultslice;
 	float compvals[FLOATSIMDSIZE];
-
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	compslice = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
-
-	switch(opcode) {
-		// AF_EQ
-		case OP_AF_EQ: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpeqps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] == param1) {
-							return fineindex;
-						}
-					}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
 				}
 			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GT
-		case OP_AF_GT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpgtps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] > param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GTE
-		case OP_AF_GTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpgeps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] >= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LT
-		case OP_AF_LT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpltps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] < param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LTE
-		case OP_AF_LTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpleps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] <= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_NE
-		case OP_AF_NE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-				dataslice = (v4sf) __builtin_ia32_loadups(&data[index]);
-				resultslice = __builtin_ia32_cmpneqps(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] != param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
 		}
 	}
-	// The operation code is unknown.
-	return ARR_ERR_INVALIDOP;
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
 }
+
 #endif
+
+
 /*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4sf datasliceleft, datasliceright, resultslice;
+	float compvals[FLOATSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4sf datasliceleft, datasliceright, resultslice;
+	float compvals[FLOATSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4sf datasliceleft, datasliceright, resultslice;
+	float compvals[FLOATSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4sf datasliceleft, datasliceright, resultslice;
+	float compvals[FLOATSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v4sf datasliceleft, datasliceright, resultslice;
+	float compvals[FLOATSIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < FLOATSIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
 
 
 /*--------------------------------------------------------------------------- */
@@ -848,193 +2695,373 @@ Py_ssize_t findindex_float_simd(signed int opcode, Py_ssize_t arraylen, float *d
    data = The input data array.
    param1 = The parameter to be applied to each array element.
    nosimd = If true, disable SIMD.
-   Returns 0 or a positive integer indicating the array index of the found item, 
-	or a negative integer as an error code.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
 #ifdef AF_HASSIMD
-Py_ssize_t findindex_double_simd(signed int opcode, Py_ssize_t arraylen, double *data, double param1) { 
+Py_ssize_t findindex_eq_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
-	Py_ssize_t index, fineindex, alignedlength; 
+	Py_ssize_t index, fineindex; 
 
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df compslice, dataslice, resultslice;
+	v2df datasliceleft, datasliceright, resultslice;
 	double compvals[DOUBLESIMDSIZE];
-
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	compslice = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
-
-	switch(opcode) {
-		// AF_EQ
-		case OP_AF_EQ: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmpeqpd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] == param1) {
-							return fineindex;
-						}
-					}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft == datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] == param1) {
+					return fineindex;
 				}
 			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] == param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GT
-		case OP_AF_GT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmpgtpd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] > param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] > param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_GTE
-		case OP_AF_GTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmpgepd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] >= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] >= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LT
-		case OP_AF_LT: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmpltpd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] < param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] < param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_LTE
-		case OP_AF_LTE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmplepd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] <= param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] <= param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
-		}
-		// AF_NE
-		case OP_AF_NE: {
-			// Use SIMD.
-			for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-				dataslice = (v2df) __builtin_ia32_loadupd(&data[index]);
-				resultslice = __builtin_ia32_cmpneqpd(dataslice, compslice);
-				// Find the rough location.
-				if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
-					// Home in on the exact location.
-					for(fineindex = index; fineindex < alignedlength; fineindex++) {
-						if (data[fineindex] != param1) {
-							return fineindex;
-						}
-					}
-				}
-			}
-
-			// Find the value within the left over elements at the end of the array.
-			for(index = alignedlength; index < arraylen; index++) {
-				if (data[index] != param1) {
-					return index;
-				}
-			}
-
-		return ARR_ERR_NOTFOUND;
 		}
 	}
-	// The operation code is unknown.
-	return ARR_ERR_INVALIDOP;
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] == param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
 }
+
 #endif
+
+
 /*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_gt_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v2df datasliceleft, datasliceright, resultslice;
+	double compvals[DOUBLESIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft > datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] > param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] > param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ge_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v2df datasliceleft, datasliceright, resultslice;
+	double compvals[DOUBLESIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft >= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] >= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] >= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_lt_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v2df datasliceleft, datasliceright, resultslice;
+	double compvals[DOUBLESIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft < datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] < param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] < param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_le_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v2df datasliceleft, datasliceright, resultslice;
+	double compvals[DOUBLESIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft <= datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] <= param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] <= param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#ifdef AF_HASSIMD
+Py_ssize_t findindex_ne_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	v2df datasliceleft, datasliceright, resultslice;
+	double compvals[DOUBLESIMDSIZE];
+
+	// Initialise the comparison values.
+	for (y = 0; y < DOUBLESIMDSIZE; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		// The actual SIMD operation. The compiler generates the correct SIMD
+		// operations, and stores them as a vector.
+		resultslice = datasliceleft != datasliceright;
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			// Home in on the exact location.
+			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] != param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		if (data[index] != param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
 

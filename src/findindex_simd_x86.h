@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   findindex_simd_x86.h
-// Purpose:  Returns the index of the first value in an array to meet the specified criteria.
+// Purpose:  Calculate the findindex of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     10-May-2017
-// Ver:      19-Jun-2018.
+// Date:     16-Apr-2019
+// Ver:      06-Jul-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -26,10 +26,53 @@
 //------------------------------------------------------------------------------
 
 
-Py_ssize_t findindex_signed_char_simd(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char param1);
-Py_ssize_t findindex_signed_short_simd(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short param1);
-Py_ssize_t findindex_signed_int_simd(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int param1);
-Py_ssize_t findindex_float_simd(signed int opcode, Py_ssize_t arraylen, float *data, float param1);
-Py_ssize_t findindex_double_simd(signed int opcode, Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1);
+Py_ssize_t findindex_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1);
+Py_ssize_t findindex_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1);
+Py_ssize_t findindex_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1);
+Py_ssize_t findindex_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1);
+Py_ssize_t findindex_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1);
+Py_ssize_t findindex_eq_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_gt_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_ge_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_lt_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_le_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_ne_float_simd(Py_ssize_t arraylen, float *data, float param1);
+Py_ssize_t findindex_eq_double_simd(Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_gt_double_simd(Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_ge_double_simd(Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_lt_double_simd(Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_le_double_simd(Py_ssize_t arraylen, double *data, double param1);
+Py_ssize_t findindex_ne_double_simd(Py_ssize_t arraylen, double *data, double param1);
 
 

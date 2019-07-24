@@ -36,7 +36,7 @@ import codegen_common
 test_template_invert = '''
 
 ##############################################################################
-class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_invert
 	"""
@@ -68,8 +68,15 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
 					'Q' : arrayfunc.arraylimits.Q_max} 
 
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
 
-		self.data = array.array('%(typecode)s', [%(test_op_x)s])
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+
+		self.data = array.array('%(typecode)s', xdata)
 		self.dataout = array.array('%(typecode)s', [0]*len(self.data))
 
 		self.expected = [self.InvertPy('%(typecode)s', x) for x in self.data]
@@ -84,7 +91,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_inplace(self):
 		"""Test %(funclabel)s in place - Array code %(typelabel)s.
 		"""
-		arrayfunc.%(funcname)s(self.data)
+		arrayfunc.%(funcname)s(self.data %(nosimd)s)
 
 		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -92,10 +99,10 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_inplace_lim(self):
-		"""Test %(funclabel)s in place with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_inplace_maxlen(self):
+		"""Test %(funclabel)s in place with array maxlen  - Array code %(typelabel)s.
 		"""
-		arrayfunc.%(funcname)s(self.data, maxlen=self.limited)
+		arrayfunc.%(funcname)s(self.data, maxlen=self.limited %(nosimd)s)
 
 		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -106,7 +113,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_outputarray(self):
 		"""Test %(funclabel)s to output array - Array code %(typelabel)s.
 		"""
-		arrayfunc.%(funcname)s(self.data, self.dataout)
+		arrayfunc.%(funcname)s(self.data, self.dataout %(nosimd)s)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -114,10 +121,10 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_outputarray_lim(self):
-		"""Test %(funclabel)s to output array with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_outputarray_maxlen(self):
+		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typelabel)s.
 		"""
-		arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited)
+		arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited %(nosimd)s)
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -230,7 +237,20 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_array_array_a2(self):
+	def test_%(funclabel)s_array_none_a2(self):
+		"""Test %(funclabel)s as *array-none* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, nosimd=False)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, nosimd='a')
+
+
+	########################################################
+	def test_%(funclabel)s_array_array_b1(self):
 		"""Test %(funclabel)s as *array-array* for maxlen='a' - Array code %(typelabel)s.
 		"""
 		# This version is expected to pass.
@@ -243,7 +263,20 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_array_none_b1(self):
+	def test_%(funclabel)s_array_array_b2(self):
+		"""Test %(funclabel)s as *array-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.inparray1a, self.dataout, nosimd=False)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.inparray1b, self.dataout, nosimd='a')
+
+
+	########################################################
+	def test_%(funclabel)s_array_none_c1(self):
 		"""Test %(funclabel)s as *array-none* for matherrors=True (unsupported option) - Array code %(typelabel)s.
 		"""
 		# This version is expected to pass.
@@ -256,7 +289,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_array_array_b2(self):
+	def test_%(funclabel)s_array_array_d1(self):
 		"""Test %(funclabel)s as *array-array* for matherrors=True (unsupported option) - Array code %(typelabel)s.
 		"""
 		# This version is expected to pass.
@@ -269,7 +302,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_no_params_c1(self):
+	def test_%(funclabel)s_no_params_e1(self):
 		"""Test %(funclabel)s with no parameters - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
@@ -311,8 +344,8 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_inplace_lim(self):
-		"""Test %(funclabel)s in place with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_inplace_maxlen(self):
+		"""Test %(funclabel)s in place with array maxlen  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, maxlen=self.limited)
@@ -327,8 +360,8 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
-	def test_%(funclabel)s_outputarray_lim(self):
-		"""Test %(funclabel)s to output array with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_outputarray_maxlen(self):
+		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typelabel)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited)
@@ -364,13 +397,32 @@ for func in funclist:
 		# The copyright header.
 		f.write(codegen_common.HeaderTemplate % headerdate)
 
-		testtemplate = test_template_invert
-
 
 		for functype in codegen_common.intarrays:
 			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
 				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x']}
-			f.write(testtemplate % funcdata)
+
+			# Test for basic operation.
+			# With SIMD, even data arra size.
+			funcdata['simdpresent'] = 'with'
+			funcdata['nosimd'] = ''
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_template_invert % funcdata)
+
+			# With SIMD, odd data array size.
+			funcdata['simdpresent'] = 'with'
+			funcdata['nosimd'] = ''
+			funcdata['arrayevenodd'] = 'odd'
+			f.write(test_template_invert % funcdata)
+
+			# Without SIMD.
+			funcdata['simdpresent'] = 'without'
+			funcdata['nosimd'] = ', nosimd=True'
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_template_invert % funcdata)
+
+
+			#####
 
 
 			# Test for invalid parameters. One template should work for all 

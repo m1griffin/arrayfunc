@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   amax_simd_x86.c
-// Purpose:  Find the maximum value in an array.
+// Purpose:  Calculate the amax of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     01-May-2017
-// Ver:      19-Jun-2018.
+// Date:     16-Apr-2019
+// Ver:      24-Jul-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@
 #include "Python.h"
 
 #include "simddefs.h"
-#include "arrayops.h"
 
 #include "arrayerrs.h"
 
@@ -50,7 +49,7 @@
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-signed char amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
+signed long long amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -66,7 +65,7 @@ signed char amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v16qi) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v16qi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = CHARSIMDSIZE; x < alignedlength; x += CHARSIMDSIZE) {
@@ -90,7 +89,7 @@ signed char amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 		}
 	}
 
-	return maxfound;
+	return (signed long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -103,7 +102,7 @@ signed char amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-unsigned char amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
+unsigned long long amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -119,7 +118,7 @@ unsigned char amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v16qi) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v16qi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = CHARSIMDSIZE; x < alignedlength; x += CHARSIMDSIZE) {
@@ -143,7 +142,7 @@ unsigned char amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
 		}
 	}
 
-	return maxfound;
+	return (unsigned long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -156,7 +155,7 @@ unsigned char amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) 
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-signed short amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
+signed long long amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -172,7 +171,7 @@ signed short amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v8hi) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v8hi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = SHORTSIMDSIZE; x < alignedlength; x += SHORTSIMDSIZE) {
@@ -196,7 +195,7 @@ signed short amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
 		}
 	}
 
-	return maxfound;
+	return (signed long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -209,7 +208,7 @@ signed short amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) {
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-unsigned short amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
+unsigned long long amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -225,7 +224,7 @@ unsigned short amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v8hi) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v8hi) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = SHORTSIMDSIZE; x < alignedlength; x += SHORTSIMDSIZE) {
@@ -249,7 +248,7 @@ unsigned short amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
 		}
 	}
 
-	return maxfound;
+	return (unsigned long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -262,7 +261,7 @@ unsigned short amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *dat
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-signed int amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
+signed long long amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -278,7 +277,7 @@ signed int amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v4si) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v4si) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = INTSIMDSIZE; x < alignedlength; x += INTSIMDSIZE) {
@@ -302,7 +301,7 @@ signed int amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 		}
 	}
 
-	return maxfound;
+	return (signed long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -315,7 +314,7 @@ signed int amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-unsigned int amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
+unsigned long long amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -331,7 +330,7 @@ unsigned int amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v4si) __builtin_ia32_lddqu((char *) data);
+	maxslice = (v4si) __builtin_ia32_lddqu((char *) &data[0]);
 
 	// Use SIMD.
 	for(x = INTSIMDSIZE; x < alignedlength; x += INTSIMDSIZE) {
@@ -355,7 +354,7 @@ unsigned int amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
 		}
 	}
 
-	return maxfound;
+	return (unsigned long long) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -368,7 +367,7 @@ unsigned int amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) {
    Returns: The maximum value found.
 */
 #ifdef AF_HASSIMD
-float amax_float_simd(Py_ssize_t arraylen, float *data) { 
+double amax_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
 	Py_ssize_t x, alignedlength; 
@@ -384,7 +383,7 @@ float amax_float_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v4sf) __builtin_ia32_loadups(data);
+	maxslice = (v4sf) __builtin_ia32_loadups(&data[0]);
 
 	// Use SIMD.
 	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
@@ -408,7 +407,7 @@ float amax_float_simd(Py_ssize_t arraylen, float *data) {
 		}
 	}
 
-	return maxfound;
+	return (double) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */
@@ -437,7 +436,7 @@ double amax_double_simd(Py_ssize_t arraylen, double *data) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v2df) __builtin_ia32_loadupd(data);
+	maxslice = (v2df) __builtin_ia32_loadupd(&data[0]);
 
 	// Use SIMD.
 	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
@@ -461,7 +460,7 @@ double amax_double_simd(Py_ssize_t arraylen, double *data) {
 		}
 	}
 
-	return maxfound;
+	return (double) maxfound;
 }
 #endif
 /*--------------------------------------------------------------------------- */

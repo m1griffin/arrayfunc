@@ -41,6 +41,16 @@
 
 /*--------------------------------------------------------------------------- */
 
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "and__simd_x86.h"
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -48,9 +58,802 @@
    data2 = The second data array.
    data3 = The third data array.
    param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
 */
 // param_arr_num_none
-void and__signed_char_1(Py_ssize_t arraylen, signed char *data1, signed char param) {
+void and__signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char param, signed char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signed char *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param, signed char *data2, signed char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1, signed char *data2, signed char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__signed_char_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char param, unsigned char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, unsigned char *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char param, unsigned char *data2, unsigned char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char *data2, unsigned char *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		and__unsigned_char_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short param, signed short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, signed short *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__signed_short_4(Py_ssize_t arraylen, int nosimd, signed short param, signed short *data2, signed short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *data1, signed short *data2, signed short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__signed_short_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short param, unsigned short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param, unsigned short *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short param, unsigned short *data2, unsigned short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short *data2, unsigned short *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		and__unsigned_short_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param, signed int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2, signed int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2, signed int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__signed_int_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & param;
+	}
+
+
+}
+
+// param_arr_num_arr
+void and__unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & param;
+	}
+
+}
+
+// param_num_arr_none
+void and__unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_3_simd(arraylen, param, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data2[x] = param & data2[x];
+	}
+
+}
+
+// param_num_arr_arr
+void and__unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_4_simd(arraylen, param, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = param & data2[x];
+	}
+
+}
+
+
+
+// param_arr_arr_none
+void and__unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_5_simd(arraylen, data1, data2);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] & data2[x];
+	}
+
+}
+
+// param_arr_arr_arr
+void and__unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int *data3) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		and__unsigned_int_6_simd(arraylen, data1, data2, data3);
+		return;
+	}
+#endif
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] & data2[x];
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
+*/
+// param_arr_num_none
+void and__signed_long_1(Py_ssize_t arraylen, int nosimd, signed long *data1, signed long param) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -63,7 +866,7 @@ void and__signed_char_1(Py_ssize_t arraylen, signed char *data1, signed char par
 }
 
 // param_arr_num_arr
-void and__signed_char_2(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3) {
+void and__signed_long_2(Py_ssize_t arraylen, int nosimd, signed long *data1, signed long param, signed long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -75,7 +878,7 @@ void and__signed_char_2(Py_ssize_t arraylen, signed char *data1, signed char par
 }
 
 // param_num_arr_none
-void and__signed_char_3(Py_ssize_t arraylen, signed char param, signed char *data2) {
+void and__signed_long_3(Py_ssize_t arraylen, int nosimd, signed long param, signed long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -87,7 +890,7 @@ void and__signed_char_3(Py_ssize_t arraylen, signed char param, signed char *dat
 }
 
 // param_num_arr_arr
-void and__signed_char_4(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3) {
+void and__signed_long_4(Py_ssize_t arraylen, int nosimd, signed long param, signed long *data2, signed long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -101,7 +904,7 @@ void and__signed_char_4(Py_ssize_t arraylen, signed char param, signed char *dat
 
 
 // param_arr_arr_none
-void and__signed_char_5(Py_ssize_t arraylen, signed char *data1, signed char *data2) {
+void and__signed_long_5(Py_ssize_t arraylen, int nosimd, signed long *data1, signed long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -113,7 +916,7 @@ void and__signed_char_5(Py_ssize_t arraylen, signed char *data1, signed char *da
 }
 
 // param_arr_arr_arr
-void and__signed_char_6(Py_ssize_t arraylen, signed char *data1, signed char *data2, signed char *data3) {
+void and__signed_long_6(Py_ssize_t arraylen, int nosimd, signed long *data1, signed long *data2, signed long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -131,9 +934,10 @@ void and__signed_char_6(Py_ssize_t arraylen, signed char *data1, signed char *da
    data2 = The second data array.
    data3 = The third data array.
    param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
 */
 // param_arr_num_none
-void and__unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsigned char param) {
+void and__unsigned_long_1(Py_ssize_t arraylen, int nosimd, unsigned long *data1, unsigned long param) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -146,7 +950,7 @@ void and__unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsigned ch
 }
 
 // param_arr_num_arr
-void and__unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned char *data3) {
+void and__unsigned_long_2(Py_ssize_t arraylen, int nosimd, unsigned long *data1, unsigned long param, unsigned long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -158,7 +962,7 @@ void and__unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsigned ch
 }
 
 // param_num_arr_none
-void and__unsigned_char_3(Py_ssize_t arraylen, unsigned char param, unsigned char *data2) {
+void and__unsigned_long_3(Py_ssize_t arraylen, int nosimd, unsigned long param, unsigned long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -170,7 +974,7 @@ void and__unsigned_char_3(Py_ssize_t arraylen, unsigned char param, unsigned cha
 }
 
 // param_num_arr_arr
-void and__unsigned_char_4(Py_ssize_t arraylen, unsigned char param, unsigned char *data2, unsigned char *data3) {
+void and__unsigned_long_4(Py_ssize_t arraylen, int nosimd, unsigned long param, unsigned long *data2, unsigned long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -184,7 +988,7 @@ void and__unsigned_char_4(Py_ssize_t arraylen, unsigned char param, unsigned cha
 
 
 // param_arr_arr_none
-void and__unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2) {
+void and__unsigned_long_5(Py_ssize_t arraylen, int nosimd, unsigned long *data1, unsigned long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -196,7 +1000,7 @@ void and__unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, unsigned ch
 }
 
 // param_arr_arr_arr
-void and__unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2, unsigned char *data3) {
+void and__unsigned_long_6(Py_ssize_t arraylen, int nosimd, unsigned long *data1, unsigned long *data2, unsigned long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -214,9 +1018,10 @@ void and__unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsigned ch
    data2 = The second data array.
    data3 = The third data array.
    param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
 */
 // param_arr_num_none
-void and__signed_short_1(Py_ssize_t arraylen, signed short *data1, signed short param) {
+void and__signed_long_long_1(Py_ssize_t arraylen, int nosimd, signed long long *data1, signed long long param) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -229,7 +1034,7 @@ void and__signed_short_1(Py_ssize_t arraylen, signed short *data1, signed short 
 }
 
 // param_arr_num_arr
-void and__signed_short_2(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3) {
+void and__signed_long_long_2(Py_ssize_t arraylen, int nosimd, signed long long *data1, signed long long param, signed long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -241,7 +1046,7 @@ void and__signed_short_2(Py_ssize_t arraylen, signed short *data1, signed short 
 }
 
 // param_num_arr_none
-void and__signed_short_3(Py_ssize_t arraylen, signed short param, signed short *data2) {
+void and__signed_long_long_3(Py_ssize_t arraylen, int nosimd, signed long long param, signed long long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -253,7 +1058,7 @@ void and__signed_short_3(Py_ssize_t arraylen, signed short param, signed short *
 }
 
 // param_num_arr_arr
-void and__signed_short_4(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3) {
+void and__signed_long_long_4(Py_ssize_t arraylen, int nosimd, signed long long param, signed long long *data2, signed long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -267,7 +1072,7 @@ void and__signed_short_4(Py_ssize_t arraylen, signed short param, signed short *
 
 
 // param_arr_arr_none
-void and__signed_short_5(Py_ssize_t arraylen, signed short *data1, signed short *data2) {
+void and__signed_long_long_5(Py_ssize_t arraylen, int nosimd, signed long long *data1, signed long long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -279,7 +1084,7 @@ void and__signed_short_5(Py_ssize_t arraylen, signed short *data1, signed short 
 }
 
 // param_arr_arr_arr
-void and__signed_short_6(Py_ssize_t arraylen, signed short *data1, signed short *data2, signed short *data3) {
+void and__signed_long_long_6(Py_ssize_t arraylen, int nosimd, signed long long *data1, signed long long *data2, signed long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -297,9 +1102,10 @@ void and__signed_short_6(Py_ssize_t arraylen, signed short *data1, signed short 
    data2 = The second data array.
    data3 = The third data array.
    param = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD acceleration.
 */
 // param_arr_num_none
-void and__unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsigned short param) {
+void and__unsigned_long_long_1(Py_ssize_t arraylen, int nosimd, unsigned long long *data1, unsigned long long param) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -312,7 +1118,7 @@ void and__unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsigned 
 }
 
 // param_arr_num_arr
-void and__unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3) {
+void and__unsigned_long_long_2(Py_ssize_t arraylen, int nosimd, unsigned long long *data1, unsigned long long param, unsigned long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -324,7 +1130,7 @@ void and__unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsigned 
 }
 
 // param_num_arr_none
-void and__unsigned_short_3(Py_ssize_t arraylen, unsigned short param, unsigned short *data2) {
+void and__unsigned_long_long_3(Py_ssize_t arraylen, int nosimd, unsigned long long param, unsigned long long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -336,7 +1142,7 @@ void and__unsigned_short_3(Py_ssize_t arraylen, unsigned short param, unsigned s
 }
 
 // param_num_arr_arr
-void and__unsigned_short_4(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3) {
+void and__unsigned_long_long_4(Py_ssize_t arraylen, int nosimd, unsigned long long param, unsigned long long *data2, unsigned long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -350,7 +1156,7 @@ void and__unsigned_short_4(Py_ssize_t arraylen, unsigned short param, unsigned s
 
 
 // param_arr_arr_none
-void and__unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2) {
+void and__unsigned_long_long_5(Py_ssize_t arraylen, int nosimd, unsigned long long *data1, unsigned long long *data2) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -362,505 +1168,7 @@ void and__unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, unsigned 
 }
 
 // param_arr_arr_arr
-void and__unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned short *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__signed_int_3(Py_ssize_t arraylen, signed int param, signed int *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__signed_int_4(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned int *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__signed_long_1(Py_ssize_t arraylen, signed long *data1, signed long param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__signed_long_2(Py_ssize_t arraylen, signed long *data1, signed long param, signed long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__signed_long_3(Py_ssize_t arraylen, signed long param, signed long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__signed_long_4(Py_ssize_t arraylen, signed long param, signed long *data2, signed long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__signed_long_5(Py_ssize_t arraylen, signed long *data1, signed long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__signed_long_6(Py_ssize_t arraylen, signed long *data1, signed long *data2, signed long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsigned long param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsigned long param, unsigned long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__unsigned_long_3(Py_ssize_t arraylen, unsigned long param, unsigned long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__unsigned_long_4(Py_ssize_t arraylen, unsigned long param, unsigned long *data2, unsigned long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, unsigned long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsigned long *data2, unsigned long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, signed long long param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, signed long long param, signed long long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__signed_long_long_3(Py_ssize_t arraylen, signed long long param, signed long long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__signed_long_long_4(Py_ssize_t arraylen, signed long long param, signed long long *data2, signed long long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__signed_long_long_5(Py_ssize_t arraylen, signed long long *data1, signed long long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, signed long long *data2, signed long long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & data2[x];
-	}
-
-}
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-void and__unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long param) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & param;
-	}
-
-
-}
-
-// param_arr_num_arr
-void and__unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long param, unsigned long long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = data1[x] & param;
-	}
-
-}
-
-// param_num_arr_none
-void and__unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long param, unsigned long long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data2[x] = param & data2[x];
-	}
-
-}
-
-// param_num_arr_arr
-void and__unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long param, unsigned long long *data2, unsigned long long *data3) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data3[x] = param & data2[x];
-	}
-
-}
-
-
-
-// param_arr_arr_none
-void and__unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long *data2) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-	for(x = 0; x < arraylen; x++) {
-		data1[x] = data1[x] & data2[x];
-	}
-
-}
-
-// param_arr_arr_arr
-void and__unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long *data2, unsigned long long *data3) {
+void and__unsigned_long_long_6(Py_ssize_t arraylen, int nosimd, unsigned long long *data1, unsigned long long *data2, unsigned long long *data3) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -884,8 +1192,9 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 	// -----------------------------------------------------
 
 
-	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 0, "and_");
+	// Get the parameters passed from Python. Does not have "matherrors". 
+	// Some functions using this template do have "nosimd".
+	arraydata = getparams_two(self, args, keywds, 0, 1, "and_");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -900,27 +1209,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'b' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__signed_char_1(arraydata.arraylength, arraydata.array1.b, arraydata.param.b);
+					and__signed_char_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.param.b);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__signed_char_2(arraydata.arraylength, arraydata.array1.b, arraydata.param.b, arraydata.array3.b);
+					and__signed_char_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.param.b, arraydata.array3.b);
 					break;
 				}
 				case param_num_arr_none : {
-					and__signed_char_3(arraydata.arraylength, arraydata.param.b, arraydata.array2.b);
+					and__signed_char_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.b, arraydata.array2.b);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__signed_char_4(arraydata.arraylength, arraydata.param.b, arraydata.array2.b, arraydata.array3.b);
+					and__signed_char_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.b, arraydata.array2.b, arraydata.array3.b);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__signed_char_5(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b);
+					and__signed_char_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__signed_char_6(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.array3.b);
+					and__signed_char_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b, arraydata.array3.b);
 					break;
 				}
 			}
@@ -931,27 +1240,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'B' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__unsigned_char_1(arraydata.arraylength, arraydata.array1.B, arraydata.param.B);
+					and__unsigned_char_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.param.B);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__unsigned_char_2(arraydata.arraylength, arraydata.array1.B, arraydata.param.B, arraydata.array3.B);
+					and__unsigned_char_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.param.B, arraydata.array3.B);
 					break;
 				}
 				case param_num_arr_none : {
-					and__unsigned_char_3(arraydata.arraylength, arraydata.param.B, arraydata.array2.B);
+					and__unsigned_char_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.B, arraydata.array2.B);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__unsigned_char_4(arraydata.arraylength, arraydata.param.B, arraydata.array2.B, arraydata.array3.B);
+					and__unsigned_char_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.B, arraydata.array2.B, arraydata.array3.B);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__unsigned_char_5(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B);
+					and__unsigned_char_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.array2.B);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__unsigned_char_6(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.array3.B);
+					and__unsigned_char_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.array2.B, arraydata.array3.B);
 					break;
 				}
 			}
@@ -962,27 +1271,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'h' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__signed_short_1(arraydata.arraylength, arraydata.array1.h, arraydata.param.h);
+					and__signed_short_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.param.h);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__signed_short_2(arraydata.arraylength, arraydata.array1.h, arraydata.param.h, arraydata.array3.h);
+					and__signed_short_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.param.h, arraydata.array3.h);
 					break;
 				}
 				case param_num_arr_none : {
-					and__signed_short_3(arraydata.arraylength, arraydata.param.h, arraydata.array2.h);
+					and__signed_short_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.h, arraydata.array2.h);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__signed_short_4(arraydata.arraylength, arraydata.param.h, arraydata.array2.h, arraydata.array3.h);
+					and__signed_short_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.h, arraydata.array2.h, arraydata.array3.h);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__signed_short_5(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h);
+					and__signed_short_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__signed_short_6(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.array3.h);
+					and__signed_short_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h, arraydata.array3.h);
 					break;
 				}
 			}
@@ -993,27 +1302,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'H' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__unsigned_short_1(arraydata.arraylength, arraydata.array1.H, arraydata.param.H);
+					and__unsigned_short_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.param.H);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__unsigned_short_2(arraydata.arraylength, arraydata.array1.H, arraydata.param.H, arraydata.array3.H);
+					and__unsigned_short_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.param.H, arraydata.array3.H);
 					break;
 				}
 				case param_num_arr_none : {
-					and__unsigned_short_3(arraydata.arraylength, arraydata.param.H, arraydata.array2.H);
+					and__unsigned_short_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.H, arraydata.array2.H);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__unsigned_short_4(arraydata.arraylength, arraydata.param.H, arraydata.array2.H, arraydata.array3.H);
+					and__unsigned_short_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.H, arraydata.array2.H, arraydata.array3.H);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__unsigned_short_5(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H);
+					and__unsigned_short_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.array2.H);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__unsigned_short_6(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.array3.H);
+					and__unsigned_short_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.array2.H, arraydata.array3.H);
 					break;
 				}
 			}
@@ -1024,27 +1333,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'i' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__signed_int_1(arraydata.arraylength, arraydata.array1.i, arraydata.param.i);
+					and__signed_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__signed_int_2(arraydata.arraylength, arraydata.array1.i, arraydata.param.i, arraydata.array3.i);
+					and__signed_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i, arraydata.array3.i);
 					break;
 				}
 				case param_num_arr_none : {
-					and__signed_int_3(arraydata.arraylength, arraydata.param.i, arraydata.array2.i);
+					and__signed_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__signed_int_4(arraydata.arraylength, arraydata.param.i, arraydata.array2.i, arraydata.array3.i);
+					and__signed_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i, arraydata.array3.i);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__signed_int_5(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i);
+					and__signed_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__signed_int_6(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i);
+					and__signed_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i);
 					break;
 				}
 			}
@@ -1055,27 +1364,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'I' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__unsigned_int_1(arraydata.arraylength, arraydata.array1.I, arraydata.param.I);
+					and__unsigned_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__unsigned_int_2(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.array3.I);
+					and__unsigned_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.array3.I);
 					break;
 				}
 				case param_num_arr_none : {
-					and__unsigned_int_3(arraydata.arraylength, arraydata.param.I, arraydata.array2.I);
+					and__unsigned_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__unsigned_int_4(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.array3.I);
+					and__unsigned_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.array3.I);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__unsigned_int_5(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I);
+					and__unsigned_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__unsigned_int_6(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I);
+					and__unsigned_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I);
 					break;
 				}
 			}
@@ -1086,27 +1395,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'l' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__signed_long_1(arraydata.arraylength, arraydata.array1.l, arraydata.param.l);
+					and__signed_long_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.param.l);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__signed_long_2(arraydata.arraylength, arraydata.array1.l, arraydata.param.l, arraydata.array3.l);
+					and__signed_long_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.param.l, arraydata.array3.l);
 					break;
 				}
 				case param_num_arr_none : {
-					and__signed_long_3(arraydata.arraylength, arraydata.param.l, arraydata.array2.l);
+					and__signed_long_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.l, arraydata.array2.l);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__signed_long_4(arraydata.arraylength, arraydata.param.l, arraydata.array2.l, arraydata.array3.l);
+					and__signed_long_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.l, arraydata.array2.l, arraydata.array3.l);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__signed_long_5(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l);
+					and__signed_long_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.array2.l);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__signed_long_6(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.array3.l);
+					and__signed_long_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.array2.l, arraydata.array3.l);
 					break;
 				}
 			}
@@ -1117,27 +1426,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'L' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__unsigned_long_1(arraydata.arraylength, arraydata.array1.L, arraydata.param.L);
+					and__unsigned_long_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.param.L);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__unsigned_long_2(arraydata.arraylength, arraydata.array1.L, arraydata.param.L, arraydata.array3.L);
+					and__unsigned_long_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.param.L, arraydata.array3.L);
 					break;
 				}
 				case param_num_arr_none : {
-					and__unsigned_long_3(arraydata.arraylength, arraydata.param.L, arraydata.array2.L);
+					and__unsigned_long_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.L, arraydata.array2.L);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__unsigned_long_4(arraydata.arraylength, arraydata.param.L, arraydata.array2.L, arraydata.array3.L);
+					and__unsigned_long_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.L, arraydata.array2.L, arraydata.array3.L);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__unsigned_long_5(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L);
+					and__unsigned_long_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.array2.L);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__unsigned_long_6(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.array3.L);
+					and__unsigned_long_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.array2.L, arraydata.array3.L);
 					break;
 				}
 			}
@@ -1148,27 +1457,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'q' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__signed_long_long_1(arraydata.arraylength, arraydata.array1.q, arraydata.param.q);
+					and__signed_long_long_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.param.q);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__signed_long_long_2(arraydata.arraylength, arraydata.array1.q, arraydata.param.q, arraydata.array3.q);
+					and__signed_long_long_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.param.q, arraydata.array3.q);
 					break;
 				}
 				case param_num_arr_none : {
-					and__signed_long_long_3(arraydata.arraylength, arraydata.param.q, arraydata.array2.q);
+					and__signed_long_long_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.q, arraydata.array2.q);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__signed_long_long_4(arraydata.arraylength, arraydata.param.q, arraydata.array2.q, arraydata.array3.q);
+					and__signed_long_long_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.q, arraydata.array2.q, arraydata.array3.q);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__signed_long_long_5(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q);
+					and__signed_long_long_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.array2.q);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__signed_long_long_6(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.array3.q);
+					and__signed_long_long_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.array2.q, arraydata.array3.q);
 					break;
 				}
 			}
@@ -1179,27 +1488,27 @@ static PyObject *py_and_(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'Q' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					and__unsigned_long_long_1(arraydata.arraylength, arraydata.array1.Q, arraydata.param.Q);
+					and__unsigned_long_long_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.param.Q);
 					break;
 				}
 				case param_arr_num_arr : {
-					and__unsigned_long_long_2(arraydata.arraylength, arraydata.array1.Q, arraydata.param.Q, arraydata.array3.Q);
+					and__unsigned_long_long_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.param.Q, arraydata.array3.Q);
 					break;
 				}
 				case param_num_arr_none : {
-					and__unsigned_long_long_3(arraydata.arraylength, arraydata.param.Q, arraydata.array2.Q);
+					and__unsigned_long_long_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.Q, arraydata.array2.Q);
 					break;
 				}
 				case param_num_arr_arr : {
-					and__unsigned_long_long_4(arraydata.arraylength, arraydata.param.Q, arraydata.array2.Q, arraydata.array3.Q);
+					and__unsigned_long_long_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.Q, arraydata.array2.Q, arraydata.array3.Q);
 					break;
 				}
 				case param_arr_arr_none : {
-					and__unsigned_long_long_5(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q);
+					and__unsigned_long_long_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.array2.Q);
 					break;
 				}
 				case param_arr_arr_arr : {
-					and__unsigned_long_long_6(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.array3.Q);
+					and__unsigned_long_long_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.array2.Q, arraydata.array3.Q);
 					break;
 				}
 			}
@@ -1250,7 +1559,7 @@ Call formats: \n\
   and_(array1, array2) \n\
   and_(array1, array2, outparray) \n\
   and_(array1, param, maxlen=y) \n\
-\n\
+  and_(array1, param, nosimd=False) \n\\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data.  \n\
 * param - A non-array numeric parameter.  \n\
@@ -1261,6 +1570,8 @@ Call formats: \n\
   positive integer. If a zero or negative length, or a value which is  \n\
   greater than the actual length of the array is specified, this  \n\
   parameter is ignored.  \n\
+* nosimd - If True, SIMD acceleration is diabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

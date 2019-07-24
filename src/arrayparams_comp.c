@@ -37,7 +37,7 @@
 
 // The list of keyword arguments. All argument must be listed, whether we 
 // intend to use them for keywords or not. 
-static char *kwlist_comp[] = {"data1", "data2", "maxlen", NULL};
+static char *kwlist_comp[] = {"data1", "data2", "maxlen", "nosimd", NULL};
 
 /*--------------------------------------------------------------------------- */
 
@@ -96,6 +96,8 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 
 	// Number of elements to work on. If zero or less, ignore this parameter.
 	Py_ssize_t arraymaxlen = 0;
+	// If True, SIMD processing is disabled.
+	int nosimd = 0;
 
 
 	// These are used to track the types of each array.
@@ -115,11 +117,11 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 
 	// Construct the format string. This is constructed dynamically because
 	// we must be able to call this same function from different C extensions.
-	makefmtstr("OO|n:", funcname, formatstr);
+	makefmtstr("OO|ni:", funcname, formatstr);
 
 	// Import the raw objects. 
 	if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_comp, &dataobj1, 
-							&dataobj2, &arraymaxlen)) {
+							&dataobj2, &arraymaxlen, &nosimd)) {
 		ErrMsgParameterError();
 		arraydata.error = 2;
 		return arraydata;
@@ -127,7 +129,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
+	if (get_paramdata_simple(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 3;
 		releasebuffers_comp(arraydata);
@@ -135,7 +137,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 	}
 
 	// Parse the second object parameter. 
-	if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
+	if (get_paramdata_simple(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 		ErrMsgParameterError();
 		arraydata.error = 4;
 		releasebuffers_comp(arraydata);
@@ -197,7 +199,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 	// The first parameter is an array and the second is not.
 	if ((paramobjdata1.paramtype == paramobj_array) && (paramobjdata2.paramtype != paramobj_array)) {
 
-		if (get_numericparams(paramobjdata1.arraycode, &paramobjdata2, &parampy)) {
+		if (get_numericparams_simple(paramobjdata1.arraycode, &paramobjdata2, &parampy)) {
 			ErrMsgParameterError();
 			arraydata.error = 13;
 			releasebuffers_comp(arraydata);
@@ -213,7 +215,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 	// The second parameter is an array and the first is not.
 	if ((paramobjdata1.paramtype != paramobj_array) && (paramobjdata2.paramtype == paramobj_array)) {
 
-		if (get_numericparams(paramobjdata2.arraycode, &paramobjdata1, &parampy)) {
+		if (get_numericparams_simple(paramobjdata2.arraycode, &paramobjdata1, &parampy)) {
 			ErrMsgParameterError();
 			arraydata.error = 14;
 			releasebuffers_comp(arraydata);
@@ -234,6 +236,7 @@ struct args_params_comp getparams_comp(PyObject *self, PyObject *args, PyObject 
 	arraydata.error = 0;
 	arraydata.arraytype = arraytype;
 	arraydata.arraylength = adjustarraymaxlen(typedarraylength, arraymaxlen);
+	arraydata.nosimd = nosimd;
 	arraydata.array1.buf = paramobjdata1.array.buf;
 	arraydata.array2.buf = paramobjdata2.array.buf;
 	arraydata.pybuffer1 = paramobjdata1.pybuffer;

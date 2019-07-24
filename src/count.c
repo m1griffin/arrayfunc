@@ -1,13 +1,13 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   count.c
-// Purpose:  Fill an array with a series of values.
+// Purpose:  Fill an array with evenly spaced values using a start and step values.
 // Language: C
-// Date:     04-May-2014
+// Date:     04-Jun-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2017    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,355 +30,452 @@
 
 #include "Python.h"
 
-#include "arrayparams_base.h"
 #include "arrayerrs.h"
 
-#include "arrayops.h"
-#include "count_common.h"
+#include "arrayparams_base.h"
+
+#include "arrayparams_cntcycrep.h"
 
 /*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
-
-// Provide a struct for returning data from parsing Python arguments.
-struct args_param {
-	char array1type;
-	char param1type;
-	char param2type;
-	char error;
-};
-
-/*--------------------------------------------------------------------------- */
-
-
-/*--------------------------------------------------------------------------- */
-
-/* Parse the Python arguments to objects, and then extract the object parameters
- * to determine their types. This lets us handle different data types as 
- * parameters.
- * This version expects the following parameters:
- * args (PyObject) = The positional arguments.
- * Returns a structure containing the results of each parameter.
+/* For arraycode: b
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
 */
-struct args_param parsepyargs_parm(PyObject *args) {
+void count_signed_char(Py_ssize_t arraylen, signed char *data, signed char startvalue, signed char stepvalue, char hasstep) { 
 
-	PyObject *dataobj, *param1obj;
+	// array index counter. 
+	Py_ssize_t x; 
+	signed char increment, step;
 
-	// We need to initialise the optional parameter to a known value, so we
-	// can test if it was changed.
-	PyObject *param2obj = NULL;
+	increment = startvalue;
 
-
-	struct args_param argtypes = {' ', ' ', 0};
-	char arr1type;
-
-	/* Import the raw objects. */
-	if (!PyArg_ParseTuple(args, "OO|O:count", &dataobj, &param1obj, &param2obj)) {
-		argtypes.error = 1;
-		return argtypes;
-	}
-
-	// Test if the first parameter is an array or bytes.
-	arr1type = lookuparraycode(dataobj);
-	if (!arr1type) {
-		argtypes.error = 2;
-		return argtypes;
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
 	} else {
-		// Get the array code type character.
-		argtypes.array1type = arr1type;
+		step = 1;
 	}
 
-
-	// We don't bother checking the second parameter type, because the
-	// parsing format strings will handle that for us.
-
-	// The third parameter is optional, so we have to test if it was set.
-	if (param2obj != NULL) {
-		argtypes.param2type = paramtypecode(param2obj);
-	} else {
-		argtypes.param2type = 0;
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
 	}
-
-
-
-	return argtypes;
 
 }
 
+/*--------------------------------------------------------------------------- */
+/* For arraycode: B
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char startvalue, signed char stepvalue, char hasstep) { 
 
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned char increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue >= 0 ? stepvalue : -stepvalue;
+	} else {
+		step = 1;
+	}
+
+	if (hasstep && (stepvalue < 0)) {
+		// Count down.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment - step;
+		}
+	} else {
+		// Count up.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment + step;
+		}
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: h
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_signed_short(Py_ssize_t arraylen, signed short *data, signed short startvalue, signed short stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed short increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: H
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short startvalue, signed short stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned short increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue >= 0 ? stepvalue : -stepvalue;
+	} else {
+		step = 1;
+	}
+
+	if (hasstep && (stepvalue < 0)) {
+		// Count down.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment - step;
+		}
+	} else {
+		// Count up.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment + step;
+		}
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: i
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_signed_int(Py_ssize_t arraylen, signed int *data, signed int startvalue, signed int stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed int increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: I
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int startvalue, signed int stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue >= 0 ? stepvalue : -stepvalue;
+	} else {
+		step = 1;
+	}
+
+	if (hasstep && (stepvalue < 0)) {
+		// Count down.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment - step;
+		}
+	} else {
+		// Count up.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment + step;
+		}
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: l
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_signed_long(Py_ssize_t arraylen, signed long *data, signed long startvalue, signed long stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed long increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: L
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long startvalue, signed long stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned long increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue >= 0 ? stepvalue : -stepvalue;
+	} else {
+		step = 1;
+	}
+
+	if (hasstep && (stepvalue < 0)) {
+		// Count down.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment - step;
+		}
+	} else {
+		// Count up.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment + step;
+		}
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: q
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long startvalue, signed long long stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed long long increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: Q
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long startvalue, signed long long stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned long long increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue >= 0 ? stepvalue : -stepvalue;
+	} else {
+		step = 1;
+	}
+
+	if (hasstep && (stepvalue < 0)) {
+		// Count down.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment - step;
+		}
+	} else {
+		// Count up.
+		for(x = 0; x < arraylen; x++) {
+			data[x] = increment;
+			increment = increment + step;
+		}
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: f
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_float(Py_ssize_t arraylen, float *data, float startvalue, float stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	float increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1.0;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For arraycode: d
+   * arraylen = The length of the data arrays.
+   * data = The input data array.
+   * startvalue = The value to start filling the data array.
+   * stepvalue = The increment value.
+   * hasstep = If true, use the provided step value, otherwise use a default step.
+*/
+void count_double(Py_ssize_t arraylen, double *data, double startvalue, double stepvalue, char hasstep) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	double increment, step;
+
+	increment = startvalue;
+
+	// If the user does not provide a "step" value, use a default.
+	if (hasstep) {
+		step = stepvalue;
+	} else {
+		step = 1.0;
+	}
+
+	// Count down.
+	for(x = 0; x < arraylen; x++) {
+		data[x] = increment;
+		increment = increment + step;
+	}
+
+}
 
 /*--------------------------------------------------------------------------- */
 
-
 /* The wrapper to the underlying C function */
-static PyObject *
-py_count(PyObject *self, PyObject *args)
-{
+static PyObject *py_count(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
-	// The array of data we work on. 
-	union dataarrays data;
+	// This is used to hold the parsed parameters.
+	struct args_params_cntcycrep arraydata = ARGSINIT_CNTCYCREP;
 
-	// The input buffers are arrays of bytes.
-	Py_buffer datapy;
-
-	// The length of the data array.
-	Py_ssize_t databufflength;
-
-	// Codes indicating the type of array and the operation desired.
-	char itemcode;
-
-	// How long the array is.
-	Py_ssize_t arraylength;
-
-	// The parameter version is available in all possible types.
-	struct paramsvals param1py, param2py;
-
-	// PyArg_ParseTuple does not match directly to the array codes. We need to
-	// use some temporary variables of alternate types to parse the parameter 
-	// data.
-	// PyArg_ParseTuple does not check for overflow of unsigned parameters.
-	signed long param1tmp_l;
-
-	signed long param2tmp_l;
-
-	signed long long param2tmp_q;
+	// -----------------------------------------------------
 
 
-	// If true, count down with the step value.
-	int countdown = 0;
+	// Get the parameters passed from Python.
+	arraydata = getparams_count(self, args, keywds, "count");
 
-	// This is used to hold the results from inspecting the Python args.
-	struct args_param argtypes;
-
-	// -------------------------------------------------------------------------
-
-	// Check the parameters to see what they are.
-	argtypes = parsepyargs_parm(args);
-
-
-	// There was an error reading the parameter types.
-	if (argtypes.error) {
-		ErrMsgParameterError();
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
 		return NULL;
 	}
 
-	// We base our next actions based on the array type.
-	itemcode = argtypes.array1type;
-
-	// The second parameter (step) was not specified.
-	if (!argtypes.param2type) {
-		param2py.b = 1;
-		param2py.B = 1;
-		param2py.h = 1;
-		param2py.H = 1;
-		param2py.i = 1;
-		param2py.I = 1;
-		param2py.l = 1;
-		param2py.L = 1;
-		param2py.f = 1.0;
-		param2py.d = 1.0;
-		param2tmp_l = 1;
-		param2tmp_q = 1;
-	}
-
-
-	// Now we will fetch the actual data depending on the array type.
-	switch (itemcode) {
-		// signed char
-		case 'b' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*l|l:count", &datapy, &param1tmp_l, &param2tmp_l)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(issignedcharrange(param1tmp_l) && issignedcharrange(param2tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.b = (signed char) param1tmp_l;
-				param2py.b = (signed char) labs(param2tmp_l);
-				countdown = (param2tmp_l < 0);
-			}
-			break;
-		}
-		// unsigned char
-		case 'B' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*l|l:count", &datapy, &param1tmp_l, &param2tmp_l)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedcharrange(param1tmp_l) && issignedcharrange(param2tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.B = (unsigned char) param1tmp_l;
-				param2py.B = (signed char) labs(param2tmp_l);
-				countdown = (param2tmp_l < 0);
-			}
-			break;
-		}
-		// signed short
-		case 'h' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*h|h:count", &datapy, &param1py.h, &param2py.h)) {
-				return NULL;
-			}
-			countdown = (param2py.h < 0);
-			param2py.h = abs(param2py.h);
-			break;
-		}
-		// unsigned short
-		case 'H' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*l|l:count", &datapy, &param1tmp_l, &param2tmp_l)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedshortrange(param1tmp_l) && issignedshortrange(param2tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.H = (unsigned short) param1tmp_l;
-				param2py.H = (unsigned short) labs(param2tmp_l);
-				countdown = (param2tmp_l < 0);
-			}
-			break;
-		}
-		// signed int
-		case 'i' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*i|i:count", &datapy, &param1py.i, &param2py.i)) {
-				return NULL;
-			}
-			countdown = (param2py.i < 0);
-			param2py.i = abs(param2py.i);
-			break;
-		}
-		// unsigned int
-		case 'I' : {
-			// With architectures where signed long is larger than unsigned int, we
-			// can use the larger signed value to test for overflow. If they are the
-			// same size, then we cannot check for overflow.
-			if (sizeof(signed long) > sizeof(unsigned int)) {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTuple(args, "y*l|l:count", &datapy, &param1tmp_l, &param2tmp_l)) {
-					return NULL;
-				}
-				// Check the data range manually.
-				if (!(isunsignedintrange(param1tmp_l) && issignedintrange(param2tmp_l))) {
-					PyBuffer_Release(&datapy);
-					ErrMsgArithOverflowParam();
-					return NULL;
-				} else {
-					param1py.I = (unsigned int) param1tmp_l;
-				}
-			} else {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTuple(args, "y*I|l:count", &datapy, &param1py.I, &param2tmp_l)) {
-					return NULL;
-				}
-			}
-			param2py.I = labs(param2tmp_l);
-			countdown = (param2tmp_l < 0);
-			break;
-		}
-		// signed long
-		case 'l' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*l|l:count", &datapy, &param1py.l, &param2py.l)) {
-				return NULL;
-			}
-			countdown = (param2py.l < 0);
-			param2py.l = labs(param2py.l);
-			break;
-		}
-		// unsigned long
-		case 'L' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*k|l:count", &datapy, &param1py.L, &param2tmp_l)) {
-				return NULL;
-			}
-			countdown = (param2tmp_l < 0);
-			param2py.L = (unsigned long) labs(param2tmp_l);
-			break;
-		}
-		// signed long long
-		case 'q' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*L|L:count", &datapy, &param1py.q, &param2tmp_q)) {
-				return NULL;
-			}
-			countdown = (param2tmp_q < 0);
-			param2py.q = llabs(param2tmp_q);
-			break;
-		}
-		// unsigned long long
-		case 'Q' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*K|L:count", &datapy, &param1py.Q, &param2tmp_q)) {
-				return NULL;
-			}
-			countdown = (param2tmp_q < 0);
-			param2py.Q = (unsigned long long) llabs(param2tmp_q);
-			break;
-		}
-		// float
-		case 'f' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*f|f:count", &datapy, &param1py.f, &param2py.f)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.f) && isfinite(param2py.f))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			countdown = (param2py.f < 0.0);
-			param2py.f = fabsf(param2py.f);
-			break;
-		}
-		// double
-		case 'd' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTuple(args, "y*d|d:count", &datapy, &param1py.d, &param2py.d)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.d) && isfinite(param2py.d))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			countdown = (param2py.d < 0.0);
-			param2py.d = fabs(param2py.d);
-			break;
-		}
-		// We don't know this code.
-		default: {
-			ErrMsgUnknownArrayType();
-			return NULL;
-			break;
-		}
-	}
-
-
-	// Assign the buffer to a union which lets us get at them as typed data.
-	data.buf = datapy.buf;
-
-
 
 	// The length of the data array.
-	databufflength = datapy.len;
-	arraylength = calcarraylength(itemcode, databufflength);
-	if (arraylength < 1) {
-		// Release the buffers.
-		PyBuffer_Release(&datapy);
+	if (arraydata.arraylength < 1) {
+		// Release the buffers. 
+		releasebuffers_cntcycrep(arraydata);
 		ErrMsgArrayLengthErr();
 		return NULL;
 	}
@@ -386,78 +483,78 @@ py_count(PyObject *self, PyObject *args)
 
 
 	/* Call the C function */
-	switch(itemcode) {
+	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			count_signed_char(arraylength, data.b, param1py.b, param2py.b, countdown);
+			count_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.param1.b, arraydata.param2.b, arraydata.hasparam2);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			count_unsigned_char(arraylength, data.B, param1py.B, param2py.B, countdown);
+			count_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.param1.B, arraydata.param2.b, arraydata.hasparam2);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			count_signed_short(arraylength, data.h, param1py.h, param2py.h, countdown);
+			count_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.param1.h, arraydata.param2.h, arraydata.hasparam2);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			count_unsigned_short(arraylength, data.H, param1py.H, param2py.H, countdown);
+			count_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.param1.H, arraydata.param2.h, arraydata.hasparam2);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			count_signed_int(arraylength, data.i, param1py.i, param2py.i, countdown);
+			count_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.param1.i, arraydata.param2.i, arraydata.hasparam2);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			count_unsigned_int(arraylength, data.I, param1py.I, param2py.I, countdown);
+			count_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.param1.I, arraydata.param2.i, arraydata.hasparam2);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			count_signed_long(arraylength, data.l, param1py.l, param2py.l, countdown);
+			count_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.param1.l, arraydata.param2.l, arraydata.hasparam2);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			count_unsigned_long(arraylength, data.L, param1py.L, param2py.L, countdown);
+			count_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.param1.L, arraydata.param2.l, arraydata.hasparam2);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			count_signed_long_long(arraylength, data.q, param1py.q, param2py.q, countdown);
+			count_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.param1.q, arraydata.param2.q, arraydata.hasparam2);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			count_unsigned_long_long(arraylength, data.Q, param1py.Q, param2py.Q, countdown);
+			count_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.param1.Q, arraydata.param2.q, arraydata.hasparam2);
 			break;
 		}
 		// float
 		case 'f' : {
-			count_float(arraylength, data.f, param1py.f, param2py.f, countdown);
+			count_float(arraydata.arraylength, arraydata.array1.f, arraydata.param1.f, arraydata.param2.f, arraydata.hasparam2);
 			break;
 		}
 		// double
 		case 'd' : {
-			count_double(arraylength, data.d, param1py.d, param2py.d, countdown);
+			count_double(arraydata.arraylength, arraydata.array1.d, arraydata.param1.d, arraydata.param2.d, arraydata.hasparam2);
 			break;
 		}
 		// We don't know this code.
 		default: {
-			PyBuffer_Release(&datapy);
+			releasebuffers_cntcycrep(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
 		}
 	}
 
-	// Release the buffers.
-	PyBuffer_Release(&datapy);
+	// Release the buffers. 
+	releasebuffers_cntcycrep(arraydata);
 
 	// Everything was successful.
 	Py_RETURN_NONE;
@@ -472,17 +569,27 @@ py_count(PyObject *self, PyObject *args)
 /* The module doc string */
 PyDoc_STRVAR(count__doc__,
 "Fill an array with evenly spaced values using a start and step values. \n\
-The function continues until the end of the array. The function does \n\
-not check for integer overflow.\n\
+_____________________________ \n\
 \n\
-count(dataarray, start, step) \n\
+Fill an array with evenly spaced values using a start and step values. \n\
 \n\
-* dataarray - The output array.\n\
-* start - The numeric value to start from.\n\
+======================  ============================================== \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
+Exceptions raised:      None \n\
+======================  ============================================== \n\
+\n\
+Call formats: \n\
+\n\
+  count(array, start, step). \n\
+\n\
+* array - The output array. \n\
+* start - The numeric value to start from. \n\
 * step - The value to increment by when creating each element. This \n\
   parameter is optional. If it is omitted, a value of 1 is assumed. A \n\
   negative step value will cause the function to count down.");
 
+
+/*--------------------------------------------------------------------------- */
 
 /* A list of all the methods defined by this module. 
  "count" is the name seen inside of Python. 
@@ -490,8 +597,10 @@ count(dataarray, start, step) \n\
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
 static PyMethodDef count_methods[] = {
-	{"count",  py_count, METH_VARARGS, count__doc__}, {NULL, NULL}
+	{"count",  (PyCFunction)py_count, METH_VARARGS | METH_KEYWORDS, count__doc__}, 
+	{NULL, NULL, 0, NULL}
 };
+
 
 static struct PyModuleDef countmodule = {
     PyModuleDef_HEAD_INIT,
@@ -507,3 +616,4 @@ PyMODINIT_FUNC PyInit_count(void)
 };
 
 /*--------------------------------------------------------------------------- */
+

@@ -29,7 +29,7 @@
 
 /*--------------------------------------------------------------------------- */
 
-#define ARGSINIT_COMP {0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}, {0}}
+#define ARGSINIT_COMP {0, 0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}, {0}}
 
 
 enum paramcats
@@ -45,6 +45,7 @@ struct args_params_comp {
 	char error;
 	char arraytype;
 	Py_ssize_t arraylength;
+	int nosimd;
 	char hasbuffer1;
 	char hasbuffer2;
 	union dataarrays array1;

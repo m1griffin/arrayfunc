@@ -39,6 +39,8 @@
 
 #include "arrayparams_two.h"
 
+
+
 /*--------------------------------------------------------------------------- */
 
 
@@ -2288,7 +2290,7 @@ static PyObject *py_pow(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "pow");
+	arraydata = getparams_two(self, args, keywds, 1, 0, "pow");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -2746,7 +2748,7 @@ Call formats: \n\
   parameter is ignored.  \n\
 * matherrors - If true, arithmetic error checking is disabled. The  \n\
   default is false. \n\
-\n");
+");
 
 /*--------------------------------------------------------------------------- */
 

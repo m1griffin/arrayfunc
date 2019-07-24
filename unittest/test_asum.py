@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      19-Jun-2018.
+# Ver:      06-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -49,114 +49,1205 @@ import arrayfunc
 
 
 
+
 ##############################################################################
-class asum_operator_b_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_general_b(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'b'
 
-		self.MaxVal = arrayfunc.arraylimits.b_max
-		self.MinVal = arrayfunc.arraylimits.b_min
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'b' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.b_max
+			MinVal = arrayfunc.arraylimits.b_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'b' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('b', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
 
 
 	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code b. General test .
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code b. General test.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code b. General test with overflow checking on .
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code b. Test optional maxlen parameter.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code b. General test with overflow checking off .
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code b. Test optional matherrors parameter.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code b. General test with array limit applied .
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code b. Test optional nosimd parameter.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
 
 
 	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code b. General test with array limit applied and overflow checking on .
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code b. Test optional maxlen, matherrors, nosimd parameters together.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
 
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_B(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
 
 	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code b. General test with array limit applied and overflow checking off .
+	def setUp(self):
+		"""Initialise.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'B' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.B_max
+			MinVal = arrayfunc.arraylimits.B_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'B' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('B', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
 
 
 	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code b. Test invalid parameter type for array data .
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code B. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code B. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code B. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code B. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code B. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_h(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'h' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'h' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('h', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code h. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code h. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code h. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code h. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code h. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_H(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'H' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.H_max
+			MinVal = arrayfunc.arraylimits.H_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'H' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('H', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code H. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code H. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code H. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code H. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code H. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_i(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'i' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.i_max
+			MinVal = arrayfunc.arraylimits.i_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'i' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('i', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code i. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code i. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code i. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code i. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code i. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_I(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'I' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.I_max
+			MinVal = arrayfunc.arraylimits.I_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'I' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('I', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code I. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code I. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code I. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code I. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code I. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_l(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'l' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.l_max
+			MinVal = arrayfunc.arraylimits.l_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'l' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('l', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code l. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code l. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code l. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code l. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code l. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_L(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'L' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.L_max
+			MinVal = arrayfunc.arraylimits.L_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'L' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('L', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code L. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code L. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code L. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code L. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code L. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_q(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'q' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.q_max
+			MinVal = arrayfunc.arraylimits.q_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'q' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('q', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code q. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code q. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code q. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code q. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code q. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_Q(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'Q' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.Q_max
+			MinVal = arrayfunc.arraylimits.Q_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'Q' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('Q', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code Q. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code Q. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code Q. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code Q. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code Q. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_f(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'f' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.f_max
+			MinVal = arrayfunc.arraylimits.f_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'f' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('f', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code f. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code f. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code f. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code f. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code f. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_d(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'd' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.d_max
+			MinVal = arrayfunc.arraylimits.d_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'd' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('d', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code d. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code d. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code d. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code d. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code d. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_b(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.b_max
+		MinVal = arrayfunc.arraylimits.b_min
+
+		self.gentest = array.array('b', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code b. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code b. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code b. Test invalid parameter type.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code b. Test invalid parameter type for limit .
-		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code b. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code b. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -167,129 +1258,115 @@ class asum_operator_b_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code b. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code b. Test excess parameters.
 		"""
-		data = array.array('b', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code b. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code b. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code b. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code b. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_B_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_B(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'B'
 
-		self.MaxVal = arrayfunc.arraylimits.B_max
-		self.MinVal = arrayfunc.arraylimits.B_min
+		arraylength = 96
 
+		MaxVal = arrayfunc.arraylimits.B_max
+		MinVal = arrayfunc.arraylimits.B_min
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code B. General test .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		self.gentest = array.array('B', [100] * arraylength)
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code B. General test with overflow checking on .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code B. General test with overflow checking off .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code B. General test with array limit applied .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code B. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code B. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code B. Test invalid parameter type for array data .
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code B. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code B. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code B. Test invalid parameter type.
 		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code B. Test invalid parameter type for limit .
-		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code B. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code B. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -300,129 +1377,115 @@ class asum_operator_B_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code B. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code B. Test excess parameters.
 		"""
-		data = array.array('B', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code B. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code B. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code B. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code B. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_h_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_h(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'h'
 
-		self.MaxVal = arrayfunc.arraylimits.h_max
-		self.MinVal = arrayfunc.arraylimits.h_min
+		arraylength = 96
 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code h. General test .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		self.gentest = array.array('h', [100] * arraylength)
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code h. General test with overflow checking on .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code h. General test with overflow checking off .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code h. General test with array limit applied .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code h. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code h. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code h. Test invalid parameter type for array data .
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code h. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code h. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code h. Test invalid parameter type.
 		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code h. Test invalid parameter type for limit .
-		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code h. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code h. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -433,129 +1496,115 @@ class asum_operator_h_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code h. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code h. Test excess parameters.
 		"""
-		data = array.array('h', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code h. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code h. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code h. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code h. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_H_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_H(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'H'
 
-		self.MaxVal = arrayfunc.arraylimits.H_max
-		self.MinVal = arrayfunc.arraylimits.H_min
+		arraylength = 96
 
+		MaxVal = arrayfunc.arraylimits.H_max
+		MinVal = arrayfunc.arraylimits.H_min
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code H. General test .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		self.gentest = array.array('H', [100] * arraylength)
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code H. General test with overflow checking on .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code H. General test with overflow checking off .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code H. General test with array limit applied .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code H. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code H. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code H. Test invalid parameter type for array data .
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code H. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code H. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code H. Test invalid parameter type.
 		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code H. Test invalid parameter type for limit .
-		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code H. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code H. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -566,129 +1615,115 @@ class asum_operator_H_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code H. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code H. Test excess parameters.
 		"""
-		data = array.array('H', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code H. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code H. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code H. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code H. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_i_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_i(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'i'
 
-		self.MaxVal = arrayfunc.arraylimits.i_max
-		self.MinVal = arrayfunc.arraylimits.i_min
+		arraylength = 96
 
+		MaxVal = arrayfunc.arraylimits.i_max
+		MinVal = arrayfunc.arraylimits.i_min
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code i. General test .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		self.gentest = array.array('i', [100] * arraylength)
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code i. General test with overflow checking on .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code i. General test with overflow checking off .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code i. General test with array limit applied .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code i. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code i. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code i. Test invalid parameter type for array data .
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code i. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code i. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code i. Test invalid parameter type.
 		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code i. Test invalid parameter type for limit .
-		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code i. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code i. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -699,129 +1734,115 @@ class asum_operator_i_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code i. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code i. Test excess parameters.
 		"""
-		data = array.array('i', itertools.chain(range(1,10,2), range(11,-88,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code i. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code i. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code i. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code i. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_I_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_I(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'I'
 
-		self.MaxVal = arrayfunc.arraylimits.I_max
-		self.MinVal = arrayfunc.arraylimits.I_min
+		arraylength = 96
 
+		MaxVal = arrayfunc.arraylimits.I_max
+		MinVal = arrayfunc.arraylimits.I_min
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code I. General test .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
+		self.gentest = array.array('I', [100] * arraylength)
 
 
 	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code I. General test with overflow checking on .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code I. General test with overflow checking off .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code I. General test with array limit applied .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code I. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code I. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code I. Test invalid parameter type for array data .
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code I. Test invalid parameter type.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
+			result = arrayfunc.asum(1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = sum(1)
 
+
 	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code I. Test invalid parameter type for overflow flag .
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code I. Test invalid parameter type.
 		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
+			result = arrayfunc.asum('xxxxx')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code I. Test invalid parameter type for limit .
-		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
+			result = sum('xxxxx')
 
 
 	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code I. Test no parameters.
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code I. Test missing parameter.
 		"""
 		with self.assertRaises(TypeError):
 			result = arrayfunc.asum()
@@ -832,1494 +1853,8657 @@ class asum_operator_I_(unittest.TestCase):
 
 
 	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code I. Test too many (five) parameters.
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code I. Test excess parameters.
 		"""
-		data = array.array('I', itertools.chain(range(1,10,2), range(88,12,-3)))
 		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
+			result = sum(self.gentest, 2, 3)
 
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code I. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code I. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code I. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code I. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_l_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_parameter_l(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'l'
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.l_max
+		MinVal = arrayfunc.arraylimits.l_min
+
+		self.gentest = array.array('l', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code l. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code l. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code l. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code l. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code l. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code l. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code l. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code l. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_L(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.L_max
+		MinVal = arrayfunc.arraylimits.L_min
+
+		self.gentest = array.array('L', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code L. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code L. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code L. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code L. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code L. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code L. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code L. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code L. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_q(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.q_max
+		MinVal = arrayfunc.arraylimits.q_min
+
+		self.gentest = array.array('q', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code q. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code q. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code q. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code q. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code q. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code q. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code q. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code q. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_Q(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.Q_max
+		MinVal = arrayfunc.arraylimits.Q_min
+
+		self.gentest = array.array('Q', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code Q. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code Q. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code Q. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code Q. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code Q. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code Q. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code Q. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code Q. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_f(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.f_max
+		MinVal = arrayfunc.arraylimits.f_min
+
+		self.gentest = array.array('f', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code f. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code f. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code f. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code f. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code f. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code f. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code f. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code f. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_parameter_d(unittest.TestCase):
+	"""Test asum for basic parameter tests.
+	op_template_params
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		MaxVal = arrayfunc.arraylimits.d_max
+		MinVal = arrayfunc.arraylimits.d_min
+
+		self.gentest = array.array('d', [100] * arraylength)
+
+
+	########################################################
+	def test_asum_param_function_A1(self):
+		"""Test asum  - Array code d. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_A2(self):
+		"""Test asum  - Array code d. Test invalid parameter type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum('xxxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum('xxxxx')
+
+
+	########################################################
+	def test_asum_param_function_B1(self):
+		"""Test asum  - Array code d. Test missing parameter.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum()
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum()
+
+
+	########################################################
+	def test_asum_param_function_B2(self):
+		"""Test asum  - Array code d. Test excess parameters.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, 5, 2, 2, 1)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, 2, 3)
+
+
+	########################################################
+	def test_asum_param_function_C1(self):
+		"""Test asum  - Array code d. Test invalid keyword parameter name.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, xxxx=5)
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(self.gentest, xxxx=5)
+
+
+	########################################################
+	def test_asum_param_function_D1(self):
+		"""Test asum  - Array code d. Test invalid maxlen keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, maxlen='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D2(self):
+		"""Test asum  - Array code d. Test invalid matherrors keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, matherrors='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+	########################################################
+	def test_asum_param_function_D3(self):
+		"""Test asum  - Array code d. Test invalid nosimd keyword type.
+		"""
+		with self.assertRaises(TypeError):
+			result = arrayfunc.asum(self.gentest, nosimd='xxxx')
+
+		# Check that the exception raised corresponds to the native Python behaviour.
+		with self.assertRaises(TypeError):
+			result = sum(1)
+
+
+##############################################################################
+
+
+##############################################################################
+class asum_nonfinite_0_even_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 0
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_1_even_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 1
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_2_even_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 2
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_3_even_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 3
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_4_even_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 4
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_0_odd_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 0
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_1_odd_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 1
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_2_odd_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 2
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_3_odd_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 3
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_4_odd_arraysize_f(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 4
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('f', nanvaldatabase)
+		self.data_inf = array.array('f',  infvaldatabase)
+		self.data_ninf = array.array('f',  ninfvaldatabase)
+		self.data_mixed = array.array('f',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code f. Test NaN data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code f. Test NaN data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code f. Test inf data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code f. Test inf data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code f. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code f. Test Mixed data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_0_even_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 0
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, even length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, even length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_1_even_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 1
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, even length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, even length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_2_even_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 2
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, even length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, even length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_3_even_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 3
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, even length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, even length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_4_even_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 4
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, even length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, even length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_0_odd_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 0
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, odd length, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, odd length array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_1_odd_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 1
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, odd length, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, odd length array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_2_odd_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 2
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, odd length, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, odd length array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_3_odd_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 3
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, odd length, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, odd length array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+##############################################################################
+class asum_nonfinite_4_odd_arraysize_d(unittest.TestCase):
+	"""Test with floating point nan, inf -inf.
+	nonfinite_template
+	"""
+
+	##############################################################################
+	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# This is active for float numbers only. 
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arrayextension = 5
+		else:
+			arrayextension = 0
+
+		arraylength = 96 + arrayextension
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		MaxVal = arrayfunc.arraylimits.h_max
+		MinVal = arrayfunc.arraylimits.h_min
+
+		testscale = 10
+
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+		# Copy the data so we can modify it in place independently.
+		nanvaldatabase = list(testdata)
+		infvaldatabase = list(testdata)
+		ninfvaldatabase = list(testdata)
+		mixedvaldatabase = list(testdata)
+		
+
+		# Insert the non-finite test values in the middle of the data.
+		tspot = arraylength // 2
+		nanvaldatabase[tspot] = math.nan
+		infvaldatabase[tspot] = math.inf
+		ninfvaldatabase[tspot] = -math.inf
+		mixedvaldatabase[tspot] = math.inf
+		mixedvaldatabase[tspot + 10] = -math.inf
+		mixedvaldatabase[tspot + 20] = math.nan
+
+
+
+		# Rotate the values in place in order to create different combinations. 
+		# This is being generated through a template to allow us to create 
+		# different combinations to help test the effects of having the
+		# special values in various locations. This is primarily of use
+		# for the SIMD tests which do operations in parallel.
+		rotplaces = 4
+		nanvaldata = nanvaldatabase[rotplaces:] + nanvaldatabase[:rotplaces]
+		infvaldata = infvaldatabase[rotplaces:] + infvaldatabase[:rotplaces]
+		ninfvaldata = ninfvaldatabase[rotplaces:] + ninfvaldatabase[:rotplaces]
+		mixedvaldata = mixedvaldatabase[rotplaces:] + mixedvaldatabase[:rotplaces]
+
+
+		# These are the test data arrays.
+		self.data_nan = array.array('d', nanvaldatabase)
+		self.data_inf = array.array('d',  infvaldatabase)
+		self.data_ninf = array.array('d',  ninfvaldatabase)
+		self.data_mixed = array.array('d',  mixedvaldatabase)
+
+
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A1(self):
+		"""Test asum  - Array code d. Test NaN data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_nan)
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A2(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+	########################################################
+	def test_asum_nonfinite_nan_A3(self):
+		"""Test asum  - Array code d. Test NaN data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		self.assertEqual(result, sum(self.data_nan))
+
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B1(self):
+		"""Test asum  - Array code d. Test inf data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_inf)
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B2(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+	########################################################
+	def test_asum_nonfinite_inf_B3(self):
+		"""Test asum  - Array code d. Test inf data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		self.assertEqual(result, sum(self.data_inf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C1(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_ninf)
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C2(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+	########################################################
+	def test_asum_nonfinite_ninf_C3(self):
+		"""Test asum  - Array code d. Test Negative Inf data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_ninf, matherrors=True)
+		self.assertEqual(result, sum(self.data_ninf))
+
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D1(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking on, odd length, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.data_mixed)
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D2(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, no SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True, nosimd=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+	########################################################
+	def test_asum_nonfinite_mixed_D3(self):
+		"""Test asum  - Array code d. Test Mixed data with error checking off, with SIMD, odd length array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.data_mixed, matherrors=True)
+		self.assertEqual(result, sum(self.data_mixed))
+
+
+
+##############################################################################
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.l_max
 		self.MinVal = arrayfunc.arraylimits.l_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code l. General test .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code l. General test with overflow checking on .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code l. General test with overflow checking off .
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code l. General test with array limit applied .
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 0.
 		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code l. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code l. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code l. Test invalid parameter type for array data .
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code l. Test invalid parameter type for overflow flag .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code l. Test invalid parameter type for limit .
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code l. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code l. Test too many (five) parameters.
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code l. Arithmetic positive overflow expected.
-		"""
-		data = array.array('l', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3)))
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+			result = arrayfunc.asum(self.testdata)
 
 
 	########################################################
-	def test_function_13(self):
-		"""Test asum  - Array code l. Arithmetic overflow expected for negative numbers.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
-		data = array.array('l', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_L_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_1_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'L'
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_2_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_3_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_L(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.L_max
 		self.MinVal = arrayfunc.arraylimits.L_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code L. General test .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code L. General test with overflow checking on .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('L', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code L. General test with overflow checking off .
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'L' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'L' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code L. General test with array limit applied .
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking enabled, array data shifted 0.
 		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code L. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code L. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code L. Test invalid parameter type for array data .
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code L. Test invalid parameter type for overflow flag .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code L. Test invalid parameter type for limit .
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code L. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code L. Test too many (five) parameters.
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code L. Arithmetic positive overflow expected.
-		"""
-		data = array.array('L', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(88,12,-3)))
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_q_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_1_L(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'q'
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.L_max
+		self.MinVal = arrayfunc.arraylimits.L_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('L', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'L' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'L' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_2_L(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.L_max
+		self.MinVal = arrayfunc.arraylimits.L_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('L', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'L' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'L' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_3_L(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.L_max
+		self.MinVal = arrayfunc.arraylimits.L_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('L', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'L' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'L' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_L(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.L_max
+		self.MinVal = arrayfunc.arraylimits.L_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('L', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'L' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'L' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code L. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.q_max
 		self.MinVal = arrayfunc.arraylimits.q_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code q. General test .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code q. General test with overflow checking on .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code q. General test with overflow checking off .
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code q. General test with array limit applied .
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 0.
 		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code q. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code q. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code q. Test invalid parameter type for array data .
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code q. Test invalid parameter type for overflow flag .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code q. Test invalid parameter type for limit .
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code q. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code q. Test too many (five) parameters.
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), range(11,-88,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code q. Arithmetic positive overflow expected.
-		"""
-		data = array.array('q', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3)))
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+			result = arrayfunc.asum(self.testdata)
 
 
 	########################################################
-	def test_function_13(self):
-		"""Test asum  - Array code q. Arithmetic overflow expected for negative numbers.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
-		data = array.array('q', itertools.chain([self.MinVal] * 10, range(1,20), [self.MinVal] * 10))
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_Q_(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_1_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'Q'
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_2_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_3_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_Q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.Q_max
 		self.MinVal = arrayfunc.arraylimits.Q_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code Q. General test .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code Q. General test with overflow checking on .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('Q', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code Q. General test with overflow checking off .
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'Q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'Q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code Q. General test with array limit applied .
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking enabled, array data shifted 0.
 		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code Q. General test with array limit applied and overflow checking on .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code Q. General test with array limit applied and overflow checking off .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for array data .
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for overflow flag .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code Q. Test invalid parameter type for limit .
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code Q. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code Q. Test too many (five) parameters.
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), range(88,12,-3)))
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code Q. Arithmetic positive overflow expected.
-		"""
-		data = array.array('Q', itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(88,12,-3)))
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data )
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_f_without_SIMD(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_1_Q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'f'
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.Q_max
+		self.MinVal = arrayfunc.arraylimits.Q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('Q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'Q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'Q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_2_Q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.Q_max
+		self.MinVal = arrayfunc.arraylimits.Q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('Q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'Q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'Q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_3_Q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.Q_max
+		self.MinVal = arrayfunc.arraylimits.Q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('Q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'Q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'Q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_Q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.Q_max
+		self.MinVal = arrayfunc.arraylimits.Q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('Q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'Q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'Q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code Q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code f. General test without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data , nosimd=True)
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code f. General test with overflow checking on without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False , nosimd=True)
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code f. General test with overflow checking off without SIMD.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True , nosimd=True)
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code f. General test with array limit applied without SIMD.
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 0.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking on without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking off without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code f. Test invalid parameter type for array data without SIMD.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code f. Test invalid parameter type for overflow flag without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code f. Test invalid parameter type for limit without SIMD.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code f. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code f. Test too many (five) parameters.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code f. Arithmetic positive overflow expected.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))])
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data , nosimd=True)
+			result = arrayfunc.asum(self.testdata)
 
 
 	########################################################
-	def test_function_13(self):
-		"""Test asum  - Array code f. Arithmetic overflow expected for negative numbers.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data , nosimd=True)
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_d_without_SIMD(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_1_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'd'
 
-		self.MaxVal = arrayfunc.arraylimits.d_max
-		self.MinVal = arrayfunc.arraylimits.d_min
-
-
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code d. General test without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data , nosimd=True)
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code d. General test with overflow checking on without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False , nosimd=True)
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code d. General test with overflow checking off without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True , nosimd=True)
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code d. General test with array limit applied without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking on without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking off without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 , nosimd=True)
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code d. Test invalid parameter type for array data without SIMD.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code d. Test invalid parameter type for overflow flag without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code d. Test invalid parameter type for limit without SIMD.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' , nosimd=True)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code d. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code d. Test too many (five) parameters.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-	########################################################
-	def test_function_12(self):
-		"""Test asum  - Array code d. Arithmetic positive overflow expected.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), [self.MaxVal] * 10, range(11,-88,-3))])
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data , nosimd=True)
-
-
-	########################################################
-	def test_function_13(self):
-		"""Test asum  - Array code d. Arithmetic overflow expected for negative numbers.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain([self.MinVal] * 10, range(1,10,2), [self.MinVal] * 10)])
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(data , nosimd=True)
-
-
-##############################################################################
-
-##############################################################################
-class asum_operator_f_with_SIMD(unittest.TestCase):
-	"""Test for basic operator function.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.TypeCode = 'f'
+		arraylength = 96
 
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
 
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
 
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code f. General test with.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code f. General test with overflow checking on with.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
 
 
 	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code f. General test with overflow checking off with.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
 
 
 	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code f. General test with array limit applied with.
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 1.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
 
 
 	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking on with.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code f. General test with array limit applied and overflow checking off with.
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
 		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code f. Test invalid parameter type for array data with.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code f. Test invalid parameter type for overflow flag with.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code f. Test invalid parameter type for limit with.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code f. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code f. Test too many (five) parameters.
-		"""
-		data = array.array('f', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
+
+
 ##############################################################################
-class asum_operator_d_with_SIMD(unittest.TestCase):
-	"""Test for basic operator function.
+class asum_overflow_MaxVal_2_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.TypeCode = 'd'
 
-		self.MaxVal = arrayfunc.arraylimits.d_max
-		self.MinVal = arrayfunc.arraylimits.d_min
+		arraylength = 96
 
-
-	########################################################
-	def test_function_01(self):
-		"""Test asum  - Array code d. General test with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_02(self):
-		"""Test asum  - Array code d. General test with overflow checking on with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_03(self):
-		"""Test asum  - Array code d. General test with overflow checking off with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True )
-		self.assertEqual(result, sum(data))
-
-
-	########################################################
-	def test_function_04(self):
-		"""Test asum  - Array code d. General test with array limit applied with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_05(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking on with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=False, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_06(self):
-		"""Test asum  - Array code d. General test with array limit applied and overflow checking off with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		result = arrayfunc.asum(data, matherrors=True, maxlen=10 )
-		self.assertEqual(result, sum(data[:10]))
-
-
-	########################################################
-	def test_function_07(self):
-		"""Test asum  - Array code d. Test invalid parameter type for array data with.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(1 )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(1)
-
-	########################################################
-	def test_function_08(self):
-		"""Test asum  - Array code d. Test invalid parameter type for overflow flag with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, matherrors='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-	########################################################
-	def test_function_09(self):
-		"""Test asum  - Array code d. Test invalid parameter type for limit with.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, maxlen='a' )
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum([1, 2, 3], matherrors='a')
-
-
-	########################################################
-	def test_function_10(self):
-		"""Test asum  - Array code d. Test no parameters.
-		"""
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum()
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum()
-
-
-	########################################################
-	def test_function_11(self):
-		"""Test asum  - Array code d. Test too many (five) parameters.
-		"""
-		data = array.array('d', [float(x) for x in itertools.chain(range(1,10,2), range(11,-88,-3))])
-		with self.assertRaises(TypeError):
-			result = arrayfunc.asum(data, False, 2, 2, 2)
-
-		# Check that the exception raised corresponds to the native Python behaviour.
-		with self.assertRaises(TypeError):
-			result = sum(data, 0, 2)
-
-
-
-##############################################################################
-
-##############################################################################
-class asum_nan_f(unittest.TestCase):
-	"""Test with floating point nan inf, and -inf.
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
 		self.MaxVal = arrayfunc.arraylimits.f_max
 		self.MinVal = arrayfunc.arraylimits.f_min
 
-		self.data_nan = array.array('f', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_inf = array.array('f', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_ninf = array.array('f', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5] * 10)
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
 
 
 	########################################################
-	def test_nan_01(self):
-		"""Test array with nan - Array code f, default SIMD state.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 2.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_nan)
+			result = arrayfunc.asum(self.testdata)
+
 
 	########################################################
-	def test_nan_02(self):
-		"""Test array with infinity - Array code f, default SIMD state.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_inf)
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
 
 	########################################################
-	def test_nan_03(self):
-		"""Test array with negative infinity - Array code f, default SIMD state.
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_ninf)
-
-	########################################################
-	def test_nan_04(self):
-		"""Test array with nan - Array code f, overflow disabled.
-		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_05(self):
-		"""Test array with infinity - Array code f, overflow disabled.
-		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_06(self):
-		"""Test array with negative infinity - Array code f, overflow disabled.
-		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_07(self):
-		"""Test array with nan - Array code f, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_08(self):
-		"""Test array with infinity - Array code f, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
-
-	########################################################
-	def test_nan_09(self):
-		"""Test array with negative infinity - Array code f, overflow and SIMD disabled.
-		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################
 
 
+
 ##############################################################################
-class asum_nan_d(unittest.TestCase):
-	"""Test with floating point nan inf, and -inf.
+class asum_overflow_MaxVal_3_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
 	"""
 
 	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_0_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
 		self.MaxVal = arrayfunc.arraylimits.d_max
 		self.MinVal = arrayfunc.arraylimits.d_min
 
-		self.data_nan = array.array('d', [-1.0, 0.0, 1.0, float('nan'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_inf = array.array('d', [-1.0, 0.0, 1.0, float('inf'), self.MaxVal, self.MinVal, 100.5] * 10)
-		self.data_ninf = array.array('d', [-1.0, 0.0, 1.0, float('-inf'), self.MaxVal, self.MinVal, 100.5] * 10)
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
 
 
 	########################################################
-	def test_nan_01(self):
-		"""Test array with nan - Array code d, default SIMD state.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 0.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_nan)
+			result = arrayfunc.asum(self.testdata)
+
 
 	########################################################
-	def test_nan_02(self):
-		"""Test array with infinity - Array code d, default SIMD state.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_1_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 1.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_inf)
+			result = arrayfunc.asum(self.testdata)
+
 
 	########################################################
-	def test_nan_03(self):
-		"""Test array with negative infinity - Array code d, default SIMD state.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_2_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 2.
 		"""
 		with self.assertRaises(OverflowError):
-			result = arrayfunc.asum(self.data_ninf)
+			result = arrayfunc.asum(self.testdata)
+
 
 	########################################################
-	def test_nan_04(self):
-		"""Test array with nan - Array code d, overflow disabled.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
 		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, matherrors=True)
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
 
 	########################################################
-	def test_nan_05(self):
-		"""Test array with infinity - Array code d, overflow disabled.
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
 		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, matherrors=True)
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_3_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
 
 	########################################################
-	def test_nan_06(self):
-		"""Test array with negative infinity - Array code d, overflow disabled.
+	def setUp(self):
+		"""Initialise.
 		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, matherrors=True)
 
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
 
 	########################################################
-	def test_nan_07(self):
-		"""Test array with nan - Array code d, overflow and SIMD disabled.
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
 		"""
-		expected = sum(self.data_nan)
-		result = arrayfunc.asum(self.data_nan, nosimd=True, matherrors=True)
-
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
 		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+			return val % (self.MaxVal - self.MinVal + 1)
+
 
 	########################################################
-	def test_nan_08(self):
-		"""Test array with infinity - Array code d, overflow and SIMD disabled.
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 3.
 		"""
-		expected = sum(self.data_inf)
-		result = arrayfunc.asum(self.data_inf, nosimd=True, matherrors=True)
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
 
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
-		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
 
 	########################################################
-	def test_nan_09(self):
-		"""Test array with negative infinity - Array code d, overflow and SIMD disabled.
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
 		"""
-		expected = sum(self.data_ninf)
-		result = arrayfunc.asum(self.data_ninf, nosimd=True, matherrors=True)
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
-		# NaN cannot be compared using normal means.
-		if math.isnan(expected):
-			self.assertTrue(math.isnan(result))
-		elif math.isnan(result):
-			self.assertTrue(math.isnan(expected))
-		# Inf or -inf can be compared using an exact match.
-		elif (not math.isfinite(result)) or (not math.isfinite(expected)):
-			self.assertEqual(result, expected)
-		# Anything else can be compared normally.
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MaxVal_4_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MaxVal, self.MaxVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
 		else:
-			deltaval = min((abs(expected), abs(result))) / 100.0
-			self.assertAlmostEqual(result, expected, delta=deltaval)
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_0_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_1_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_2_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_3_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_4_l(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.l_max
+		self.MinVal = arrayfunc.arraylimits.l_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('l', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'l' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'l' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code l. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_0_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_1_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_2_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_3_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_4_q(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.q_max
+		self.MinVal = arrayfunc.arraylimits.q_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('q', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'q' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'q' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code q. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_0_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_1_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_2_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_3_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_4_f(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.f_max
+		self.MinVal = arrayfunc.arraylimits.f_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('f', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'f' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'f' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_0_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 0
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 0.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_1_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 1
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 1.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_2_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 2
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 2.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_3_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 3
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 3.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_overflow_MinVal_4_d(unittest.TestCase):
+	"""Test asum for numeric overflow.
+	op_template_overflow
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		arraylength = 96
+
+		self.MaxVal = arrayfunc.arraylimits.d_max
+		self.MinVal = arrayfunc.arraylimits.d_min
+
+		# Rotate the data around a bit to try different locations for overflow.
+		# This tests how the SIMD operation will respond to the overflow happening
+		# in different locations.
+		rotplaces = 4
+		basedata = ([1] * arraylength) + [self.MinVal, self.MinVal] + ([1] * arraylength)
+		testbasedata = basedata[rotplaces:] + basedata[:rotplaces]
+
+		# Test arrays.
+		self.testdata = array.array('d', testbasedata)
+
+
+	########################################################
+	def sumwithoverflow(self, testvalues):
+		"""Sum the array, while accounting for overflow with different
+		data types.
+		"""
+		val = sum(testvalues)
+		# Single precision floatinng point. Python's own native
+		# format is double precision so we have to catch the overflow
+		# using a compare.
+		if 'd' == 'f':
+			if val > arrayfunc.arraylimits.f_max:
+				return math.inf
+			elif val < arrayfunc.arraylimits.f_min:
+				return -math.inf
+			else:
+				return val
+		# Double precision floating point.
+		elif 'd' == 'd':
+			return val
+		# Integer. The way that Python handles negative integers means
+		# we can't simply 'and' this with a mask.
+		else:
+			return val % (self.MaxVal - self.MinVal + 1)
+
+
+	########################################################
+	def test_asum_overflow_A1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking enabled, array data shifted 4.
+		"""
+		with self.assertRaises(OverflowError):
+			result = arrayfunc.asum(self.testdata)
+
+
+	########################################################
+	def test_asum_overflow_B1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
+
+
+	########################################################
+	def test_asum_overflow_C1(self):
+		"""Test asum  - Array code d. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
+		"""
+		result = arrayfunc.asum(self.testdata, matherrors=True, nosimd=True)
+		self.assertEqual(result, self.sumwithoverflow(self.testdata))
 
 
 ##############################################################################

@@ -1,13 +1,14 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   takewhile.c
-// Purpose:  Copy values from an array, stopping when a condition fails.
-// Language: c
-// Date:     10-May-2014.
+// Purpose:  Select values from an array starting from the beginning and stopping
+//           when the criteria fails.
+// Language: C
+// Date:     15-Nov-2017.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,466 +33,2437 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-
 #include "arrayops.h"
-#include "takewhile_common.h"
+
+#include "arrayparams_droptakefilter.h"
 
 /*--------------------------------------------------------------------------- */
 
-// Provide a struct for returning data from parsing Python arguments.
-struct args_param {
-	char array1type;
-	char array2type;
-	char param1type;
-	char error;
-};
-
-
-// The list of keyword arguments. All argument must be listed, whether we 
-// intend to use them for keywords or not. 
-static char *kwlist[] = {"op", "data", "dataout", "param", "maxlen", NULL};
-
 /*--------------------------------------------------------------------------- */
-
-
-/*--------------------------------------------------------------------------- */
-
-/* Parse the Python arguments to objects, and then extract the object parameters
- * to determine their types. This lets us handle different data types as 
- * parameters.
- * This version expects the following parameters:
- * args (PyObject) = The positional arguments.
- * Returns a structure containing the results of each parameter.
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
 */
-struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
+Py_ssize_t takewhile_eq_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
 
-	PyObject *dataobj, *dataoutobj, *param1obj, *opstr;
+	// array index counter. 
+	Py_ssize_t index; 
 
-
-	struct args_param argtypes = {' ', ' ', ' ', 0};
-
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
-
-	char array1code, array2code;
-
-
-	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "UOOO|n:takewhile", kwlist, 
-			&opstr, &dataobj, &dataoutobj, &param1obj, &arraymaxlen)) {
-		argtypes.error = 1;
-		return argtypes;
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
 	}
-
-	// Test if the second parameter is an array.
-	array1code = lookuparraycode(dataobj);
-	if (!array1code) {
-		argtypes.error = 2;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array1type = array1code;
-	}
-
-
-	// Test if the second parameter is an array.
-	array2code = lookuparraycode(dataoutobj);
-	if (!array2code) {
-		argtypes.error = 3;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array2type = array2code;
-	}
-
-
-	// Get the parameter type codes.
-	argtypes.param1type = paramtypecode(param1obj);
-
-
-
-	return argtypes;
+	return index;
 
 }
 
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
 
 /*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
 
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_signed_char(signed int opcode, Py_ssize_t arraylen, signed char *data, signed char *dataout, signed char param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_signed_char(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, unsigned char param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_unsigned_char(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_signed_short(signed int opcode, Py_ssize_t arraylen, signed short *data, signed short *dataout, signed short param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_signed_short(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, unsigned short param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_unsigned_short(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_signed_int(signed int opcode, Py_ssize_t arraylen, signed int *data, signed int *dataout, signed int param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_signed_int(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, unsigned int param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_unsigned_int(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_signed_long(signed int opcode, Py_ssize_t arraylen, signed long *data, signed long *dataout, signed long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_signed_long(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, unsigned long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_unsigned_long(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_signed_long_long(signed int opcode, Py_ssize_t arraylen, signed long long *data, signed long long *dataout, signed long long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_signed_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, unsigned long long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_unsigned_long_long(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_float(Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_float(signed int opcode, Py_ssize_t arraylen, float *data, float *dataout, float param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_float(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_float(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_float(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_float(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_float(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_float(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_eq_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] == param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_gt_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] > param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ge_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] >= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_lt_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] < param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_le_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] <= param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_ne_double(Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	for(index = 0; index < arraylen; index++) {
+		if (!(data[index] != param1)) {
+			return index;
+		}
+		dataout[index] = data[index];
+	}
+	return index;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   Returns 0 or a positive integer indicating the number of input elements 
+         copied to the output array, or an error code.
+*/
+Py_ssize_t takewhile_select_double(signed int opcode, Py_ssize_t arraylen, double *data, double *dataout, double param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+			return takewhile_eq_double(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+			return takewhile_gt_double(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+			return takewhile_ge_double(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+			return takewhile_lt_double(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+			return takewhile_le_double(arraylen, data, dataout, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+			return takewhile_ne_double(arraylen, data, dataout, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
 
 /* The wrapper to the underlying C function */
 static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
-	// The array of data we work on. 
-	union dataarrays data, dataout;
-
-	// The input buffers are arrays of bytes.
-	Py_buffer datapy, dataoutpy;
-
-	// The length of the data array.
-	Py_ssize_t databufflength, dataoutbufflength;
-
-	// Codes indicating the type of array and the operation desired.
-	char itemcode;
-	signed int opcode;
-	PyObject *opstr;
-
-
-	// How long the array is.
-	Py_ssize_t arraylength;
-
-	// The parameter version is available in all possible types.
-	struct paramsvals param1py;
-
-	// PyArg_ParseTuple does not match directly to the array codes. We need to
-	// use some temporary variables of alternate types to parse the parameter 
-	// data.
-	// PyArg_ParseTuple does not check for overflow of unsigned parameters.
-	signed long param1tmp_l;
-
-	// This is used to hold the results from inspecting the Python args.
-	struct args_param argtypes;
-
 	// The error code returned by the function.
-	Py_ssize_t resultcode;
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
+	Py_ssize_t resultcode = 0;
 
-	// -------------------------------------------------------------------------
+	// This is used to hold the parsed parameters.
+	struct args_params_droptakefilter arraydata = ARGSINIT_DROPTAKEFILTER;
 
-
-	// Check the parameters to see what they are.
-	argtypes = parsepyargs_parm(args, keywds);
+	// -----------------------------------------------------
 
 
+	// Get the parameters passed from Python.
+	arraydata = getparams_droptakefilter(self, args, keywds, "takewhile");
 
-	// There was an error reading the parameter types.
-	if (argtypes.error) {
-		ErrMsgParameterError();
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
 		return NULL;
 	}
 
-	// Both array types must be the same.
-	if (argtypes.array1type != argtypes.array2type) {
-		ErrMsgArrayTypeMismatch();
-		return NULL;
-	}
-
-	// Check if the array and parameter types are compatible.
-	if (!paramcompatok(argtypes.array1type, argtypes.param1type)) {
-		ErrMsgArrayAndParamMismatch();
-		return NULL;
-	}
-
-	itemcode = argtypes.array1type;
-
-	// Now we will fetch the actual data depending on the array type.
-	switch (itemcode) {
-		// signed char
-		case 'b' : {
-			// There does not seem to be a format string for signed char, so we must use a larger type
-			// and check it manually. 
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(issignedcharrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				PyBuffer_Release(&dataoutpy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.b = (signed char) param1tmp_l;
-			}
-			break;
-		}
-		// unsigned char
-		case 'B' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedcharrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				PyBuffer_Release(&dataoutpy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.B = (unsigned char) param1tmp_l;
-			}
-			break;
-		}
-		// signed short
-		case 'h' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*h|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.h, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned short
-		case 'H' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedshortrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				PyBuffer_Release(&dataoutpy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.H = (unsigned short) param1tmp_l;
-			}
-			break;
-		}
-		// signed int
-		case 'i' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*i|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.i, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned int
-		case 'I' : {
-			// With architectures where signed long is larger than unsigned int, we
-			// can use the larger signed value to test for overflow. If they are the
-			// same size, then we cannot check for overflow.
-			if (sizeof(signed long) > sizeof(unsigned int)) {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
-						&opstr, &datapy, &dataoutpy, &param1tmp_l, &arraymaxlen)) {
-					return NULL;
-				}
-				// Check the data range manually.
-				if (!(isunsignedintrange(param1tmp_l))) {
-					PyBuffer_Release(&datapy);
-					PyBuffer_Release(&dataoutpy);
-					ErrMsgArithOverflowParam();
-					return NULL;
-				} else {
-					param1py.I = (unsigned int) param1tmp_l;
-				}
-			} else {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*I|n:takewhile", kwlist, 
-						&opstr, &datapy, &dataoutpy, &param1py.I, &arraymaxlen)) {
-					return NULL;
-				}
-			}
-			break;
-		}
-		// signed long
-		case 'l' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*l|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.l, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned long
-		case 'L' : {
-			// The format codes do NOT match the array codes for this type.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*k|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.L, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// signed long
-		case 'q' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*L|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.q, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned long
-		case 'Q' : {
-			// The format codes do NOT match the array codes for this type.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*K|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.Q, &arraymaxlen)) {
-				return NULL;
-			}
-			break;
-		}
-		// float
-		case 'f' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*f|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.f, &arraymaxlen)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.f))) {
-				PyBuffer_Release(&datapy);
-				PyBuffer_Release(&dataoutpy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			break;
-		}
-		// double
-		case 'd' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*y*d|n:takewhile", kwlist, 
-					&opstr, &datapy, &dataoutpy, &param1py.d, &arraymaxlen)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.d))) {
-				PyBuffer_Release(&datapy);
-				PyBuffer_Release(&dataoutpy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			break;
-		}
-		// We don't know this code.
-		default: {
-			ErrMsgUnknownArrayType();
-			return NULL;
-			break;
-		}
-	}
-
-
-	// Convert the command string to an integer.
-	opcode = opstrdecode(opstr);
-
-	// Check if the command string is valid.
-	if (opcode < 0) {
-		// Release the buffers. 
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
-		ErrMsgOperatorNotValidforthisFunction();
-		return NULL;
-	}
-
-
-	// Assign the buffer to a union which lets us get at them as typed data.
-	data.buf = datapy.buf;
-	dataout.buf = dataoutpy.buf;
 
 	// The length of the data array.
-	databufflength = datapy.len;
-	dataoutbufflength = dataoutpy.len;
-
-	arraylength = calcarraylength(itemcode, databufflength);
-	if (arraylength < 1) {
-		// Release the buffers.
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
+	if (arraydata.arraylength < 1) {
+		// Release the buffers. 
+		releasebuffers_droptakefilter(arraydata);
 		ErrMsgArrayLengthErr();
 		return NULL;
 	}
 
-	// The input and output arrays must be the same length.
-	if (databufflength != dataoutbufflength) {
-		// Release the buffers.
-		PyBuffer_Release(&datapy);
-		PyBuffer_Release(&dataoutpy);
-		ErrMsgArrayLengthMismatch();
-		return NULL;
-	}
-
-	// Adjust the length of array being operated on, if necessary.
-	arraylength = adjustarraymaxlen(arraylength, arraymaxlen);
-
 
 
 	/* Call the C function */
-	switch(itemcode) {
+	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			resultcode = takewhile_signed_char(opcode, arraylength, data.b, dataout.b, param1py.b);
+			resultcode = takewhile_select_signed_char(arraydata.opcode, arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.param.b);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultcode = takewhile_unsigned_char(opcode, arraylength, data.B, dataout.B, param1py.B);
+			resultcode = takewhile_select_unsigned_char(arraydata.opcode, arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.param.B);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultcode = takewhile_signed_short(opcode, arraylength, data.h, dataout.h, param1py.h);
+			resultcode = takewhile_select_signed_short(arraydata.opcode, arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.param.h);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultcode = takewhile_unsigned_short(opcode, arraylength, data.H, dataout.H, param1py.H);
+			resultcode = takewhile_select_unsigned_short(arraydata.opcode, arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.param.H);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultcode = takewhile_signed_int(opcode, arraylength, data.i, dataout.i, param1py.i);
+			resultcode = takewhile_select_signed_int(arraydata.opcode, arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.param.i);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultcode = takewhile_unsigned_int(opcode, arraylength, data.I, dataout.I, param1py.I);
+			resultcode = takewhile_select_unsigned_int(arraydata.opcode, arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.param.I);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultcode = takewhile_signed_long(opcode, arraylength, data.l, dataout.l, param1py.l);
+			resultcode = takewhile_select_signed_long(arraydata.opcode, arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.param.l);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultcode = takewhile_unsigned_long(opcode, arraylength, data.L, dataout.L, param1py.L);
+			resultcode = takewhile_select_unsigned_long(arraydata.opcode, arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.param.L);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultcode = takewhile_signed_long_long(opcode, arraylength, data.q, dataout.q, param1py.q);
+			resultcode = takewhile_select_signed_long_long(arraydata.opcode, arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.param.q);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultcode = takewhile_unsigned_long_long(opcode, arraylength, data.Q, dataout.Q, param1py.Q);
+			resultcode = takewhile_select_unsigned_long_long(arraydata.opcode, arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.param.Q);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultcode = takewhile_float(opcode, arraylength, data.f, dataout.f, param1py.f);
+			resultcode = takewhile_select_float(arraydata.opcode, arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.param.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = takewhile_double(opcode, arraylength, data.d, dataout.d, param1py.d);
+			resultcode = takewhile_select_double(arraydata.opcode, arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.param.d);
 			break;
 		}
 		// We don't know this code.
 		default: {
-			PyBuffer_Release(&datapy);
-			PyBuffer_Release(&dataoutpy);
+			releasebuffers_droptakefilter(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
 		}
 	}
 
+	// Release the buffers. 
+	releasebuffers_droptakefilter(arraydata);
 
-	// Release the buffers.
-	PyBuffer_Release(&datapy);
-	PyBuffer_Release(&dataoutpy);
-
-	// Signal the errors.
-	if (resultcode == ARR_ERR_INVALIDOP) {
-		ErrMsgOperatorNotValidforthisFunction();
-		return NULL;
-	}
 
 	// Return the number of items filtered through.
 	return PyLong_FromSsize_t(resultcode);
@@ -505,23 +2477,37 @@ static PyObject *py_takewhile(PyObject *self, PyObject *args, PyObject *keywds) 
 
 /* The module doc string */
 PyDoc_STRVAR(takewhile__doc__,
-"Select values from an array starting from the beginning and stopping \n\
-when the criteria fails.\n\
+"takewhile \n\
+_____________________________ \n\
 \n\
-x = dropwhile(op, inparray, outparray, rparam)\n\
-x = dropwhile(op, inparray, outparray, rparam, maxlen=y)\n\
+Select values from an array starting from the beginning and stopping \n\
+when the criteria fails. \n\
 \n\
-* op - The arithmetic comparison operation.\n\
-* inparray - The input data array to be filtered.\n\
-* outparray - The output array.\n\
-* rparam - The parameter to be applied to 'op'. \n\
+======================  ============================================== \n\
+Equivalent to:          itertools.takewhile(lambda x: x < param, array) \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
+Exceptions raised:      None \n\
+======================  ============================================== \n\
+\n\
+Call formats: \n\
+\n\
+  result = takewhile(opstr, array, outparray, param) \n\
+  result = takewhile(opstr, array, outparray, param, maxlen=y) \n\
+\n\
+* opstr - The arithmetic comparison operation as a string. \n\
+          These are: '==', '>', '>=', '<', '<=', '!='. \n\
+* array - The input data array to be examined. \n\
+* outparray - The output array. \n\
+* param - A non-array numeric parameter. \n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\
-  parameter is ignored.\n\
-* x - An integer count of the number of items filtered into outparray.");
+  parameter is ignored. \n\
+* result - An integer count of the number of items filtered into outparray. \n\
+");
 
 
+/*--------------------------------------------------------------------------- */
 
 /* A list of all the methods defined by this module. 
  "takewhile" is the name seen inside of Python. 
@@ -529,9 +2515,10 @@ x = dropwhile(op, inparray, outparray, rparam, maxlen=y)\n\
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
 static PyMethodDef takewhile_methods[] = {
-	{"takewhile",  (PyCFunction) py_takewhile, METH_VARARGS | METH_KEYWORDS, takewhile__doc__}, 
+	{"takewhile",  (PyCFunction)py_takewhile, METH_VARARGS | METH_KEYWORDS, takewhile__doc__}, 
 	{NULL, NULL, 0, NULL}
 };
+
 
 static struct PyModuleDef takewhilemodule = {
     PyModuleDef_HEAD_INIT,
@@ -547,3 +2534,4 @@ PyMODINIT_FUNC PyInit_takewhile(void)
 };
 
 /*--------------------------------------------------------------------------- */
+

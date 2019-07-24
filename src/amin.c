@@ -1,13 +1,13 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   amin.c
-// Purpose:  Find the minimum value in an array.
+// Purpose:  Calculate the amin of values in an array.
 // Language: C
-// Date:     04-May-2014
+// Date:     12-May-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,176 +30,622 @@
 
 #include "Python.h"
 
-#include "arrayparams_base.h"
+#include <limits.h>
+#include <math.h>
+
 #include "arrayerrs.h"
 
-#include "amin_common.h"
+#include "arrayparams_base.h"
+
+#include "arrayparams_booloutsimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "amin_simd_x86.h"
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_char(Py_ssize_t arraylen, signed char *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed char minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (signed long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_char_select(Py_ssize_t arraylen, int nosimd, signed char *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		return amin_signed_char_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_signed_char(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_char(Py_ssize_t arraylen, unsigned char *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned char minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (unsigned long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_char_select(Py_ssize_t arraylen, int nosimd, unsigned char *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		return amin_unsigned_char_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_unsigned_char(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_short(Py_ssize_t arraylen, signed short *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed short minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (signed long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_short_select(Py_ssize_t arraylen, int nosimd, signed short *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		return amin_signed_short_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_signed_short(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_short(Py_ssize_t arraylen, unsigned short *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned short minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (unsigned long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_short_select(Py_ssize_t arraylen, int nosimd, unsigned short *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		return amin_unsigned_short_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_unsigned_short(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_int(Py_ssize_t arraylen, signed int *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed int minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (signed long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_int_select(Py_ssize_t arraylen, int nosimd, signed int *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		return amin_signed_int_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_signed_int(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_int(Py_ssize_t arraylen, unsigned int *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (unsigned long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_int_select(Py_ssize_t arraylen, int nosimd, unsigned int *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		return amin_unsigned_int_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_unsigned_int(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_long(Py_ssize_t arraylen, signed long *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed long minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (signed long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_long(Py_ssize_t arraylen, unsigned long *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned long minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (unsigned long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+signed long long amin_signed_long_long(Py_ssize_t arraylen, signed long long *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	signed long long minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (signed long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+unsigned long long amin_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned long long minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (unsigned long long) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+double amin_float(Py_ssize_t arraylen, float *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	float minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (double) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+double amin_float_select(Py_ssize_t arraylen, int nosimd, float *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		return amin_float_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_float(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+double amin_double(Py_ssize_t arraylen, double *data) { 
+
+	// array index counter. 
+	Py_ssize_t x; 
+	double minfound;
+
+	minfound = data[0];
+	for(x = 0; x < arraylen; x++) {
+		if (data[x] < minfound) {
+			minfound = data[x];
+		}
+	}
+
+	return (double) minfound;
+}
+/*--------------------------------------------------------------------------- */
+
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   Returns: The minimum value found.
+*/
+double amin_double_select(Py_ssize_t arraylen, int nosimd, double *data) { 
+
+	#ifdef AF_HASSIMD
+	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		return amin_double_simd(arraylen, data);
+	} else {
+	#endif
+		return amin_double(arraylen, data);
+	#ifdef AF_HASSIMD
+	}
+	#endif
+
+}
+/*--------------------------------------------------------------------------- */
 
 
 /*--------------------------------------------------------------------------- */
 
-// The list of keyword arguments. All argument must be listed, whether we 
-// intend to use them for keywords or not. 
-static char *kwlist[] = {"data", "maxlen", "nosimd", NULL};
-
-/*--------------------------------------------------------------------------- */
-
-/*--------------------------------------------------------------------------- */
 /* The wrapper to the underlying C function */
 static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 
 
-	// The raw object so we can examine what it is. 
-	PyObject *dataobj;
+	// This is used to hold the parsed parameters.
+	struct args_params_booloutsimd arraydata = ARGSINIT_BOOLOUTSIMD;
 
-	// The array of data we work on. 
-	union dataarrays data;
-
-	// The input buffers are arrays of bytes.
-	Py_buffer datapy;
-
-	// The length of the data array.
-	Py_ssize_t databufflength;
-
-	// Codes indicating the type of array and the operation desired.
-	char itemcode;
-
-	// How long the array is.
-	Py_ssize_t arraylength;
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
 
 	// The parameter version is available in all possible types.
-	struct paramsvals resultfound;
+	signed long long resultq;
+	unsigned long long resultQ;
+	double resultd;
 
-	// If true, disable using SIMD.
-	unsigned int nosimd = 0;
+	// -----------------------------------------------------
 
 
-	// -------------------------------------------------------------------------
+	// Get the parameters passed from Python.
+	arraydata = getparams_booloutsimd(self, args, keywds, "amin");
 
-	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "O|ni:amin", kwlist, 
-			&dataobj, &arraymaxlen, &nosimd)) {
-		ErrMsgParameterError();
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
 		return NULL;
 	}
-
-
-	// Test if the parameter is an array.
-	itemcode = lookuparraycode(dataobj);
-	if (!itemcode) {
-		ErrMsgArrayExpected();
-		return NULL;
-	}
-
-
-	// Now we will fetch the actual data.
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "y*|ni:amin", kwlist, 
-			&datapy, &arraymaxlen, &nosimd)) {
-		return NULL;
-	}
-
-
-	// Assign the buffer to a union which lets us get at them as typed data.
-	data.buf = datapy.buf;
 
 
 	// The length of the data array.
-	databufflength = datapy.len;
-	arraylength = calcarraylength(itemcode, databufflength);
-	if (arraylength < 1) {
+	if (arraydata.arraylength < 1) {
 		// Release the buffers. 
-		PyBuffer_Release(&datapy);
+		releasebuffers_booloutsimd(arraydata);
 		ErrMsgArrayLengthErr();
 		return NULL;
 	}
 
 
-	// Adjust the length of array being operated on, if necessary.
-	arraylength = adjustarraymaxlen(arraylength, arraymaxlen);
-
 
 	/* Call the C function */
-	switch(itemcode) {
+	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			resultfound.b = amin_signed_char(arraylength, data.b, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromLong(resultfound.b);
+			resultq = amin_signed_char_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromLongLong(resultq);
+			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultfound.B = amin_unsigned_char(arraylength, data.B, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromUnsignedLong(resultfound.B);
+			resultQ = amin_unsigned_char_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromUnsignedLongLong(resultQ);
+			break;
 		}
 		// signed short
 		case 'h' : {
-			resultfound.h = amin_signed_short(arraylength, data.h, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromLong(resultfound.h);
+			resultq = amin_signed_short_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromLongLong(resultq);
+			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultfound.H = amin_unsigned_short(arraylength, data.H, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromUnsignedLong(resultfound.H);
+			resultQ = amin_unsigned_short_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromUnsignedLongLong(resultQ);
+			break;
 		}
 		// signed int
 		case 'i' : {
-			resultfound.i = amin_signed_int(arraylength, data.i, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromLong(resultfound.i);
+			resultq = amin_signed_int_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromLongLong(resultq);
+			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultfound.I = amin_unsigned_int(arraylength, data.I, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromUnsignedLong(resultfound.I);
+			resultQ = amin_unsigned_int_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromUnsignedLongLong(resultQ);
+			break;
 		}
 		// signed long
 		case 'l' : {
-			resultfound.l = amin_signed_long(arraylength, data.l, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromLong(resultfound.l);
+			resultq = amin_signed_long(arraydata.arraylength, arraydata.array1.l);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromLongLong(resultq);
+			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultfound.L = amin_unsigned_long(arraylength, data.L, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromUnsignedLong(resultfound.L);
+			resultQ = amin_unsigned_long(arraydata.arraylength, arraydata.array1.L);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromUnsignedLongLong(resultQ);
+			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultfound.q = amin_signed_long_long(arraylength, data.q, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromLongLong(resultfound.q);
+			resultq = amin_signed_long_long(arraydata.arraylength, arraydata.array1.q);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromLongLong(resultq);
+			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultfound.Q = amin_unsigned_long_long(arraylength, data.Q, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyLong_FromUnsignedLongLong(resultfound.Q);
+			resultQ = amin_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q);
+			releasebuffers_booloutsimd(arraydata);
+			return PyLong_FromUnsignedLongLong(resultQ);
+			break;
 		}
 		// float
 		case 'f' : {
-			resultfound.f = amin_float(arraylength, data.f, nosimd);
-			return PyFloat_FromDouble((double) resultfound.f);
+			resultd = amin_float_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f);
+			releasebuffers_booloutsimd(arraydata);
+			return PyFloat_FromDouble(resultd);
+			break;
 		}
 		// double
 		case 'd' : {
-			resultfound.d = amin_double(arraylength, data.d, nosimd);
-			PyBuffer_Release(&datapy);
-			return PyFloat_FromDouble(resultfound.d);
+			resultd = amin_double_select(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d);
+			releasebuffers_booloutsimd(arraydata);
+			return PyFloat_FromDouble(resultd);
+			break;
 		}
 		// We don't know this code.
 		default: {
-			PyBuffer_Release(&datapy);
+			releasebuffers_booloutsimd(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
+			break;
 		}
 	}
+
+	// Release the buffers. 
+	releasebuffers_booloutsimd(arraydata);
 
 
 }
@@ -210,20 +656,35 @@ static PyObject *py_amin(PyObject *self, PyObject *args, PyObject *keywds) {
 
 /* The module doc string */
 PyDoc_STRVAR(amin__doc__,
-"Returns the minimum value in the array.\n\
+"amin \n\
+_____________________________ \n\
 \n\
-x = amin(inparray)\n\
-x = amin(inparray, maxlen=y)\n\
-x = amax(inparray, maxlen=y, nosimd=true)\n\
+Calculate amin over the values in an array.  \n\
 \n\
-* inparray - The input data array to be examined.\n\
+======================  ============================================== \n\
+Equivalent to:          min(x) \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
+Exceptions raised:      None \n\
+======================  ============================================== \n\
+\n\
+Call formats: \n\
+\n\
+  result = amin(array) \n\
+  result = amin(array, maxlen=y) \n\
+  result = amin(array, nosimd=False) \n\
+\n\
+* array - The input data array to be examined. \n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
-  greater than the actual length of the array is specified, this  \n\
-  parameter is ignored.\n\
-* nosimd - If true, use of SIMD is disabled.\n\
-* x - The minimum value.");
+  greater than the actual length of the array is specified, this \n\
+  parameter is ignored. \n\
+* nosimd - If True, SIMD acceleration is disabled if present. \n\
+  The default is False (SIMD acceleration is enabled if present). \n\
+* result = The  minimum of all the values in the array. \n\
+");
 
+
+/*--------------------------------------------------------------------------- */
 
 /* A list of all the methods defined by this module. 
  "amin" is the name seen inside of Python. 
@@ -231,9 +692,10 @@ x = amax(inparray, maxlen=y, nosimd=true)\n\
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
 static PyMethodDef amin_methods[] = {
-	{"amin",  (PyCFunction) py_amin, METH_VARARGS | METH_KEYWORDS, amin__doc__}, 
+	{"amin",  (PyCFunction)py_amin, METH_VARARGS | METH_KEYWORDS, amin__doc__}, 
 	{NULL, NULL, 0, NULL}
 };
+
 
 static struct PyModuleDef aminmodule = {
     PyModuleDef_HEAD_INIT,
@@ -249,3 +711,4 @@ PyMODINIT_FUNC PyInit_amin(void)
 };
 
 /*--------------------------------------------------------------------------- */
+

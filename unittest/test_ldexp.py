@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      06-Apr-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -332,7 +332,7 @@ class ldexp_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_ldexp_array_num_none_a4(self):
-		"""Test ldexp as *array-num-none* for errors='a' - Array code f.
+		"""Test ldexp as *array-num-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -345,7 +345,7 @@ class ldexp_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.ldexp(floatarray1, testint, errors='a')
+			arrayfunc.ldexp(floatarray1, testint, matherrors='a')
 
 
 	########################################################
@@ -440,7 +440,7 @@ class ldexp_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_ldexp_array_num_array_b5(self):
-		"""Test ldexp as *array-num-array* for errors='a' - Array code f.
+		"""Test ldexp as *array-num-array* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -453,7 +453,7 @@ class ldexp_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.ldexp(floatarray1, testint, self.dataout, errors='a')
+			arrayfunc.ldexp(floatarray1, testint, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1168,7 +1168,7 @@ class ldexp_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_ldexp_array_num_none_a4(self):
-		"""Test ldexp as *array-num-none* for errors='a' - Array code d.
+		"""Test ldexp as *array-num-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -1181,7 +1181,7 @@ class ldexp_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.ldexp(floatarray1, testint, errors='a')
+			arrayfunc.ldexp(floatarray1, testint, matherrors='a')
 
 
 	########################################################
@@ -1276,7 +1276,7 @@ class ldexp_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_ldexp_array_num_array_b5(self):
-		"""Test ldexp as *array-num-array* for errors='a' - Array code d.
+		"""Test ldexp as *array-num-array* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -1289,7 +1289,7 @@ class ldexp_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.ldexp(floatarray1, testint, self.dataout, errors='a')
+			arrayfunc.ldexp(floatarray1, testint, self.dataout, matherrors='a')
 
 
 	########################################################

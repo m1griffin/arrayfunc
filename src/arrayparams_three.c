@@ -156,7 +156,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
+	if (get_paramdata_simple(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 3;
 		releasebuffers_three(arraydata);
@@ -164,7 +164,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 	}
 
 	// Parse the second object parameter. 
-	if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
+	if (get_paramdata_simple(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 		ErrMsgParameterError();
 		arraydata.error = 4;
 		releasebuffers_three(arraydata);
@@ -172,7 +172,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 	}
 
 	// Parse the third object parameter. 
-	if (get_paramdata(dataobj3, &paramobjdata3, &arraydata.hasbuffer3)) {
+	if (get_paramdata_simple(dataobj3, &paramobjdata3, &arraydata.hasbuffer3)) {
 		ErrMsgParameterError();
 		arraydata.error = 5;
 		releasebuffers_three(arraydata);
@@ -218,7 +218,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 	} else {
 
 		// As this is not an array, it should be a number.
-		if (get_numericparams(paramobjdata1.arraycode, &paramobjdata2, &parampy2)) {
+		if (get_numericparams_simple(paramobjdata1.arraycode, &paramobjdata2, &parampy2)) {
 			ErrMsgParameterError();
 			arraydata.error = 9;
 			releasebuffers_three(arraydata);
@@ -247,7 +247,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 
 	} else {
 		// As this is not an array, it should be a number.
-		if (get_numericparams(paramobjdata1.arraycode, &paramobjdata3, &parampy3)) {
+		if (get_numericparams_simple(paramobjdata1.arraycode, &paramobjdata3, &parampy3)) {
 			ErrMsgParameterError();
 			arraydata.error = 12;
 			releasebuffers_three(arraydata);
@@ -266,7 +266,7 @@ struct args_params_3 getparams_three(PyObject *self, PyObject *args, PyObject *k
 
 	// Parse the fourth object parameter. This one is optional.
 	if (dataobj4 != NULL) {
-		if (get_paramdata(dataobj4, &paramobjdata4, &arraydata.hasbuffer4)) {
+		if (get_paramdata_simple(dataobj4, &paramobjdata4, &arraydata.hasbuffer4)) {
 			ErrMsgParameterError();
 			arraydata.error = 13;
 			releasebuffers_three(arraydata);

@@ -36,8 +36,8 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
 
+#include "arrayparams_one.h"
 
 
 
@@ -52,6 +52,7 @@ signed int log_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned 
 
 	// array index counter.
 	Py_ssize_t x;
+
 
 
 	// Math error checking disabled.
@@ -95,6 +96,7 @@ signed int log_double(Py_ssize_t arraylen, double *data, double *dataout, unsign
 
 	// array index counter.
 	Py_ssize_t x;
+
 
 
 	// Math error checking disabled.

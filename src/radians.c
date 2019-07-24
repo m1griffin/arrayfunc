@@ -35,20 +35,28 @@
 // This _USE_MATH_DEFINES is required for MSVC 2010 compatibility to enable
 // the M_PI constant. This must be immediately above <math.h>.
 #define _USE_MATH_DEFINES
+#include <math.h>
+
 
 #include <math.h>
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
 
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "radians_simd_x86.h"
+#endif
 
 
 /*--------------------------------------------------------------------------- */
 
 // Used to calculate degrees to radians.
-const double degtorad_d = M_PI / 180.0;
-const float degtorad_f = (float) (M_PI / 180.0);
+#define DEGTORAD_D M_PI / 180.0
+#define DEGTORAD_F (float) (M_PI / 180.0)
 
 /*--------------------------------------------------------------------------- */
 
@@ -60,33 +68,46 @@ const float degtorad_f = (float) (M_PI / 180.0);
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int radians_float(Py_ssize_t arraylen, int nosimd, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			radians_float_2_simd(arraylen, data, dataout);
+		} else {
+			radians_float_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
+
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = degtorad_f * data[x];
+				dataout[x] = DEGTORAD_F * data[x];
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = degtorad_f * data[x];
+				data[x] = DEGTORAD_F * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = degtorad_f * data[x];
+				dataout[x] = DEGTORAD_F * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = degtorad_f * data[x];
+				data[x] = DEGTORAD_F * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
@@ -103,33 +124,46 @@ signed int radians_float(Py_ssize_t arraylen, float *data, float *dataout, unsig
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int radians_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int radians_double(Py_ssize_t arraylen, int nosimd, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			radians_double_2_simd(arraylen, data, dataout);
+		} else {
+			radians_double_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
+
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = degtorad_d * data[x];
+				dataout[x] = DEGTORAD_D * data[x];
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = degtorad_d * data[x];
+				data[x] = DEGTORAD_D * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
 			for(x = 0; x < arraylen; x++) {
-				dataout[x] = degtorad_d * data[x];
+				dataout[x] = DEGTORAD_D * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
 			for(x = 0; x < arraylen; x++) {
-				data[x] = degtorad_d * data[x];
+				data[x] = DEGTORAD_D * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		}
@@ -166,12 +200,12 @@ static PyObject *py_radians(PyObject *self, PyObject *args, PyObject *keywds) {
 	switch(arraydata.arraytype) {
 		// float
 		case 'f' : {
-			resultcode = radians_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = radians_float(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = radians_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = radians_double(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 		// We don't know this code.
@@ -222,7 +256,7 @@ Call formats: \n\
     radians(array1, outparray) \n\
     radians(array1, maxlen=y) \n\
     radians(array1, matherrors=False)) \n\
-\n\
+    radians(array, nosimd=False) \n\\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
 * outparray - The output array. This parameter is optional. \n\
@@ -232,6 +266,8 @@ Call formats: \n\
   parameter is ignored. \n\
 * matherrors - If true, arithmetic error checking is disabled. The \n\
   default is false. \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

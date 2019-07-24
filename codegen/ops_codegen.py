@@ -73,6 +73,8 @@ mathops_head = """//------------------------------------------------------------
 
 #include "arrayparams_two.h"
 
+%(includeoptions)s
+
 /*--------------------------------------------------------------------------- */
 """
 
@@ -90,13 +92,14 @@ ops_op_float = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -112,13 +115,14 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -134,13 +138,14 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -156,13 +161,14 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -180,13 +186,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -202,13 +209,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -239,7 +247,7 @@ ops_add_uint = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -247,6 +255,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -263,7 +272,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -271,6 +280,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -287,7 +297,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -295,6 +305,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -311,7 +322,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -319,6 +330,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -337,7 +349,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -345,6 +357,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -361,7 +374,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -369,6 +382,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -400,7 +414,7 @@ ops_add_int = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -408,6 +422,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -437,7 +452,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -445,6 +460,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -475,7 +491,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -483,6 +499,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -512,7 +529,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -520,6 +537,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -552,13 +570,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -575,13 +594,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -612,13 +632,14 @@ ops_sub_uint = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -634,13 +655,14 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -656,13 +678,14 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -678,13 +701,14 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -702,13 +726,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -724,13 +749,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -763,7 +789,7 @@ ops_sub_int = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -771,6 +797,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -800,7 +827,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -808,6 +835,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -838,7 +866,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -846,6 +874,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -878,7 +907,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -886,6 +915,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -920,13 +950,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -943,13 +974,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -981,7 +1013,7 @@ ops_mul_int = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -989,6 +1021,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
 		}
@@ -1029,7 +1062,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1037,6 +1070,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
 		}
@@ -1077,7 +1111,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1085,6 +1119,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
 		}
@@ -1125,7 +1160,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1133,6 +1168,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
 		}
@@ -1175,13 +1211,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
 		}
@@ -1199,13 +1236,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
 		}
@@ -1239,7 +1277,7 @@ ops_mul_uint = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1247,6 +1285,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_1)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
 		}
@@ -1269,7 +1308,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1277,6 +1316,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_2)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
 		}
@@ -1299,7 +1339,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1307,6 +1347,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_3)s
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
 		}
@@ -1329,7 +1370,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 }
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1337,6 +1378,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_4)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
 		}
@@ -1361,13 +1403,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_5)s
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
 		}
@@ -1383,13 +1426,14 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+%(simd_call_6)s
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
 		}
@@ -2120,6 +2164,125 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 # ==============================================================================
 
+# For unsigned integer.
+ops_floordiv_uint = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+   ignoreerrors = If true, disable arithmetic math error checking (default is false).
+*/
+// param_arr_num_none
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	// Cannot disable divide by zero checking because this causes a crash.
+	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
+
+	for(x = 0; x < arraylen; x++) {
+		data1[x] = data1[x] / param;
+	}
+	return ARR_NO_ERR;
+
+}
+
+
+// param_arr_num_arr
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	// Cannot disable divide by zero checking because this causes a crash.
+	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
+
+	for(x = 0; x < arraylen; x++) {
+		data3[x] = data1[x] / param;
+	}
+	return ARR_NO_ERR;
+
+}
+
+
+// param_num_arr_none
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	for(x = 0; x < arraylen; x++) {
+		// Cannot disable divide by zero checking because this causes a crash.
+		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
+		data2[x] = param / data2[x];
+	}
+	return ARR_NO_ERR;
+
+}
+
+// param_num_arr_arr
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	for(x = 0; x < arraylen; x++) {
+		// Cannot disable divide by zero checking because this causes a crash.
+		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
+		data3[x] = param / data2[x];
+	}
+	return ARR_NO_ERR;
+
+}
+
+
+
+// param_arr_arr_none
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	for(x = 0; x < arraylen; x++) {
+		// Cannot disable divide by zero checking because this causes a crash.
+		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
+		data1[x] = data1[x] / data2[x];
+	}
+	return ARR_NO_ERR;
+
+}
+
+// param_arr_arr_arr
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+	for(x = 0; x < arraylen; x++) {
+		// Cannot disable divide by zero checking because this causes a crash.
+		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
+		data3[x] = data1[x] / data2[x];
+	}
+	return ARR_NO_ERR;
+
+}
+"""
+
+
+# ==============================================================================
+
+# ==============================================================================
+
 # For floating point floor division.
 ops_floordiv_float = """
 /*--------------------------------------------------------------------------- */
@@ -2139,6 +2302,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / param);
 		}
@@ -2168,6 +2332,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / param);
 		}
@@ -2197,6 +2362,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data2[x] = %(copname)s(param / data2[x]);
 		}
@@ -2227,6 +2393,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(param / data2[x]);
 		}
@@ -2256,6 +2423,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / data2[x]);
 		}
@@ -2285,6 +2453,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
 		for(x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / data2[x]);
 		}
@@ -2557,7 +2726,7 @@ ops_mod_uint = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2574,7 +2743,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 
 // param_arr_num_arr
-signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2592,7 +2761,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 
 // param_num_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2610,7 +2779,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_num_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2629,7 +2798,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 // param_arr_arr_none
-signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -2645,7 +2814,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 }
 
 // param_arr_arr_arr
-signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
+signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -3183,6 +3352,271 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 # ==============================================================================
 
 
+# The operations using SIMD. This handles multiple different SIMD operations.
+ops_simdsupport = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data1 = The first data array.
+   data2 = The second data array.
+   data3 = The third data array.
+   param = The parameter to be applied to each array element.
+*/
+// param_arr_num_none
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int y;
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(arraytype)s opvals[%(simdwidth)s];
+
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		opvals[y] = param;
+	}
+	datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)sopvals);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data1[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data1[x] = data1[x] %(copname)s param;
+	}
+
+}
+#endif
+
+
+// param_arr_num_arr
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int y;
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(arraytype)s opvals[%(simdwidth)s];
+
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		opvals[y] = param;
+	}
+	datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)sopvals);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data3[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data3[x] = data1[x] %(copname)s param;
+	}
+
+}
+#endif
+
+
+// param_num_arr_none
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_3_simd(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int y;
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(arraytype)s opvals[%(simdwidth)s];
+
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		opvals[y] = param;
+	}
+	datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)sopvals);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)s&data2[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data2[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data2[x] = param %(copname)s data2[x];
+	}
+
+}
+#endif
+
+
+// param_num_arr_arr
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_4_simd(Py_ssize_t arraylen, %(arraytype)s param, %(arraytype)s *data2, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+	unsigned int y;
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(arraytype)s opvals[%(simdwidth)s];
+
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		opvals[y] = param;
+	}
+	datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)sopvals);
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)s&data2[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data3[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data3[x] = param %(copname)s data2[x];
+	}
+
+}
+#endif
+
+
+// param_arr_arr_none
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_5_simd(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[x]);
+		datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)s&data2[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data1[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data1[x] = data1[x] %(copname)s data2[x];
+	}
+
+}
+#endif
+
+
+// param_arr_arr_arr
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_6_simd(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s *data2, %(arraytype)s *data3) {
+
+	// array index counter. 
+	Py_ssize_t x; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, resultslice;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[x]);
+		datasliceright =(%(simdattr)s)  %(simdload)s(%(simdcast)s&data2[x]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		resultslice = datasliceleft %(copname)s datasliceright;
+		// Store the result.
+		%(simdstore)s&data3[x], %(simdstorecast)s resultslice);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(x = alignedlength; x < arraylen; x++) {
+		data3[x] = data1[x] %(copname)s data2[x];
+	}
+
+}
+#endif
+
+/*--------------------------------------------------------------------------- */
+"""
 
 # ==============================================================================
 
@@ -3192,27 +3626,27 @@ opscall = """
 		case '%(arraycode)s' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_1(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.param.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_1(arraydata.arraylength,%(nosimdparam)s arraydata.array1.%(arraycode)s, arraydata.param.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_2(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.param.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_2(arraydata.arraylength,%(nosimdparam)s arraydata.array1.%(arraycode)s, arraydata.param.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_3(arraydata.arraylength, arraydata.param.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_3(arraydata.arraylength,%(nosimdparam)s arraydata.param.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_4(arraydata.arraylength, arraydata.param.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_4(arraydata.arraylength,%(nosimdparam)s arraydata.param.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_5(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_5(arraydata.arraylength,%(nosimdparam)s arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = %(funclabel)s_%(funcmodifier)s_6(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
+					resultcode = %(funclabel)s_%(funcmodifier)s_6(arraydata.arraylength,%(nosimdparam)s arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.array3.%(arraycode)s, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -3241,7 +3675,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 
 
 	// Get the parameters passed from Python.
-	arraydata = getparams_two(self, args, keywds, 1, "%(funclabel)s");
+	arraydata = getparams_two(self, args, keywds, 1, %(getsimdparam)s, "%(funclabel)s");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -3314,7 +3748,7 @@ Call formats: \\n\\
   %(funclabel)s(array1, array2, outparray) \\n\\
   %(funclabel)s(array1, param, maxlen=y) \\n\\
   %(funclabel)s(array1, param, matherrors=False) \\n\\
-\\n\\
+%(helpsimd1)s\\n\\
 * array1 - The first input data array to be examined. If no output  \\n\\
   array is provided the results will overwrite the input data.  \\n\\
 * param - A non-array numeric parameter.  \\n\\
@@ -3327,7 +3761,7 @@ Call formats: \\n\\
   parameter is ignored.  \\n\\
 * matherrors - If true, arithmetic error checking is disabled. The  \\n\\
   default is false. \\n\\
-\\n");
+%(helpsimd2)s");
 
 /*--------------------------------------------------------------------------- */
 
@@ -3433,6 +3867,9 @@ powtemplateunsigned = """
 /*--------------------------------------------------------------------------- */
 """
 
+
+# ==============================================================================
+
 # These are the C functions used to calculate absolute value (abs).
 absfunc = {
 	'b' : 'abs',
@@ -3449,6 +3886,86 @@ absfunc = {
 	'd' : ''
 }
 
+
+
+# ==============================================================================
+
+# This is required for SIMD operations only.
+includeoptions = '''#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "%(funclabel)s_simd_x86.h"
+#endif'''
+
+
+# SIMD call template. This has to handle multiple template strings,
+# and so is presented as a dictionary to allow it to be handled
+# iteratively. 
+
+SIMD_call = {
+'simd_call_1' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif\n''',
+
+'simd_call_2' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif\n''',
+
+'simd_call_3' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif\n''',
+
+'simd_call_4' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif\n''',
+
+'simd_call_5' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif\n''',
+
+'simd_call_6' : '''\n#ifdef AF_HASSIMD
+		// SIMD version.
+		if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+			%(funclabel)s_%(funcmodifier)s_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif\n'''
+}
+
+
+# This is used to insert the "nosimd" parameter in parameter declarations. 
+nosimddecl = ' int nosimd,'
+
+# This one is used in the actual function call. 
+nosimdparam = ' arraydata.nosimd,'
+
+
+# The following are used to fill in template data which handles whether
+# a function requires SIMD related template data or not. 
+helpsimd1_template = '  %(funclabel)s(array, param, nosimd=False)'
+
+helpsimd2_template = '''* nosimd - If True, SIMD acceleration is disabled. This parameter is \\n\\
+  optional. The default is FALSE. \\n\\n'''
 
 # ==============================================================================
 
@@ -3471,10 +3988,8 @@ opstemplates = {
 			'uint' : ops_truediv_uint,
 			'float' : ops_truediv_float
 		},
-
-	# For floordiv, uint is the same as with truediv, but float differs.
 	'//' : {'int' : ops_floordiv_int,
-			'uint' : ops_truediv_uint,
+			'uint' : ops_floordiv_uint,
 			'float' : ops_floordiv_float
 		},
 	'%' : {'int' : ops_mod_int,
@@ -3491,6 +4006,46 @@ opstemplates = {
 
 # ==============================================================================
 
+# ==============================================================================
+
+# Various SIMD instruction information which varies according to array type.
+simdvalues = {
+'b' : {'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'B' : {'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'h' : {'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdwidth' : 'SHORTSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '(v16qi)', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'H' : {'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdwidth' : 'SHORTSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '(v16qi)', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'i' : {'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdwidth' : 'INTSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '(v16qi)', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'I' : {'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdwidth' : 'INTSIMDSIZE', 
+			'simdload' : '__builtin_ia32_lddqu', 'simdstorecast' : '(v16qi)', 'simdstore' : '__builtin_ia32_storedqu((char *)'},
+'l' : {},
+'L' : {},
+'q' : {},
+'Q' : {},
+'f' : {'simdcast' : '', 'simdattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 
+			'simdload' : '__builtin_ia32_loadups', 'simdstorecast' : '', 'simdstore' : '__builtin_ia32_storeups('},
+'d' : {'simdcast' : '', 'simdattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 
+			'simdload' : '__builtin_ia32_loadupd', 'simdstorecast' : '', 'simdstore' : '__builtin_ia32_storeupd('},
+}
+
+# This describes which functions and which array types support SIMD.
+simd_all_arrays = ['b', 'B', 'h', 'H', 'i', 'I', 'f', 'd']
+simd_float_arrays = ('f', 'd')
+
+funcshavesimd = {
+	'+' : simd_all_arrays,
+	'-' : simd_all_arrays,
+	'*' : simd_all_arrays,
+}
+
+# ==============================================================================
+
+# ==============================================================================
+
 
 # Read in the op codes.
 oplist = codegen_common.ReadCSVData('funcs.csv')
@@ -3498,27 +4053,39 @@ oplist = codegen_common.ReadCSVData('funcs.csv')
 
 # Filter out the desired math functions.
 
-funclist = [x for x in oplist if x['c_code_template'] in ['template_mathop']]
+funclist = [x for x in oplist if x['c_code_template'] in ['template_mathop', 'template_mathop_simd']]
 
 
 # ==============================================================================
 
 for func in funclist:
 
+	# Functions using SIMD.
+	hassimd = func['c_code_template'] == 'template_mathop_simd'
 
 	# Create the source code based on templates.
-	filename = func['funcname'] + '.c'
+	funcname = func['funcname']
+	filename = funcname + '.c'
+	pyoperator = func['pyoperator']
+
 	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : func['funcname']}
-		f.write(mathops_head % {'funclabel' : func['funcname']})
+
+		funcdata = {'funclabel' : funcname, 'includeoptions' : ''}
+		if hassimd:
+			funcdata['includeoptions'] = includeoptions% {'funclabel' : funcname}
+			
+		f.write(mathops_head % funcdata)
 		opscalltext = []
 
 			
 
 		# Check each array type.
 		for arraycode in codegen_common.arraycodes:
-			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
-			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
+			arraytype = codegen_common.arraytypes[arraycode]
+			funcmodifier = arraytype.replace(' ', '_')
+
+			funcdata['funcmodifier'] = funcmodifier
+			funcdata['arraytype'] = arraytype
 			funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
 			funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
 
@@ -3526,9 +4093,9 @@ for func in funclist:
 			funcdata['abs'] = absfunc[arraycode]
 
 			# This is used for mod only.
-			if (arraycode == 'f') and (func['pyoperator'] == '%'):
+			if (arraycode == 'f') and (pyoperator == '%'):
 				funcdata['modfloor'] = 'floorf'
-			elif (arraycode == 'd') and (func['pyoperator'] == '%'):
+			elif (arraycode == 'd') and (pyoperator == '%'):
 				funcdata['modfloor'] = 'floor'
 			else:
 				funcdata['modfloor'] = ''
@@ -3538,21 +4105,33 @@ for func in funclist:
 			# 'funcdata' is defind before we get to powtemplate.
 			if arraycode == 'f':
 				funcdata['copname'] = func['c_operator_f']
-				ops_calc = opstemplates[func['pyoperator']]['float']
+				ops_calc = opstemplates[pyoperator]['float']
 			elif arraycode == 'd':
 				funcdata['copname'] = func['c_operator_d']
-				ops_calc = opstemplates[func['pyoperator']]['float']
+				ops_calc = opstemplates[pyoperator]['float']
 			elif arraycode in codegen_common.unsignedint:
 				 funcdata['copname'] = func['c_operator_i']
-				 ops_calc = opstemplates[func['pyoperator']]['uint']
+				 ops_calc = opstemplates[pyoperator]['uint']
 				 funcdata['powtemplate'] = powtemplateunsigned % funcdata
 			elif arraycode in codegen_common.signedint:
 				 funcdata['copname'] = func['c_operator_i']
-				 ops_calc = opstemplates[func['pyoperator']]['int']
+				 ops_calc = opstemplates[pyoperator]['int']
 				 funcdata['powtemplate'] = powtemplatesigned % funcdata
 			else:
 				print('Error - Unsupported array code.', arraycode)
 
+
+			if hassimd and arraycode in funcshavesimd[pyoperator]:
+				simdfuncdata = {'simdwidth' : simdvalues[arraycode]['simdwidth'], 
+					'funclabel' : funcname,
+					'funcmodifier' : funcmodifier}
+				funcdata.update(dict([(x, y % simdfuncdata) for x,y in SIMD_call.items()]))
+				funcdata['nosimddecl'] = nosimddecl
+				funcdata['nosimdparam'] = nosimdparam
+			else:
+				funcdata.update(dict([(x, '') for x,y in SIMD_call.items()]))
+				funcdata['nosimddecl'] = ''
+				funcdata['nosimdparam'] = ''
 
 
 			f.write(ops_calc % funcdata)
@@ -3562,16 +4141,102 @@ for func in funclist:
 			funcdata['arraycode'] = arraycode
 			opscalltext.append(opscall % funcdata)
 
-		
+		if hassimd:
+			helpsimd1 = helpsimd1_template % {'funclabel' : funcname}
+			helpsimd2 = helpsimd2_template
+			getsimdparam = '1'
+		else:
+			helpsimd1 = ''
+			helpsimd2 = ''
+			getsimdparam = '0'
+
+
 		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(mathops_params % {'funclabel' : func['funcname'], 
+		f.write(mathops_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'supportedarrays' : supportedarrays,
 				'matherrors' : ', '.join(func['matherrors'].split(',')),
-				'opscall' : ''.join(opscalltext)})
+				'opscall' : ''.join(opscalltext),
+				'getsimdparam' : getsimdparam,
+				'helpsimd1' : helpsimd1,
+				'helpsimd2' : helpsimd2})
 
 
 # ==============================================================================
 
+
+
+# ==============================================================================
+
+# The original date of the SIMD C code.
+simdcodedate = '1-Apr-2019'
+simdfilename = '_simd_x86'
+
+# Get just the functions which support SIMD.
+simdlist = [x for x in funclist if x['c_code_template'] == 'template_mathop_simd']
+
+
+# This outputs the SIMD version.
+
+for func in simdlist:
+
+	outputlist = []
+
+	funcname = func['funcname']
+	pyoperator = func['pyoperator']
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+
+	# Output the generated code.
+	for arraycode in funcshavesimd[pyoperator]:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+
+		# The compare_ops symbols is the same for integer and floating point.
+		funcdata = {'funclabel' : funcname,
+					'arraytype' : arraytype, 
+					'funcmodifier' : arraytype.replace(' ', '_'),
+					'arraycode' : arraycode,
+					'arraytype' : codegen_common.arraytypes[arraycode],
+					}
+
+		# Get the correct operator.
+		if arraycode == 'f':
+			funcdata['copname'] = func['c_operator_f']
+		elif arraycode == 'd':
+			funcdata['copname'] = func['c_operator_d']
+		elif arraycode in codegen_common.intarrays:
+			 funcdata['copname'] = func['c_operator_i']
+		else:
+			print('Error - Unsupported array code.', arraycode)
+
+
+		# Start of function definition.
+		funcdata.update(simdvalues[arraycode])
+		outputlist.append(ops_simdsupport % funcdata)
+
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================
 

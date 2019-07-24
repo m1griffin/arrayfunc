@@ -35,7 +35,13 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "invert_simd_x86.h"
+#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -44,8 +50,237 @@
    data = The input data array.
    dataout = The output data array.
    hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
 */
-void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, bool hasoutputarray) {
+void invert_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, signed char *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_signed_char_2_simd(arraylen, data, dataout);
+		} else {
+			invert_signed_char_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_unsigned_char(Py_ssize_t arraylen, int nosimd, unsigned char *data, unsigned char *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_unsigned_char_2_simd(arraylen, data, dataout);
+		} else {
+			invert_unsigned_char_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data, signed short *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_signed_short_2_simd(arraylen, data, dataout);
+		} else {
+			invert_signed_short_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_unsigned_short(Py_ssize_t arraylen, int nosimd, unsigned short *data, unsigned short *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_unsigned_short_2_simd(arraylen, data, dataout);
+		} else {
+			invert_unsigned_short_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, signed int *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_signed_int_2_simd(arraylen, data, dataout);
+		} else {
+			invert_signed_int_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_unsigned_int(Py_ssize_t arraylen, int nosimd, unsigned int *data, unsigned int *dataout, bool hasoutputarray) {
+
+	// array index counter.
+	Py_ssize_t x;
+
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			invert_unsigned_int_2_simd(arraylen, data, dataout);
+		} else {
+			invert_unsigned_int_1_simd(arraylen, data);
+		}
+		return;
+	}
+#endif
+
+	if (hasoutputarray) {		
+		for(x = 0; x < arraylen; x++) {
+			dataout[x] = ~data[x];
+		}
+	} else {
+		for(x = 0; x < arraylen; x++) {
+			data[x] = ~data[x];
+		}
+	}
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+/* arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+   hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
+*/
+void invert_signed_long(Py_ssize_t arraylen, int nosimd, signed long *data, signed long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -69,8 +304,9 @@ void invert_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dat
    data = The input data array.
    dataout = The output data array.
    hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
 */
-void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char *dataout, bool hasoutputarray) {
+void invert_unsigned_long(Py_ssize_t arraylen, int nosimd, unsigned long *data, unsigned long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -94,8 +330,9 @@ void invert_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned cha
    data = The input data array.
    dataout = The output data array.
    hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
 */
-void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, bool hasoutputarray) {
+void invert_signed_long_long(Py_ssize_t arraylen, int nosimd, signed long long *data, signed long long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -119,158 +356,9 @@ void invert_signed_short(Py_ssize_t arraylen, signed short *data, signed short *
    data = The input data array.
    dataout = The output data array.
    hasoutputarray = If true, the output goes into the second array.
+   nosimd = If true, disable SIMD acceleration.
 */
-void invert_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
-			dataout[x] = ~data[x];
-		}
-	} else {
-		for(x = 0; x < arraylen; x++) {
-			data[x] = ~data[x];
-		}
-	}
-
-}
-
-
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   hasoutputarray = If true, the output goes into the second array.
-*/
-void invert_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long *dataout, bool hasoutputarray) {
+void invert_unsigned_long_long(Py_ssize_t arraylen, int nosimd, unsigned long long *data, unsigned long long *dataout, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -316,61 +404,61 @@ static PyObject *py_invert(PyObject *self, PyObject *args, PyObject *keywds) {
 
 		// signed_char
 		case 'b' : {
-			invert_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.hasoutputarray);
+			invert_signed_char(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_char
 		case 'B' : {
-			invert_unsigned_char(arraydata.arraylength, arraydata.array1.B, arraydata.array2.B, arraydata.hasoutputarray);
+			invert_unsigned_char(arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.array2.B, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_short
 		case 'h' : {
-			invert_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.hasoutputarray);
+			invert_signed_short(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_short
 		case 'H' : {
-			invert_unsigned_short(arraydata.arraylength, arraydata.array1.H, arraydata.array2.H, arraydata.hasoutputarray);
+			invert_unsigned_short(arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.array2.H, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_int
 		case 'i' : {
-			invert_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.hasoutputarray);
+			invert_signed_int(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_int
 		case 'I' : {
-			invert_unsigned_int(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.hasoutputarray);
+			invert_unsigned_int(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long
 		case 'l' : {
-			invert_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.hasoutputarray);
+			invert_signed_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.array2.l, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long
 		case 'L' : {
-			invert_unsigned_long(arraydata.arraylength, arraydata.array1.L, arraydata.array2.L, arraydata.hasoutputarray);
+			invert_unsigned_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.array2.L, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long_long
 		case 'q' : {
-			invert_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.hasoutputarray);
+			invert_signed_long_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.array2.q, arraydata.hasoutputarray);
 			break;
 		}
 
 		// unsigned_long_long
 		case 'Q' : {
-			invert_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, arraydata.array2.Q, arraydata.hasoutputarray);
+			invert_unsigned_long_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.array2.Q, arraydata.hasoutputarray);
 			break;
 		}
 
@@ -414,6 +502,7 @@ Call formats: \n\
     invert(array1) \n\
     invert(array1, outparray) \n\
     invert(array1, maxlen=y) \n\
+    invert(array1, nosimd=False) \n\
  \n\
 * array1 - The first input data array to be examined. If no output  \n\
   array is provided the results will overwrite the input data.  \n\
@@ -422,6 +511,8 @@ Call formats: \n\
   positive integer. If a zero or negative length, or a value which is  \n\
   greater than the actual length of the array is specified, this  \n\
   parameter is ignored.  \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

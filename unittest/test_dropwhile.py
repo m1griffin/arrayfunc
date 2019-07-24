@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     18-Jun-2014.
-# Ver:      19-Jun-2018.
+# Ver:      06-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -59,21 +59,14 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'b'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -83,32 +76,25 @@ class dropwhile_operator_b(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.b_min
-		self.Maxval = arrayfunc.arraylimits.b_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -122,165 +108,145 @@ class dropwhile_operator_b(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code b.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code b.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code b.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code b.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code b.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code b.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code b.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code b.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code b.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code b.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code b.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code b.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code b.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code b.
+		"""Test array limits  - Array code b.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code b.
+		"""Test array limits  - Array code b.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_b(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'b'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -335,7 +301,7 @@ class dropwhile_operator_b(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code b.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -350,7 +316,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -362,7 +328,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -374,7 +340,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code b.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -382,7 +348,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -394,7 +360,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -406,7 +372,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -418,7 +384,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code b.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -426,7 +392,7 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code b.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -446,12 +412,36 @@ class dropwhile_operator_b(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code b.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_b(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'b'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.b_min
+		self.Maxval = arrayfunc.arraylimits.b_max
 
 
 	########################################################
@@ -478,7 +468,9 @@ class dropwhile_operator_b(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_B(unittest.TestCase):
@@ -490,21 +482,14 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'B'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -514,32 +499,25 @@ class dropwhile_operator_B(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.B_min
-		self.Maxval = arrayfunc.arraylimits.B_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -553,165 +531,145 @@ class dropwhile_operator_B(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code B.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code B.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code B.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code B.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code B.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code B.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code B.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code B.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code B.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code B.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code B.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code B.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code B.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code B.
+		"""Test array limits  - Array code B.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code B.
+		"""Test array limits  - Array code B.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_B(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'B'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -766,7 +724,7 @@ class dropwhile_operator_B(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code B.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -781,7 +739,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -793,7 +751,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -805,7 +763,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code B.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -813,7 +771,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -825,7 +783,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -837,7 +795,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -849,7 +807,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code B.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -857,7 +815,7 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code B.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -877,12 +835,36 @@ class dropwhile_operator_B(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code B.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_B(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'B'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.B_min
+		self.Maxval = arrayfunc.arraylimits.B_max
 
 
 	########################################################
@@ -909,7 +891,9 @@ class dropwhile_operator_B(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_h(unittest.TestCase):
@@ -921,21 +905,14 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'h'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -945,32 +922,25 @@ class dropwhile_operator_h(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.h_min
-		self.Maxval = arrayfunc.arraylimits.h_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -984,165 +954,145 @@ class dropwhile_operator_h(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code h.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code h.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code h.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code h.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code h.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code h.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code h.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code h.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code h.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code h.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code h.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code h.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code h.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code h.
+		"""Test array limits  - Array code h.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code h.
+		"""Test array limits  - Array code h.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_h(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'h'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -1197,7 +1147,7 @@ class dropwhile_operator_h(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code h.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -1212,7 +1162,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1224,7 +1174,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1236,7 +1186,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code h.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -1244,7 +1194,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1256,7 +1206,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1268,7 +1218,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1280,7 +1230,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code h.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -1288,7 +1238,7 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code h.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -1308,12 +1258,36 @@ class dropwhile_operator_h(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code h.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_h(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'h'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.h_min
+		self.Maxval = arrayfunc.arraylimits.h_max
 
 
 	########################################################
@@ -1340,7 +1314,9 @@ class dropwhile_operator_h(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_H(unittest.TestCase):
@@ -1352,21 +1328,14 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'H'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -1376,32 +1345,25 @@ class dropwhile_operator_H(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.H_min
-		self.Maxval = arrayfunc.arraylimits.H_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -1415,165 +1377,145 @@ class dropwhile_operator_H(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code H.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code H.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code H.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code H.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code H.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code H.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code H.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code H.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code H.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code H.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code H.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code H.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code H.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code H.
+		"""Test array limits  - Array code H.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code H.
+		"""Test array limits  - Array code H.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_H(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'H'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -1628,7 +1570,7 @@ class dropwhile_operator_H(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code H.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -1643,7 +1585,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1655,7 +1597,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1667,7 +1609,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code H.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -1675,7 +1617,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1687,7 +1629,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1699,7 +1641,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -1711,7 +1653,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code H.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -1719,7 +1661,7 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code H.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -1739,12 +1681,36 @@ class dropwhile_operator_H(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code H.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_H(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'H'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.H_min
+		self.Maxval = arrayfunc.arraylimits.H_max
 
 
 	########################################################
@@ -1771,7 +1737,9 @@ class dropwhile_operator_H(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_i(unittest.TestCase):
@@ -1783,21 +1751,14 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'i'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -1807,32 +1768,25 @@ class dropwhile_operator_i(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.i_min
-		self.Maxval = arrayfunc.arraylimits.i_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -1846,165 +1800,145 @@ class dropwhile_operator_i(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code i.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code i.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code i.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code i.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code i.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code i.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code i.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code i.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code i.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code i.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code i.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code i.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code i.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code i.
+		"""Test array limits  - Array code i.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code i.
+		"""Test array limits  - Array code i.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_i(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'i'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -2059,7 +1993,7 @@ class dropwhile_operator_i(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code i.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -2074,7 +2008,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2086,7 +2020,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2098,7 +2032,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code i.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -2106,7 +2040,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2118,7 +2052,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2130,7 +2064,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2142,7 +2076,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code i.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -2150,7 +2084,7 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code i.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -2170,12 +2104,36 @@ class dropwhile_operator_i(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code i.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_i(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'i'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.i_min
+		self.Maxval = arrayfunc.arraylimits.i_max
 
 
 	########################################################
@@ -2202,7 +2160,9 @@ class dropwhile_operator_i(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_I(unittest.TestCase):
@@ -2214,21 +2174,14 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'I'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -2238,32 +2191,25 @@ class dropwhile_operator_I(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.I_min
-		self.Maxval = arrayfunc.arraylimits.I_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -2277,165 +2223,145 @@ class dropwhile_operator_I(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code I.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code I.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code I.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code I.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code I.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code I.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code I.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code I.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code I.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code I.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code I.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code I.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code I.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code I.
+		"""Test array limits  - Array code I.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code I.
+		"""Test array limits  - Array code I.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_I(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'I'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -2490,7 +2416,7 @@ class dropwhile_operator_I(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code I.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -2505,7 +2431,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2517,7 +2443,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2529,7 +2455,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code I.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -2537,7 +2463,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2549,7 +2475,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2561,7 +2487,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2573,7 +2499,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code I.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -2581,7 +2507,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code I.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -2601,7 +2527,7 @@ class dropwhile_operator_I(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code I.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
@@ -2609,10 +2535,31 @@ class dropwhile_operator_I(unittest.TestCase):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
 
 
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_I(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
 	########################################################
-	# Whether this test can be peformed depends on the integer word sizes in for this architecture.
-	@unittest.skipIf(arrayfunc.arraylimits.I_max == arrayfunc.arraylimits.L_max, 
-		'Skip test if I integer does not have overflow checks.')
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'I'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.I_min
+		self.Maxval = arrayfunc.arraylimits.I_max
+
+
+	########################################################
 	def test_overflow_min(self):
 		"""Test parameter overflow min  - Array code I.
 		"""
@@ -2621,9 +2568,6 @@ class dropwhile_operator_I(unittest.TestCase):
 
 
 	########################################################
-	# Whether this test can be peformed depends on the integer word sizes in for this architecture.
-	@unittest.skipIf(arrayfunc.arraylimits.I_max == arrayfunc.arraylimits.L_max, 
-		'Skip test if I integer does not have overflow checks.')
 	def test_overflow_max(self):
 		"""Test parameter overflow max  - Array code I.
 		"""
@@ -2639,7 +2583,9 @@ class dropwhile_operator_I(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_l(unittest.TestCase):
@@ -2651,21 +2597,14 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'l'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -2675,32 +2614,25 @@ class dropwhile_operator_l(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.l_min
-		self.Maxval = arrayfunc.arraylimits.l_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -2714,165 +2646,145 @@ class dropwhile_operator_l(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code l.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code l.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code l.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code l.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code l.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code l.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code l.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code l.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code l.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code l.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code l.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code l.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code l.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code l.
+		"""Test array limits  - Array code l.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code l.
+		"""Test array limits  - Array code l.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_l(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'l'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -2927,7 +2839,7 @@ class dropwhile_operator_l(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code l.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -2942,7 +2854,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2954,7 +2866,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2966,7 +2878,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code l.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -2974,7 +2886,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2986,7 +2898,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -2998,7 +2910,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3010,7 +2922,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code l.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -3018,7 +2930,7 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code l.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -3038,12 +2950,36 @@ class dropwhile_operator_l(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code l.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_l(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'l'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.l_min
+		self.Maxval = arrayfunc.arraylimits.l_max
 
 
 	########################################################
@@ -3070,7 +3006,9 @@ class dropwhile_operator_l(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_L(unittest.TestCase):
@@ -3082,21 +3020,14 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'L'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -3106,32 +3037,25 @@ class dropwhile_operator_L(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.L_min
-		self.Maxval = arrayfunc.arraylimits.L_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -3145,165 +3069,145 @@ class dropwhile_operator_L(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code L.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code L.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code L.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code L.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code L.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code L.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code L.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code L.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code L.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code L.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code L.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code L.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code L.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code L.
+		"""Test array limits  - Array code L.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code L.
+		"""Test array limits  - Array code L.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_L(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'L'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -3358,7 +3262,7 @@ class dropwhile_operator_L(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code L.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -3373,7 +3277,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3385,7 +3289,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3397,7 +3301,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code L.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -3405,7 +3309,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3417,7 +3321,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3429,7 +3333,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3441,7 +3345,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code L.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -3449,7 +3353,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code L.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -3469,7 +3373,7 @@ class dropwhile_operator_L(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code L.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
@@ -3477,7 +3381,9 @@ class dropwhile_operator_L(unittest.TestCase):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_q(unittest.TestCase):
@@ -3489,21 +3395,14 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'q'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -3513,32 +3412,25 @@ class dropwhile_operator_q(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.q_min
-		self.Maxval = arrayfunc.arraylimits.q_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -3552,165 +3444,145 @@ class dropwhile_operator_q(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code q.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code q.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code q.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code q.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code q.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code q.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code q.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code q.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code q.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code q.
+		"""Test array limits  - Array code q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code q.
+		"""Test array limits  - Array code q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_q(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'q'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -3765,7 +3637,7 @@ class dropwhile_operator_q(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code q.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -3780,7 +3652,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3792,7 +3664,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3804,7 +3676,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code q.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -3812,7 +3684,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3824,7 +3696,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3836,7 +3708,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -3848,7 +3720,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code q.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -3856,7 +3728,7 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code q.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -3876,12 +3748,36 @@ class dropwhile_operator_q(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_q(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'q'
+		self.zerofill = 0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.q_min
+		self.Maxval = arrayfunc.arraylimits.q_max
 
 
 	########################################################
@@ -3908,7 +3804,9 @@ class dropwhile_operator_q(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_Q(unittest.TestCase):
@@ -3920,21 +3818,14 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'Q'
-		self.TestData = [int(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [int(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = int(100)
-		self.zerofill = int(0)
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 95, 103]
+		self.zerofill = 0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -3944,32 +3835,25 @@ class dropwhile_operator_Q(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.Q_min
-		self.Maxval = arrayfunc.arraylimits.Q_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -3983,165 +3867,145 @@ class dropwhile_operator_Q(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code Q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code Q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code Q.
 		"""
-		param = int(100)
+		param = 96
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code Q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code Q.
 		"""
-		param = int(97)
+		param = 96
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code Q.
-		"""
-		param = int(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code Q.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code Q.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code Q.
 		"""
-		param = int(102)
+		param = 98
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code Q.
-		"""
-		param = int(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code Q.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code Q.
 		"""
-		param = int(99)
+		param = 98
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code Q.
-		"""
-		param = int(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code Q.
+		"""Test array limits  - Array code Q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code Q.
+		"""Test array limits  - Array code Q.
 		"""
-		param = int(101)
+		param = 97
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_Q(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'Q'
+		self.TestData = [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]
+		self.zerofill = 0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -4196,7 +4060,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code Q.
 		"""
-		param = int(101)
+		param = 101
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -4211,7 +4075,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4223,7 +4087,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4235,7 +4099,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code Q.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100)
 
 
 	########################################################
@@ -4243,7 +4107,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, int(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4255,7 +4119,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4267,7 +4131,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, int(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4279,7 +4143,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code Q.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, int(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100)
 
 
 	########################################################
@@ -4287,7 +4151,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code Q.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, int(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100)
 
 
 	########################################################
@@ -4307,7 +4171,7 @@ class dropwhile_operator_Q(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code Q.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.5)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
@@ -4315,7 +4179,9 @@ class dropwhile_operator_Q(unittest.TestCase):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_f(unittest.TestCase):
@@ -4327,21 +4193,14 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'f'
-		self.TestData = [float(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [float(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = float(100)
-		self.zerofill = float(0)
+		self.TestData = [97.0, 97.0, 97.0, 98.0, 99.0, 101.0, 101.0, 102.0, 95.0, 103.0]
+		self.zerofill = 0.0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -4351,32 +4210,25 @@ class dropwhile_operator_f(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.f_min
-		self.Maxval = arrayfunc.arraylimits.f_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -4390,165 +4242,145 @@ class dropwhile_operator_f(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code f.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code f.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code f.
 		"""
-		param = float(100)
+		param = 96.0
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code f.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code f.
 		"""
-		param = float(97)
+		param = 96.0
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code f.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code f.
 		"""
-		param = float(102)
+		param = 98.0
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code f.
-		"""
-		param = float(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code f.
 		"""
-		param = float(102)
+		param = 98.0
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code f.
-		"""
-		param = float(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code f.
-		"""
-		param = float(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code f.
 		"""
-		param = float(99)
+		param = 98.0
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code f.
-		"""
-		param = float(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code f.
+		"""Test array limits  - Array code f.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code f.
+		"""Test array limits  - Array code f.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_f(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'f'
+		self.TestData = [97.0, 97.0, 97.0, 98.0, 99.0, 101.0, 101.0, 102.0, 102.0, 103.0]
+		self.zerofill = 0.0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -4603,7 +4435,7 @@ class dropwhile_operator_f(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code f.
 		"""
-		param = float(101)
+		param = 101.0
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -4618,7 +4450,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4630,7 +4462,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4642,7 +4474,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code f.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, float(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100.0)
 
 
 	########################################################
@@ -4650,7 +4482,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, float(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4662,7 +4494,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, float(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4674,7 +4506,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, float(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -4686,7 +4518,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code f.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, float(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100.0)
 
 
 	########################################################
@@ -4694,7 +4526,7 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code f.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, float(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100.0)
 
 
 	########################################################
@@ -4714,12 +4546,36 @@ class dropwhile_operator_f(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
+
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_paramovfl_f(unittest.TestCase):
+	"""Test for testing parameter overflow.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'f'
+		self.zerofill = 0.0
+
+		# These values are used for testing parameter overflows.
+		self.dataovfl = array.array(self.TypeCode, range(97, 107))
+		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
+
+		self.MinVal = arrayfunc.arraylimits.f_min
+		self.Maxval = arrayfunc.arraylimits.f_max
 
 
 	########################################################
@@ -4746,7 +4602,9 @@ class dropwhile_operator_f(unittest.TestCase):
 		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
 
 
+
 ##############################################################################
+
 
 ##############################################################################
 class dropwhile_operator_d(unittest.TestCase):
@@ -4758,21 +4616,14 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Initialise.
 		"""
 		self.TypeCode = 'd'
-		self.TestData = [float(x) for x in [97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.TestData2 = [float(x) for x in [103, 102, 101, 100, 97, 97, 97, 98, 99, 101, 101, 102, 102, 103]]
-		self.constfill = float(100)
-		self.zerofill = float(0)
+		self.TestData = [97.0, 97.0, 97.0, 98.0, 99.0, 101.0, 101.0, 102.0, 95.0, 103.0]
+		self.zerofill = 0.0
 
 		self.data = array.array(self.TypeCode, self.TestData)
-		self.data2 = array.array(self.TypeCode, self.TestData2)
-		self.data3 = array.array(self.TypeCode, itertools.repeat(self.constfill, len(self.TestData)))
-
 		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
-		self.dataout2 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data2)))
-		self.dataout3 = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data3)))
 
 
-		# These are the compare operators to use when testing the dropwhile function.
+		# These are the compare operators to use when testing the function.
 		self.opvals = {
 			'<' : operator.lt,
 			'<=' : operator.le,
@@ -4782,32 +4633,25 @@ class dropwhile_operator_d(unittest.TestCase):
 			'>' : operator.gt
 			}
 
-		# These values are used for testing parameter overflows.
-		self.dataovfl = array.array(self.TypeCode, [int(x) for x in range(97, 107)])
-		self.dataoutovfl = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.dataovfl)))
-
-		self.MinVal = arrayfunc.arraylimits.d_min
-		self.Maxval = arrayfunc.arraylimits.d_max
-
-
-		# This is used in testing parameters.
-		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
 	def DropWhile(self, op, data, param, maxlen=0):
 		"""Emulate the test function.
 		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
 		# Get the type of compare operation we want, and convert it into a
 		# function we can use as a predicate.
 		opfunc = self.opvals[op]
 		opval = lambda x: opfunc(x, param)
 
-		# Peform the dropwhile operation.
-		result = list(itertools.dropwhile(opval, data))
-		# If the limit parameter is used, trim accordingly.
-		if maxlen > 0:
-			result = result[:maxlen]
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
 		copiedlength = len(result)
 		
 		# Pad out with the same fill used for the output array, and return
@@ -4821,165 +4665,145 @@ class dropwhile_operator_d(unittest.TestCase):
 	def test_operator_eq_01(self):
 		"""Test eq  - Array code d.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('==', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_eq_02(self):
-		"""Test eq  - Array code d.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('==', self.data, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gt_01(self):
 		"""Test gt  - Array code d.
 		"""
-		param = float(100)
+		param = 96.0
 		result = arrayfunc.dropwhile('>', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gt_02(self):
-		"""Test gt  - Array code d.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('>', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_gte_01(self):
 		"""Test gte  - Array code d.
 		"""
-		param = float(97)
+		param = 96.0
 		result = arrayfunc.dropwhile('>=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('>=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_gte_02(self):
-		"""Test gte  - Array code d.
-		"""
-		param = float(97)
-		result = arrayfunc.dropwhile('>=', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('>=', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lt_01(self):
 		"""Test lt  - Array code d.
 		"""
-		param = float(102)
+		param = 98.0
 		result = arrayfunc.dropwhile('<', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
 
-
-	########################################################
-	def test_operator_lt_02(self):
-		"""Test lt  - Array code d.
-		"""
-		param = float(104)
-		result = arrayfunc.dropwhile('<', self.data2, self.dataout2, param)
-		expected, explength = self.DropWhile('<', self.data2, param)
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout2), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lte_01(self):
 		"""Test lte  - Array code d.
 		"""
-		param = float(102)
+		param = 98.0
 		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('<=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_02(self):
-		"""Test lte  - Array code d.
-		"""
-		param = float(104)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
-	def test_operator_lte_03(self):
-		"""Test lte  - Array code d.
-		"""
-		param = float(110)
-		result = arrayfunc.dropwhile('<=', self.data, self.dataout, param)
-		expected, explength = self.DropWhile('<=', self.data, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_ne_01(self):
 		"""Test ne  - Array code d.
 		"""
-		param = float(99)
+		param = 98.0
 		result = arrayfunc.dropwhile('!=', self.data, self.dataout, param)
 		expected, explength = self.DropWhile('!=', self.data, param)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 		
 
 	########################################################
-	def test_operator_ne_02(self):
-		"""Test ne  - Array code d.
-		"""
-		param = float(110)
-		result = arrayfunc.dropwhile('!=', self.data3, self.dataout3, param)
-		expected, explength = self.DropWhile('!=', self.data3, param)
-		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
-
-
-	########################################################
 	def test_operator_lim_01(self):
-		"""Test arraly limits  - Array code d.
+		"""Test array limits  - Array code d.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=len(self.data)//2)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=len(self.data)//2)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
 	def test_operator_lim_02(self):
-		"""Test arraly limits  - Array code d.
+		"""Test array limits  - Array code d.
 		"""
-		param = float(101)
+		param = 97.0
 		result = arrayfunc.dropwhile('==', self.data, self.dataout, param, maxlen=-1)
 		expected, explength = self.DropWhile('==', self.data, param, maxlen=-1)
+
+		# Check the test to make sure it is working as intended.
+		self.assertTrue((result > 0) and (result < len(self.data)))
 		self.assertEqual(result, explength)
-		self.assertEqual(list(self.dataout), expected)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+##############################################################################
+class dropwhile_params_d(unittest.TestCase):
+	"""Test for basic parameter function.
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.TypeCode = 'd'
+		self.TestData = [97.0, 97.0, 97.0, 98.0, 99.0, 101.0, 101.0, 102.0, 102.0, 103.0]
+		self.zerofill = 0.0
+
+		self.data = array.array(self.TypeCode, self.TestData)
+
+		self.dataout = array.array(self.TypeCode, itertools.repeat(self.zerofill, len(self.data)))
+
+
+		# This is used in testing parameters.
+		self.dataempty = array.array(self.TypeCode)
 
 
 	########################################################
@@ -5034,7 +4858,7 @@ class dropwhile_operator_d(unittest.TestCase):
 	def test_param_six_params(self):
 		"""Test exception when too many (six) parameters passed  - Array code d.
 		"""
-		param = float(101)
+		param = 101.0
 		with self.assertRaises(TypeError):
 			result = arrayfunc.dropwhile('==', self.data, self.dataout, param, 3, maxlen=2)
 
@@ -5049,7 +4873,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid keyword parameters passed  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100), xx=2)
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, xx=2)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -5061,7 +4885,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid keyword parameter type passed  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float(100), maxlen='x')
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen='x')
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -5073,7 +4897,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid first parameter value  - Array code d.
 		"""
 		with self.assertRaises(ValueError):
-			result = arrayfunc.dropwhile('!', self.data, self.dataout, float(100))
+			result = arrayfunc.dropwhile('!', self.data, self.dataout, 100.0)
 
 
 	########################################################
@@ -5081,7 +4905,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid first parameter type  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile(62, self.data, self.dataout, float(100))
+			result = arrayfunc.dropwhile(62, self.data, self.dataout, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -5093,7 +4917,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid array input parameter value  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', 99, self.dataout, float(100))
+			result = arrayfunc.dropwhile('==', 99, self.dataout, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -5105,7 +4929,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid array output parameter type  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, 99, float(100))
+			result = arrayfunc.dropwhile('==', self.data, 99, 100.0)
 
 		# Check that the exception raised corresponds to the native Python behaviour.
 		with self.assertRaises(TypeError):
@@ -5117,7 +4941,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with empty input array parameter type  - Array code d.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, float(100))
+			result = arrayfunc.dropwhile('==', self.dataempty, self.dataout, 100.0)
 
 
 	########################################################
@@ -5125,7 +4949,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with empty output array parameter type  - Array code d.
 		"""
 		with self.assertRaises(IndexError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataempty, float(100))
+			result = arrayfunc.dropwhile('==', self.data, self.dataempty, 100.0)
 
 
 	########################################################
@@ -5145,7 +4969,7 @@ class dropwhile_operator_d(unittest.TestCase):
 		"""Test exception with invalid compare parameter type  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, int(100.5))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100)
 
 
 		# Check that the exception raised corresponds to the native Python behaviour.
@@ -5153,34 +4977,12 @@ class dropwhile_operator_d(unittest.TestCase):
 			result = itertools.dropwhile(lambda x: x < 1, 99)
 
 
-	########################################################
-	def test_overflow_min(self):
-		"""Test parameter overflow min  - Array code d.
-		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.MinVal * 1.1)
-
-
-	########################################################
-	def test_overflow_max(self):
-		"""Test parameter overflow max  - Array code d.
-		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval * 1.1)
-
-
-	########################################################
-	def test_overflow_ok(self):
-		"""Test no overflow. These should not overflow  - Array code d.
-		"""
-		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.MinVal)
-		result = arrayfunc.dropwhile('==', self.dataovfl, self.dataoutovfl, self.Maxval)
-
 
 ##############################################################################
 
+
 ##############################################################################
-class dropwhile_nan_f(unittest.TestCase):
+class dropwhile_nonfinite_f(unittest.TestCase):
 	"""Test for nan, inf, -inf.
 	"""
 
@@ -5190,60 +4992,113 @@ class dropwhile_nan_f(unittest.TestCase):
 		"""
 		self.data = array.array('f', [100.0] * 10)
 		self.dataout = array.array('f', itertools.repeat(0.0, len(self.data)))
+		self.zerofill = 0.0
+
+		# These are the compare operators to use when testing the function.
+		self.opvals = {
+			'<' : operator.lt,
+			'<=' : operator.le,
+			'==' : operator.eq,
+			'!=' : operator.ne,
+			'>=' : operator.ge,
+			'>' : operator.gt
+			}
 
 
 	########################################################
-	def test_nan_01(self):
+	def DropWhile(self, op, data, param, maxlen=0):
+		"""Emulate the test function.
+		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
+		# Get the type of compare operation we want, and convert it into a
+		# function we can use as a predicate.
+		opfunc = self.opvals[op]
+		opval = lambda x: opfunc(x, param)
+
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
+		copiedlength = len(result)
+		
+		# Pad out with the same fill used for the output array, and return
+		# the number of items copied.
+		trimmed = result + list(itertools.repeat(self.zerofill, len(data) - len(result)))
+
+		return trimmed, copiedlength
+
+
+	########################################################
+	def test_nonfinite_01(self):
 		"""Test for param of nan  - Array code f.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('nan'))
+		param = math.nan
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_02(self):
+	def test_nonfinite_02(self):
 		"""Test for param of inf  - Array code f.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('inf'))
+		param = math.inf
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_03(self):
+	def test_nonfinite_03(self):
 		"""Test for param of -inf  - Array code f.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('-inf'))
+		param = -math.inf
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_04(self):
-		"""Test for lim of nan  - Array code f.
+	def test_nonfinite_04(self):
+		"""Test for maxlen of nan  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('nan'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=math.nan)
 
 
 	########################################################
-	def test_nan_05(self):
-		"""Test for lim of inf  - Array code f.
+	def test_nonfinite_05(self):
+		"""Test for maxlen of inf  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('inf'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=math.inf)
 
 
 	########################################################
-	def test_nan_06(self):
-		"""Test for lim of -inf  - Array code f.
+	def test_nonfinite_06(self):
+		"""Test for maxlen of -inf  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('-inf'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=-math.inf)
 
 
 ##############################################################################
 
+
 ##############################################################################
-class dropwhile_nan_d(unittest.TestCase):
+class dropwhile_nonfinite_d(unittest.TestCase):
 	"""Test for nan, inf, -inf.
 	"""
 
@@ -5253,57 +5108,110 @@ class dropwhile_nan_d(unittest.TestCase):
 		"""
 		self.data = array.array('d', [100.0] * 10)
 		self.dataout = array.array('d', itertools.repeat(0.0, len(self.data)))
+		self.zerofill = 0.0
+
+		# These are the compare operators to use when testing the function.
+		self.opvals = {
+			'<' : operator.lt,
+			'<=' : operator.le,
+			'==' : operator.eq,
+			'!=' : operator.ne,
+			'>=' : operator.ge,
+			'>' : operator.gt
+			}
 
 
 	########################################################
-	def test_nan_01(self):
+	def DropWhile(self, op, data, param, maxlen=0):
+		"""Emulate the test function.
+		"""
+		# If the maxlen parameter is used, trim the source data accordingly.
+		if maxlen > 0:
+			testdata = data[:maxlen]
+		else:
+			testdata = data
+
+		# Get the type of compare operation we want, and convert it into a
+		# function we can use as a predicate.
+		opfunc = self.opvals[op]
+		opval = lambda x: opfunc(x, param)
+
+		# Peform the operation.
+		result = list(itertools.dropwhile(opval, testdata))
+		copiedlength = len(result)
+		
+		# Pad out with the same fill used for the output array, and return
+		# the number of items copied.
+		trimmed = result + list(itertools.repeat(self.zerofill, len(data) - len(result)))
+
+		return trimmed, copiedlength
+
+
+	########################################################
+	def test_nonfinite_01(self):
 		"""Test for param of nan  - Array code d.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('nan'))
+		param = math.nan
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_02(self):
+	def test_nonfinite_02(self):
 		"""Test for param of inf  - Array code d.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('inf'))
+		param = math.inf
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_03(self):
+	def test_nonfinite_03(self):
 		"""Test for param of -inf  - Array code d.
 		"""
-		with self.assertRaises(OverflowError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, float('-inf'))
+		param = -math.inf
+		result = arrayfunc.dropwhile('==', self.data, self.dataout, param)
+		expected, explength = self.DropWhile('==', self.data, param)
+
+		self.assertEqual(result, explength)
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_nan_04(self):
-		"""Test for lim of nan  - Array code d.
+	def test_nonfinite_04(self):
+		"""Test for maxlen of nan  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('nan'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=math.nan)
 
 
 	########################################################
-	def test_nan_05(self):
-		"""Test for lim of inf  - Array code d.
+	def test_nonfinite_05(self):
+		"""Test for maxlen of inf  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('inf'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=math.inf)
 
 
 	########################################################
-	def test_nan_06(self):
-		"""Test for lim of -inf  - Array code d.
+	def test_nonfinite_06(self):
+		"""Test for maxlen of -inf  - Array code d.
 		"""
 		with self.assertRaises(TypeError):
-			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=float('-inf'))
+			result = arrayfunc.dropwhile('==', self.data, self.dataout, 100.0, maxlen=-math.inf)
 
 
 ##############################################################################
+
 
 ##############################################################################
 if __name__ == '__main__':

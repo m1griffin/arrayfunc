@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     14-Feb-2018.
-# Ver:      19-Jun-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
  
 
 ##############################################################################
-class gt_general_b(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_b(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -62,21 +62,37 @@ class gt_general_b(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('b', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('b', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('b', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.data2fail = array.array('b', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code b.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -87,12 +103,12 @@ class gt_general_b(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code b.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -103,14 +119,14 @@ class gt_general_b(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code b.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -121,12 +137,12 @@ class gt_general_b(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code b.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -137,12 +153,12 @@ class gt_general_b(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code b.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -153,14 +169,14 @@ class gt_general_b(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -172,7 +188,7 @@ class gt_general_b(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code b.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -184,7 +200,7 @@ class gt_general_b(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code b.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -199,11 +215,472 @@ class gt_general_b(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_b(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.data2fail = array.array('b', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code b.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code b.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code b.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code b.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_b(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.data2fail = array.array('b', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code b.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code b.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code b.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code b.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_b(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('b', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('b', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('b', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('b', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code b.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code b.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code b.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code b.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -401,6 +878,21 @@ class gt_param_errors_opt_b(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code b.
 		"""
@@ -431,6 +923,21 @@ class gt_param_errors_opt_b(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code b.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code b.
 		"""
@@ -456,12 +963,25 @@ class gt_param_errors_opt_b(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code b.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_B(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_B(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -472,21 +992,37 @@ class gt_general_B(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('B', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('B', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('B', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.data2fail = array.array('B', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code B.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -497,12 +1033,12 @@ class gt_general_B(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code B.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -513,14 +1049,14 @@ class gt_general_B(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code B.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -531,12 +1067,12 @@ class gt_general_B(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code B.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -547,12 +1083,12 @@ class gt_general_B(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code B.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -563,14 +1099,14 @@ class gt_general_B(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -582,7 +1118,7 @@ class gt_general_B(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code B.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -594,7 +1130,7 @@ class gt_general_B(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code B.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -609,11 +1145,472 @@ class gt_general_B(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_B(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.data2fail = array.array('B', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code B.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code B.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code B.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code B.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_B(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.data2fail = array.array('B', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code B.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code B.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code B.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code B.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_B(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('B', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('B', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('B', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('B', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code B.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code B.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code B.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code B.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -811,6 +1808,21 @@ class gt_param_errors_opt_B(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code B.
 		"""
@@ -841,6 +1853,21 @@ class gt_param_errors_opt_B(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code B.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code B.
 		"""
@@ -866,12 +1893,25 @@ class gt_param_errors_opt_B(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code B.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_h(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_h(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -882,21 +1922,37 @@ class gt_general_h(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('h', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('h', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('h', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.data2fail = array.array('h', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code h.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -907,12 +1963,12 @@ class gt_general_h(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code h.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -923,14 +1979,14 @@ class gt_general_h(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code h.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -941,12 +1997,12 @@ class gt_general_h(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code h.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -957,12 +2013,12 @@ class gt_general_h(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code h.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -973,14 +2029,14 @@ class gt_general_h(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -992,7 +2048,7 @@ class gt_general_h(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code h.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -1004,7 +2060,7 @@ class gt_general_h(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code h.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -1019,11 +2075,472 @@ class gt_general_h(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_h(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.data2fail = array.array('h', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code h.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code h.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code h.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code h.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_h(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.data2fail = array.array('h', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code h.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code h.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code h.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code h.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_h(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('h', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('h', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('h', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('h', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code h.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code h.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code h.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code h.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -1221,6 +2738,21 @@ class gt_param_errors_opt_h(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code h.
 		"""
@@ -1251,6 +2783,21 @@ class gt_param_errors_opt_h(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code h.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code h.
 		"""
@@ -1276,12 +2823,25 @@ class gt_param_errors_opt_h(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code h.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_H(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_H(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -1292,21 +2852,37 @@ class gt_general_H(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('H', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('H', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('H', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.data2fail = array.array('H', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code H.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1317,12 +2893,12 @@ class gt_general_H(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code H.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -1333,14 +2909,14 @@ class gt_general_H(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code H.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1351,12 +2927,12 @@ class gt_general_H(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code H.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1367,12 +2943,12 @@ class gt_general_H(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code H.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -1383,14 +2959,14 @@ class gt_general_H(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1402,7 +2978,7 @@ class gt_general_H(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code H.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -1414,7 +2990,7 @@ class gt_general_H(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code H.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -1429,11 +3005,472 @@ class gt_general_H(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_H(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.data2fail = array.array('H', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code H.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code H.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code H.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code H.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_H(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.data2fail = array.array('H', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code H.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code H.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code H.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code H.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_H(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('H', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('H', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('H', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('H', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code H.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code H.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code H.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code H.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -1631,6 +3668,21 @@ class gt_param_errors_opt_H(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code H.
 		"""
@@ -1661,6 +3713,21 @@ class gt_param_errors_opt_H(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code H.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code H.
 		"""
@@ -1686,12 +3753,25 @@ class gt_param_errors_opt_H(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code H.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_i(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_i(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -1702,21 +3782,37 @@ class gt_general_i(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('i', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('i', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('i', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.data2fail = array.array('i', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code i.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1727,12 +3823,12 @@ class gt_general_i(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code i.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -1743,14 +3839,14 @@ class gt_general_i(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code i.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1761,12 +3857,12 @@ class gt_general_i(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code i.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1777,12 +3873,12 @@ class gt_general_i(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code i.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -1793,14 +3889,14 @@ class gt_general_i(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -1812,7 +3908,7 @@ class gt_general_i(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code i.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -1824,7 +3920,7 @@ class gt_general_i(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code i.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -1839,11 +3935,472 @@ class gt_general_i(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_i(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.data2fail = array.array('i', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code i.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code i.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code i.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code i.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_i(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.data2fail = array.array('i', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code i.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code i.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code i.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code i.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_i(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('i', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('i', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('i', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('i', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code i.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code i.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code i.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code i.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -2041,6 +4598,21 @@ class gt_param_errors_opt_i(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code i.
 		"""
@@ -2071,6 +4643,21 @@ class gt_param_errors_opt_i(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code i.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code i.
 		"""
@@ -2096,12 +4683,25 @@ class gt_param_errors_opt_i(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code i.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_I(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_I(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -2112,21 +4712,37 @@ class gt_general_I(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('I', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('I', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('I', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.data2fail = array.array('I', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code I.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2137,12 +4753,12 @@ class gt_general_I(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code I.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -2153,14 +4769,14 @@ class gt_general_I(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code I.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2171,12 +4787,12 @@ class gt_general_I(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code I.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2187,12 +4803,12 @@ class gt_general_I(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code I.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -2203,14 +4819,14 @@ class gt_general_I(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2222,7 +4838,7 @@ class gt_general_I(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code I.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -2234,7 +4850,7 @@ class gt_general_I(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code I.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -2249,11 +4865,472 @@ class gt_general_I(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_I(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.data2fail = array.array('I', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code I.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code I.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code I.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code I.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_I(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.data2fail = array.array('I', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code I.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code I.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code I.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code I.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_I(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('I', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('I', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('I', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('I', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code I.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code I.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code I.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code I.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -2451,6 +5528,21 @@ class gt_param_errors_opt_I(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code I.
 		"""
@@ -2481,6 +5573,21 @@ class gt_param_errors_opt_I(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code I.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code I.
 		"""
@@ -2506,12 +5613,25 @@ class gt_param_errors_opt_I(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code I.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_l(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_l(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -2522,21 +5642,37 @@ class gt_general_l(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('l', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('l', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('l', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.data2fail = array.array('l', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code l.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2547,12 +5683,12 @@ class gt_general_l(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code l.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -2563,14 +5699,14 @@ class gt_general_l(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code l.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2581,12 +5717,12 @@ class gt_general_l(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code l.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2597,12 +5733,12 @@ class gt_general_l(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code l.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -2613,14 +5749,14 @@ class gt_general_l(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2632,7 +5768,7 @@ class gt_general_l(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code l.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -2644,7 +5780,7 @@ class gt_general_l(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code l.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -2659,11 +5795,472 @@ class gt_general_l(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_l(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.data2fail = array.array('l', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code l.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code l.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code l.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code l.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_l(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.data2fail = array.array('l', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code l.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code l.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code l.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code l.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_l(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('l', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('l', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('l', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('l', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code l.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code l.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code l.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code l.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -2861,6 +6458,21 @@ class gt_param_errors_opt_l(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code l.
 		"""
@@ -2891,6 +6503,21 @@ class gt_param_errors_opt_l(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code l.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code l.
 		"""
@@ -2916,12 +6543,25 @@ class gt_param_errors_opt_l(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code l.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_L(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_L(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -2932,21 +6572,37 @@ class gt_general_L(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('L', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('L', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('L', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.data2fail = array.array('L', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code L.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2957,12 +6613,12 @@ class gt_general_L(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code L.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -2973,14 +6629,14 @@ class gt_general_L(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code L.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -2991,12 +6647,12 @@ class gt_general_L(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code L.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3007,12 +6663,12 @@ class gt_general_L(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code L.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -3023,14 +6679,14 @@ class gt_general_L(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3042,7 +6698,7 @@ class gt_general_L(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code L.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -3054,7 +6710,7 @@ class gt_general_L(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code L.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -3069,11 +6725,472 @@ class gt_general_L(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_L(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.data2fail = array.array('L', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code L.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code L.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code L.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code L.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_L(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.data2fail = array.array('L', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code L.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code L.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code L.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code L.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_L(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('L', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('L', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('L', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('L', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code L.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code L.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code L.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code L.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -3271,6 +7388,21 @@ class gt_param_errors_opt_L(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code L.
 		"""
@@ -3301,6 +7433,21 @@ class gt_param_errors_opt_L(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code L.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code L.
 		"""
@@ -3326,12 +7473,25 @@ class gt_param_errors_opt_L(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code L.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_q(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_q(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -3342,21 +7502,37 @@ class gt_general_q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('q', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('q', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('q', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.data2fail = array.array('q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code q.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3367,12 +7543,12 @@ class gt_general_q(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code q.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -3383,14 +7559,14 @@ class gt_general_q(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code q.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3401,12 +7577,12 @@ class gt_general_q(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3417,12 +7593,12 @@ class gt_general_q(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -3433,14 +7609,14 @@ class gt_general_q(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3452,7 +7628,7 @@ class gt_general_q(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code q.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -3464,7 +7640,7 @@ class gt_general_q(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code q.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -3479,11 +7655,472 @@ class gt_general_q(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_q(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.data2fail = array.array('q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code q.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code q.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_q(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.data2fail = array.array('q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code q.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code q.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_q(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('q', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('q', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('q', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('q', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -3681,6 +8318,21 @@ class gt_param_errors_opt_q(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code q.
 		"""
@@ -3711,6 +8363,21 @@ class gt_param_errors_opt_q(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code q.
 		"""
@@ -3736,12 +8403,25 @@ class gt_param_errors_opt_q(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code q.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_Q(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_Q(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
 	test_template_comp
@@ -3752,21 +8432,37 @@ class gt_general_Q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('Q', [6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6])
-		self.data2 = array.array('Q', [5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5])
-		self.data2fail = array.array('Q', [7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.data2fail = array.array('Q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code Q.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3777,12 +8473,12 @@ class gt_general_Q(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code Q.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -3793,14 +8489,14 @@ class gt_general_Q(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3811,12 +8507,12 @@ class gt_general_Q(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code Q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3827,12 +8523,12 @@ class gt_general_Q(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code Q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -3843,14 +8539,14 @@ class gt_general_Q(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -3862,7 +8558,7 @@ class gt_general_Q(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code Q.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -3874,7 +8570,7 @@ class gt_general_Q(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code Q.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -3889,11 +8585,472 @@ class gt_general_Q(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_Q(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.data2fail = array.array('Q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code Q.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code Q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code Q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code Q.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_Q(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6,6]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7,7]), range(testdatasize))]
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.data2fail = array.array('Q', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code Q.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code Q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code Q.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code Q.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_Q(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('Q', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('Q', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('Q', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('Q', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code Q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code Q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code Q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code Q.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -4091,6 +9248,21 @@ class gt_param_errors_opt_Q(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code Q.
 		"""
@@ -4121,6 +9293,21 @@ class gt_param_errors_opt_Q(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code Q.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code Q.
 		"""
@@ -4146,12 +9333,25 @@ class gt_param_errors_opt_Q(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code Q.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
  
 
 ##############################################################################
-class gt_general_f(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_f(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
 	test_template_comp
@@ -4162,21 +9362,37 @@ class gt_general_f(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('f', [6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0])
-		self.data2 = array.array('f', [5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0])
-		self.data2fail = array.array('f', [7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('f', xdata)
+		self.data2 = array.array('f', ydata)
+		self.data2fail = array.array('f', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code f.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4187,12 +9403,12 @@ class gt_general_f(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code f.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -4203,14 +9419,14 @@ class gt_general_f(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code f.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4221,12 +9437,12 @@ class gt_general_f(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code f.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4237,12 +9453,12 @@ class gt_general_f(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code f.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -4253,14 +9469,14 @@ class gt_general_f(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4272,7 +9488,7 @@ class gt_general_f(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code f.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -4284,7 +9500,7 @@ class gt_general_f(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code f.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -4299,11 +9515,472 @@ class gt_general_f(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_f(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('f', xdata)
+		self.data2 = array.array('f', ydata)
+		self.data2fail = array.array('f', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code f.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code f.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code f.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code f.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code f.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code f.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_f(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('f', xdata)
+		self.data2 = array.array('f', ydata)
+		self.data2fail = array.array('f', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code f.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code f.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code f.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code f.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code f.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code f.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code f.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_f(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('f', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('f', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('f', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('f', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code f.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code f.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code f.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code f.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -4501,6 +10178,21 @@ class gt_param_errors_opt_f(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code f.
 		"""
@@ -4531,6 +10223,21 @@ class gt_param_errors_opt_f(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code f.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code f.
 		"""
@@ -4556,6 +10263,19 @@ class gt_param_errors_opt_f(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code f.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
 
@@ -4574,9 +10294,9 @@ class gt_errors_nf_f(unittest.TestCase):
 		self.testvalue = 10.5
 		self.testdata = array.array('f', [self.testvalue] * 20)
 
-		self.nanvalue = float('NaN')
-		self.infvalue = float('inf')
-		self.ninfvalue = float('-inf')
+		self.nanvalue = math.nan
+		self.infvalue = math.inf
+		self.ninfvalue = -math.inf
 
 		self.nandata = array.array('f', [float(self.nanvalue)] * len(self.testdata))
 		self.infdata = array.array('f', [float(self.infvalue)] * len(self.testdata))
@@ -4804,7 +10524,7 @@ class gt_errors_nf_f(unittest.TestCase):
  
 
 ##############################################################################
-class gt_general_d(unittest.TestCase):
+class gt_general_even_arraysize_with_simd_d(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
 	test_template_comp
@@ -4815,21 +10535,37 @@ class gt_general_d(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('d', [6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0])
-		self.data2 = array.array('d', [5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0])
-		self.data2fail = array.array('d', [7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0])
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('d', xdata)
+		self.data2 = array.array('d', ydata)
+		self.data2fail = array.array('d', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_gt_basic_array_num_a1(self):
 		"""Test gt as *array-num* for basic function - Array code d.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4840,12 +10576,12 @@ class gt_general_d(unittest.TestCase):
 	def test_gt_basic_array_num_a2(self):
 		"""Test gt as *array-num* for basic function - Array code d.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x > testval for x in self.data1])
 
-				result = arrayfunc.gt(self.data1, testval)
+				result = arrayfunc.gt(self.data1, testval )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -4856,14 +10592,14 @@ class gt_general_d(unittest.TestCase):
 	def test_gt_basic_array_num_a3(self):
 		"""Test gt as *array-num* for basic function with array limit - Array code d.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x > testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.gt(self.data1, testval, maxlen=limited)
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4874,12 +10610,12 @@ class gt_general_d(unittest.TestCase):
 	def test_gt_basic_num_array_b1(self):
 		"""Test gt as *num-array* for basic function - Array code d.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2])
 
-				result = arrayfunc.gt(testval, self.data2)
+				result = arrayfunc.gt(testval, self.data2 )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4890,12 +10626,12 @@ class gt_general_d(unittest.TestCase):
 	def test_gt_basic_num_array_b2(self):
 		"""Test gt as *num-array* for basic function - Array code d.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval > x for x in self.data2fail])
 
-				result = arrayfunc.gt(testval, self.data2fail)
+				result = arrayfunc.gt(testval, self.data2fail )
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -4906,14 +10642,14 @@ class gt_general_d(unittest.TestCase):
 	def test_gt_basic_num_array_b3(self):
 		"""Test gt as *num-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval > x for x in self.data2[0:limited]])
 
-				result = arrayfunc.gt(testval, self.data2, maxlen=limited)
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -4925,7 +10661,7 @@ class gt_general_d(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code d.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.gt(self.data1, self.data2)
+		result = arrayfunc.gt(self.data1, self.data2 )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -4937,7 +10673,7 @@ class gt_general_d(unittest.TestCase):
 		"""Test gt as *array-array* for basic function - Array code d.
 		"""
 		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.gt(self.data1, self.data2fail)
+		result = arrayfunc.gt(self.data1, self.data2fail )
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -4952,11 +10688,472 @@ class gt_general_d(unittest.TestCase):
 
 		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_odd_arraysize_with_simd_d(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('d', xdata)
+		self.data2 = array.array('d', ydata)
+		self.data2fail = array.array('d', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code d.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code d.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code d.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail )
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited )
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code d.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code d.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail )
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code d.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited )
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class gt_general_even_arraysize_without_simd_d(unittest.TestCase):
+	"""Test for basic general function operation using numeric 
+	data 5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0.
+	test_template_comp
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0,6.0]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0,5.0]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0,7.0]), range(testdatasize))]
+
+		self.data1 = array.array('d', xdata)
+		self.data2 = array.array('d', ydata)
+		self.data2fail = array.array('d', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
+
+
+	########################################################
+	def test_gt_basic_array_num_a1(self):
+		"""Test gt as *array-num* for basic function - Array code d.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a2(self):
+		"""Test gt as *array-num* for basic function - Array code d.
+		"""
+		for testval in self.data2failparam:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([x > testval for x in self.data1])
+
+				result = arrayfunc.gt(self.data1, testval , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_num_a3(self):
+		"""Test gt as *array-num* for basic function with array limit - Array code d.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([x > testval for x in self.data1[0:limited]])
+
+				result = arrayfunc.gt(self.data1, testval, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b1(self):
+		"""Test gt as *num-array* for basic function - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2])
+
+				result = arrayfunc.gt(testval, self.data2 , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b2(self):
+		"""Test gt as *num-array* for basic function - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				expected = all([testval > x for x in self.data2fail])
+
+				result = arrayfunc.gt(testval, self.data2fail , nosimd=True)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_num_array_b3(self):
+		"""Test gt as *num-array* for basic function with array limit - Array code d.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				limited = len(self.data1) // 2
+
+				expected = all([testval > x for x in self.data2[0:limited]])
+
+				result = arrayfunc.gt(testval, self.data2, maxlen=limited , nosimd=True)
+
+				self.assertTrue(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c1(self):
+		"""Test gt as *array-array* for basic function - Array code d.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2)])
+		result = arrayfunc.gt(self.data1, self.data2 , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c2(self):
+		"""Test gt as *array-array* for basic function - Array code d.
+		"""
+		expected = all([x > y for (x, y) in zip(self.data1, self.data2fail)])
+		result = arrayfunc.gt(self.data1, self.data2fail , nosimd=True)
+
+		self.assertFalse(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+	########################################################
+	def test_gt_basic_array_array_c3(self):
+		"""Test gt as *array-array* for basic function with array limit - Array code d.
+		"""
+		limited = len(self.data1) // 2
+
+		expected = all([x > y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+
+		result = arrayfunc.gt(self.data1, self.data2, maxlen=limited , nosimd=True)
+
+		self.assertTrue(result)
+		self.assertIsInstance(result, bool)
+		self.assertEqual(expected, result)
+
+
+##############################################################################
+
+ 
+
+
+##############################################################################
+class gt_numpos_d(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('d', [6] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('d', list(self.data1))
+		self.data1fail[-1] = 5
+
+		self.data2 = array.array('d', [5] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('d', list(self.data2))
+		self.data2fail[-1] = 7
+
+
+
+	########################################################
+	def test_gt_numpos_array_num_a1(self):
+		"""Test gt as *array-num* for failing with different data positions in array - Array code d.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.gt(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_num_array_b1(self):
+		"""Test gt as *num-array* for failing with different data positions in array - Array code d.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 > x for x in self.data2fail])
+
+				result = arrayfunc.gt(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c1(self):
+		"""Test gt as *array-array* for failing with different data positions in array 1 - Array code d.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.gt(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_gt_numpos_array_array_c2(self):
+		"""Test gt as *array-array* for failing with different data positions in array 2 - Array code d.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x > y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.gt(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
 
 
 ##############################################################################
@@ -5154,6 +11351,21 @@ class gt_param_errors_opt_d(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_array_num_a3(self):
+		"""Test gt as *array-num* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_gt_num_array_c1(self):
 		"""Test gt as *num-array* for matherrors=True - Array code d.
 		"""
@@ -5184,6 +11396,21 @@ class gt_param_errors_opt_d(unittest.TestCase):
 
 
 	########################################################
+	def test_gt_num_array_c3(self):
+		"""Test gt as *num-array* for nosimd='a' - Array code d.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_gt_array_array_e1(self):
 		"""Test gt as *array-array* for matherrors=True - Array code d.
 		"""
@@ -5209,6 +11436,19 @@ class gt_param_errors_opt_d(unittest.TestCase):
 			result = arrayfunc.gt(self.inparray1a, self.inparray2a, maxlen='a')
 
 
+	########################################################
+	def test_gt_array_array_e3(self):
+		"""Test gt as *array-array* for nosimd='a' - Array code d.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.gt(self.inparray1a, self.inparray2a, nosimd='a')
+
+
 ##############################################################################
 
 
@@ -5227,9 +11467,9 @@ class gt_errors_nf_d(unittest.TestCase):
 		self.testvalue = 10.5
 		self.testdata = array.array('d', [self.testvalue] * 20)
 
-		self.nanvalue = float('NaN')
-		self.infvalue = float('inf')
-		self.ninfvalue = float('-inf')
+		self.nanvalue = math.nan
+		self.infvalue = math.inf
+		self.ninfvalue = -math.inf
 
 		self.nandata = array.array('d', [float(self.nanvalue)] * len(self.testdata))
 		self.infdata = array.array('d', [float(self.infvalue)] * len(self.testdata))

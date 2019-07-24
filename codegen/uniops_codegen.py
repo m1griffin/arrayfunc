@@ -68,11 +68,16 @@ uniops_head = """//-------------------------------------------------------------
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "%(funclabel)s_simd_x86.h"
+#endif
 
 /*--------------------------------------------------------------------------- */
 
-%(factdefs)s
 """
 
 # ==============================================================================
@@ -86,7 +91,7 @@ uniops_op_float = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -138,12 +143,12 @@ uniops_neg_int = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-
+%(simd_call)s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
@@ -188,12 +193,12 @@ uniops_abs_int = """
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
-
+%(simd_call)s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
@@ -230,209 +235,103 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *da
 
 # ==============================================================================
 
-
-# Calculate factorial of a signed integer.
-uniops_fac_intsigned = """
+# The operations using SIMD.
+ops_simdsupport = """
 /*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
    data = The input data array.
    dataout = The output data array.
-   ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hasoutputarray = If true, the output goes into the second array.
 */
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+// param_arr_none
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
 
-	// array index counter.
-	Py_ssize_t x;
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft;
 
 
-	// Factorial is not defined for negative values, and there is
-	// a limit to the size of factorial that can be calculated.
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
-				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
-					dataout[x] = DEFAULT_FACT;
-				} else {
-					dataout[x] = %(factdata)s[data[x]];
-				}
-			}
-		} else {
-			for(x = 0; x < arraylen; x++) {
-				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
-					data[x] = DEFAULT_FACT;
-				} else {
-					data[x] = %(factdata)s[data[x]];
-				}
-			}
-		}
-	} else {
-	// Math error checking enabled.
-		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
-				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
-					return ARR_ERR_OVFL;
-				}
-				dataout[x] = %(factdata)s[data[x]];
-			}
-		} else {
-			for(x = 0; x < arraylen; x++) {
-				if ((data[x] < 0) || (data[x] > %(maxfact)s)) {
-					return ARR_ERR_OVFL;
-				}
-				data[x] = %(factdata)s[data[x]];
-			}
-		}
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		datasliceleft = %(simdop)s;
+		// Store the result.
+		__builtin_ia32_storedqu((char *) &data[index], %(simdstorecast)s datasliceleft);
 	}
 
-	return ARR_NO_ERR;
-
-}
-
-"""
-
-# Calculate factorial of an unsigned integer.
-uniops_fac_intunsigned = """
-/*--------------------------------------------------------------------------- */
-/* arraylen = The length of the data arrays.
-   data = The input data array.
-   dataout = The output data array.
-   ignoreerrors = If true, disable arithmetic math error checking (default is false).
-   hasoutputarray = If true, the output goes into the second array.
-*/
-signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
-
-	// array index counter.
-	Py_ssize_t x;
-
-
-	// Factorial is not defined for negative values, and there is
-	// a limit to the size of factorial that can be calculated.
-
-	// Math error checking disabled.
-	if (ignoreerrors) {
-		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
-				if (data[x] > %(maxfact)s) {
-					dataout[x] = DEFAULT_FACT;
-				} else {
-					dataout[x] = %(factdata)s[data[x]];
-				}
-			}
-		} else {
-			for(x = 0; x < arraylen; x++) {
-				if (data[x] > %(maxfact)s) {
-					data[x] = DEFAULT_FACT;
-				} else {
-					data[x] = %(factdata)s[data[x]];
-				}
-			}
-		}
-	} else {
-	// Math error checking enabled.
-		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
-				if (data[x] > %(maxfact)s) {
-					return ARR_ERR_OVFL;
-				}
-				dataout[x] = %(factdata)s[data[x]];
-			}
-		} else {
-			for(x = 0; x < arraylen; x++) {
-				if (data[x] > %(maxfact)s) {
-					return ARR_ERR_OVFL;
-				}
-				data[x] = %(factdata)s[data[x]];
-			}
-		}
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		data[index] = %(simdcleanup)s;
 	}
 
-	return ARR_NO_ERR;
+}
+#endif
+
+
+// param_arr_arr
+#ifdef AF_HASSIMD
+void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft;
+
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = (%(simdattr)s) __builtin_ia32_lddqu((char *) &data[index]);
+		// The actual SIMD operation. The compiler generates the correct instruction.
+		datasliceleft = %(simdop)s;
+		// Store the result.
+		__builtin_ia32_storedqu((char *) &dataout[index], %(simdstorecast)s datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for(index = alignedlength; index < arraylen; index++) {
+		dataout[index] = %(simdcleanup)s;
+	}
 
 }
+#endif
 
 """
 
 
-uniops_fac_defs = """
-/*--------------------------------------------------------------------------- */
+# SIMD call template.
+SIMD_call = '''\n#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+		if (hasoutputarray) {
+			%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data, dataout);
+		} else {
+			%(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif\n'''
 
-// Calculate factorials.
-// We are making some assumptions here about the sizes of integers.
-// Instead of calculating factorials using a loop, we create a series of 
-// look-up tables. This seems to be about 5 to 20 times faster than using
-// a loop and test method.
-
-
-// Factorial data.
-
-// The default value to return when a factorial calculation was in error.
-#define DEFAULT_FACT 0
-
-// Signed and unsigned chars.
-#define MAX_SC_FACT 5
-signed char fact_sc_data[] = {1, 1, 2, 6, 24, 120};
-#define MAX_USC_FACT 5
-unsigned char fact_usc_data[] = {1, 1, 2, 6, 24, 120};
-
-// Signed and unsigned shorts.
-#define MAX_SS_FACT 7
-signed short fact_ss_data[] = {1, 1, 2, 6, 24, 120, 720, 5040};
-#define MAX_USS_FACT 8
-unsigned short fact_uss_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 40320};
-
-
-// Signed and unsigned ints.
-#define MAX_SI_FACT 12
-signed int fact_si_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 3628800, 39916800, 479001600};
-#define MAX_USI_FACT 12
-unsigned int fact_usi_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 3628800, 39916800, 479001600};
-
-
-// Signed and unsigned long.
-// Check if long integer is 8 bytes.
-#if LONG_MAX == 9223372036854775807
-
-#define MAX_SL_FACT 20
-signed long fact_sl_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 
-				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
-				20922789888000, 355687428096000, 6402373705728000, 121645100408832000,
-				2432902008176640000};
-#define MAX_USL_FACT 20
-unsigned long fact_usl_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 
-				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
-				20922789888000, 355687428096000, 6402373705728000, 121645100408832000,
-				2432902008176640000};
-
-// Long integers are assumed to be 4 bytes.
-#else
-
-#define MAX_SL_FACT 12
-signed long fact_sl_data[] = {1, 1, 2, 6, 24, 120, 720, 5040};
-#define MAX_USL_FACT 12
-unsigned long fact_usl_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 3628800, 39916800, 479001600};
-
-#endif // End for long integer.
-
-#define MAX_SLL_FACT 20
-signed long long fact_sll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 
-				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
-				20922789888000, 355687428096000, 6402373705728000, 121645100408832000,
-				2432902008176640000};
-#define MAX_USLL_FACT 20
-unsigned long long fact_usll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 40320, 362880, 
-				3628800, 39916800, 479001600, 6227020800, 87178291200, 1307674368000, 
-				20922789888000, 355687428096000, 6402373705728000, 121645100408832000,
-				2432902008176640000};
-
-/*--------------------------------------------------------------------------- */
-
-"""
 
 # ==============================================================================
-
 
 
 # ==============================================================================
@@ -441,7 +340,7 @@ unsigned long long fact_usll_data[] = {1, 1, 2, 6, 24, 120, 720, 5040, 5040, 403
 opscall = """
 		// %(funcmodifier)s
 		case '%(arraycode)s' : {
-			resultcode = %(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = %(funclabel)s_%(funcmodifier)s(arraydata.arraylength, arraydata.nosimd, arraydata.array1.%(arraycode)s, arraydata.array2.%(arraycode)s, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 """
@@ -530,6 +429,7 @@ Call formats: \\n\\
     %(funclabel)s(array1, outparray) \\n\\
     %(funclabel)s(array1, maxlen=y) \\n\\
     %(funclabel)s(array1, matherrors=False)) \\n\\
+    %(funclabel)s(array1, nosimd=False) \\n\\
 \\n\\
 * array1 - The first input data array to be examined. If no output \\n\\
   array is provided the results will overwrite the input data. \\n\\
@@ -540,6 +440,8 @@ Call formats: \\n\\
   parameter is ignored. \\n\\
 * matherrors - If true, arithmetic error checking is disabled. The \\n\\
   default is false. \\n\\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \\n\\
+  optional. The default is FALSE.  \\n\\
 ");
 
 
@@ -578,59 +480,38 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # ==============================================================================
 
+# Various SIMD instruction information which varies according to array type.
+simdvalues = {
+'b' : {'hassimd' : True, 'simdattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 'simdstorecast' : '', 'simdwidth' : 'CHARSIMDSIZE'},
+'h' : {'hassimd' : True, 'simdattr' : 'v8hi', 'simdwidth' : 'SHORTSIMDSIZE', 'simdstorecast' : '(v16qi)', 'simdwidth' : 'SHORTSIMDSIZE'},
+'i' : {'hassimd' : True, 'simdattr' : 'v4si', 'simdwidth' : 'INTSIMDSIZE', 'simdstorecast' : '(v16qi)', 'simdwidth' : 'INTSIMDSIZE'},
+'l' : {'hassimd' : False},
+'q' : {'hassimd' : False},
+'f' : {'hassimd' : False},
+'d' : {'hassimd' : False},
+}
+
+
+# The SIMD operations used for each function.
+simdop = {
+'b' : {'abs_' : '__builtin_ia32_pabsb128(datasliceleft)', 'neg' : '-datasliceleft'},
+'h' : {'abs_' : '__builtin_ia32_pabsw128(datasliceleft)', 'neg' : '-datasliceleft'},
+'i' : {'abs_' : '__builtin_ia32_pabsd128(datasliceleft)', 'neg' : '-datasliceleft'},
+}
+
+# This is used to finish up array elements which were left over at the
+# end of the SIMD operation.
+simdcleanup = {'abs_' : 'data[index] >= 0 ? data[index] : -data[index]', 'neg' : '-data[index]'}
+
+
+# ==============================================================================
+
 # Which opstemplate is valid for which operation. Each math operation requires
 # different templates for signed int, unsigned int, and float.
-opstemplates = {
-	'neg' : {'int' : uniops_neg_int,
-			'uint' : None,
-			'float' : uniops_op_float
-		},
-	'abs_' : {'int' : uniops_abs_int,
-			'uint' : None,
-			'float' : uniops_op_float
-		},
-	'factorial' : {'int' : uniops_fac_intsigned,
-			'uint' : uniops_fac_intunsigned,
-			'float' : None
-		},
-}
+opstemplates = {'neg' : uniops_neg_int,
+			'abs_' : uniops_abs_int}
 
-supportedtypes = {'neg' : (codegen_common.signedint + codegen_common.floatarrays),
-				'abs_' : (codegen_common.signedint + codegen_common.floatarrays),
-				'factorial' : (codegen_common.intarrays),
-}
-
-
-# What C code definitions to use with factorial.
-maxfact = {
-	'b' : 'MAX_SC_FACT',
-	'B' : 'MAX_USC_FACT',
-	'h' : 'MAX_SS_FACT',
-	'H' : 'MAX_USS_FACT',
-	'i' : 'MAX_SI_FACT',
-	'I' : 'MAX_USI_FACT',
-	'l' : 'MAX_SL_FACT',
-	'L' : 'MAX_USL_FACT',
-	'q' : 'MAX_SLL_FACT',
-	'Q' : 'MAX_USLL_FACT',
-	'f' : '',
-	'd' : ''
-}
-
-factdata = {
-	'b' : 'fact_sc_data',
-	'B' : 'fact_usc_data',
-	'h' : 'fact_ss_data',
-	'H' : 'fact_uss_data',
-	'i' : 'fact_si_data',
-	'I' : 'fact_usi_data',
-	'l' : 'fact_sl_data',
-	'L' : 'fact_usl_data',
-	'q' : 'fact_sll_data',
-	'Q' : 'fact_usll_data',
-	'f' : '',
-	'd' : ''
-}
+supportedtypes = (codegen_common.signedint + codegen_common.floatarrays)
 
 # ==============================================================================
 
@@ -647,44 +528,44 @@ funclist = [x for x in oplist if x['c_code_template'] in ['template_uniop']]
 
 for func in funclist:
 
-	# Create the source code based on templates.
-	filename = func['funcname'] + '.c'
-	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : func['funcname'], 'factdefs' : ''}
+	# Function name.
+	funcname = func['funcname']
 
-		# This is for factorial only.
-		if func['funcname'] == 'factorial':
-			funcdata['factdefs'] = uniops_fac_defs
+	# Create the source code based on templates.
+	filename = funcname + '.c'
+	with open(filename, 'w') as f:
+		funcdata = {'funclabel' : funcname}
 
 		f.write(uniops_head % funcdata)
 		opscalltext = []
 
 
 		# Check each array type. The types of arrays supported must be looked up.
-		for arraycode in supportedtypes[func['funcname']]:
+		for arraycode in supportedtypes:
 			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
 			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
-			funcdata['intmaxvalue'] = codegen_common.maxvalue[arraycode]
 			funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
-
-			# This is for factorial only.
-			if func['funcname'] == 'factorial':
-				funcdata['maxfact'] = maxfact[arraycode]
-				funcdata['factdata'] = factdata[arraycode]
 
 
 			if arraycode == 'f':
 				funcdata['copname'] = func['c_operator_f']
-				ops_calc = opstemplates[func['funcname']]['float']
+				funcdata['simd_call'] = ''
+				ops_calc = uniops_op_float
 			elif arraycode == 'd':
 				funcdata['copname'] = func['c_operator_d']
-				ops_calc = opstemplates[func['funcname']]['float']
-			elif arraycode in codegen_common.unsignedint:
-				 funcdata['copname'] = func['c_operator_i']
-				 ops_calc = opstemplates[func['funcname']]['uint']
+				funcdata['simd_call'] = ''
+				ops_calc = uniops_op_float
 			elif arraycode in codegen_common.signedint:
-				 funcdata['copname'] = func['c_operator_i']
-				 ops_calc = opstemplates[func['funcname']]['int']
+				if simdvalues[arraycode]['hassimd']:
+					simd_call_vals = {'simdwidth' : simdvalues[arraycode]['simdwidth'], 
+						'funclabel' : funcdata['funclabel'], 
+						'funcmodifier' : funcdata['funcmodifier']}
+					funcdata['simd_call'] = SIMD_call % simd_call_vals
+				else:
+					funcdata['simd_call'] = ''
+
+				funcdata['copname'] = func['c_operator_i']
+				ops_calc = opstemplates[funcname]
 			else:
 				print('Error - Unsupported array code.', arraycode)
 
@@ -699,7 +580,7 @@ for func in funclist:
 
 		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
-		f.write(uniops_params % {'funclabel' : func['funcname'], 
+		f.write(uniops_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'supportedarrays' : supportedarrays,
 				'matherrors' : ', '.join(func['matherrors'].split(',')),
@@ -708,7 +589,63 @@ for func in funclist:
 # ==============================================================================
 
 
+# ==============================================================================
+
+# The original date of the SIMD C code.
+simdcodedate = '22-Mar-2019'
+simdfilename = '_simd_x86'
+
+# This outputs the SIMD version.
+
+for func in funclist:
+
+	outputlist = []
+
+	funcname = func['funcname']
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+
+	# Output the generated code.
+	for arraycode in supportedtypes:
+
+		if simdvalues[arraycode]['hassimd']:
+			arraytype = codegen_common.arraytypes[arraycode]
+
+			# The compare_ops symbols is the same for integer and floating point.
+			datavals = {'funclabel' : funcname,
+						'arraytype' : arraytype, 
+						'funcmodifier' : arraytype.replace(' ', '_'),
+						'simdattr' : simdvalues[arraycode]['simdattr'],
+						'simdwidth' : simdvalues[arraycode]['simdwidth'],
+						'simdstorecast' : simdvalues[arraycode]['simdstorecast'],
+						'simdop' : simdop[arraycode][funcname],
+						'simdcleanup' : simdcleanup[funcname],
+						}
+
+
+			# Start of function definition.
+			outputlist.append(ops_simdsupport % datavals)
 
 
 
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================
 

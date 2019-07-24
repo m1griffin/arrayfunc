@@ -35,10 +35,15 @@
 
 #include "arrayerrs.h"
 #include "arrayparams_base.h"
-#include "arrayparams_one.h"
+#include "arrayparams_onesimd.h"
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD
+#include "neg_simd_x86.h"
+#endif
 
 /*--------------------------------------------------------------------------- */
-
 
 
 /*--------------------------------------------------------------------------- */
@@ -48,11 +53,23 @@
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_signed_char(Py_ssize_t arraylen, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, signed char *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			neg_signed_char_2_simd(arraylen, data, dataout);
+		} else {
+			neg_signed_char_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
@@ -92,11 +109,23 @@ signed int neg_signed_char(Py_ssize_t arraylen, signed char *data, signed char *
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_signed_short(Py_ssize_t arraylen, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data, signed short *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			neg_signed_short_2_simd(arraylen, data, dataout);
+		} else {
+			neg_signed_short_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
@@ -136,11 +165,23 @@ signed int neg_signed_short(Py_ssize_t arraylen, signed short *data, signed shor
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, signed int *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
 
+
+#ifdef AF_HASSIMD
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			neg_signed_int_2_simd(arraylen, data, dataout);
+		} else {
+			neg_signed_int_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
@@ -180,7 +221,7 @@ signed int neg_signed_int(Py_ssize_t arraylen, signed int *data, signed int *dat
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_signed_long(Py_ssize_t arraylen, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_signed_long(Py_ssize_t arraylen, int nosimd, signed long *data, signed long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -224,7 +265,7 @@ signed int neg_signed_long(Py_ssize_t arraylen, signed long *data, signed long *
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_signed_long_long(Py_ssize_t arraylen, int nosimd, signed long long *data, signed long long *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -268,7 +309,7 @@ signed int neg_signed_long_long(Py_ssize_t arraylen, signed long long *data, sig
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_float(Py_ssize_t arraylen, int nosimd, float *data, float *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -312,7 +353,7 @@ signed int neg_float(Py_ssize_t arraylen, float *data, float *dataout, unsigned 
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
    hasoutputarray = If true, the output goes into the second array.
 */
-signed int neg_double(Py_ssize_t arraylen, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
+signed int neg_double(Py_ssize_t arraylen, int nosimd, double *data, double *dataout, unsigned int ignoreerrors, bool hasoutputarray) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -379,43 +420,43 @@ static PyObject *py_neg(PyObject *self, PyObject *args, PyObject *keywds) {
 
 		// signed_char
 		case 'b' : {
-			resultcode = neg_signed_char(arraydata.arraylength, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_signed_char(arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.array2.b, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_short
 		case 'h' : {
-			resultcode = neg_signed_short(arraydata.arraylength, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_signed_short(arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.array2.h, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_int
 		case 'i' : {
-			resultcode = neg_signed_int(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_signed_int(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long
 		case 'l' : {
-			resultcode = neg_signed_long(arraydata.arraylength, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_signed_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.array2.l, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// signed_long_long
 		case 'q' : {
-			resultcode = neg_signed_long_long(arraydata.arraylength, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_signed_long_long(arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.array2.q, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// float
 		case 'f' : {
-			resultcode = neg_float(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_float(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
 		// double
 		case 'd' : {
-			resultcode = neg_double(arraydata.arraylength, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
+			resultcode = neg_double(arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.array2.d, arraydata.ignoreerrors, arraydata.hasoutputarray);
 			break;
 		}
 
@@ -472,6 +513,7 @@ Call formats: \n\
     neg(array1, outparray) \n\
     neg(array1, maxlen=y) \n\
     neg(array1, matherrors=False)) \n\
+    neg(array1, nosimd=False) \n\
 \n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
@@ -482,6 +524,8 @@ Call formats: \n\
   parameter is ignored. \n\
 * matherrors - If true, arithmetic error checking is disabled. The \n\
   default is false. \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 

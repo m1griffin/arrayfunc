@@ -290,10 +290,11 @@ char isfloatrange(double x) {
    hasbuffer = If 1, a buffer handle was obtained and must be released. If 0,
      there is no buffer to be released (either not a buffer object, or was not
      obtained.
+   paramoverflow = If non-zero, a parameter overflowed, otherwise OK.
    Returns 0 if OK, otherwise non-zero.
 
 */
-int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer) {
+int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer, char *paramoverflow) {
 
 	// Used to track overflows in integer conversions.
 	int intparamoverflow = 0;
@@ -305,6 +306,7 @@ int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasb
 
 
 	*hasbuffer = 0;
+	*paramoverflow = 0;
 
 	// Parameter is an array.
 	if (PyObject_CheckBuffer(dataobj)) {
@@ -356,6 +358,7 @@ int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasb
 				// as a native integer.
 				if ((ullintparam == (unsigned long long)-1) && PyErr_Occurred()) {
 					paramobjdata->paramtype = paramobj_error;
+					*paramoverflow = 1;
 					return -1;
 				}
 
@@ -393,19 +396,20 @@ int get_paramdata(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasb
  * paramobjdata = Contains values and information about the numeric parameter
  *    we want to analyse.
  * checkedvalue = The output value cast to the correct numeric type.
+ * paramoverflow = If non-zero, a parameter overflowed, otherwise OK.
  * Returns = Zero if OK, otherwise indicates an error.
 */
 char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
-			struct paramsvals *checkedvalue) {
+			struct paramsvals *checkedvalue, char *paramoverflow) {
 
 	unsigned long long intparam;
 
+	*paramoverflow = 0;
 
 	// Make sure it is a numeric type.
 	if ((paramobjdata->paramtype != paramobj_int) && 
 		(paramobjdata->paramtype != paramobj_uint) &&
 		 (paramobjdata->paramtype != paramobj_float))  { return -2; }
-
 
 
 	// Is it a float?
@@ -420,7 +424,10 @@ char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
 		// Single precision float.
 		if (arraycode == 'f') {
 			// Overflow.
-			if (!isfloatrange(paramobjdata->dparam))  { return -1; }
+			if (!isfloatrange(paramobjdata->dparam))  { 
+				*paramoverflow = 1;
+				return -1; 
+			}
 			checkedvalue->f = (float) paramobjdata->dparam;
 			return 0;
 		}
@@ -438,34 +445,49 @@ char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
 	if (strchr("bhilq", arraycode) != NULL) {
 		// Check if signed int data. This could also be the case if the
 		// integer was too large for the largest signed integer type.
-		if (paramobjdata->paramtype != paramobj_int) { return -2; }
+		if (paramobjdata->paramtype != paramobj_int) { 
+			*paramoverflow = 1;
+			return -2; 
+		}
 
 		switch(arraycode) {
 			// signed char
 			case 'b' : {
 				// Overflow.
-				if (!issignedcharrange(paramobjdata->llintparam))  { return -1; }
+				if (!issignedcharrange(paramobjdata->llintparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->b = (signed char) paramobjdata->llintparam;
 				return 0;
 			}
 			// signed short
 			case 'h' : {
 				// Overflow.
-				if (!issignedshortrange(paramobjdata->llintparam))  { return -1; }
+				if (!issignedshortrange(paramobjdata->llintparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->h = (signed short) paramobjdata->llintparam;
 				return 0;
 			}
 			// signed int
 			case 'i' : {
 				// Overflow.
-				if (!issignedintrange(paramobjdata->llintparam))  { return -1; }
+				if (!issignedintrange(paramobjdata->llintparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->i = (signed int) paramobjdata->llintparam;
 				return 0;
 			}
 			// signed long
 			case 'l' : {
 				// Overflow.
-				if (!issignedlongrange(paramobjdata->llintparam))  { return -1; }
+				if (!issignedlongrange(paramobjdata->llintparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->l = (signed long) paramobjdata->llintparam;
 				return 0;
 			}
@@ -504,28 +526,40 @@ char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
 			// unsigned char
 			case 'B' : {
 				// Overflow.
-				if (!isunsignedcharrange(intparam))  { return -1; }
+				if (!isunsignedcharrange(intparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->B = (signed char) intparam;
 				return 0;
 			}
 			// unsigned short
 			case 'H' : {
 				// Overflow.
-				if (!isunsignedshortrange(intparam))  { return -1; }
+				if (!isunsignedshortrange(intparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->H = (signed short) intparam;
 				return 0;
 			}
 			// unsigned int
 			case 'I' : {
 				// Overflow.
-				if (!isunsignedintrange(intparam))  { return -1; }
+				if (!isunsignedintrange(intparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->I = (signed int) intparam;
 				return 0;
 			}
 			// unsigned long
 			case 'L' : {
 				// Overflow.
-				if (!isunsignedlongrange(intparam))  { return -1; }
+				if (!isunsignedlongrange(intparam))  { 
+					*paramoverflow = 1;
+					return -1; 
+				}
 				checkedvalue->L = (signed long) intparam;
 				return 0;
 			}
@@ -546,6 +580,30 @@ char get_numericparams(char arraycode, struct paramsdata *paramobjdata,
 	// We should never reach here unless there has been a programming error.
 	return -2;
 
+
+}
+
+/*--------------------------------------------------------------------------- */
+
+// This is the same as get_paramdata, but without the paramoverflow parameter.
+int get_paramdata_simple(PyObject *dataobj, struct paramsdata *paramobjdata, char *hasbuffer) {
+
+	char paramoverflow = 0;
+
+	return get_paramdata(dataobj, paramobjdata, hasbuffer, &paramoverflow);
+
+}
+
+
+/*--------------------------------------------------------------------------- */
+
+// This is the same as get_numericparams, but without the paramoverflow parameter.
+char get_numericparams_simple(char arraycode, struct paramsdata *paramobjdata,
+			struct paramsvals *checkedvalue) {
+
+	char paramoverflow = 0;
+
+	return get_numericparams(arraycode, paramobjdata, checkedvalue, &paramoverflow);
 
 }
 

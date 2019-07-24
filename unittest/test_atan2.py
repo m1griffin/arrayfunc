@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -616,7 +616,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_num_none_a4(self):
-		"""Test atan2 as *array-num-none* for errors='a' - Array code f.
+		"""Test atan2 as *array-num-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -629,7 +629,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, testfloat, errors='a')
+			arrayfunc.atan2(floatarray1, testfloat, matherrors='a')
 
 
 	########################################################
@@ -724,7 +724,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_num_array_b5(self):
-		"""Test atan2 as *array-num-array* for errors='a' - Array code f.
+		"""Test atan2 as *array-num-array* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -737,7 +737,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, testfloat, self.dataout, errors='a')
+			arrayfunc.atan2(floatarray1, testfloat, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -820,7 +820,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_num_array_none_c4(self):
-		"""Test atan2 as *num-array-none* for errors='a' - Array code f.
+		"""Test atan2 as *num-array-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -833,7 +833,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(testfloat, floatarray1, errors='a')
+			arrayfunc.atan2(testfloat, floatarray1, matherrors='a')
 
 
 	########################################################
@@ -918,7 +918,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_num_array_array_d5(self):
-		"""Test atan2 as *num-array-array* for errors='a' - Array code f.
+		"""Test atan2 as *num-array-array* for matherrors='a' - Array code f.
 		"""
 		testfloat = self.floatarray2[0]
 
@@ -927,7 +927,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(testfloat, self.intarray1, self.dataout, errors='a')
+			arrayfunc.atan2(testfloat, self.intarray1, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -990,7 +990,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_array_none_e4(self):
-		"""Test atan2 as *array-array-none* for errors='a' - Array code f.
+		"""Test atan2 as *array-array-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -1003,7 +1003,7 @@ class atan2_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, self.floatarray2, errors='a')
+			arrayfunc.atan2(floatarray1, self.floatarray2, matherrors='a')
 
 
 	########################################################
@@ -1076,14 +1076,14 @@ class atan2_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_array_array_f5(self):
-		"""Test atan2 as *array-array-array* for errors='a' - Array code f.
+		"""Test atan2 as *array-array-array* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, errors='a')
+			arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2398,7 +2398,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_num_none_a4(self):
-		"""Test atan2 as *array-num-none* for errors='a' - Array code d.
+		"""Test atan2 as *array-num-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2411,7 +2411,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, testfloat, errors='a')
+			arrayfunc.atan2(floatarray1, testfloat, matherrors='a')
 
 
 	########################################################
@@ -2506,7 +2506,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_num_array_b5(self):
-		"""Test atan2 as *array-num-array* for errors='a' - Array code d.
+		"""Test atan2 as *array-num-array* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2519,7 +2519,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, testfloat, self.dataout, errors='a')
+			arrayfunc.atan2(floatarray1, testfloat, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2602,7 +2602,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_num_array_none_c4(self):
-		"""Test atan2 as *num-array-none* for errors='a' - Array code d.
+		"""Test atan2 as *num-array-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2615,7 +2615,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(testfloat, floatarray1, errors='a')
+			arrayfunc.atan2(testfloat, floatarray1, matherrors='a')
 
 
 	########################################################
@@ -2700,7 +2700,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_num_array_array_d5(self):
-		"""Test atan2 as *num-array-array* for errors='a' - Array code d.
+		"""Test atan2 as *num-array-array* for matherrors='a' - Array code d.
 		"""
 		testfloat = self.floatarray2[0]
 
@@ -2709,7 +2709,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(testfloat, self.intarray1, self.dataout, errors='a')
+			arrayfunc.atan2(testfloat, self.intarray1, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2772,7 +2772,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_array_none_e4(self):
-		"""Test atan2 as *array-array-none* for errors='a' - Array code d.
+		"""Test atan2 as *array-array-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2785,7 +2785,7 @@ class atan2_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(floatarray1, self.floatarray2, errors='a')
+			arrayfunc.atan2(floatarray1, self.floatarray2, matherrors='a')
 
 
 	########################################################
@@ -2858,14 +2858,14 @@ class atan2_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_atan2_array_array_array_f5(self):
-		"""Test atan2 as *array-array-array* for errors='a' - Array code d.
+		"""Test atan2 as *array-array-array* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, errors='a')
+			arrayfunc.atan2(self.floatarray1, self.floatarray2, self.dataout, matherrors='a')
 
 
 	########################################################

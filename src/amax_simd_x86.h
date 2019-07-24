@@ -1,15 +1,15 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   amax_simd_x86.h
-// Purpose:  Find the maximum value in an array.
+// Purpose:  Calculate the amax of values in an array.
 //           This file provides an SIMD version of the functions.
 // Language: C
-// Date:     01-May-2017
-// Ver:      19-Jun-2018.
+// Date:     16-Apr-2019
+// Ver:      24-Jul-2019.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -26,13 +26,13 @@
 //------------------------------------------------------------------------------
 
 
-signed char amax_signed_char_simd(Py_ssize_t arraylen, signed char *data);
-unsigned char amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data);
-signed short amax_signed_short_simd(Py_ssize_t arraylen, signed short *data);
-unsigned short amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data);
-signed int amax_signed_int_simd(Py_ssize_t arraylen, signed int *data);
-unsigned int amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data);
-float amax_float_simd(Py_ssize_t arraylen, float *data);
+signed long long amax_signed_char_simd(Py_ssize_t arraylen, signed char *data);
+unsigned long long amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data);
+signed long long amax_signed_short_simd(Py_ssize_t arraylen, signed short *data);
+unsigned long long amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data);
+signed long long amax_signed_int_simd(Py_ssize_t arraylen, signed int *data);
+unsigned long long amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data);
+double amax_float_simd(Py_ssize_t arraylen, float *data);
 double amax_double_simd(Py_ssize_t arraylen, double *data);
 
 

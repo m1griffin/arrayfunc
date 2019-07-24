@@ -29,7 +29,7 @@
 
 /*--------------------------------------------------------------------------- */
 
-#define ARGSINIT_TWO {0, 0, 0, 0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}, {NULL}, {NULL}, {0}}
+#define ARGSINIT_TWO {0, 0, 0, 0, 0, 0, 0, 0, 0, {NULL}, {NULL}, {NULL}, {NULL}, {NULL}, {NULL}, {0}}
 
 
 enum paramcats
@@ -52,6 +52,7 @@ struct args_params_2 {
 	char hasbuffer2;
 	char hasbuffer3;
 	unsigned int ignoreerrors;
+	int nosimd;
 	Py_ssize_t arraylength;
 	union dataarrays array1;
 	union dataarrays array2;
@@ -66,7 +67,7 @@ struct args_params_2 {
 
 /*--------------------------------------------------------------------------- */
 
-struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *keywds, char matherrors, char *funcname);
+struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *keywds, char matherrors, char hasnosimd, char *funcname);
 
 void releasebuffers_two(struct args_params_2 arraydata);
 

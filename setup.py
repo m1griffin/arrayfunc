@@ -12,28 +12,28 @@ from setuptools import setup, Extension
 
 # This is a list of the files and all the dependencies.
 extensions = [
-	('aall', ['src/aall.c', 'src/aall_common.c', 'src/aall_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
-	('aany', ['src/aany.c', 'src/aany_common.c', 'src/aany_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('aall', ['src/aall.c', 'src/aall_simd_x86.c', 'src/arrayparams_allany.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('aany', ['src/aany.c', 'src/aany_simd_x86.c', 'src/arrayparams_allany.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 
-	('afilter', ['src/afilter.c', 'src/afilter_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('afilter', ['src/afilter.c', 'src/arrayparams_droptakefilter.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 
-	('amax', ['src/amax.c', 'src/amax_common.c', 'src/amax_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('amin', ['src/amin.c', 'src/amin_common.c', 'src/amin_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('amax', ['src/amax.c', 'src/amax_simd_x86.c', 'src/arrayparams_booloutsimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('amin', ['src/amin.c', 'src/amin_simd_x86.c', 'src/arrayparams_booloutsimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('asum', ['src/asum.c', 'src/asum_common.c', 'src/asum_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('asum', ['src/asum.c', 'src/asum_simd_x86.c', 'src/arrayparams_asum.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('compress', ['src/compress.c', 'src/compress_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('convert', ['src/convert.c', 'src/convert_common.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('compress', ['src/compress.c', 'src/arrayparams_compress.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('convert', ['src/convert.c', 'src/arrayparams_convert.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('count', ['src/count.c', 'src/count_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
-	('cycle', ['src/cycle.c', 'src/cycle_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
-	('repeat', ['src/repeat.c', 'src/repeat_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('count', ['src/count.c', 'src/arrayparams_cntcycrep.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('cycle', ['src/cycle.c', 'src/arrayparams_cntcycrep.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('repeat', ['src/repeat.c', 'src/arrayparams_cntcycrep.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('dropwhile', ['src/dropwhile.c', 'src/dropwhile_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
-	('takewhile', ['src/takewhile.c', 'src/takewhile_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('dropwhile', ['src/dropwhile.c', 'src/arrayparams_droptakefilter.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('takewhile', ['src/takewhile.c', 'src/arrayparams_droptakefilter.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 
-	('findindex', ['src/findindex.c', 'src/findindex_common.c', 'src/findindex_simd_x86.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
-	('findindices', ['src/findindices.c', 'src/findindices_common.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('findindex', ['src/findindex.c', 'src/findindex_simd_x86.c', 'src/arrayparams_allany.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
+	('findindices', ['src/findindices.c', 'src/arrayparams_findindices.c', 'src/arrayparams_base.c', 'src/arrayops.c', 'src/arrayerrs.c']),
 
 
 	('simdsupport', ['src/simdsupport.c']),
@@ -41,31 +41,31 @@ extensions = [
 	('arraylimits', ['src/arraylimits.c']),
 
 
-	('add', ['src/add.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('sub', ['src/sub.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('mul', ['src/mul.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('add', ['src/add.c', 'src/add_simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('sub', ['src/sub.c', 'src/sub_simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('mul', ['src/mul.c', 'src/mul_simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('truediv', ['src/truediv.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('floordiv', ['src/floordiv.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('mod', ['src/mod.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('pow', ['src/pow.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('eq', ['src/eq.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('ne', ['src/ne.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('gt', ['src/gt.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('ge', ['src/ge.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('lt', ['src/lt.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('le', ['src/le.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('eq', ['src/eq.c', 'src/eq_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('ne', ['src/ne.c', 'src/ne_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('gt', ['src/gt.c', 'src/gt_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('ge', ['src/ge.c', 'src/ge_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('lt', ['src/lt.c', 'src/lt_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('le', ['src/le.c', 'src/le_simd_x86.c', 'src/arrayparams_comp.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('and_', ['src/and_.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('or_', ['src/or_.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('xor', ['src/xor.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('and_', ['src/and_.c', 'src/and__simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('or_', ['src/or_.c', 'src/or__simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('xor', ['src/xor.c', 'src/xor_simd_x86.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('lshift', ['src/lshift.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('rshift', ['src/rshift.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('neg', ['src/neg.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('abs_', ['src/abs_.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('neg', ['src/neg.c', 'src/neg_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('abs_', ['src/abs_.c', 'src/abs__simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('factorial', ['src/factorial.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('invert', ['src/invert.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('invert', ['src/invert.c', 'src/invert_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('acos', ['src/acos.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('acosh', ['src/acosh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -73,7 +73,6 @@ extensions = [
 	('asinh', ['src/asinh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('atan', ['src/atan.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('atanh', ['src/atanh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('ceil', ['src/ceil.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('cos', ['src/cos.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('cosh', ['src/cosh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('erf', ['src/erf.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -81,7 +80,6 @@ extensions = [
 	('exp', ['src/exp.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('expm1', ['src/expm1.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('fabs', ['src/fabs.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('floor', ['src/floor.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('gamma', ['src/gamma.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('lgamma', ['src/lgamma.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('log10', ['src/log10.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -90,13 +88,17 @@ extensions = [
 	('log', ['src/log.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('sin', ['src/sin.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('sinh', ['src/sinh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('sqrt', ['src/sqrt.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('tan', ['src/tan.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('tanh', ['src/tanh.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('trunc', ['src/trunc.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
-	('degrees', ['src/degrees.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('radians', ['src/radians.c', 'src/arrayparams_one.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+
+	('ceil', ['src/ceil.c', 'src/ceil_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('floor', ['src/floor.c', 'src/floor_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('trunc', ['src/trunc.c', 'src/trunc_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('sqrt', ['src/sqrt.c', 'src/sqrt_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+
+	('degrees', ['src/degrees.c', 'src/degrees_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('radians', ['src/radians.c', 'src/radians_simd_x86.c', 'src/arrayparams_onesimd.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 
 	('isfinite', ['src/isfinite.c', 'src/arrayparams_boolout.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('isinf', ['src/isinf.c', 'src/arrayparams_boolout.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -143,7 +145,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '4.2.0',
+	version = '4.3.1',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

@@ -567,18 +567,34 @@ def GetHeaderFileDataSIMD():
 		# This gets the function name from the file, assuming the function
 		# name is the first part of the file name (e.g. aall_simd_x86.h ).
 		simdfile = os.path.basename(fname)
-		funcname = simdfile.partition('_')[0]
+		funcname = re.split('_simd', simdfile)[0]
 
 		with open(fname, 'r') as f:
 			typemaps = dict(zip(arraytypes.values(), itertools.repeat(False)))
 			cfuncs = [x for x in f if '_simd(' in x]
 
 			for line in cfuncs:
+				# Trim off everything from _simd and to the right.
 				funcstart = line.partition('_simd(')[0]
+				# Split off the return value.
 				cfuncname = funcstart.rpartition(' ')[2]
-				afuncname = cfuncname.rpartition(funcname)[-1]
-				afunctype = afuncname.replace('_', ' ')
-				afunclabel = afunctype.strip()
+				# Get the type the function handles.
+				afunctype = cfuncname.split('_')[1:]
+				# Some functions have a trailing underscore that results in
+				# an extra space that needs to be filtered out. E.g. and_, or_
+				if afunctype[0] == '':
+					afunctype = afunctype[1:]
+				# Take care of instances where there are multiple numbered versions.
+				if afunctype[-1].isdigit():
+					afunctype = afunctype[:-1]
+				# Take care of cass where there is an extra descriptive element in the
+				# first part of the list. This happens in cases where a comparison
+				# character is passed as a parameter (e.g. with aall, aany, etc.).
+				if afunctype[0] in ('eq', 'lt', 'le', 'gt', 'ge', 'ne'):
+					afunctype = afunctype[1:]
+				# Put the type label back together if there is more than one word.
+				afunclabel = ' '.join(afunctype)
+
 				typemaps[afunclabel] = True
 				
 

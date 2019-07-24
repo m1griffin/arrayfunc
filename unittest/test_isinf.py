@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      16-Nov-2018.
+# Ver:      06-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ class isinf_general_inf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 		self.data = array.array('f', xdata + datainf + xdata)
 
@@ -96,7 +96,7 @@ class isinf_general_inf_f(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf with array limit  - Array code f.
+		"""Test isinf with array maxlen  - Array code f.
 		"""
 		result = arrayfunc.isinf(self.data, maxlen=self.limited)
 
@@ -121,9 +121,9 @@ class isinf_param_errors_inf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')] * len(xdata)
-		datainf = [float('inf')] * len(xdata)
-		dataninf = [float('-inf')] * len(xdata)
+		datanan = [math.nan] * len(xdata)
+		datainf = [math.inf] * len(xdata)
+		dataninf = [-math.inf] * len(xdata)
 
 		self.floatarray = array.array('f', xdata + datainf)
 		self.floatarray2 = copy.copy(self.floatarray)
@@ -210,9 +210,9 @@ class isinf_inf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 
 		self.cleandata = array.array('f', xdata + xdata)
@@ -271,7 +271,7 @@ class isinf_inf_f(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf value to find beyond limit parameter - Array code f.
+		"""Test isinf value to find beyond maxlen parameter - Array code f.
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
@@ -297,9 +297,9 @@ class isinf_general_ninf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 		self.data = array.array('f', xdata + dataninf + xdata)
 
@@ -331,7 +331,7 @@ class isinf_general_ninf_f(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf with array limit  - Array code f.
+		"""Test isinf with array maxlen  - Array code f.
 		"""
 		result = arrayfunc.isinf(self.data, maxlen=self.limited)
 
@@ -356,9 +356,9 @@ class isinf_param_errors_ninf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')] * len(xdata)
-		datainf = [float('inf')] * len(xdata)
-		dataninf = [float('-inf')] * len(xdata)
+		datanan = [math.nan] * len(xdata)
+		datainf = [math.inf] * len(xdata)
+		dataninf = [-math.inf] * len(xdata)
 
 		self.floatarray = array.array('f', xdata + dataninf)
 		self.floatarray2 = copy.copy(self.floatarray)
@@ -445,9 +445,9 @@ class isinf_ninf_f(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 
 		self.cleandata = array.array('f', xdata + xdata)
@@ -506,7 +506,7 @@ class isinf_ninf_f(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf value to find beyond limit parameter - Array code f.
+		"""Test isinf value to find beyond maxlen parameter - Array code f.
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
@@ -532,9 +532,9 @@ class isinf_general_inf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 		self.data = array.array('d', xdata + datainf + xdata)
 
@@ -566,7 +566,7 @@ class isinf_general_inf_d(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf with array limit  - Array code d.
+		"""Test isinf with array maxlen  - Array code d.
 		"""
 		result = arrayfunc.isinf(self.data, maxlen=self.limited)
 
@@ -591,9 +591,9 @@ class isinf_param_errors_inf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')] * len(xdata)
-		datainf = [float('inf')] * len(xdata)
-		dataninf = [float('-inf')] * len(xdata)
+		datanan = [math.nan] * len(xdata)
+		datainf = [math.inf] * len(xdata)
+		dataninf = [-math.inf] * len(xdata)
 
 		self.floatarray = array.array('d', xdata + datainf)
 		self.floatarray2 = copy.copy(self.floatarray)
@@ -680,9 +680,9 @@ class isinf_inf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 
 		self.cleandata = array.array('d', xdata + xdata)
@@ -741,7 +741,7 @@ class isinf_inf_d(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf value to find beyond limit parameter - Array code d.
+		"""Test isinf value to find beyond maxlen parameter - Array code d.
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 
@@ -767,9 +767,9 @@ class isinf_general_ninf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 		self.data = array.array('d', xdata + dataninf + xdata)
 
@@ -801,7 +801,7 @@ class isinf_general_ninf_d(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf with array limit  - Array code d.
+		"""Test isinf with array maxlen  - Array code d.
 		"""
 		result = arrayfunc.isinf(self.data, maxlen=self.limited)
 
@@ -826,9 +826,9 @@ class isinf_param_errors_ninf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')] * len(xdata)
-		datainf = [float('inf')] * len(xdata)
-		dataninf = [float('-inf')] * len(xdata)
+		datanan = [math.nan] * len(xdata)
+		datainf = [math.inf] * len(xdata)
+		dataninf = [-math.inf] * len(xdata)
 
 		self.floatarray = array.array('d', xdata + dataninf)
 		self.floatarray2 = copy.copy(self.floatarray)
@@ -915,9 +915,9 @@ class isinf_ninf_d(unittest.TestCase):
 		"""
 		xdata = [-5.0,-1.0,0.0,0.4,0.8,1.2,1.6,2.0,2.4,2.8,3.2,3.6]
 
-		datanan = [float('nan')]
-		datainf = [float('inf')]
-		dataninf = [float('-inf')]
+		datanan = [math.nan]
+		datainf = [math.inf]
+		dataninf = [-math.inf]
 
 
 		self.cleandata = array.array('d', xdata + xdata)
@@ -976,7 +976,7 @@ class isinf_ninf_d(unittest.TestCase):
 
 	########################################################
 	def test_isinf_b1(self):
-		"""Test isinf value to find beyond limit parameter - Array code d.
+		"""Test isinf value to find beyond maxlen parameter - Array code d.
 		"""
 		result = arrayfunc.isinf(self.testdataend, maxlen=len(self.testdataend) - 1)
 

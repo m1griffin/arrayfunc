@@ -31,11 +31,11 @@ import codegen_common
 
 # ==============================================================================
 
-# This template is for compare operators (e.g. ==, !=, <, <=, >, >=).
+# This template is for compare operations.
 test_template_comp = ''' 
 
 ##############################################################################
-class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	"""Test for basic general function operation using numeric 
 	data %(test_op_y)s.
 	test_template_comp
@@ -46,21 +46,37 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.data1 = array.array('%(typecode)s', [%(test_op_x)s])
-		self.data2 = array.array('%(typecode)s', [%(test_op_y)s])
-		self.data2fail = array.array('%(typecode)s', [%(test_op_y_fail)s])
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		ydata = [x for x,y in zip(itertools.cycle([%(test_op_y)s]), range(testdatasize))]
+		ydatafail = [x for x,y in zip(itertools.cycle([%(test_op_y_fail)s]), range(testdatasize))]
+
+		self.data1 = array.array('%(typecode)s', xdata)
+		self.data2 = array.array('%(typecode)s', ydata)
+		self.data2fail = array.array('%(typecode)s', ydatafail)
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+		self.data2failparam = self.data2fail[:paramitersize]
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_a1(self):
 		"""Test %(funclabel)s as *array-num* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x %(pyoperator)s testval for x in self.data1])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval)
+				result = arrayfunc.%(funcname)s(self.data1, testval %(nosimd)s)
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -71,12 +87,12 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_a2(self):
 		"""Test %(funclabel)s as *array-num* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.data2fail:
+		for testval in self.data2failparam:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([x %(pyoperator)s testval for x in self.data1])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval)
+				result = arrayfunc.%(funcname)s(self.data1, testval %(nosimd)s)
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -87,14 +103,14 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_array_num_a3(self):
 		"""Test %(funclabel)s as *array-num* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.data2:
+		for testval in self.data2param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([x %(pyoperator)s testval for x in self.data1[0:limited]])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval, maxlen=limited)
+				result = arrayfunc.%(funcname)s(self.data1, testval, maxlen=limited %(nosimd)s)
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -105,12 +121,12 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_b1(self):
 		"""Test %(funclabel)s as *num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval %(pyoperator)s x for x in self.data2])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2)
+				result = arrayfunc.%(funcname)s(testval, self.data2 %(nosimd)s)
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -121,12 +137,12 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_b2(self):
 		"""Test %(funclabel)s as *num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				expected = all([testval %(pyoperator)s x for x in self.data2fail])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2fail)
+				result = arrayfunc.%(funcname)s(testval, self.data2fail %(nosimd)s)
 
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
@@ -137,14 +153,14 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 	def test_%(funclabel)s_basic_num_array_b3(self):
 		"""Test %(funclabel)s as *num-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.data1:
+		for testval in self.data1param:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
 				limited = len(self.data1) // 2
 
 				expected = all([testval %(pyoperator)s x for x in self.data2[0:limited]])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2, maxlen=limited)
+				result = arrayfunc.%(funcname)s(testval, self.data2, maxlen=limited %(nosimd)s)
 
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
@@ -156,7 +172,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 		"""Test %(funclabel)s as *array-array* for basic function - Array code %(typelabel)s.
 		"""
 		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.%(funcname)s(self.data1, self.data2)
+		result = arrayfunc.%(funcname)s(self.data1, self.data2 %(nosimd)s)
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -168,7 +184,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 		"""Test %(funclabel)s as *array-array* for basic function - Array code %(typelabel)s.
 		"""
 		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.%(funcname)s(self.data1, self.data2fail)
+		result = arrayfunc.%(funcname)s(self.data1, self.data2fail %(nosimd)s)
 
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
@@ -183,7 +199,7 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 
 		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
 
-		result = arrayfunc.%(funcname)s(self.data1, self.data2, maxlen=limited)
+		result = arrayfunc.%(funcname)s(self.data1, self.data2, maxlen=limited %(nosimd)s)
 
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
@@ -193,6 +209,123 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 ##############################################################################
 
 '''
+
+
+# ==============================================================================
+
+# This template tests with numbers in various positions.
+test_template_numpos = ''' 
+
+
+##############################################################################
+class %(funclabel)s_numpos_%(typelabel)s(unittest.TestCase):
+	"""Test with a single fail value in different array positions.
+	test_template_numpos
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise. The test data is generated from the script itself.
+		"""
+		self.testarraylen = 159
+
+		self.data1 = array.array('%(typecode)s', [%(test_data1)s] * self.testarraylen)
+		self.testval1 = self.data1[0]
+		self.data1fail = array.array('%(typecode)s', list(self.data1))
+		self.data1fail[-1] = %(test_data1fail)s
+
+		self.data2 = array.array('%(typecode)s', [%(test_data2)s] * self.testarraylen)
+		self.testval2 = self.data2[0]
+		self.data2fail = array.array('%(typecode)s', list(self.data2))
+		self.data2fail[-1] = %(test_data2fail)s
+
+
+
+	########################################################
+	def test_%(funclabel)s_numpos_array_num_a1(self):
+		"""Test %(funclabel)s as *array-num* for failing with different data positions in array - Array code %(typelabel)s.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x %(pyoperator)s self.testval2 for x in self.data1fail])
+
+				result = arrayfunc.%(funcname)s(self.data1fail, self.testval2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_%(funclabel)s_numpos_num_array_b1(self):
+		"""Test %(funclabel)s as *num-array* for failing with different data positions in array - Array code %(typelabel)s.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([self.testval1 %(pyoperator)s x for x in self.data2fail])
+
+				result = arrayfunc.%(funcname)s(self.testval1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+	########################################################
+	def test_%(funclabel)s_numpos_array_array_c1(self):
+		"""Test %(funclabel)s as *array-array* for failing with different data positions in array 1 - Array code %(typelabel)s.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x %(pyoperator)s y for x,y in zip(self.data1fail, self.data2)])
+
+				result = arrayfunc.%(funcname)s(self.data1fail, self.data2)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data1.append(self.data1.pop(0))
+
+
+	########################################################
+	def test_%(funclabel)s_numpos_array_array_c2(self):
+		"""Test %(funclabel)s as *array-array* for failing with different data positions in array 2 - Array code %(typelabel)s.
+		"""
+		for testpos in range(self.testarraylen):
+			with self.subTest(msg='Failed with posistion', testpos = testpos):
+
+				expected = all([x %(pyoperator)s y for x,y in zip(self.data1, self.data2fail)])
+
+				result = arrayfunc.%(funcname)s(self.data1, self.data2fail)
+
+				self.assertFalse(result)
+				self.assertIsInstance(result, bool)
+				self.assertEqual(expected, result)
+
+			
+			# Shift the data one position.
+			self.data2.append(self.data2.pop(0))
+
+
+##############################################################################
+
+'''
+
+
 
 # ==============================================================================
 
@@ -398,6 +531,21 @@ class %(funclabel)s_param_errors_opt_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
+	def test_%(funclabel)s_array_num_a3(self):
+		"""Test %(funclabel)s as *array-num* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.%(funcname)s(self.inparray1a, inpvalue, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.%(funcname)s(self.inparray1a, inpvalue, nosimd='a')
+
+
+	########################################################
 	def test_%(funclabel)s_num_array_c1(self):
 		"""Test %(funclabel)s as *num-array* for matherrors=True - Array code %(typelabel)s.
 		"""
@@ -428,6 +576,21 @@ class %(funclabel)s_param_errors_opt_%(typelabel)s(unittest.TestCase):
 
 
 	########################################################
+	def test_%(funclabel)s_num_array_c3(self):
+		"""Test %(funclabel)s as *num-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		inpvalue = self.inparray2a[0]
+
+		# This version is expected to pass.
+		result = arrayfunc.%(funcname)s(inpvalue, self.inparray1a, nosimd=True)
+
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.%(funcname)s(inpvalue, self.inparray1a, nosimd='a')
+
+
+	########################################################
 	def test_%(funclabel)s_array_array_e1(self):
 		"""Test %(funclabel)s as *array-array* for matherrors=True - Array code %(typelabel)s.
 		"""
@@ -451,6 +614,19 @@ class %(funclabel)s_param_errors_opt_%(typelabel)s(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			result = arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, maxlen='a')
+
+
+	########################################################
+	def test_%(funclabel)s_array_array_e3(self):
+		"""Test %(funclabel)s as *array-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+
+		# This version is expected to pass.
+		result = arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			result = arrayfunc.%(funcname)s(self.inparray1a, self.inparray2a, nosimd='a')
 
 
 ##############################################################################
@@ -478,9 +654,9 @@ class %(funclabel)s_errors_nf_%(typelabel)s(unittest.TestCase):
 		self.testvalue = 10.5
 		self.testdata = array.array('%(typecode)s', [self.testvalue] * 20)
 
-		self.nanvalue = float('NaN')
-		self.infvalue = float('inf')
-		self.ninfvalue = float('-inf')
+		self.nanvalue = math.nan
+		self.infvalue = math.inf
+		self.ninfvalue = -math.inf
 
 		self.nandata = array.array('%(typecode)s', [float(self.nanvalue)] * len(self.testdata))
 		self.infdata = array.array('%(typecode)s', [float(self.infvalue)] * len(self.testdata))
@@ -709,12 +885,48 @@ class %(funclabel)s_errors_nf_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
+# This data is used to create tests for test_template_numpos.
 
-# ==============================================================================
+# First parameter.
+numposdata1 = {
+	'eq' : '5',
+	'gt' : '6',
+	'ge' : '6',
+	'lt' : '5',
+	'le' : '6',
+	'ne' : '5',
+}
 
-# These are all the test code templates. 
-test_templates = {'test_template_comp' : test_template_comp}
+# First parameter to cause no match.
+numposdata1fail = {
+	'eq' : '4',
+	'gt' : '5',
+	'ge' : '4',
+	'lt' : '7',
+	'le' : '8',
+	'ne' : '6',
+}
 
+
+# Second parameter.
+numposdata2 = {
+	'eq' : '5',
+	'gt' : '5',
+	'ge' : '5',
+	'lt' : '6',
+	'le' : '7',
+	'ne' : '6',
+}
+
+# Second parameter to cause no match.
+numposdata2fail = {
+	'eq' : '4',
+	'gt' : '7',
+	'ge' : '7',
+	'lt' : '4',
+	'le' : '5',
+	'ne' : '5',
+}
 
 # ==============================================================================
 
@@ -745,7 +957,6 @@ for func in funclist:
 
 		# Check each array type.
 		for functype in codegen_common.arraycodes:
-			testtemplate = test_templates[func['test_op_templ']]
 
 			# Convert the numeric literals to the appropriate type for the array.
 			if functype in codegen_common.floatarrays:
@@ -781,8 +992,37 @@ for func in funclist:
 				funcdata['bad_test_op_x'] = badfmtconvert(func['test_op_x'])
 				funcdata['bad_test_op_y'] = badfmtconvert(func['test_op_y'])
 				
+			# Test for basic operation.
+			# With SIMD, even data arra size.
+			funcdata['simdpresent'] = 'with'
+			funcdata['nosimd'] = ''
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_template_comp % funcdata)
 
-			f.write(testtemplate % funcdata)
+			# With SIMD, odd data array size.
+			funcdata['simdpresent'] = 'with'
+			funcdata['nosimd'] = ''
+			funcdata['arrayevenodd'] = 'odd'
+			f.write(test_template_comp % funcdata)
+
+			# Without SIMD.
+			funcdata['simdpresent'] = 'without'
+			funcdata['nosimd'] = ', nosimd=True'
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_template_comp % funcdata)
+
+
+			#####
+
+			# Test for function with data in different array positions.
+			funcdata['test_data1'] = numposdata1[funcname]
+			funcdata['test_data1fail'] = numposdata1fail[funcname]
+			funcdata['test_data2'] = numposdata2[funcname]
+			funcdata['test_data2fail'] = numposdata2fail[funcname]
+			f.write(test_template_numpos % funcdata)
+
+
+			#####
 
 			# Test for invalid parameters. One template should work for all 
 			# functions of this style.
@@ -791,7 +1031,7 @@ for func in funclist:
 			# Test for invalid optional parameters such as errors and maxlen.
 			f.write(param_invalid_opt_template % funcdata)
 
-
+			#####
 
 			# NaN, Inf tests are for floating point only.
 			if functype in codegen_common.floatarrays:

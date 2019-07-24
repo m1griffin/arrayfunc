@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      01-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -616,7 +616,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_num_none_a4(self):
-		"""Test fmod as *array-num-none* for errors='a' - Array code f.
+		"""Test fmod as *array-num-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -629,7 +629,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, testfloat, errors='a')
+			arrayfunc.fmod(floatarray1, testfloat, matherrors='a')
 
 
 	########################################################
@@ -724,7 +724,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_num_array_b5(self):
-		"""Test fmod as *array-num-array* for errors='a' - Array code f.
+		"""Test fmod as *array-num-array* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -737,7 +737,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, testfloat, self.dataout, errors='a')
+			arrayfunc.fmod(floatarray1, testfloat, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -820,7 +820,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_num_array_none_c4(self):
-		"""Test fmod as *num-array-none* for errors='a' - Array code f.
+		"""Test fmod as *num-array-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -833,7 +833,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(testfloat, floatarray1, errors='a')
+			arrayfunc.fmod(testfloat, floatarray1, matherrors='a')
 
 
 	########################################################
@@ -918,7 +918,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_num_array_array_d5(self):
-		"""Test fmod as *num-array-array* for errors='a' - Array code f.
+		"""Test fmod as *num-array-array* for matherrors='a' - Array code f.
 		"""
 		testfloat = self.floatarray2[0]
 
@@ -927,7 +927,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(testfloat, self.intarray1, self.dataout, errors='a')
+			arrayfunc.fmod(testfloat, self.intarray1, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -990,7 +990,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_array_none_e4(self):
-		"""Test fmod as *array-array-none* for errors='a' - Array code f.
+		"""Test fmod as *array-array-none* for matherrors='a' - Array code f.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -1003,7 +1003,7 @@ class fmod_param_errors_f(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, self.floatarray2, errors='a')
+			arrayfunc.fmod(floatarray1, self.floatarray2, matherrors='a')
 
 
 	########################################################
@@ -1076,14 +1076,14 @@ class fmod_param_errors_f(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_array_array_f5(self):
-		"""Test fmod as *array-array-array* for errors='a' - Array code f.
+		"""Test fmod as *array-array-array* for matherrors='a' - Array code f.
 		"""
 		# This version is expected to pass.
 		arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, errors='a')
+			arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1421,7 +1421,7 @@ class fmod_inf_noerrors_f(unittest.TestCase):
 
 		# When error data is calculated with error checking off, the result is
 		# always NaN.
-		self.nanresult = [float('nan')] * testarraysize
+		self.nanresult = [math.nan] * testarraysize
 
 
 
@@ -1836,7 +1836,7 @@ class fmod_ninf_noerrors_f(unittest.TestCase):
 
 		# When error data is calculated with error checking off, the result is
 		# always NaN.
-		self.nanresult = [float('nan')] * testarraysize
+		self.nanresult = [math.nan] * testarraysize
 
 
 
@@ -2766,7 +2766,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_num_none_a4(self):
-		"""Test fmod as *array-num-none* for errors='a' - Array code d.
+		"""Test fmod as *array-num-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2779,7 +2779,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, testfloat, errors='a')
+			arrayfunc.fmod(floatarray1, testfloat, matherrors='a')
 
 
 	########################################################
@@ -2874,7 +2874,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_num_array_b5(self):
-		"""Test fmod as *array-num-array* for errors='a' - Array code d.
+		"""Test fmod as *array-num-array* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2887,7 +2887,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, testfloat, self.dataout, errors='a')
+			arrayfunc.fmod(floatarray1, testfloat, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2970,7 +2970,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_num_array_none_c4(self):
-		"""Test fmod as *num-array-none* for errors='a' - Array code d.
+		"""Test fmod as *num-array-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -2983,7 +2983,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(testfloat, floatarray1, errors='a')
+			arrayfunc.fmod(testfloat, floatarray1, matherrors='a')
 
 
 	########################################################
@@ -3068,7 +3068,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_num_array_array_d5(self):
-		"""Test fmod as *num-array-array* for errors='a' - Array code d.
+		"""Test fmod as *num-array-array* for matherrors='a' - Array code d.
 		"""
 		testfloat = self.floatarray2[0]
 
@@ -3077,7 +3077,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(testfloat, self.intarray1, self.dataout, errors='a')
+			arrayfunc.fmod(testfloat, self.intarray1, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -3140,7 +3140,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_array_none_e4(self):
-		"""Test fmod as *array-array-none* for errors='a' - Array code d.
+		"""Test fmod as *array-array-none* for matherrors='a' - Array code d.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray1 = copy.copy(self.floatarray1)
@@ -3153,7 +3153,7 @@ class fmod_param_errors_d(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(floatarray1, self.floatarray2, errors='a')
+			arrayfunc.fmod(floatarray1, self.floatarray2, matherrors='a')
 
 
 	########################################################
@@ -3226,14 +3226,14 @@ class fmod_param_errors_d(unittest.TestCase):
 
 	########################################################
 	def test_fmod_array_array_array_f5(self):
-		"""Test fmod as *array-array-array* for errors='a' - Array code d.
+		"""Test fmod as *array-array-array* for matherrors='a' - Array code d.
 		"""
 		# This version is expected to pass.
 		arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, errors='a')
+			arrayfunc.fmod(self.floatarray1, self.floatarray2, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -3571,7 +3571,7 @@ class fmod_inf_noerrors_d(unittest.TestCase):
 
 		# When error data is calculated with error checking off, the result is
 		# always NaN.
-		self.nanresult = [float('nan')] * testarraysize
+		self.nanresult = [math.nan] * testarraysize
 
 
 
@@ -3986,7 +3986,7 @@ class fmod_ninf_noerrors_d(unittest.TestCase):
 
 		# When error data is calculated with error checking off, the result is
 		# always NaN.
-		self.nanresult = [float('nan')] * testarraysize
+		self.nanresult = [math.nan] * testarraysize
 
 
 

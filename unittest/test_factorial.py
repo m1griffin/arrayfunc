@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Jun-2018.
+# Ver:      06-Jul-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ import arrayfunc
 ##############################################################################
 class factorial_general_b(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -111,8 +111,8 @@ class factorial_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code b.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code b.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -125,8 +125,8 @@ class factorial_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code b.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code b.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -164,8 +164,8 @@ class factorial_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code b.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code b.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -178,8 +178,8 @@ class factorial_general_b(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code b.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code b.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -279,14 +279,14 @@ class factorial_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code b.
+		"""Test factorial as *array-none* for matherrors='a' - Array code b.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -304,7 +304,7 @@ class factorial_opt_param_errors_b(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code b.
+		"""Test factorial as *array-array* for matherrors='a' - Array code b.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -312,7 +312,7 @@ class factorial_opt_param_errors_b(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -336,7 +336,7 @@ class factorial_opt_param_errors_b(unittest.TestCase):
 ##############################################################################
 class factorial_general_B(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -394,8 +394,8 @@ class factorial_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code B.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code B.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -408,8 +408,8 @@ class factorial_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code B.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code B.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -447,8 +447,8 @@ class factorial_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code B.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code B.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -461,8 +461,8 @@ class factorial_general_B(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code B.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code B.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -562,14 +562,14 @@ class factorial_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code B.
+		"""Test factorial as *array-none* for matherrors='a' - Array code B.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -587,7 +587,7 @@ class factorial_opt_param_errors_B(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code B.
+		"""Test factorial as *array-array* for matherrors='a' - Array code B.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -595,7 +595,7 @@ class factorial_opt_param_errors_B(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -619,7 +619,7 @@ class factorial_opt_param_errors_B(unittest.TestCase):
 ##############################################################################
 class factorial_general_h(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -677,8 +677,8 @@ class factorial_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code h.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code h.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -691,8 +691,8 @@ class factorial_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code h.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code h.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -730,8 +730,8 @@ class factorial_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code h.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code h.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -744,8 +744,8 @@ class factorial_general_h(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code h.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code h.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -845,14 +845,14 @@ class factorial_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code h.
+		"""Test factorial as *array-none* for matherrors='a' - Array code h.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -870,7 +870,7 @@ class factorial_opt_param_errors_h(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code h.
+		"""Test factorial as *array-array* for matherrors='a' - Array code h.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -878,7 +878,7 @@ class factorial_opt_param_errors_h(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -902,7 +902,7 @@ class factorial_opt_param_errors_h(unittest.TestCase):
 ##############################################################################
 class factorial_general_H(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -960,8 +960,8 @@ class factorial_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code H.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code H.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -974,8 +974,8 @@ class factorial_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code H.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code H.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1013,8 +1013,8 @@ class factorial_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code H.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code H.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1027,8 +1027,8 @@ class factorial_general_H(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code H.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code H.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1128,14 +1128,14 @@ class factorial_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code H.
+		"""Test factorial as *array-none* for matherrors='a' - Array code H.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1153,7 +1153,7 @@ class factorial_opt_param_errors_H(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code H.
+		"""Test factorial as *array-array* for matherrors='a' - Array code H.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -1161,7 +1161,7 @@ class factorial_opt_param_errors_H(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1185,7 +1185,7 @@ class factorial_opt_param_errors_H(unittest.TestCase):
 ##############################################################################
 class factorial_general_i(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -1243,8 +1243,8 @@ class factorial_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code i.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code i.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1257,8 +1257,8 @@ class factorial_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code i.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code i.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1296,8 +1296,8 @@ class factorial_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code i.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code i.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1310,8 +1310,8 @@ class factorial_general_i(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code i.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code i.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1411,14 +1411,14 @@ class factorial_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code i.
+		"""Test factorial as *array-none* for matherrors='a' - Array code i.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1436,7 +1436,7 @@ class factorial_opt_param_errors_i(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code i.
+		"""Test factorial as *array-array* for matherrors='a' - Array code i.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -1444,7 +1444,7 @@ class factorial_opt_param_errors_i(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1468,7 +1468,7 @@ class factorial_opt_param_errors_i(unittest.TestCase):
 ##############################################################################
 class factorial_general_I(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -1526,8 +1526,8 @@ class factorial_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code I.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code I.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1540,8 +1540,8 @@ class factorial_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code I.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code I.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1579,8 +1579,8 @@ class factorial_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code I.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code I.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1593,8 +1593,8 @@ class factorial_general_I(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code I.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code I.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1694,14 +1694,14 @@ class factorial_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code I.
+		"""Test factorial as *array-none* for matherrors='a' - Array code I.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -1719,7 +1719,7 @@ class factorial_opt_param_errors_I(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code I.
+		"""Test factorial as *array-array* for matherrors='a' - Array code I.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -1727,7 +1727,7 @@ class factorial_opt_param_errors_I(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -1751,7 +1751,7 @@ class factorial_opt_param_errors_I(unittest.TestCase):
 ##############################################################################
 class factorial_general_l(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -1809,8 +1809,8 @@ class factorial_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code l.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code l.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1823,8 +1823,8 @@ class factorial_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code l.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code l.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -1862,8 +1862,8 @@ class factorial_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code l.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code l.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1876,8 +1876,8 @@ class factorial_general_l(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code l.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code l.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -1977,14 +1977,14 @@ class factorial_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code l.
+		"""Test factorial as *array-none* for matherrors='a' - Array code l.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -2002,7 +2002,7 @@ class factorial_opt_param_errors_l(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code l.
+		"""Test factorial as *array-array* for matherrors='a' - Array code l.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -2010,7 +2010,7 @@ class factorial_opt_param_errors_l(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2034,7 +2034,7 @@ class factorial_opt_param_errors_l(unittest.TestCase):
 ##############################################################################
 class factorial_general_L(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -2092,8 +2092,8 @@ class factorial_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code L.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code L.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2106,8 +2106,8 @@ class factorial_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code L.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code L.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2145,8 +2145,8 @@ class factorial_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code L.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code L.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2159,8 +2159,8 @@ class factorial_general_L(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code L.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code L.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2260,14 +2260,14 @@ class factorial_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code L.
+		"""Test factorial as *array-none* for matherrors='a' - Array code L.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -2285,7 +2285,7 @@ class factorial_opt_param_errors_L(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code L.
+		"""Test factorial as *array-array* for matherrors='a' - Array code L.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -2293,7 +2293,7 @@ class factorial_opt_param_errors_L(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2317,7 +2317,7 @@ class factorial_opt_param_errors_L(unittest.TestCase):
 ##############################################################################
 class factorial_general_q(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -2375,8 +2375,8 @@ class factorial_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code q.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2389,8 +2389,8 @@ class factorial_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code q.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2428,8 +2428,8 @@ class factorial_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code q.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2442,8 +2442,8 @@ class factorial_general_q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code q.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2543,14 +2543,14 @@ class factorial_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code q.
+		"""Test factorial as *array-none* for matherrors='a' - Array code q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -2568,7 +2568,7 @@ class factorial_opt_param_errors_q(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code q.
+		"""Test factorial as *array-array* for matherrors='a' - Array code q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -2576,7 +2576,7 @@ class factorial_opt_param_errors_q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2600,7 +2600,7 @@ class factorial_opt_param_errors_q(unittest.TestCase):
 ##############################################################################
 class factorial_general_Q(unittest.TestCase):
 	"""Test for basic general tests.
-	test_template_uniop
+	test_template_factorial
 	"""
 
 
@@ -2658,8 +2658,8 @@ class factorial_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a3(self):
-		"""Test factorial in place with array limit  - Array code Q.
+	def test_factorial_inplace_maxlen_a3(self):
+		"""Test factorial in place with array maxlen  - Array code Q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2672,8 +2672,8 @@ class factorial_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a4(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code Q.
+	def test_factorial_inplace_ov_maxlen_a4(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code Q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -2711,8 +2711,8 @@ class factorial_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a7(self):
-		"""Test factorial to output array with array limit  - Array code Q.
+	def test_factorial_outputarray_maxlen_a7(self):
+		"""Test factorial to output array with array maxlen  - Array code Q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2725,8 +2725,8 @@ class factorial_general_Q(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a8(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code Q.
+	def test_factorial_outputarray_ov_maxlen_a8(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code Q.
 		"""
 		pydataout = [math.factorial(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -2826,14 +2826,14 @@ class factorial_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_none_a1(self):
-		"""Test factorial as *array-none* for errors='a' - Array code Q.
+		"""Test factorial as *array-none* for matherrors='a' - Array code Q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, errors='a')
+			arrayfunc.factorial(self.inparray1b, matherrors='a')
 
 
 	########################################################
@@ -2851,7 +2851,7 @@ class factorial_opt_param_errors_Q(unittest.TestCase):
 
 	########################################################
 	def test_factorial_array_array_b1(self):
-		"""Test factorial as *array-array* for errors='a' - Array code Q.
+		"""Test factorial as *array-array* for matherrors='a' - Array code Q.
 		"""
 		# This version is expected to pass.
 		arrayfunc.factorial(self.inparray1a, self.dataout, matherrors=True)
@@ -2859,7 +2859,7 @@ class factorial_opt_param_errors_Q(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.inparray1b, self.dataout, errors='a')
+			arrayfunc.factorial(self.inparray1b, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -2874,91 +2874,6 @@ class factorial_opt_param_errors_Q(unittest.TestCase):
 		with self.assertRaises(TypeError):
 			arrayfunc.factorial(self.inparray1b, self.dataout, maxlen='a')
 
-
-
-##############################################################################
-
-
-
-##############################################################################
-class factorial_invalidarray_d(unittest.TestCase):
-	"""Test for invalid arrays.
-	test_template_invalidarray
-	"""
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.data = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0])
-		self.dataout = array.array('d', [0]*len(self.data))
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_factorial_inplace(self):
-		"""Test factorial in place - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data)
-
-
-	########################################################
-	def test_factorial_inplace_ov_a1(self):
-		"""Test factorial in place with matherrors=True  - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, matherrors=True)
-
-
-	########################################################
-	def test_factorial_inplace_lim_a2(self):
-		"""Test factorial in place with array limit  - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, maxlen=self.limited)
-
-
-	########################################################
-	def test_factorial_inplace_ov_lim_a3(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, matherrors=True, maxlen=self.limited)
-
-
-	########################################################
-	def test_factorial_outputarray_a4(self):
-		"""Test factorial to output array - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, self.dataout)
-
-
-	########################################################
-	def test_factorial_outputarray_ov_a4(self):
-		"""Test factorial to output array with matherrors=True  - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, self.dataout, matherrors=True)
-
-
-	########################################################
-	def test_factorial_outputarray_lim_a5(self):
-		"""Test factorial to output array with array limit  - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, self.dataout, maxlen=self.limited)
-
-
-	########################################################
-	def test_factorial_outputarray_ov_lim_a6(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code d.
-		"""
-		with self.assertRaises(TypeError):
-			arrayfunc.factorial(self.data, self.dataout, matherrors=True, maxlen=self.limited)
 
 
 ##############################################################################
@@ -2999,16 +2914,16 @@ class factorial_invalidarray_f(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_inplace_lim_a2(self):
-		"""Test factorial in place with array limit  - Array code f.
+	def test_factorial_inplace_maxlen_a2(self):
+		"""Test factorial in place with array maxlen  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.factorial(self.data, maxlen=self.limited)
 
 
 	########################################################
-	def test_factorial_inplace_ov_lim_a3(self):
-		"""Test factorial in place with matherrors=True and array limit  - Array code f.
+	def test_factorial_inplace_ov_maxlen_a3(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.factorial(self.data, matherrors=True, maxlen=self.limited)
@@ -3031,16 +2946,101 @@ class factorial_invalidarray_f(unittest.TestCase):
 
 
 	########################################################
-	def test_factorial_outputarray_lim_a5(self):
-		"""Test factorial to output array with array limit  - Array code f.
+	def test_factorial_outputarray_maxlen_a5(self):
+		"""Test factorial to output array with array maxlen  - Array code f.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.factorial(self.data, self.dataout, maxlen=self.limited)
 
 
 	########################################################
-	def test_factorial_outputarray_ov_lim_a6(self):
-		"""Test factorial to output array with matherrors=True and array limit - Array code f.
+	def test_factorial_outputarray_ov_maxlen_a6(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, self.dataout, matherrors=True, maxlen=self.limited)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class factorial_invalidarray_d(unittest.TestCase):
+	"""Test for invalid arrays.
+	test_template_invalidarray
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.data = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0])
+		self.dataout = array.array('d', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_factorial_inplace(self):
+		"""Test factorial in place - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data)
+
+
+	########################################################
+	def test_factorial_inplace_ov_a1(self):
+		"""Test factorial in place with matherrors=True  - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, matherrors=True)
+
+
+	########################################################
+	def test_factorial_inplace_maxlen_a2(self):
+		"""Test factorial in place with array maxlen  - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, maxlen=self.limited)
+
+
+	########################################################
+	def test_factorial_inplace_ov_maxlen_a3(self):
+		"""Test factorial in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, matherrors=True, maxlen=self.limited)
+
+
+	########################################################
+	def test_factorial_outputarray_a4(self):
+		"""Test factorial to output array - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, self.dataout)
+
+
+	########################################################
+	def test_factorial_outputarray_ov_a4(self):
+		"""Test factorial to output array with matherrors=True  - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, self.dataout, matherrors=True)
+
+
+	########################################################
+	def test_factorial_outputarray_maxlen_a5(self):
+		"""Test factorial to output array with array maxlen  - Array code d.
+		"""
+		with self.assertRaises(TypeError):
+			arrayfunc.factorial(self.data, self.dataout, maxlen=self.limited)
+
+
+	########################################################
+	def test_factorial_outputarray_ov_maxlen_a6(self):
+		"""Test factorial to output array with matherrors=True and array maxlen - Array code d.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.factorial(self.data, self.dataout, matherrors=True, maxlen=self.limited)

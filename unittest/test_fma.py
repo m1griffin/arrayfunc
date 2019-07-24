@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     30-Nov-2018.
-# Ver:      17-Dec-2018.
+# Ver:      13-Apr-2019.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class fma_general_optionsnone_f(unittest.TestCase):
+class fma_general_optionsnone_even_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation using no options.
 	test_template_fma
 	"""
@@ -77,20 +77,38 @@ class fma_general_optionsnone_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
 		self.dataout = array.array('f', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - no options - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -110,8 +128,8 @@ class fma_general_optionsnone_f(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - no options - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					# No array limits used.
@@ -127,7 +145,7 @@ class fma_general_optionsnone_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - no options - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -147,7 +165,7 @@ class fma_general_optionsnone_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - no options - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				# No array limits used.
@@ -163,7 +181,7 @@ class fma_general_optionsnone_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - no options - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -183,7 +201,7 @@ class fma_general_optionsnone_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - no options - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				# No array limits used.
@@ -229,7 +247,7 @@ class fma_general_optionsnone_f(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmaxlen_f(unittest.TestCase):
+class fma_general_optionsmaxlen_even_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation using maxlen option.
 	test_template_fma
 	"""
@@ -255,20 +273,38 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
 		self.dataout = array.array('f', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - maxlen option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -288,8 +324,8 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - maxlen option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -305,7 +341,7 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - maxlen option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -325,7 +361,7 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - maxlen option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -341,7 +377,7 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - maxlen option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -361,7 +397,7 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - maxlen option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -407,7 +443,7 @@ class fma_general_optionsmaxlen_f(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmatherror_f(unittest.TestCase):
+class fma_general_optionsmatherror_even_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation using matherror option.
 	test_template_fma
 	"""
@@ -433,20 +469,38 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
 		self.dataout = array.array('f', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - matherror option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -466,8 +520,8 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - matherror option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					# No array limits used.
@@ -483,7 +537,7 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - matherror option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -503,7 +557,7 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - matherror option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				# No array limits used.
@@ -519,7 +573,7 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - matherror option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -539,7 +593,7 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - matherror option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				# No array limits used.
@@ -585,7 +639,7 @@ class fma_general_optionsmatherror_f(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
+class fma_general_optionsmaxlenmatherrors_even_arraysize_f(unittest.TestCase):
 	"""Test for basic general function operation using maxlen and matherrors option.
 	test_template_fma
 	"""
@@ -611,20 +665,38 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('f', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('f', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
 		self.dataout = array.array('f', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -644,8 +716,8 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -661,7 +733,7 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -681,7 +753,7 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -697,7 +769,7 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -717,7 +789,7 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code f.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -751,6 +823,594 @@ class fma_general_optionsmaxlenmatherrors_f(unittest.TestCase):
 		expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
 
 		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, maxlen=self.limited, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_even_arraysize_f(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
+		self.dataout = array.array('f', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_odd_arraysize_f(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
+		self.dataout = array.array('f', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_even_arraysize_f(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('f', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('f', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('f', zdata)
+
+		self.dataout = array.array('f', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code f.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout)
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -34723,7 +35383,7 @@ class fma_finite_errors_f(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsnone_d(unittest.TestCase):
+class fma_general_optionsnone_even_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation using no options.
 	test_template_fma
 	"""
@@ -34749,20 +35409,38 @@ class fma_general_optionsnone_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
 		self.dataout = array.array('d', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - no options - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -34782,8 +35460,8 @@ class fma_general_optionsnone_d(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - no options - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					# No array limits used.
@@ -34799,7 +35477,7 @@ class fma_general_optionsnone_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - no options - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -34819,7 +35497,7 @@ class fma_general_optionsnone_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - no options - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				# No array limits used.
@@ -34835,7 +35513,7 @@ class fma_general_optionsnone_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - no options - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -34855,7 +35533,7 @@ class fma_general_optionsnone_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - no options - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				# No array limits used.
@@ -34901,7 +35579,7 @@ class fma_general_optionsnone_d(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmaxlen_d(unittest.TestCase):
+class fma_general_optionsmaxlen_even_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation using maxlen option.
 	test_template_fma
 	"""
@@ -34927,20 +35605,38 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
 		self.dataout = array.array('d', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - maxlen option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -34960,8 +35656,8 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - maxlen option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -34977,7 +35673,7 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - maxlen option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -34997,7 +35693,7 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - maxlen option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -35013,7 +35709,7 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - maxlen option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -35033,7 +35729,7 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - maxlen option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -35079,7 +35775,7 @@ class fma_general_optionsmaxlen_d(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmatherror_d(unittest.TestCase):
+class fma_general_optionsmatherror_even_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation using matherror option.
 	test_template_fma
 	"""
@@ -35105,20 +35801,38 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
 		self.dataout = array.array('d', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - matherror option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -35138,8 +35852,8 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - matherror option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					# No array limits used.
@@ -35155,7 +35869,7 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - matherror option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -35175,7 +35889,7 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - matherror option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				# No array limits used.
@@ -35191,7 +35905,7 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - matherror option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -35211,7 +35925,7 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - matherror option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				# No array limits used.
@@ -35257,7 +35971,7 @@ class fma_general_optionsmatherror_d(unittest.TestCase):
 
 
 ##############################################################################
-class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
+class fma_general_optionsmaxlenmatherrors_even_arraysize_d(unittest.TestCase):
 	"""Test for basic general function operation using maxlen and matherrors option.
 	test_template_fma
 	"""
@@ -35283,20 +35997,38 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
-		self.datax = array.array('d', [0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0])
-		self.datay = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
-		self.dataz = array.array('d', [x for (x,y) in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), self.datax)])
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
 		self.dataout = array.array('d', [0.0] * len(self.datax))
 
 		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
 
 
 	########################################################
 	def test_fma_basic_arr_num_num_none_a1(self):
 		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 
 					# Copy the array so the data doesn't get changed.
@@ -35316,8 +36048,8 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 	def test_fma_basic_arr_num_num_arr_a2(self):
 		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for y in self.datay:
-			for z in self.dataz:
+		for y in self.yiter:
+			for z in self.ziter:
 				with self.subTest(msg='Failed with parameters', y = y, z = z):
 					expected = [x * y + z for x in self.datax]
 					expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -35333,7 +36065,7 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_none_b1(self):
 		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 
 				# Copy the array so the data doesn't get changed.
@@ -35353,7 +36085,7 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 	def test_fma_basic_arr_arr_num_arr_b2(self):
 		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for z in self.dataz:
+		for z in self.ziter:
 			with self.subTest(msg='Failed with parameters', z = z):
 				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -35369,7 +36101,7 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_none_c1(self):
 		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 
 				# Copy the array so the data doesn't get changed.
@@ -35389,7 +36121,7 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 	def test_fma_basic_arr_num_arr_arr_c2(self):
 		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code d.
 		"""
-		for y in self.datay:
+		for y in self.yiter:
 			with self.subTest(msg='Failed with parameters', y = y):
 				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
 				expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
@@ -35423,6 +36155,594 @@ class fma_general_optionsmaxlenmatherrors_d(unittest.TestCase):
 		expected = expected[0:self.limited] + list(self.dataout)[self.limited:]
 
 		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, maxlen=self.limited, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_even_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
+		self.dataout = array.array('d', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_odd_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'odd' == 'even':
+			testdatasize = 160
+		if 'odd' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
+		self.dataout = array.array('d', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout, matherrors=True)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout, matherrors=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout, matherrors=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class fma_general_optionsmaxlenmatherrors_even_arraysize_d(unittest.TestCase):
+	"""Test for basic general function operation using maxlen and matherrors option.
+	test_template_fma
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		# The compare values are set by template. They are used to
+		# set whether the array size is even or odd.
+		if 'even' == 'even':
+			testdatasize = 160
+		if 'even' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+
+		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
+		self.datax = array.array('d', xdata)
+
+		ydata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.datay = array.array('d', ydata)
+		zdata = [x for x,y in zip(itertools.cycle([-2.0, -1.0, 1.0, 2.0]), range(testdatasize))]
+		self.dataz = array.array('d', zdata)
+
+		self.dataout = array.array('d', [0.0] * len(self.datax))
+
+		self.limited = len(self.datax) // 2
+
+		# These are used in parameter loops to avoid having too many tests.
+		self.yiter = [-2.0, -1.0, 1.0, 2.0]
+		self.ziter = [-2.0, -1.0, 1.0, 2.0]
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_none_a1(self):
+		"""Test fma as *arr_num_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+
+					# Copy the array so the data doesn't get changed.
+					datax = copy.copy(self.datax)
+
+					expected = [x * y + z for x in datax]
+					# No array limits used.
+
+					arrayfunc.fma(datax, y, z)
+
+					for dataoutitem, expecteditem in zip(datax, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_num_arr_a2(self):
+		"""Test fma as *arr_num_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			for z in self.ziter:
+				with self.subTest(msg='Failed with parameters', y = y, z = z):
+					expected = [x * y + z for x in self.datax]
+					# No array limits used.
+
+					arrayfunc.fma(self.datax, y, z, self.dataout)
+
+					for dataoutitem, expecteditem in zip(self.dataout, expected):
+						# The behavour of assertEqual is modified by addTypeEqualityFunc.
+						self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_none_b1(self):
+		"""Test fma as *arr_arr_num_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,y in zip(datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, self.datay, z)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_num_arr_b2(self):
+		"""Test fma as *arr_arr_num_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for z in self.ziter:
+			with self.subTest(msg='Failed with parameters', z = z):
+				expected = [x * y + z for x,y in zip(self.datax, self.datay)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, self.datay, z, self.dataout)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_none_c1(self):
+		"""Test fma as *arr_num_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+
+				# Copy the array so the data doesn't get changed.
+				datax = copy.copy(self.datax)
+
+				expected = [x * y + z for x,z in zip(datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(datax, y, self.dataz)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_num_arr_arr_c2(self):
+		"""Test fma as *arr_num_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		for y in self.yiter:
+			with self.subTest(msg='Failed with parameters', y = y):
+				expected = [x * y + z for x,z in zip(self.datax, self.dataz)]
+				# No array limits used.
+
+				arrayfunc.fma(self.datax, y, self.dataz, self.dataout)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_none_d1(self):
+		"""Test fma as *arr_arr_arr_none* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz)
+
+		for dataoutitem, expecteditem in zip(self.datax, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_fma_basic_arr_arr_arr_arr_d2(self):
+		"""Test fma as *arr_arr_arr_arr* for basic function - maxlen and matherrors option - Array code d.
+		"""
+		expected = [x * y + z for x,y,z in zip(self.datax, self.datay, self.dataz)]
+		# No array limits used.
+
+		arrayfunc.fma(self.datax, self.datay, self.dataz, self.dataout)
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.

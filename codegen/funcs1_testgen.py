@@ -36,7 +36,7 @@ import codegen_common
 test_template_noparams = '''
 
 ##############################################################################
-class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_noparams
 	"""
@@ -62,146 +62,116 @@ class %(funclabel)s_general_%(typelabel)s(unittest.TestCase):
 		"""
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
+		if '%(arrayevenodd)s' == 'even':
+			testdatasize = 160
+		if '%(arrayevenodd)s' == 'odd':
+			testdatasize = 159
+		paramitersize = 5
+
+		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		self.data = array.array('%(typecode)s', xdata)
+		self.dataout = array.array('%(typecode)s', [0]*len(self.data))
+
+		self.limited = len(self.data) // 2
+
+		# The expected results.
+		self.expected = [%(pyoperator)s(x) for x in self.data]
+
+		# The expected results when the maxlen parameter is used.
+		self.expectedlimiteddata = self.expected[0:self.limited] + list(self.data)[self.limited:]
+
+		# The same, but where dataout is used as one of the sources.
+		self.expectedlimiteddataout = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
 
 	########################################################
-	def test_%(funclabel)s_outputarray(self):
-		"""Test %(funclabel)s to output array - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_none_a1(self):
+		"""Test %(funclabel)s as *array-none* for basic function - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data %(nosimd)s)
 
-		dataout = array.array('%(typecode)s', [0]*len(data))
-
-
-		expected = [%(pyoperator)s(x) for x in data]
-		arrayfunc.%(funcname)s(data, dataout)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_outputarray_ov(self):
-		"""Test %(funclabel)s to output array with matherrors=True  - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_none_a2(self):
+		"""Test %(funclabel)s as *array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, matherrors=True %(nosimd)s)
 
-		dataout = array.array('%(typecode)s', [0]*len(data))
-
-
-		expected = [%(pyoperator)s(x) for x in data]
-		arrayfunc.%(funcname)s(data, dataout, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_outputarray_lim(self):
-		"""Test %(funclabel)s to output array with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_none_a3(self):
+		"""Test %(funclabel)s as *array-none* for basic function with maxlen - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, maxlen=self.limited %(nosimd)s)
 
-		dataout = array.array('%(typecode)s', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [%(pyoperator)s(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.%(funcname)s(data, dataout, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_outputarray_ov_lim(self):
-		"""Test %(funclabel)s to output array with matherrors=True and array limit - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_none_a4(self):
+		"""Test %(funclabel)s as *array-none* for basic function with maxlen and matherrors=True - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, maxlen=self.limited, matherrors=True %(nosimd)s)
 
-		dataout = array.array('%(typecode)s', [0]*len(data))
-
-		limited = len(data) // 2
-
-		pydataout = [%(pyoperator)s(x) for x in data]
-		expected = pydataout[0:limited] + list(dataout)[limited:]
-
-		arrayfunc.%(funcname)s(data, dataout, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_%(funclabel)s_inplace(self):
-		"""Test %(funclabel)s in place - Array code %(typelabel)s.
-		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
-
-
-		expected = [%(pyoperator)s(x) for x in data]
-		arrayfunc.%(funcname)s(data)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimiteddata):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_inplace_ov(self):
-		"""Test %(funclabel)s in place with matherrors=True  - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_array_b1(self):
+		"""Test %(funclabel)s as *array-array* for basic function - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, self.dataout %(nosimd)s)
 
-
-		expected = [%(pyoperator)s(x) for x in data]
-		arrayfunc.%(funcname)s(data, matherrors=True)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_inplace_lim(self):
-		"""Test %(funclabel)s in place with array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_array_b2(self):
+		"""Test %(funclabel)s as *array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, self.dataout, matherrors=True %(nosimd)s)
 
-		limited = len(data) // 2
-
-		pydataout = [%(pyoperator)s(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.%(funcname)s(data, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
 
 
 	########################################################
-	def test_%(funclabel)s_inplace_ov_lim(self):
-		"""Test %(funclabel)s in place with matherrors=True and array limit  - Array code %(typelabel)s.
+	def test_%(funclabel)s_basic_array_array_b3(self):
+		"""Test %(funclabel)s as *array-array* for basic function with maxlen - Array code %(typelabel)s.
 		"""
-		data = array.array('%(typecode)s', [%(test_op_x)s])
+		arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited %(nosimd)s)
 
-		limited = len(data) // 2
-
-		pydataout = [%(pyoperator)s(x) for x in data]
-		expected = pydataout[0:limited] + list(data)[limited:]
-
-		arrayfunc.%(funcname)s(data, matherrors=True, maxlen=limited)
-
-		for dataoutitem, expecteditem in zip(list(data), expected):
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
 			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_%(funclabel)s_basic_array_array_b4(self):
+		"""Test %(funclabel)s as *array-array* for basic function with maxlen and matherrors=True - Array code %(typelabel)s.
+		"""
+		arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited, matherrors=True %(nosimd)s)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimiteddataout):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
 
 
 ##############################################################################
@@ -253,7 +223,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_b1(self):
-		"""Test %(funclabel)s as *array-none* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		# Copy the array so we don't change the original data.
 		floatarray = copy.copy(self.floatarray)
@@ -265,7 +235,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(floatarray, errors='a')
+			arrayfunc.%(funcname)s(floatarray, matherrors='a')
 
 
 	########################################################
@@ -325,14 +295,14 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_array_d1(self):
-		"""Test %(funclabel)s as *array-num-array* for errors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-num-array* for matherrors='a' - Array code %(typelabel)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.floatarray, self.dataout, matherrors=True)
 
 		# This is the actual test.
 		with self.assertRaises(TypeError):
-			arrayfunc.%(funcname)s(self.floatarray, self.dataout, errors='a')
+			arrayfunc.%(funcname)s(self.floatarray, self.dataout, matherrors='a')
 
 
 	########################################################
@@ -363,6 +333,77 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 ##############################################################################
 
 '''
+
+
+
+# ==============================================================================
+
+
+
+# The template used to generate the tests for testing invalid parameter types
+# for "nosimd". This is used only for those functions which support SIMD.
+param_nosimd_invalid_template = '''
+
+##############################################################################
+class %(funclabel)s_param_nosimd_errors_%(typelabel)s(unittest.TestCase):
+	"""Test for invalid nosimd parameters.
+	param_nosimd_invalid_template
+	"""
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		self.floatarray = array.array('%(typecode)s', [%(test_op_x)s])
+
+		arraysize =  len(self.floatarray)
+
+		self.dataout = array.array('%(typecode)s', itertools.repeat(0.0, arraysize))
+
+		# Create some integer array equivalents.
+		self.intarray = array.array('i', [int(x) for x in self.floatarray])
+
+		self.intdataout = array.array('i', [int(x) for x in self.dataout])
+
+
+
+	########################################################
+	def test_%(funclabel)s_array_none_b1(self):
+		"""Test %(funclabel)s as *array-none* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		# Copy the array so we don't change the original data.
+		floatarray = copy.copy(self.floatarray)
+
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(floatarray, nosimd=True)
+
+		floatarray = copy.copy(self.floatarray)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(floatarray, nosimd='a')
+
+
+	########################################################
+	def test_%(funclabel)s_array_num_array_d1(self):
+		"""Test %(funclabel)s as *array-num-array* for nosimd='a' - Array code %(typelabel)s.
+		"""
+		# This version is expected to pass.
+		arrayfunc.%(funcname)s(self.floatarray, self.dataout, nosimd=True)
+
+		# This is the actual test.
+		with self.assertRaises(TypeError):
+			arrayfunc.%(funcname)s(self.floatarray, self.dataout, nosimd='a')
+
+
+
+##############################################################################
+
+'''
+
+
 
 # ==============================================================================
 
@@ -671,7 +712,7 @@ class %(funclabel)s_isnanisinftest_%(typelabel)s(unittest.TestCase):
 		self.dataout = array.array('%(typecode)s', itertools.repeat(0.0, floatarraysize))
 
 		# This interleaves ordinaray float data with nan, inf, and -inf.
-		self.testarray = array.array('%(typecode)s', itertools.chain.from_iterable([(x,y) for (x,y) in zip(itertools.cycle([float('nan'), float('inf'), float('-inf')]), self.floatarray)]))
+		self.testarray = array.array('%(typecode)s', itertools.chain.from_iterable([(x,y) for (x,y) in zip(itertools.cycle([math.nan, math.inf, -math.inf]), self.floatarray)]))
 
 
 		# These are the expected results from tests.
@@ -839,8 +880,7 @@ class %(funclabel)s_isnanisinftest_%(typelabel)s(unittest.TestCase):
 # ==============================================================================
 
 # These are all the test code templates. 
-test_templates = {'test_template_noparams' : test_template_noparams,
-	'nan_data_error_noparam_template' : nan_data_error_noparam_template,
+test_templates = {'nan_data_error_noparam_template' : nan_data_error_noparam_template,
 	'nan_data_errorchecked_noparam_template' : nan_data_errorchecked_noparam_template,
 	'nan_data_noerror_noparam_template' : nan_data_noerror_noparam_template,
 	'nan_data_isnanisinftest_template' : nan_data_isnanisinftest_template,
@@ -854,9 +894,10 @@ oplist = codegen_common.ReadCSVData('funcs.csv')
 
 
 # Filter out the desired math functions.
+funclist = [x for x in oplist if x['test_op_templ'] in ('test_template_noparams', 'test_template_noparams_1simd')]
 
-funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_noparams']
-
+# Create a list of names which support SIMD.
+havesimd = [x['funcname'] for x in funclist if x['test_op_templ'] == 'test_template_noparams_1simd']
 
 # ==============================================================================
 
@@ -877,16 +918,58 @@ for func in funclist:
 		# The copyright header.
 		f.write(codegen_common.HeaderTemplate % headerdate)
 
-		testtemplate = test_templates[func['test_op_templ']]
 
 		for functype in codegen_common.floatarrays:
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
-				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x']}
-			f.write(testtemplate % funcdata)
+			funcdata = {'funclabel' : funcname, 
+				'funcname' : funcname, 
+				'pyoperator' : func['pyoperator'],
+				'typelabel' : functype, 
+				'typecode' : functype, 
+				'test_op_x' : func['test_op_x']
+				}
 
+			# Test for basic operation.
+
+			# Not all functions support SIMD operations.
+			if funcname in havesimd:
+				# With SIMD, even data arra size.
+				funcdata['simdpresent'] = 'with'
+				funcdata['nosimd'] = ''
+				funcdata['arrayevenodd'] = 'even'
+				f.write(test_template_noparams % funcdata)
+
+				# With SIMD, odd data array size.
+				funcdata['simdpresent'] = 'with'
+				funcdata['nosimd'] = ''
+				funcdata['arrayevenodd'] = 'odd'
+				f.write(test_template_noparams % funcdata)
+
+				# Without SIMD.
+				funcdata['simdpresent'] = 'without'
+				funcdata['nosimd'] = ', nosimd=True'
+				funcdata['arrayevenodd'] = 'even'
+				f.write(test_template_noparams % funcdata)
+			else:
+				# Without SIMD.
+				funcdata['simdpresent'] = 'without'
+				funcdata['nosimd'] = ''
+				funcdata['arrayevenodd'] = 'even'
+				f.write(test_template_noparams % funcdata)
+
+
+			#####
+			
 			# Test for invalid parameters. One template should work for all 
 			# functions of this style.
 			f.write(param_invalid_template % funcdata)
+
+			# This one is used only with functions that support SIMD.
+			if funcname in havesimd:
+				f.write(param_nosimd_invalid_template % funcdata)
+
+			#####
+
+
 
 		# Tests involving NaN, inf, and -inf.
 		for templatename, testarray, testlabel  in zip(nantemplates, nanfunclabel, nantestlabel) :

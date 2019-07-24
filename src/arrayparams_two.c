@@ -47,6 +47,12 @@ static char *kwlist_2wmath[] = {"data1", "data2", "dataout", "matherrors", "maxl
 // This version does not support "matherrors".
 static char *kwlist_2womath[] = {"data1", "data2", "dataout", "maxlen", NULL};
 
+// This version is for versions which support the "nosimd" but not "matherrors" parameter.
+static char *kwlist_2wsimdwomath[] = {"data1", "data2", "dataout", "maxlen", "nosimd", NULL};
+
+// This version is for versions which support both the "nosimd" and "matherrors" parameter.
+static char *kwlist_2wsimdwmath[] = {"data1", "data2", "dataout", "matherrors", "maxlen", "nosimd", NULL};
+
 /*--------------------------------------------------------------------------- */
 
 
@@ -91,11 +97,13 @@ void releasebuffers_two(struct args_params_2 arraydata) {
  * 		function which forms the original entry point.
  * matherrors = If zero, the "matherrors" keyword argument is not present. If
  * 		non-zero, the "matherrors" keyword argument is available.
+ * hasnosimd = If zero, the "hasnosimd" keyword argument is not present. If
+ * 		non-zero, the "hasnosimd" keyword argument is available.
  * funcname = A string which represents the C extension name. This is passed to
  * 		PyArg_ParseTupleAndKeywords for error reporting.
  * Returns: A structure which contains the parameter data.
 */
-struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *keywds, char matherrors, char *funcname) {
+struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *keywds, char matherrors, char hasnosimd, char *funcname) {
 
 
 	// This is used for constructing parameter format strings. The size must
@@ -126,6 +134,8 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 
 	// If true, *disabled* overflow checking.
 	unsigned int ignoreerrors = 0;
+	// If True, SIMD processing is disabled.
+	int nosimd = 0;
 
 
 	// This is used to track the types of each array.
@@ -146,34 +156,62 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	// This supports two styles of functions. One allows the "matherrors" 
 	// keyword parameter, while the other does not.
 	if (matherrors) {
-		// Construct the format string. This is constructed dynamically because
-		// we must be able to call this same function from different C extensions.
-		makefmtstr("OO|Oin:", funcname, formatstr);
+		if (hasnosimd) {
+			// Construct the format string. This is constructed dynamically because
+			// we must be able to call this same function from different C extensions.
+			makefmtstr("OO|Oini:", funcname, formatstr);
 
-		// Import the raw objects. 
-		if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2wmath, &dataobj1, 
-								&dataobj2, &dataobj3, &ignoreerrors, &arraymaxlen)) {
-			ErrMsgParameterError();
-			arraydata.error = 2;
-			return arraydata;
+			// Import the raw objects. 
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2wsimdwmath, &dataobj1, 
+									&dataobj2, &dataobj3, &ignoreerrors, &arraymaxlen, &nosimd)) {
+				ErrMsgParameterError();
+				arraydata.error = 2;
+				return arraydata;
+			}
+		} else {
+			// Construct the format string. This is constructed dynamically because
+			// we must be able to call this same function from different C extensions.
+			makefmtstr("OO|Oin:", funcname, formatstr);
+
+			// Import the raw objects. 
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2wmath, &dataobj1, 
+									&dataobj2, &dataobj3, &ignoreerrors, &arraymaxlen)) {
+				ErrMsgParameterError();
+				arraydata.error = 2;
+				return arraydata;
+			}
 		}
 	} else {
-		// Construct the format string. This is constructed dynamically because
-		// we must be able to call this same function from different C extensions.
-		makefmtstr("OO|On:", funcname, formatstr);
+		if (hasnosimd) {
+			// Construct the format string. This is constructed dynamically because
+			// we must be able to call this same function from different C extensions.
+			makefmtstr("OO|Oni:", funcname, formatstr);
 
-		// Import the raw objects. 
-		if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2womath, &dataobj1, 
-								&dataobj2, &dataobj3, &arraymaxlen)) {
-			ErrMsgParameterError();
-			arraydata.error = 2;
-			return arraydata;
+			// Import the raw objects. 
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2wsimdwomath, &dataobj1, 
+									&dataobj2, &dataobj3, &arraymaxlen, &nosimd)) {
+				ErrMsgParameterError();
+				arraydata.error = 2;
+				return arraydata;
+			}
+		} else {
+			// Construct the format string. This is constructed dynamically because
+			// we must be able to call this same function from different C extensions.
+			makefmtstr("OO|On:", funcname, formatstr);
+
+			// Import the raw objects. 
+			if (!PyArg_ParseTupleAndKeywords(args, keywds, formatstr, kwlist_2womath, &dataobj1, 
+									&dataobj2, &dataobj3, &arraymaxlen)) {
+				ErrMsgParameterError();
+				arraydata.error = 2;
+				return arraydata;
+			}
 		}
 	}
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
+	if (get_paramdata_simple(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 3;
 		releasebuffers_two(arraydata);
@@ -181,7 +219,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	}
 
 	// Parse the second object parameter. 
-	if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
+	if (get_paramdata_simple(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 		ErrMsgParameterError();
 		arraydata.error = 4;
 		releasebuffers_two(arraydata);
@@ -234,7 +272,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 
 	// Parse the third object parameter. This one is optional.
 	if (dataobj3 != NULL) {
-		if (get_paramdata(dataobj3, &paramobjdata3, &arraydata.hasbuffer3)) {
+		if (get_paramdata_simple(dataobj3, &paramobjdata3, &arraydata.hasbuffer3)) {
 			ErrMsgParameterError();
 			arraydata.error = 8;
 			releasebuffers_two(arraydata);
@@ -289,7 +327,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	// The first parameter is an array and the second is not.
 	if ((paramobjdata1.paramtype == paramobj_array) && (paramobjdata2.paramtype != paramobj_array)) {
 
-		if (get_numericparams(paramobjdata1.arraycode, &paramobjdata2, &parampy)) {
+		if (get_numericparams_simple(paramobjdata1.arraycode, &paramobjdata2, &parampy)) {
 			ErrMsgParameterError();
 			arraydata.error = 13;
 			releasebuffers_two(arraydata);
@@ -305,7 +343,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	// The second parameter is an array and the first is not.
 	if ((paramobjdata1.paramtype != paramobj_array) && (paramobjdata2.paramtype == paramobj_array)) {
 
-		if (get_numericparams(paramobjdata2.arraycode, &paramobjdata1, &parampy)) {
+		if (get_numericparams_simple(paramobjdata2.arraycode, &paramobjdata1, &parampy)) {
 			ErrMsgParameterError();
 			arraydata.error = 14;
 			releasebuffers_two(arraydata);
@@ -333,6 +371,7 @@ struct args_params_2 getparams_two(PyObject *self, PyObject *args, PyObject *key
 	arraydata.error = 0;
 	arraydata.arraytype = arraytype;
 	arraydata.ignoreerrors = ignoreerrors;
+	arraydata.nosimd = nosimd;
 	arraydata.arraylength = adjustarraymaxlen(typedarraylength, arraymaxlen);
 	arraydata.array1.buf = paramobjdata1.array.buf;
 	arraydata.array2.buf = paramobjdata2.array.buf;

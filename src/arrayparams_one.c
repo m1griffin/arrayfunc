@@ -143,7 +143,7 @@ struct args_params_1 getparams_one(PyObject *self, PyObject *args, PyObject *key
 
 
 	// Parse the first object parameter. 
-	if (get_paramdata(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
+	if (get_paramdata_simple(dataobj1, &paramobjdata1, &arraydata.hasbuffer1)) {
 		ErrMsgParameterError();
 		arraydata.error = 2;
 		releasebuffers_one(arraydata);
@@ -167,7 +167,7 @@ struct args_params_1 getparams_one(PyObject *self, PyObject *args, PyObject *key
 
 	// Parse the second object parameter. This one is optional.
 	if (dataobj2 != NULL) {
-		if (get_paramdata(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
+		if (get_paramdata_simple(dataobj2, &paramobjdata2, &arraydata.hasbuffer2)) {
 			ErrMsgParameterError();
 			arraydata.error = 4;
 			releasebuffers_one(arraydata);

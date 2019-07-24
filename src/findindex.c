@@ -1,13 +1,13 @@
 //------------------------------------------------------------------------------
 // Project:  arrayfunc
 // Module:   findindex.c
-// Purpose:  Returns the index of the first value in an array to meet the specified criteria.
+// Purpose:  Calculate the findindex of values in an array.
 // Language: C
-// Date:     10-May-2014
+// Date:     15-Nov-2017.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,13 +30,17 @@
 
 #include "Python.h"
 
+#include <limits.h>
+#include <math.h>
+
 #include "arrayerrs.h"
+
 #include "arrayparams_base.h"
-
 #include "arrayops.h"
-#include "simddefs.h"
 
-#include "findindex_common.h"
+#include "arrayparams_allany.h"
+
+#include "simddefs.h"
 
 #ifdef AF_HASSIMD
 #include "findindex_simd_x86.h"
@@ -44,423 +48,2691 @@
 
 /*--------------------------------------------------------------------------- */
 
-// Provide a struct for returning data from parsing Python arguments.
-struct args_param {
-	char array1type;
-	char param1type;
-	char error;
-};
-
-// The list of keyword arguments. All argument must be listed, whether we 
-// intend to use them for keywords or not. 
-static char *kwlist[] = {"op", "data", "param", "maxlen", "nosimd", NULL};
-
 /*--------------------------------------------------------------------------- */
-
-
-/*--------------------------------------------------------------------------- */
-
-/* Parse the Python arguments to objects, and then extract the object parameters
- * to determine their types. This lets us handle different data types as 
- * parameters.
- * This version expects the following parameters:
- * args (PyObject) = The positional arguments.
- * Returns a structure containing the results of each parameter.
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
 */
-struct args_param parsepyargs_parm(PyObject *args, PyObject *keywds) {
+Py_ssize_t findindex_eq_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
 
-	PyObject *dataobj, *param1obj, *opstr;
-
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
-
-	struct args_param argtypes = {' ', ' ', 0};
-	char arraycode;
-	unsigned int nosimd = 0;
-
-	/* Import the raw objects. */
-	if (!PyArg_ParseTupleAndKeywords(args, keywds, "UOO|ni:findindex", kwlist, 
-			&opstr, &dataobj, &param1obj, &arraymaxlen, &nosimd)) {
-		argtypes.error = 1;
-		return argtypes;
-	}
-
-	// Test if the second parameter is an array.
-	arraycode = lookuparraycode(dataobj);
-	if (!arraycode) {
-		argtypes.error = 2;
-		return argtypes;
-	} else {
-		// Get the array code type character.
-		argtypes.array1type = arraycode;
-	}
-
-
-	// Get the parameter type codes.
-	argtypes.param1type = paramtypecode(param1obj);
-
-
-	return argtypes;
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
 
 }
 
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_signed_char(Py_ssize_t arraylen, signed char *data, signed char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: b
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, signed char *data, signed char param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_eq_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_signed_char(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_gt_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_signed_char(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_ge_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_signed_char(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_lt_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_signed_char(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_le_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_signed_char(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_ne_signed_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_signed_char(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: B
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, unsigned char *data, unsigned char param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_eq_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_unsigned_char(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_gt_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_unsigned_char(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_ge_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_unsigned_char(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_lt_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_unsigned_char(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_le_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_unsigned_char(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+				return findindex_ne_unsigned_char_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_unsigned_char(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_signed_short(Py_ssize_t arraylen, signed short *data, signed short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: h
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, signed short *data, signed short param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_eq_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_signed_short(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_gt_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_signed_short(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_ge_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_signed_short(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_lt_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_signed_short(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_le_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_signed_short(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_ne_signed_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_signed_short(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_unsigned_short(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: H
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, unsigned short *data, unsigned short param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_eq_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_unsigned_short(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_gt_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_unsigned_short(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_ge_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_unsigned_short(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_lt_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_unsigned_short(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_le_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_unsigned_short(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+				return findindex_ne_unsigned_short_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_unsigned_short(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_signed_int(Py_ssize_t arraylen, signed int *data, signed int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: i
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, signed int *data, signed int param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_eq_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_signed_int(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_gt_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_signed_int(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_ge_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_signed_int(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_lt_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_signed_int(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_le_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_signed_int(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_ne_signed_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_signed_int(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: I
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, unsigned int *data, unsigned int param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_eq_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_unsigned_int(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_gt_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_unsigned_int(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_ge_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_unsigned_int(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_lt_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_unsigned_int(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_le_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_unsigned_int(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+				return findindex_ne_unsigned_int_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_unsigned_int(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_signed_long(Py_ssize_t arraylen, signed long *data, signed long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: l
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_signed_long(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, signed long *data, signed long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+
+			return findindex_eq_signed_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+
+			return findindex_gt_signed_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+
+			return findindex_ge_signed_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+
+			return findindex_lt_signed_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+
+			return findindex_le_signed_long(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+
+			return findindex_ne_signed_long(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsigned long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: L
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_unsigned_long(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, unsigned long *data, unsigned long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+
+			return findindex_eq_unsigned_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+
+			return findindex_gt_unsigned_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+
+			return findindex_ge_unsigned_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+
+			return findindex_lt_unsigned_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+
+			return findindex_le_unsigned_long(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+
+			return findindex_ne_unsigned_long(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_signed_long_long(Py_ssize_t arraylen, signed long long *data, signed long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_signed_long_long(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, signed long long *data, signed long long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+
+			return findindex_eq_signed_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+
+			return findindex_gt_signed_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+
+			return findindex_ge_signed_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+
+			return findindex_lt_signed_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+
+			return findindex_le_signed_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+
+			return findindex_ne_signed_long_long(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *data, unsigned long long param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: Q
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_unsigned_long_long(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, unsigned long long *data, unsigned long long param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+
+			return findindex_eq_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+
+			return findindex_gt_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+
+			return findindex_ge_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+
+			return findindex_lt_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+
+			return findindex_le_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+
+			return findindex_ne_unsigned_long_long(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_float(Py_ssize_t arraylen, float *data, float param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: f
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_float(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, float *data, float param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_eq_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_float(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_gt_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_float(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_ge_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_float(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_lt_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_float(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_le_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_float(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+				return findindex_ne_float_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_float(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_eq_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] == param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_gt_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] > param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ge_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] >= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_lt_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] < param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_le_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] <= param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+Py_ssize_t findindex_ne_double(Py_ssize_t arraylen, double *data, double param1) { 
+	// array index counter.
+	Py_ssize_t index;
+
+		for(index = 0; index < arraylen; index++) {
+			if (data[index] != param1) {
+				return index;
+			}
+		}
+		return ARR_ERR_NOTFOUND;
+
+}
+
+/*--------------------------------------------------------------------------- */
+/* For array code: d
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, ARR_ERR_NOTFOUND
+		 if it was false at least once, or an error code if the opcode was invalid.
+*/
+Py_ssize_t findindex_select_double(signed int opcode, Py_ssize_t arraylen, unsigned int nosimd, double *data, double param1) { 
+
+	switch(opcode) {
+		// AF_EQ
+		case OP_AF_EQ: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_eq_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_eq_double(arraylen, data, param1);
+			break;
+		}
+		// AF_GT
+		case OP_AF_GT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_gt_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_gt_double(arraylen, data, param1);
+			break;
+		}
+		// AF_GE
+		case OP_AF_GE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_ge_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ge_double(arraylen, data, param1);
+			break;
+		}
+		// AF_LT
+		case OP_AF_LT: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_lt_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_lt_double(arraylen, data, param1);
+			break;
+		}
+		// AF_LE
+		case OP_AF_LE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_le_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_le_double(arraylen, data, param1);
+			break;
+		}
+		// AF_NE
+		case OP_AF_NE: {
+#ifdef AF_HASSIMD
+			// SIMD version.
+			if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+				return findindex_ne_double_simd(arraylen, data, param1);
+			}
+#endif
+			return findindex_ne_double(arraylen, data, param1);
+			break;
+		}
+	}
+
+	// The operation code is unknown.
+	return ARR_ERR_INVALIDOP;
+}
+/*--------------------------------------------------------------------------- */
 
 /*--------------------------------------------------------------------------- */
 
-
 /* The wrapper to the underlying C function */
-static PyObject *py_findindex(PyObject *self, PyObject *args, PyObject *keywds)
-{
+static PyObject *py_findindex(PyObject *self, PyObject *args, PyObject *keywds) {
 
-
-	// The array of data we work on. 
-	union dataarrays data;
-
-	// The input buffers are arrays of bytes.
-	Py_buffer datapy;
-
-	// The length of the data array.
-	Py_ssize_t databufflength;
-
-
-	// Codes indicating the type of array and the operation desired.
-	char itemcode;
-	signed int opcode;
-	PyObject *opstr;
-
-	// How long the array is.
-	Py_ssize_t arraylength;
-	// Number of elements to work on. If zero or less, ignore this parameter.
-	Py_ssize_t arraymaxlen = 0;
-
-	// The parameter version is available in all possible types.
-	struct paramsvals param1py;
-
-	// PyArg_ParseTuple does not match directly to the array codes. We need to
-	// use some temporary variables of alternate types to parse the parameter 
-	// data.
-	// PyArg_ParseTuple does not check for overflow of unsigned parameters.
-	signed long param1tmp_l;
-
-	// This is used to hold the results from inspecting the Python args.
-	struct args_param argtypes;
 
 	// The error code returned by the function.
-	Py_ssize_t resultcode;
+	Py_ssize_t resultcode = 0;
 
-	// If true, disable using SIMD.
-	unsigned int nosimd = 0;
+	// This is used to hold the parsed parameters.
+	struct args_params_allany arraydata = ARGSINIT_ALLANY;
 
-
-	// -------------------------------------------------------------------------
-
-
-	// Check the parameters to see what they are.
-	argtypes = parsepyargs_parm(args, keywds);
+	// -----------------------------------------------------
 
 
+	// Get the parameters passed from Python.
+	arraydata = getparams_allany(self, args, keywds, "findindex");
 
-	// There was an error reading the parameter types.
-	if (argtypes.error) {
-		ErrMsgParameterError();
+	// If there was an error, we count on the parameter parsing function to 
+	// release the buffers if this was necessary.
+	if (arraydata.error) {
 		return NULL;
 	}
 
-
-	// Check if the array and parameter types are compatible.
-	if (!paramcompatok(argtypes.array1type, argtypes.param1type)) {
-		ErrMsgArrayAndParamMismatch();
-		return NULL;
-	}
-
-	itemcode = argtypes.array1type;
-
-	// Now we will fetch the actual data depending on the array type.
-	switch (itemcode) {
-		// signed char
-		case 'b' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(issignedcharrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.b = (signed char) param1tmp_l;
-			}
-			break;
-		}
-		// unsigned char
-		case 'B' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedcharrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.B = (unsigned char) param1tmp_l;
-			}
-			break;
-		}
-		// signed short
-		case 'h' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*h|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.h, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned short
-		case 'H' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isunsignedshortrange(param1tmp_l))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			} else {
-				param1py.H = (unsigned short) param1tmp_l;
-			}
-			break;
-		}
-		// signed int
-		case 'i' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*i|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.i, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned int
-		case 'I' : {
-			// With architectures where signed long is larger than unsigned int, we
-			// can use the larger signed value to test for overflow. If they are the
-			// same size, then we cannot check for overflow.
-			if (sizeof(signed long) > sizeof(unsigned int)) {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:findindex", kwlist, 
-						&opstr, &datapy, &param1tmp_l, &arraymaxlen, &nosimd)) {
-					return NULL;
-				}
-				// Check the data range manually.
-				if (!(isunsignedintrange(param1tmp_l))) {
-					PyBuffer_Release(&datapy);
-					ErrMsgArithOverflowParam();
-					return NULL;
-				} else {
-					param1py.I = (unsigned int) param1tmp_l;
-				}
-			} else {
-				// The format string and parameter names depend on the expected data types.
-				if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*I|ni:findindex", kwlist, 
-						&opstr, &datapy, &param1py.I, &arraymaxlen, &nosimd)) {
-					return NULL;
-				}
-			}
-			break;
-		}
-		// signed long
-		case 'l' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*l|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.l, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned long
-		case 'L' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*k|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.L, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// signed long long
-		case 'q' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*L|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.q, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// unsigned long long
-		case 'Q' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*K|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.Q, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			break;
-		}
-		// float
-		case 'f' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*f|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.f, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.f))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			break;
-		}
-		// double
-		case 'd' : {
-			// The format string and parameter names depend on the expected data types.
-			if (!PyArg_ParseTupleAndKeywords(args, keywds, "Uy*d|ni:findindex", kwlist, 
-					&opstr, &datapy, &param1py.d, &arraymaxlen, &nosimd)) {
-				return NULL;
-			}
-			// Check the data range manually.
-			if (!(isfinite(param1py.d))) {
-				PyBuffer_Release(&datapy);
-				ErrMsgArithOverflowParam();
-				return NULL;
-			}
-			break;
-		}
-		// We don't know this code.
-		default: {
-			ErrMsgUnknownArrayType();
-			return NULL;
-			break;
-		}
-	}
-
-
-	// Convert the command string to an integer.
-	opcode = opstrdecode(opstr);
-
-	// Check if the command string is valid.
-	if (opcode < 0) {
-		// Release the buffers. 
-		PyBuffer_Release(&datapy);
-		ErrMsgOperatorNotValidforthisFunction();
-		return NULL;
-	}
-
-
-
-	// Assign the buffer to a union which lets us get at them as typed data.
-	data.buf = datapy.buf;
 
 	// The length of the data array.
-	databufflength = datapy.len;
-	arraylength = calcarraylength(itemcode, databufflength);
-	if (arraylength < 1) {
+	if (arraydata.arraylength < 1) {
 		// Release the buffers. 
-		PyBuffer_Release(&datapy);
+		releasebuffers_allany(arraydata);
 		ErrMsgArrayLengthErr();
 		return NULL;
 	}
 
 
-	// Adjust the length of array being operated on, if necessary.
-	arraylength = adjustarraymaxlen(arraylength, arraymaxlen);
-
-
 
 	/* Call the C function */
-	switch(itemcode) {
+	switch(arraydata.arraytype) {
 		// signed char
 		case 'b' : {
-			resultcode = findindex_signed_char(opcode, arraylength, data.b, param1py.b, nosimd);
+			resultcode = findindex_select_signed_char(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.b, arraydata.param.b);
 			break;
 		}
 		// unsigned char
 		case 'B' : {
-			resultcode = findindex_unsigned_char(opcode, arraylength, data.B, param1py.B);
+			resultcode = findindex_select_unsigned_char(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.B, arraydata.param.B);
 			break;
 		}
 		// signed short
 		case 'h' : {
-			resultcode = findindex_signed_short(opcode, arraylength, data.h, param1py.h, nosimd);
+			resultcode = findindex_select_signed_short(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.h, arraydata.param.h);
 			break;
 		}
 		// unsigned short
 		case 'H' : {
-			resultcode = findindex_unsigned_short(opcode, arraylength, data.H, param1py.H);
+			resultcode = findindex_select_unsigned_short(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.H, arraydata.param.H);
 			break;
 		}
 		// signed int
 		case 'i' : {
-			resultcode = findindex_signed_int(opcode, arraylength, data.i, param1py.i, nosimd);
+			resultcode = findindex_select_signed_int(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i);
 			break;
 		}
 		// unsigned int
 		case 'I' : {
-			resultcode = findindex_unsigned_int(opcode, arraylength, data.I, param1py.I);
+			resultcode = findindex_select_unsigned_int(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I);
 			break;
 		}
 		// signed long
 		case 'l' : {
-			resultcode = findindex_signed_long(opcode, arraylength, data.l, param1py.l);
+			resultcode = findindex_select_signed_long(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.l, arraydata.param.l);
 			break;
 		}
 		// unsigned long
 		case 'L' : {
-			resultcode = findindex_unsigned_long(opcode, arraylength, data.L, param1py.L);
+			resultcode = findindex_select_unsigned_long(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.L, arraydata.param.L);
 			break;
 		}
 		// signed long long
 		case 'q' : {
-			resultcode = findindex_signed_long_long(opcode, arraylength, data.q, param1py.q);
+			resultcode = findindex_select_signed_long_long(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.q, arraydata.param.q);
 			break;
 		}
 		// unsigned long long
 		case 'Q' : {
-			resultcode = findindex_unsigned_long_long(opcode, arraylength, data.Q, param1py.Q);
+			resultcode = findindex_select_unsigned_long_long(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.Q, arraydata.param.Q);
 			break;
 		}
 		// float
 		case 'f' : {
-			resultcode = findindex_float(opcode, arraylength, data.f, param1py.f, nosimd);
+			resultcode = findindex_select_float(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.param.f);
 			break;
 		}
 		// double
 		case 'd' : {
-			resultcode = findindex_double(opcode, arraylength, data.d, param1py.d, nosimd);
+			resultcode = findindex_select_double(arraydata.opcode, arraydata.arraylength, arraydata.nosimd, arraydata.array1.d, arraydata.param.d);
 			break;
 		}
 		// We don't know this code.
 		default: {
-			PyBuffer_Release(&datapy);
+			releasebuffers_allany(arraydata);
 			ErrMsgUnknownArrayType();
 			return NULL;
 			break;
 		}
 	}
 
-
 	// Release the buffers. 
-	PyBuffer_Release(&datapy);
+	releasebuffers_allany(arraydata);
+
 
 	// Signal the errors.
 	if (resultcode == ARR_ERR_INVALIDOP) {
 		ErrMsgOperatorNotValidforthisFunction();
 		return NULL;
 	}
+
+
 
 	// Adjust the result code if the data was not found, so that we don't leak
 	// internal error codes to user space (and cause problems if they change).
@@ -480,22 +2752,38 @@ static PyObject *py_findindex(PyObject *self, PyObject *args, PyObject *keywds)
 
 /* The module doc string */
 PyDoc_STRVAR(findindex__doc__,
-"Returns the index of the first value in an array to meet the specified \n\
-criteria.\n\
+"findindex \n\
+_____________________________ \n\
 \n\
-x = findindex(op, inparray, rparam)\n\
-x = findindex(op, inparray, rparam, maxlen=y)\n\
+Calculate findindex over the values in an array.  \n\
 \n\
-* op - The arithmetic comparison operation.\n\
-* inparray - The input data array to be examined.\n\
-* rparam - The parameter to be applied to 'op'. \n\
+======================  ============================================== \n\
+Equivalent to:          [x for x,y in enumerate(array) if y > param][0] \n\
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
+Exceptions raised:      None \n\
+======================  ============================================== \n\
+\n\
+Call formats: \n\
+\n\
+  result = findindex(opstr, array, param) \n\
+  result = findindex(opstr, array, param, maxlen=y) \n\
+  result = findindex(opstr, array, param, nosimd=False) \n\
+\n\
+* opstr - The arithmetic comparison operation as a string. \n\
+          These are: '==', '>', '>=', '<', '<=', '!='. \n\
+* array - The input data array to be examined. \n\
+* param - A non-array numeric parameter. \n\
 * maxlen - Limit the length of the array used. This must be a valid \n\
   positive integer. If a zero or negative length, or a value which is \n\
   greater than the actual length of the array is specified, this \n\
-  parameter is ignored.\n\
-* nosimd - If true, disable SIMD. \n\
-* x - The resulting index. This will be negative if no match was found.");
+  parameter is ignored. \n\
+* nosimd - If True, SIMD acceleration is disabled if present. \n\
+  The default is False (SIMD acceleration is enabled if present). \n\
+* * result - The resulting index. This will be negative if no match was found. \n\
+");
 
+
+/*--------------------------------------------------------------------------- */
 
 /* A list of all the methods defined by this module. 
  "findindex" is the name seen inside of Python. 
@@ -503,9 +2791,10 @@ x = findindex(op, inparray, rparam, maxlen=y)\n\
  "METH_VARGS" tells Python how to call the handler. 
  The {NULL, NULL} entry indicates the end of the method definitions. */
 static PyMethodDef findindex_methods[] = {
-	{"findindex",  (PyCFunction) py_findindex, METH_VARARGS | METH_KEYWORDS, findindex__doc__}, 
+	{"findindex",  (PyCFunction)py_findindex, METH_VARARGS | METH_KEYWORDS, findindex__doc__}, 
 	{NULL, NULL, 0, NULL}
 };
+
 
 static struct PyModuleDef findindexmodule = {
     PyModuleDef_HEAD_INIT,
@@ -521,3 +2810,4 @@ PyMODINIT_FUNC PyInit_findindex(void)
 };
 
 /*--------------------------------------------------------------------------- */
+
