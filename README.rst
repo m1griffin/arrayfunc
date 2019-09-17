@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 4.3.1 for 2019-07-01
+:Version: 4.3.1 for 2019-09-17
 :Copyright: 2014 - 2019
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -297,7 +297,7 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
-Ubuntu 18.10       64 bit    GCC                         3.6
+Ubuntu 19.04       64 bit    GCC                         3.7
 Debian 10          32 bit    GCC                         3.6
 Debian 10          64 bit    GCC                         3.6
 OpenSuse 15        64 bit    GCC                         3.6

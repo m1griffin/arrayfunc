@@ -53,31 +53,54 @@ single precision (float) = 23 bits of precision.
 */
 
 
-// Double precision (double) to long integers. A double has 53 bits of precision.
-#define LONG_MAX_GUARD_D ((sizeof(signed long) == 8) ? LONG_MAX - 0xfff : LONG_MAX)
-#define LONG_MIN_GUARD_D ((sizeof(signed long) == 8) ? LONG_MIN + 0xfff : LONG_MIN)
-#define ULONG_MAX_GUARD_D ((sizeof(unsigned long) == 8) ? ULONG_MAX - 0x1fff : ULONG_MAX)
+// Long integers may be either 32 or 64 bits, depending upon CPU architecture
+// and OS/compiler.
+// Array types 'l' and 'L' are 8 byte integers.
+#if LONG_MAX == LLONG_MAX
 
-// Single precision (float) to long integers. A single has 24 bits of precision.
-#define LONG_MAX_GUARD_F ((sizeof(signed long) > 4) ? ((sizeof(signed long) == 8) ? LONG_MAX - 0xffffffffff : LONG_MAX - 0xff) : LONG_MAX)
-#define LONG_MIN_GUARD_F ((sizeof(signed long) > 4) ? ((sizeof(signed long) == 8) ? LONG_MIN + 0xffffffffff : LONG_MIN + 0xff) : LONG_MIN)
-#define ULONG_MAX_GUARD_F ((sizeof(unsigned long) > 4) ? ((sizeof(unsigned long) == 8) ? ULONG_MAX - 0x1ffffffffff : ULONG_MAX - 0xff) : ULONG_MAX)
+// Double precision (double) to long integers. A double has 52 bits of precision.
+#define LONG_MAX_GUARD_D (LONG_MAX - 0xfff)
+#define LONG_MIN_GUARD_D (LONG_MIN + 0xfff)
+#define ULONG_MAX_GUARD_D (ULONG_MAX - 0xfff)
 
-// Single precision (float) to integers. A single has 24 bits of precision.
-#define INT_MAX_GUARD_F ((sizeof(signed int) == 4) ? INT_MAX - 0xff : INT_MAX)
-#define INT_MIN_GUARD_F ((sizeof(signed int) == 4) ? INT_MIN + 0xff : INT_MIN)
-#define UINT_MAX_GUARD_F ((sizeof(unsigned int) == 4) ? UINT_MAX - 0x1ff : UINT_MAX)
+// Single precision (float) to long integers. A single has 23 bits of precision.
+#define LONG_MAX_GUARD_F (LONG_MAX - 0x1ffffffffff)
+#define LONG_MIN_GUARD_F (LONG_MIN + 0x1ffffffffff)
+#define ULONG_MAX_GUARD_F (ULONG_MAX - 0x1ffffffffff)
+
+// Array types 'l' and 'L' are 4 byte integers.
+#else
+
+// Double precision (double) to long integers. A double has 52 bits of precision.
+#define LONG_MAX_GUARD_D LONG_MAX
+#define LONG_MIN_GUARD_D LONG_MIN
+#define ULONG_MAX_GUARD_D ULONG_MAX
+
+// Single precision (float) to long integers. A single has 23 bits of precision.
+#define LONG_MAX_GUARD_F (LONG_MAX - 0x1ff)
+#define LONG_MIN_GUARD_F (LONG_MIN + 0x1ff)
+#define ULONG_MAX_GUARD_F (ULONG_MAX - 0x1ff)
+
+#endif
 
 
-// Single precision (float) to long long integers. A single has 24 bits of precision.
-#define LLONG_MAX_GUARD_F (LLONG_MAX - 0xffffffffff)
-#define LLONG_MIN_GUARD_F (LLONG_MIN + 0xffffffffff)
+// Other array types are always the same size on supported platforms.
+// Single precision (float) to integers. A single has 23 bits of precision.
+#define INT_MAX_GUARD_F (INT_MAX - 0x1ff)
+#define INT_MIN_GUARD_F (INT_MIN + 0x1ff)
+#define UINT_MAX_GUARD_F (UINT_MAX - 0x1ff)
+
+
+// Single precision (float) to long long integers. A single has 23 bits of precision.
+#define LLONG_MAX_GUARD_F (LLONG_MAX - 0x1ffffffffff)
+#define LLONG_MIN_GUARD_F (LLONG_MIN + 0x1ffffffffff)
 #define ULLONG_MAX_GUARD_F (ULLONG_MAX - 0x1ffffffffff)
 
-// Double precision (double) to long long integers. A double has 53 bits of precision.
+
+// Double precision (double) to long long integers. A double has 52 bits of precision.
 #define LLONG_MAX_GUARD_D (LLONG_MAX - 0xfff)
 #define LLONG_MIN_GUARD_D (LLONG_MIN + 0xfff)
-#define ULLONG_MAX_GUARD_D (ULLONG_MAX - 0x1fff)
+#define ULLONG_MAX_GUARD_D (ULLONG_MAX - 0xfff)
 
 
 /*--------------------------------------------------------------------------- */

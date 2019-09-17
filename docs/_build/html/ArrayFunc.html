@@ -52,9 +52,9 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Authors:</th><td class="field-body">Michael Griffin</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">4.2.0 for 2018-12-22</td>
+<tr class="field-even field"><th class="field-name">Version:</th><td class="field-body">4.3.1 for 2019-09-17</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2018</td>
+<tr class="field-odd field"><th class="field-name">Copyright:</th><td class="field-body">2014 - 2019</td>
 </tr>
 <tr class="field-even field"><th class="field-name">License:</th><td class="field-body">This document may be distributed under the Apache License V2.0.</td>
 </tr>
@@ -246,15 +246,17 @@
 <li><a class="reference internal" href="#variables-affecting-performance" id="id151">Variables affecting Performance</a></li>
 <li><a class="reference internal" href="#typical-performance-readings" id="id152">Typical Performance Readings</a><ul>
 <li><a class="reference internal" href="#non-optmised-performance" id="id153">Non-Optmised Performance</a></li>
-<li><a class="reference internal" href="#optmised-performance" id="id154">Optmised Performance</a></li>
-<li><a class="reference internal" href="#simd-optimisations" id="id155">SIMD Optimisations</a></li>
-<li><a class="reference internal" href="#array-size-versus-performance" id="id156">Array Size Versus Performance</a></li>
+<li><a class="reference internal" href="#optmised-performance-no-simd" id="id154">Optmised Performance (No SIMD)</a></li>
+<li><a class="reference internal" href="#optmised-performance-with-simd" id="id155">Optmised Performance (with SIMD)</a></li>
+<li><a class="reference internal" href="#math-error-disable-optimisation-effects" id="id156">Math Error Disable Optimisation Effects</a></li>
+<li><a class="reference internal" href="#simd-optimisation-effects" id="id157">SIMD Optimisation Effects</a></li>
+<li><a class="reference internal" href="#array-size-versus-performance" id="id158">Array Size Versus Performance</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#platform-effects" id="id157">Platform Effects</a></li>
+<li><a class="reference internal" href="#platform-effects" id="id159">Platform Effects</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#id12" id="id158">Platform support</a></li>
+<li><a class="reference internal" href="#id12" id="id160">Platform support</a></li>
 </ul>
 </li>
 </ul>
@@ -1472,6 +1474,7 @@ as an additional feature.</li>
 <span class="n">add</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">add</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">add</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">add</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1487,6 +1490,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="truediv">
@@ -1656,6 +1661,7 @@ default is false.</li>
 <span class="n">mul</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">mul</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">mul</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">mul</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1671,6 +1677,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="neg">
@@ -1698,6 +1706,7 @@ default is false.</li>
 <span class="n">neg</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">neg</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">neg</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">neg</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1709,6 +1718,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="pow">
@@ -1786,6 +1797,7 @@ default is false.</li>
 <span class="n">sub</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">sub</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">sub</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">sub</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1801,6 +1813,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="abs">
@@ -1828,6 +1842,7 @@ default is false.</li>
 <span class="n">abs_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">abs_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">abs_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">abs_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1839,6 +1854,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 </div>
@@ -1869,6 +1886,7 @@ default is false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">eq</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">eq</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">eq</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">eq</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1885,6 +1903,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="gt">
@@ -1912,6 +1932,7 @@ false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">gt</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">gt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">gt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">gt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1928,6 +1949,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="ge">
@@ -1955,6 +1978,7 @@ false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ge</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ge</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ge</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">ge</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -1971,6 +1995,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="lt">
@@ -1998,6 +2024,7 @@ false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">lt</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">lt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">lt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">lt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2014,6 +2041,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="le">
@@ -2041,6 +2070,7 @@ false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">le</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">le</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">le</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">le</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2057,6 +2087,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="ne">
@@ -2084,6 +2116,7 @@ false.</li>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">array1</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">ne</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2100,6 +2133,8 @@ parameter is ignored.</li>
 operations. If all comparison operations result in true, the return value
 will be true. If any of them result in false, the return value will be
 false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 </div>
@@ -2133,6 +2168,7 @@ false.</li>
 <span class="n">and_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">and_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">and_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">and_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2146,6 +2182,8 @@ applied to the corresponding element in the first array.</li>
 positive integer. If a zero or negative length, or a value which is
 greater than the actual length of the array is specified, this
 parameter is ignored.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="or">
@@ -2176,6 +2214,7 @@ parameter is ignored.</li>
 <span class="n">or_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">or_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">or_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">or_</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2189,6 +2228,8 @@ applied to the corresponding element in the first array.</li>
 positive integer. If a zero or negative length, or a value which is
 greater than the actual length of the array is specified, this
 parameter is ignored.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="xor">
@@ -2219,6 +2260,7 @@ parameter is ignored.</li>
 <span class="n">xor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">)</span>
 <span class="n">xor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">array2</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">xor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+<span class="n">xor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2232,6 +2274,8 @@ applied to the corresponding element in the first array.</li>
 positive integer. If a zero or negative length, or a value which is
 greater than the actual length of the array is specified, this
 parameter is ignored.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="invert">
@@ -2618,6 +2662,7 @@ default is false.</li>
 <span class="n">sqrt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">sqrt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">sqrt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">sqrt</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -2630,6 +2675,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 </div>
@@ -3226,6 +3273,7 @@ default is false.</li>
 <span class="n">degrees</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">degrees</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">degrees</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">degrees</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -3238,6 +3286,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="radians">
@@ -3265,6 +3315,7 @@ default is false.</li>
 <span class="n">radians</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">radians</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">radians</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">radians</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -3277,6 +3328,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 </div>
@@ -3307,6 +3360,7 @@ default is false.</li>
 <span class="n">ceil</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">ceil</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">ceil</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">ceil</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -3319,6 +3373,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="copysign">
@@ -3469,6 +3525,7 @@ default is false.</li>
 <span class="n">floor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">floor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">floor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">floor</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -3481,6 +3538,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 <div class="section" id="fmod">
@@ -3708,6 +3767,7 @@ default is false.</li>
 <span class="n">trunc</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">outparray</span><span class="p">)</span>
 <span class="n">trunc</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">maxlen</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
 <span class="n">trunc</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">matherrors</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="n">trunc</span><span class="p">(</span><span class="n">array1</span><span class="p">,</span> <span class="n">nosimd</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
 <ul class="simple">
@@ -3720,6 +3780,8 @@ greater than the actual length of the array is specified, this
 parameter is ignored.</li>
 <li>matherrors - If true, arithmetic error checking is disabled. The
 default is false.</li>
+<li>nosimd - If True, SIMD acceleration is disabled. This parameter is
+optional. The default is FALSE.</li>
 </ul>
 </div>
 </div>
@@ -4355,7 +4417,7 @@ marginal speed ups anyway.</p>
 </div>
 <div class="section" id="data-type-support">
 <h3><a class="toc-backref" href="#id148">Data Type Support</a><a class="headerlink" href="#data-type-support" title="Permalink to this headline">¶</a></h3>
-<p>The following table shows which array data types are supported by 64 bit x86
+<p>The following table shows which array data types are supported by x86_64
 SIMD instructions.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4392,11 +4454,11 @@ SIMD instructions.</p>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
 <td>X</td>
-<td>&#160;</td>
 <td>X</td>
-<td>&#160;</td>
 <td>X</td>
-<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -4406,11 +4468,39 @@ SIMD instructions.</p>
 </tr>
 <tr class="row-odd"><td>aany</td>
 <td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
 <td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>abs_</td>
 <td>X</td>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>add</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -4446,7 +4536,21 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
-<tr class="row-even"><td>asum</td>
+<tr class="row-even"><td>and_</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -4460,19 +4564,271 @@ SIMD instructions.</p>
 <td>X</td>
 <td>X</td>
 </tr>
+<tr class="row-even"><td>ceil</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>degrees</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>eq</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
 <tr class="row-odd"><td>findindex</td>
 <td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
 <td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>floor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>ge</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>gt</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>invert</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>le</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>lt</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>mul</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>ne</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>neg</td>
 <td>X</td>
 <td>&#160;</td>
 <td>X</td>
 <td>&#160;</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>or_</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>X</td>
 <td>X</td>
+</tr>
+<tr class="row-odd"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>sub</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>X</td>
+<td>X</td>
+</tr>
+<tr class="row-even"><td>xor</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>X</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 </tr>
 </tbody>
 </table>
@@ -4564,494 +4920,494 @@ SIMD acceleration was disabled (not the default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>8.9</td>
-<td>7.4</td>
-<td>8.1</td>
+<td>8.7</td>
+<td>7.6</td>
 <td>10</td>
-<td>9.4</td>
+<td>10</td>
+<td>8.6</td>
+<td>9.5</td>
+<td>8.2</td>
 <td>11</td>
-<td>8.3</td>
-<td>10</td>
-<td>7.0</td>
-<td>9.9</td>
-<td>18</td>
-<td>14</td>
+<td>8.2</td>
+<td>11</td>
+<td>13</td>
+<td>9.7</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>3.7</td>
-<td>3.9</td>
-<td>4.3</td>
-<td>4.4</td>
-<td>3.5</td>
-<td>4.8</td>
-<td>3.9</td>
-<td>4.7</td>
-<td>3.6</td>
-<td>4.6</td>
-<td>6.8</td>
 <td>5.4</td>
+<td>4.7</td>
+<td>4.2</td>
+<td>4.0</td>
+<td>4.2</td>
+<td>4.5</td>
+<td>3.9</td>
+<td>4.5</td>
+<td>4.0</td>
+<td>5.3</td>
+<td>11</td>
+<td>6.3</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
-<td>124</td>
-<td>119</td>
+<td>126</td>
+<td>127</td>
 <td>127</td>
 <td>126</td>
 <td>119</td>
+<td>101</td>
+<td>129</td>
 <td>127</td>
-<td>128</td>
-<td>132</td>
-<td>121</td>
-<td>124</td>
-<td>120</td>
+<td>114</td>
+<td>123</td>
+<td>130</td>
 <td>120</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
-<td>33</td>
-<td>31</td>
-<td>33</td>
-<td>30</td>
 <td>26</td>
-<td>32</td>
 <td>21</td>
+<td>23</td>
+<td>19</td>
+<td>21</td>
+<td>23</td>
+<td>14</td>
 <td>15</td>
 <td>15</td>
 <td>16</td>
-<td>22</td>
-<td>18</td>
+<td>21</td>
+<td>21</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>19</td>
 <td>20</td>
 <td>19</td>
+<td>24</td>
 <td>20</td>
-<td>25</td>
-<td>25</td>
-<td>12</td>
+<td>24</td>
+<td>20</td>
 <td>14</td>
-<td>13</td>
-<td>13</td>
-<td>21</td>
+<td>16</td>
+<td>14</td>
+<td>15</td>
+<td>31</td>
 <td>29</td>
 </tr>
 <tr class="row-odd"><td>asum</td>
-<td>9.1</td>
-<td>9.3</td>
 <td>8.3</td>
-<td>10</td>
+<td>9.8</td>
+<td>8.3</td>
+<td>8.9</td>
+<td>7.8</td>
+<td>9.2</td>
+<td>7.9</td>
+<td>8.6</td>
 <td>8.2</td>
-<td>9.5</td>
-<td>8.4</td>
-<td>9.5</td>
-<td>7.7</td>
-<td>8.8</td>
-<td>6.8</td>
-<td>6.4</td>
+<td>8.9</td>
+<td>6.0</td>
+<td>5.8</td>
 </tr>
 <tr class="row-even"><td>compress</td>
-<td>34</td>
-<td>34</td>
-<td>38</td>
-<td>23</td>
-<td>32</td>
-<td>16</td>
-<td>39</td>
-<td>25</td>
-<td>39</td>
-<td>25</td>
-<td>32</td>
 <td>31</td>
+<td>36</td>
+<td>40</td>
+<td>24</td>
+<td>31</td>
+<td>17</td>
+<td>34</td>
+<td>29</td>
+<td>38</td>
+<td>25</td>
+<td>35</td>
+<td>34</td>
 </tr>
 <tr class="row-odd"><td>count</td>
-<td>220</td>
-<td>220</td>
-<td>217</td>
-<td>209</td>
-<td>148</td>
-<td>124</td>
-<td>150</td>
-<td>107</td>
-<td>152</td>
-<td>111</td>
+<td>203</td>
+<td>212</td>
+<td>145</td>
+<td>205</td>
+<td>142</td>
+<td>110</td>
+<td>105</td>
+<td>109</td>
+<td>102</td>
+<td>102</td>
 <td>73</td>
-<td>74</td>
+<td>72</td>
 </tr>
 <tr class="row-even"><td>cycle</td>
-<td>82</td>
-<td>93</td>
-<td>86</td>
-<td>93</td>
-<td>77</td>
-<td>52</td>
-<td>87</td>
-<td>57</td>
-<td>87</td>
-<td>56</td>
+<td>88</td>
+<td>83</td>
+<td>83</td>
+<td>81</td>
+<td>80</td>
+<td>66</td>
+<td>92</td>
 <td>59</td>
-<td>58</td>
+<td>91</td>
+<td>60</td>
+<td>55</td>
+<td>54</td>
 </tr>
 <tr class="row-odd"><td>dropwhile</td>
-<td>144</td>
-<td>143</td>
-<td>143</td>
-<td>147</td>
-<td>167</td>
+<td>235</td>
+<td>256</td>
+<td>248</td>
+<td>215</td>
+<td>203</td>
+<td>196</td>
+<td>182</td>
+<td>165</td>
+<td>178</td>
+<td>184</td>
+<td>191</td>
 <td>175</td>
-<td>171</td>
-<td>167</td>
-<td>170</td>
-<td>169</td>
-<td>144</td>
-<td>132</td>
 </tr>
 <tr class="row-even"><td>findindex</td>
-<td>16</td>
-<td>16</td>
-<td>16</td>
 <td>20</td>
-<td>18</td>
-<td>18</td>
-<td>16</td>
-<td>18</td>
-<td>16</td>
+<td>19</td>
+<td>19</td>
+<td>20</td>
 <td>18</td>
 <td>17</td>
 <td>16</td>
+<td>23</td>
+<td>16</td>
+<td>22</td>
+<td>12</td>
+<td>15</td>
 </tr>
 <tr class="row-odd"><td>findindices</td>
-<td>26</td>
-<td>26</td>
-<td>27</td>
-<td>26</td>
-<td>26</td>
-<td>29</td>
-<td>26</td>
-<td>27</td>
-<td>27</td>
-<td>26</td>
 <td>24</td>
+<td>20</td>
+<td>28</td>
 <td>23</td>
+<td>27</td>
+<td>23</td>
+<td>25</td>
+<td>22</td>
+<td>26</td>
+<td>21</td>
+<td>30</td>
+<td>30</td>
 </tr>
 <tr class="row-even"><td>repeat</td>
+<td>124</td>
+<td>128</td>
 <td>127</td>
-<td>133</td>
-<td>129</td>
-<td>125</td>
-<td>127</td>
-<td>41</td>
-<td>109</td>
-<td>39</td>
-<td>116</td>
-<td>38</td>
-<td>117</td>
+<td>121</td>
+<td>112</td>
+<td>42</td>
 <td>102</td>
+<td>36</td>
+<td>93</td>
+<td>34</td>
+<td>112</td>
+<td>106</td>
 </tr>
 <tr class="row-odd"><td>takewhile</td>
-<td>267</td>
-<td>259</td>
-<td>281</td>
-<td>276</td>
-<td>263</td>
-<td>196</td>
-<td>187</td>
-<td>133</td>
-<td>163</td>
-<td>138</td>
-<td>333</td>
-<td>154</td>
+<td>249</td>
+<td>227</td>
+<td>239</td>
+<td>241</td>
+<td>228</td>
+<td>188</td>
+<td>168</td>
+<td>125</td>
+<td>162</td>
+<td>153</td>
+<td>268</td>
+<td>175</td>
 </tr>
 <tr class="row-even"><td>add</td>
-<td>91</td>
-<td>122</td>
-<td>87</td>
-<td>130</td>
-<td>82</td>
-<td>116</td>
-<td>57</td>
-<td>54</td>
-<td>53</td>
+<td>99</td>
+<td>138</td>
+<td>93</td>
+<td>114</td>
+<td>76</td>
+<td>105</td>
+<td>41</td>
 <td>38</td>
+<td>46</td>
+<td>40</td>
 <td>115</td>
-<td>50</td>
+<td>43</td>
 </tr>
 <tr class="row-odd"><td>truediv</td>
-<td>79</td>
 <td>67</td>
-<td>75</td>
-<td>76</td>
-<td>69</td>
-<td>60</td>
-<td>67</td>
-<td>57</td>
 <td>62</td>
-<td>56</td>
-<td>154</td>
-<td>79</td>
+<td>70</td>
+<td>73</td>
+<td>71</td>
+<td>67</td>
+<td>58</td>
+<td>52</td>
+<td>51</td>
+<td>46</td>
+<td>116</td>
+<td>65</td>
 </tr>
 <tr class="row-even"><td>floordiv</td>
 <td>32</td>
-<td>33</td>
-<td>33</td>
 <td>36</td>
 <td>33</td>
-<td>31</td>
+<td>37</td>
+<td>35</td>
+<td>35</td>
 <td>32</td>
-<td>30</td>
-<td>31</td>
-<td>32</td>
-<td>109</td>
-<td>74</td>
+<td>33</td>
+<td>28</td>
+<td>26</td>
+<td>142</td>
+<td>70</td>
 </tr>
 <tr class="row-odd"><td>mod</td>
 <td>24</td>
-<td>27</td>
-<td>23</td>
 <td>29</td>
-<td>31</td>
-<td>28</td>
+<td>21</td>
+<td>30</td>
+<td>26</td>
+<td>25</td>
+<td>30</td>
+<td>21</td>
 <td>32</td>
-<td>23</td>
-<td>29</td>
 <td>22</td>
-<td>73</td>
-<td>55</td>
+<td>76</td>
+<td>54</td>
 </tr>
 <tr class="row-even"><td>mul</td>
 <td>19</td>
-<td>30</td>
+<td>29</td>
 <td>14</td>
-<td>24</td>
-<td>9.6</td>
-<td>73</td>
-<td>5.3</td>
-<td>40</td>
-<td>5.3</td>
-<td>37</td>
-<td>125</td>
-<td>56</td>
+<td>22</td>
+<td>8.6</td>
+<td>67</td>
+<td>4.9</td>
+<td>34</td>
+<td>4.9</td>
+<td>33</td>
+<td>113</td>
+<td>44</td>
 </tr>
 <tr class="row-odd"><td>neg</td>
-<td>127</td>
+<td>136</td>
 <td>&#160;</td>
-<td>146</td>
+<td>125</td>
 <td>&#160;</td>
-<td>138</td>
+<td>120</td>
 <td>&#160;</td>
-<td>76</td>
+<td>65</td>
 <td>&#160;</td>
-<td>81</td>
+<td>103</td>
 <td>&#160;</td>
-<td>115</td>
-<td>77</td>
+<td>128</td>
+<td>74</td>
 </tr>
 <tr class="row-even"><td>pow</td>
-<td>53</td>
-<td>59</td>
-<td>47</td>
+<td>61</td>
 <td>52</td>
-<td>43</td>
-<td>58</td>
-<td>24</td>
-<td>62</td>
-<td>23</td>
-<td>54</td>
-<td>8.0</td>
-<td>14</td>
+<td>52</td>
+<td>52</td>
+<td>42</td>
+<td>60</td>
+<td>22</td>
+<td>50</td>
+<td>22</td>
+<td>56</td>
+<td>8.2</td>
+<td>12</td>
 </tr>
 <tr class="row-odd"><td>sub</td>
-<td>75</td>
-<td>152</td>
-<td>89</td>
-<td>166</td>
-<td>96</td>
+<td>92</td>
+<td>163</td>
+<td>94</td>
 <td>131</td>
+<td>85</td>
+<td>147</td>
+<td>56</td>
 <td>51</td>
-<td>44</td>
+<td>63</td>
+<td>50</td>
+<td>133</td>
 <td>46</td>
-<td>43</td>
-<td>116</td>
-<td>55</td>
 </tr>
 <tr class="row-even"><td>and_</td>
-<td>262</td>
-<td>253</td>
-<td>255</td>
-<td>258</td>
-<td>219</td>
-<td>190</td>
-<td>59</td>
-<td>60</td>
-<td>64</td>
-<td>48</td>
+<td>183</td>
+<td>167</td>
+<td>233</td>
+<td>158</td>
+<td>165</td>
+<td>153</td>
+<td>52</td>
+<td>44</td>
+<td>51</td>
+<td>40</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>or_</td>
-<td>251</td>
-<td>275</td>
-<td>253</td>
-<td>243</td>
-<td>218</td>
-<td>194</td>
-<td>56</td>
-<td>57</td>
-<td>63</td>
-<td>49</td>
+<td>208</td>
+<td>198</td>
+<td>242</td>
+<td>185</td>
+<td>165</td>
+<td>139</td>
+<td>55</td>
+<td>47</td>
+<td>67</td>
+<td>35</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>xor</td>
-<td>159</td>
-<td>188</td>
-<td>180</td>
-<td>179</td>
+<td>174</td>
 <td>181</td>
-<td>150</td>
-<td>63</td>
-<td>55</td>
-<td>60</td>
+<td>251</td>
+<td>177</td>
+<td>140</td>
+<td>126</td>
 <td>51</td>
+<td>46</td>
+<td>55</td>
+<td>46</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>invert</td>
-<td>318</td>
-<td>269</td>
-<td>356</td>
-<td>301</td>
-<td>302</td>
-<td>218</td>
-<td>144</td>
-<td>190</td>
-<td>176</td>
-<td>197</td>
+<td>366</td>
+<td>297</td>
+<td>349</td>
+<td>337</td>
+<td>300</td>
+<td>287</td>
+<td>117</td>
+<td>162</td>
+<td>129</td>
+<td>155</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>eq</td>
-<td>101</td>
-<td>96</td>
+<td>150</td>
 <td>102</td>
 <td>99</td>
-<td>102</td>
-<td>107</td>
-<td>78</td>
-<td>71</td>
 <td>87</td>
-<td>94</td>
-<td>110</td>
-<td>83</td>
+<td>126</td>
+<td>146</td>
+<td>63</td>
+<td>74</td>
+<td>66</td>
+<td>70</td>
+<td>100</td>
+<td>61</td>
 </tr>
 <tr class="row-odd"><td>gt</td>
+<td>99</td>
+<td>111</td>
+<td>154</td>
+<td>111</td>
+<td>116</td>
+<td>102</td>
+<td>71</td>
+<td>87</td>
 <td>78</td>
-<td>143</td>
-<td>77</td>
-<td>81</td>
-<td>141</td>
-<td>79</td>
-<td>82</td>
-<td>78</td>
-<td>68</td>
-<td>75</td>
-<td>107</td>
-<td>76</td>
+<td>66</td>
+<td>88</td>
+<td>56</td>
 </tr>
 <tr class="row-even"><td>ge</td>
-<td>100</td>
-<td>97</td>
-<td>101</td>
-<td>97</td>
-<td>96</td>
-<td>106</td>
-<td>73</td>
-<td>110</td>
-<td>73</td>
-<td>93</td>
-<td>126</td>
-<td>86</td>
-</tr>
-<tr class="row-odd"><td>lt</td>
-<td>115</td>
-<td>123</td>
-<td>72</td>
-<td>74</td>
-<td>92</td>
-<td>139</td>
-<td>73</td>
-<td>77</td>
-<td>79</td>
-<td>81</td>
-<td>102</td>
-<td>80</td>
-</tr>
-<tr class="row-even"><td>le</td>
-<td>102</td>
-<td>93</td>
-<td>97</td>
-<td>100</td>
+<td>146</td>
+<td>108</td>
+<td>98</td>
+<td>99</td>
 <td>98</td>
 <td>109</td>
-<td>76</td>
-<td>80</td>
-<td>74</td>
-<td>87</td>
-<td>120</td>
-<td>85</td>
-</tr>
-<tr class="row-odd"><td>ne</td>
-<td>77</td>
-<td>130</td>
-<td>76</td>
-<td>119</td>
-<td>136</td>
-<td>152</td>
+<td>67</td>
 <td>71</td>
-<td>82</td>
-<td>82</td>
 <td>74</td>
+<td>73</td>
+<td>138</td>
+<td>67</td>
+</tr>
+<tr class="row-odd"><td>lt</td>
+<td>99</td>
+<td>95</td>
+<td>93</td>
+<td>138</td>
+<td>156</td>
+<td>94</td>
+<td>71</td>
+<td>89</td>
+<td>80</td>
+<td>73</td>
+<td>108</td>
+<td>72</td>
+</tr>
+<tr class="row-even"><td>le</td>
+<td>143</td>
+<td>106</td>
+<td>93</td>
+<td>94</td>
 <td>97</td>
+<td>103</td>
+<td>72</td>
+<td>75</td>
+<td>69</td>
+<td>72</td>
+<td>131</td>
 <td>69</td>
 </tr>
+<tr class="row-odd"><td>ne</td>
+<td>100</td>
+<td>102</td>
+<td>170</td>
+<td>123</td>
+<td>157</td>
+<td>174</td>
+<td>83</td>
+<td>96</td>
+<td>89</td>
+<td>89</td>
+<td>98</td>
+<td>73</td>
+</tr>
 <tr class="row-even"><td>lshift</td>
-<td>186</td>
-<td>191</td>
+<td>177</td>
+<td>237</td>
+<td>174</td>
+<td>236</td>
+<td>162</td>
 <td>173</td>
-<td>179</td>
-<td>206</td>
-<td>156</td>
-<td>64</td>
-<td>61</td>
-<td>65</td>
 <td>56</td>
+<td>46</td>
+<td>64</td>
+<td>59</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>rshift</td>
-<td>173</td>
-<td>236</td>
-<td>176</td>
-<td>235</td>
-<td>168</td>
-<td>198</td>
-<td>63</td>
-<td>60</td>
-<td>65</td>
-<td>62</td>
+<td>194</td>
+<td>200</td>
+<td>194</td>
+<td>190</td>
+<td>207</td>
+<td>140</td>
+<td>57</td>
+<td>46</td>
+<td>58</td>
+<td>50</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>137</td>
+<td>127</td>
 <td>&#160;</td>
-<td>110</td>
+<td>119</td>
 <td>&#160;</td>
-<td>117</td>
+<td>94</td>
 <td>&#160;</td>
-<td>105</td>
+<td>72</td>
 <td>&#160;</td>
-<td>99</td>
+<td>58</td>
 <td>&#160;</td>
-<td>164</td>
-<td>108</td>
+<td>155</td>
+<td>80</td>
 </tr>
 <tr class="row-odd"><td>acos</td>
 <td>&#160;</td>
@@ -5065,7 +5421,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>15</td>
-<td>12</td>
+<td>11</td>
 </tr>
 <tr class="row-even"><td>acosh</td>
 <td>&#160;</td>
@@ -5078,7 +5434,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.6</td>
+<td>10</td>
 <td>6.1</td>
 </tr>
 <tr class="row-odd"><td>asin</td>
@@ -5092,8 +5448,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>13</td>
-<td>12</td>
+<td>16</td>
+<td>9.4</td>
 </tr>
 <tr class="row-even"><td>asinh</td>
 <td>&#160;</td>
@@ -5106,8 +5462,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.6</td>
-<td>6.9</td>
+<td>6.5</td>
+<td>6.3</td>
 </tr>
 <tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
@@ -5121,7 +5477,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>14</td>
-<td>12</td>
+<td>10</td>
 </tr>
 <tr class="row-even"><td>atan2</td>
 <td>&#160;</td>
@@ -5134,8 +5490,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>11</td>
-<td>9.7</td>
+<td>10</td>
+<td>8.1</td>
 </tr>
 <tr class="row-odd"><td>atanh</td>
 <td>&#160;</td>
@@ -5148,8 +5504,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>7.2</td>
-<td>7.6</td>
+<td>6.9</td>
+<td>7.4</td>
 </tr>
 <tr class="row-even"><td>ceil</td>
 <td>&#160;</td>
@@ -5162,8 +5518,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>267</td>
-<td>182</td>
+<td>225</td>
+<td>183</td>
 </tr>
 <tr class="row-odd"><td>copysign</td>
 <td>&#160;</td>
@@ -5176,8 +5532,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>247</td>
-<td>109</td>
+<td>209</td>
+<td>77</td>
 </tr>
 <tr class="row-even"><td>cos</td>
 <td>&#160;</td>
@@ -5190,8 +5546,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>16</td>
-<td>8.3</td>
+<td>15</td>
+<td>6.3</td>
 </tr>
 <tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
@@ -5204,8 +5560,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>11</td>
-<td>7.4</td>
+<td>12</td>
+<td>7.8</td>
 </tr>
 <tr class="row-even"><td>degrees</td>
 <td>&#160;</td>
@@ -5218,8 +5574,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>139</td>
-<td>117</td>
+<td>152</td>
+<td>121</td>
 </tr>
 <tr class="row-odd"><td>erf</td>
 <td>&#160;</td>
@@ -5233,7 +5589,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>17</td>
-<td>13</td>
+<td>12</td>
 </tr>
 <tr class="row-even"><td>erfc</td>
 <td>&#160;</td>
@@ -5246,8 +5602,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.2</td>
-<td>7.3</td>
+<td>11</td>
+<td>7.5</td>
 </tr>
 <tr class="row-odd"><td>exp</td>
 <td>&#160;</td>
@@ -5260,8 +5616,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>17</td>
-<td>8.9</td>
+<td>22</td>
+<td>8.4</td>
 </tr>
 <tr class="row-even"><td>expm1</td>
 <td>&#160;</td>
@@ -5274,8 +5630,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.9</td>
-<td>6.8</td>
+<td>7.8</td>
+<td>7.4</td>
 </tr>
 <tr class="row-odd"><td>fabs</td>
 <td>&#160;</td>
@@ -5288,20 +5644,20 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>187</td>
-<td>124</td>
+<td>270</td>
+<td>152</td>
 </tr>
 <tr class="row-even"><td>factorial</td>
-<td>199</td>
-<td>201</td>
-<td>198</td>
-<td>198</td>
-<td>192</td>
-<td>171</td>
-<td>122</td>
-<td>109</td>
-<td>121</td>
-<td>98</td>
+<td>196</td>
+<td>229</td>
+<td>196</td>
+<td>225</td>
+<td>186</td>
+<td>191</td>
+<td>103</td>
+<td>83</td>
+<td>99</td>
+<td>83</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -5316,8 +5672,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>254</td>
-<td>170</td>
+<td>228</td>
+<td>148</td>
 </tr>
 <tr class="row-even"><td>fma</td>
 <td>&#160;</td>
@@ -5330,8 +5686,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>154</td>
-<td>45</td>
+<td>118</td>
+<td>41</td>
 </tr>
 <tr class="row-odd"><td>fmod</td>
 <td>&#160;</td>
@@ -5345,7 +5701,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>12</td>
-<td>12</td>
+<td>11</td>
 </tr>
 <tr class="row-even"><td>gamma</td>
 <td>&#160;</td>
@@ -5372,8 +5728,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>26</td>
-<td>17</td>
+<td>25</td>
+<td>14</td>
 </tr>
 <tr class="row-even"><td>isfinite</td>
 <td>&#160;</td>
@@ -5386,8 +5742,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>136</td>
-<td>124</td>
+<td>132</td>
+<td>114</td>
 </tr>
 <tr class="row-odd"><td>isinf</td>
 <td>&#160;</td>
@@ -5400,8 +5756,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>149</td>
-<td>131</td>
+<td>140</td>
+<td>111</td>
 </tr>
 <tr class="row-even"><td>isnan</td>
 <td>&#160;</td>
@@ -5414,8 +5770,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>173</td>
-<td>156</td>
+<td>184</td>
+<td>141</td>
 </tr>
 <tr class="row-odd"><td>ldexp</td>
 <td>&#160;</td>
@@ -5428,8 +5784,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>29</td>
-<td>30</td>
+<td>32</td>
+<td>27</td>
 </tr>
 <tr class="row-even"><td>lgamma</td>
 <td>&#160;</td>
@@ -5442,8 +5798,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.3</td>
-<td>5.9</td>
+<td>11</td>
+<td>6.4</td>
 </tr>
 <tr class="row-odd"><td>log</td>
 <td>&#160;</td>
@@ -5456,8 +5812,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>26</td>
-<td>8.3</td>
+<td>32</td>
+<td>7.9</td>
 </tr>
 <tr class="row-even"><td>log10</td>
 <td>&#160;</td>
@@ -5471,7 +5827,7 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>15</td>
-<td>7.8</td>
+<td>6.7</td>
 </tr>
 <tr class="row-odd"><td>log1p</td>
 <td>&#160;</td>
@@ -5484,8 +5840,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.3</td>
-<td>10</td>
+<td>7.9</td>
+<td>9.9</td>
 </tr>
 <tr class="row-even"><td>log2</td>
 <td>&#160;</td>
@@ -5498,8 +5854,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>22</td>
-<td>11</td>
+<td>24</td>
+<td>10</td>
 </tr>
 <tr class="row-odd"><td>radians</td>
 <td>&#160;</td>
@@ -5512,8 +5868,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>147</td>
-<td>116</td>
+<td>168</td>
+<td>84</td>
 </tr>
 <tr class="row-even"><td>sin</td>
 <td>&#160;</td>
@@ -5526,8 +5882,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
-<td>7.8</td>
+<td>17</td>
+<td>7.5</td>
 </tr>
 <tr class="row-odd"><td>sinh</td>
 <td>&#160;</td>
@@ -5540,8 +5896,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.5</td>
-<td>5.6</td>
+<td>5.9</td>
+<td>5.2</td>
 </tr>
 <tr class="row-even"><td>sqrt</td>
 <td>&#160;</td>
@@ -5554,8 +5910,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>25</td>
-<td>21</td>
+<td>44</td>
+<td>35</td>
 </tr>
 <tr class="row-odd"><td>tan</td>
 <td>&#160;</td>
@@ -5568,8 +5924,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.1</td>
-<td>5.1</td>
+<td>6.5</td>
+<td>5.0</td>
 </tr>
 <tr class="row-even"><td>tanh</td>
 <td>&#160;</td>
@@ -5582,8 +5938,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.2</td>
-<td>6.6</td>
+<td>5.9</td>
+<td>5.9</td>
 </tr>
 <tr class="row-odd"><td>trunc</td>
 <td>&#160;</td>
@@ -5596,8 +5952,8 @@ SIMD acceleration was disabled (not the default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>278</td>
-<td>210</td>
+<td>261</td>
+<td>153</td>
 </tr>
 </tbody>
 </table>
@@ -5613,10 +5969,10 @@ SIMD acceleration was disabled (not the default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>84</td>
+<td>82</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>356</td>
+<td>366</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
 <td>1.3</td>
@@ -5627,11 +5983,11 @@ SIMD acceleration was disabled (not the default).</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="optmised-performance">
-<h4><a class="toc-backref" href="#id154">Optmised Performance</a><a class="headerlink" href="#optmised-performance" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="optmised-performance-no-simd">
+<h4><a class="toc-backref" href="#id154">Optmised Performance (No SIMD)</a><a class="headerlink" href="#optmised-performance-no-simd" title="Permalink to this headline">¶</a></h4>
 <p>In this set of tests, all arithmatic error checking was disabled (not the
-default state) and SIMD acceleration was enabled (the normal default).</p>
-<p>Relative Performance with Optimisations - Python Time / Arrayfunc Time.</p>
+default state) and SIMD acceleration was also disabled (not the normal
+default).</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="17%" />
@@ -5666,494 +6022,494 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>111</td>
+<td>7.5</td>
+<td>8.2</td>
+<td>9.8</td>
+<td>7.7</td>
+<td>8.4</td>
+<td>9.4</td>
 <td>7.6</td>
-<td>59</td>
-<td>6.8</td>
-<td>32</td>
-<td>12</td>
+<td>9.9</td>
+<td>6.6</td>
 <td>11</td>
-<td>10</td>
+<td>13</td>
 <td>11</td>
-<td>10</td>
-<td>45</td>
-<td>25</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>47</td>
-<td>3.5</td>
-<td>27</td>
-<td>4.4</td>
-<td>13</td>
+<td>5.0</td>
+<td>5.6</td>
+<td>4.1</td>
+<td>4.2</td>
 <td>4.7</td>
-<td>3.3</td>
+<td>5.1</td>
+<td>4.4</td>
+<td>5.7</td>
 <td>4.5</td>
-<td>4.5</td>
-<td>4.6</td>
-<td>21</td>
-<td>9.7</td>
+<td>5.6</td>
+<td>11</td>
+<td>6.3</td>
 </tr>
 <tr class="row-even"><td>afilter</td>
-<td>124</td>
-<td>119</td>
-<td>127</td>
-<td>125</td>
+<td>128</td>
 <td>120</td>
-<td>127</td>
-<td>130</td>
+<td>120</td>
+<td>119</td>
+<td>115</td>
+<td>102</td>
 <td>131</td>
-<td>124</td>
-<td>129</td>
+<td>130</td>
 <td>126</td>
-<td>123</td>
+<td>121</td>
+<td>129</td>
+<td>121</td>
 </tr>
 <tr class="row-odd"><td>amax</td>
-<td>86</td>
-<td>84</td>
-<td>43</td>
-<td>42</td>
-<td>82</td>
-<td>159</td>
+<td>26</td>
 <td>21</td>
+<td>23</td>
+<td>20</td>
+<td>21</td>
+<td>23</td>
+<td>14</td>
 <td>15</td>
 <td>15</td>
-<td>16</td>
-<td>127</td>
-<td>55</td>
+<td>17</td>
+<td>21</td>
+<td>21</td>
 </tr>
 <tr class="row-even"><td>amin</td>
-<td>73</td>
-<td>73</td>
-<td>37</td>
-<td>37</td>
-<td>115</td>
-<td>80</td>
-<td>14</td>
-<td>14</td>
+<td>21</td>
+<td>19</td>
+<td>24</td>
+<td>20</td>
+<td>24</td>
+<td>20</td>
+<td>15</td>
+<td>16</td>
 <td>14</td>
 <td>15</td>
-<td>119</td>
-<td>37</td>
+<td>32</td>
+<td>32</td>
 </tr>
 <tr class="row-odd"><td>asum</td>
-<td>14</td>
-<td>14</td>
 <td>13</td>
-<td>16</td>
+<td>15</td>
 <td>13</td>
-<td>16</td>
-<td>14</td>
+<td>15</td>
+<td>12</td>
 <td>16</td>
 <td>13</td>
 <td>15</td>
-<td>26</td>
 <td>13</td>
+<td>15</td>
+<td>6.2</td>
+<td>6.0</td>
 </tr>
 <tr class="row-even"><td>compress</td>
-<td>35</td>
-<td>34</td>
-<td>38</td>
-<td>23</td>
 <td>33</td>
-<td>19</td>
-<td>39</td>
-<td>21</td>
-<td>39</td>
-<td>19</td>
-<td>28</td>
-<td>23</td>
+<td>34</td>
+<td>37</td>
+<td>22</td>
+<td>29</td>
+<td>17</td>
+<td>34</td>
+<td>24</td>
+<td>37</td>
+<td>20</td>
+<td>32</td>
+<td>29</td>
 </tr>
 <tr class="row-odd"><td>count</td>
-<td>214</td>
-<td>217</td>
-<td>222</td>
-<td>201</td>
-<td>152</td>
-<td>120</td>
-<td>150</td>
-<td>103</td>
-<td>152</td>
+<td>199</td>
+<td>209</td>
+<td>147</td>
+<td>192</td>
+<td>139</td>
+<td>107</td>
+<td>99</td>
 <td>112</td>
-<td>73</td>
-<td>74</td>
+<td>116</td>
+<td>103</td>
+<td>76</td>
+<td>75</td>
 </tr>
 <tr class="row-even"><td>cycle</td>
-<td>81</td>
+<td>87</td>
 <td>89</td>
-<td>85</td>
-<td>91</td>
-<td>76</td>
-<td>53</td>
-<td>85</td>
-<td>51</td>
+<td>87</td>
+<td>88</td>
+<td>84</td>
+<td>63</td>
 <td>83</td>
-<td>51</td>
-<td>57</td>
+<td>54</td>
+<td>86</td>
+<td>60</td>
+<td>58</td>
 <td>58</td>
 </tr>
 <tr class="row-odd"><td>dropwhile</td>
-<td>143</td>
-<td>139</td>
-<td>143</td>
-<td>143</td>
-<td>174</td>
-<td>175</td>
-<td>157</td>
-<td>170</td>
-<td>169</td>
-<td>158</td>
-<td>144</td>
-<td>130</td>
+<td>235</td>
+<td>238</td>
+<td>222</td>
+<td>213</td>
+<td>187</td>
+<td>194</td>
+<td>193</td>
+<td>190</td>
+<td>188</td>
+<td>195</td>
+<td>196</td>
+<td>179</td>
 </tr>
 <tr class="row-even"><td>findindex</td>
-<td>192</td>
-<td>16</td>
-<td>109</td>
 <td>20</td>
-<td>51</td>
-<td>18</td>
+<td>20</td>
+<td>20</td>
+<td>21</td>
 <td>16</td>
 <td>17</td>
 <td>16</td>
-<td>18</td>
-<td>63</td>
-<td>33</td>
+<td>22</td>
+<td>16</td>
+<td>21</td>
+<td>12</td>
+<td>17</td>
 </tr>
 <tr class="row-odd"><td>findindices</td>
 <td>26</td>
-<td>26</td>
+<td>21</td>
 <td>27</td>
-<td>26</td>
-<td>26</td>
-<td>29</td>
-<td>26</td>
+<td>22</td>
+<td>25</td>
+<td>22</td>
 <td>27</td>
-<td>27</td>
-<td>27</td>
-<td>24</td>
-<td>24</td>
+<td>23</td>
+<td>26</td>
+<td>21</td>
+<td>28</td>
+<td>28</td>
 </tr>
 <tr class="row-even"><td>repeat</td>
-<td>129</td>
-<td>130</td>
-<td>129</td>
-<td>124</td>
-<td>124</td>
-<td>41</td>
-<td>112</td>
+<td>128</td>
+<td>125</td>
+<td>125</td>
+<td>116</td>
+<td>116</td>
 <td>40</td>
-<td>109</td>
-<td>36</td>
-<td>123</td>
-<td>101</td>
+<td>121</td>
+<td>38</td>
+<td>119</td>
+<td>39</td>
+<td>112</td>
+<td>104</td>
 </tr>
 <tr class="row-odd"><td>takewhile</td>
-<td>264</td>
-<td>269</td>
-<td>294</td>
-<td>266</td>
-<td>250</td>
-<td>191</td>
-<td>188</td>
-<td>125</td>
-<td>178</td>
-<td>129</td>
-<td>345</td>
-<td>153</td>
+<td>254</td>
+<td>213</td>
+<td>233</td>
+<td>229</td>
+<td>246</td>
+<td>209</td>
+<td>201</td>
+<td>154</td>
+<td>184</td>
+<td>160</td>
+<td>243</td>
+<td>184</td>
 </tr>
 <tr class="row-even"><td>add</td>
-<td>169</td>
-<td>161</td>
-<td>179</td>
-<td>247</td>
-<td>234</td>
-<td>181</td>
-<td>119</td>
-<td>94</td>
-<td>98</td>
-<td>79</td>
-<td>154</td>
-<td>102</td>
+<td>264</td>
+<td>237</td>
+<td>259</td>
+<td>242</td>
+<td>168</td>
+<td>180</td>
+<td>138</td>
+<td>92</td>
+<td>153</td>
+<td>92</td>
+<td>224</td>
+<td>114</td>
 </tr>
 <tr class="row-odd"><td>truediv</td>
-<td>78</td>
-<td>63</td>
+<td>67</td>
+<td>59</td>
+<td>60</td>
 <td>66</td>
-<td>76</td>
-<td>74</td>
-<td>57</td>
-<td>75</td>
-<td>62</td>
-<td>66</td>
+<td>71</td>
+<td>68</td>
+<td>64</td>
 <td>58</td>
-<td>204</td>
-<td>178</td>
+<td>59</td>
+<td>49</td>
+<td>183</td>
+<td>151</td>
 </tr>
 <tr class="row-even"><td>floordiv</td>
+<td>37</td>
+<td>32</td>
+<td>39</td>
+<td>35</td>
 <td>36</td>
 <td>29</td>
-<td>38</td>
-<td>36</td>
-<td>38</td>
-<td>30</td>
-<td>38</td>
-<td>31</td>
-<td>38</td>
-<td>33</td>
-<td>167</td>
-<td>128</td>
+<td>35</td>
+<td>29</td>
+<td>35</td>
+<td>26</td>
+<td>182</td>
+<td>150</td>
 </tr>
 <tr class="row-odd"><td>mod</td>
-<td>25</td>
+<td>24</td>
+<td>26</td>
+<td>21</td>
+<td>30</td>
 <td>28</td>
+<td>27</td>
+<td>29</td>
 <td>24</td>
 <td>30</td>
-<td>32</td>
-<td>29</td>
-<td>36</td>
-<td>29</td>
-<td>33</td>
-<td>28</td>
-<td>112</td>
-<td>98</td>
+<td>25</td>
+<td>102</td>
+<td>84</td>
 </tr>
 <tr class="row-even"><td>mul</td>
-<td>175</td>
-<td>163</td>
-<td>172</td>
-<td>174</td>
-<td>181</td>
-<td>144</td>
-<td>95</td>
-<td>90</td>
-<td>100</td>
-<td>88</td>
-<td>165</td>
-<td>120</td>
+<td>161</td>
+<td>159</td>
+<td>173</td>
+<td>157</td>
+<td>167</td>
+<td>131</td>
+<td>83</td>
+<td>86</td>
+<td>82</td>
+<td>66</td>
+<td>170</td>
+<td>94</td>
 </tr>
 <tr class="row-odd"><td>neg</td>
-<td>178</td>
+<td>135</td>
 <td>&#160;</td>
-<td>191</td>
+<td>185</td>
 <td>&#160;</td>
-<td>116</td>
+<td>156</td>
 <td>&#160;</td>
-<td>81</td>
+<td>70</td>
 <td>&#160;</td>
-<td>80</td>
+<td>84</td>
 <td>&#160;</td>
-<td>180</td>
-<td>99</td>
+<td>179</td>
+<td>92</td>
 </tr>
 <tr class="row-even"><td>pow</td>
-<td>46</td>
+<td>51</td>
 <td>47</td>
-<td>38</td>
-<td>45</td>
+<td>41</td>
+<td>44</td>
 <td>29</td>
-<td>58</td>
-<td>17</td>
-<td>53</td>
-<td>16</td>
 <td>48</td>
-<td>6.8</td>
-<td>16</td>
+<td>15</td>
+<td>45</td>
+<td>15</td>
+<td>59</td>
+<td>7.5</td>
+<td>14</td>
 </tr>
 <tr class="row-odd"><td>sub</td>
+<td>158</td>
 <td>159</td>
-<td>216</td>
-<td>238</td>
-<td>247</td>
-<td>159</td>
-<td>138</td>
-<td>105</td>
-<td>86</td>
-<td>106</td>
-<td>67</td>
+<td>158</td>
 <td>141</td>
-<td>115</td>
+<td>148</td>
+<td>173</td>
+<td>106</td>
+<td>100</td>
+<td>109</td>
+<td>90</td>
+<td>222</td>
+<td>100</td>
 </tr>
 <tr class="row-even"><td>and_</td>
-<td>182</td>
-<td>179</td>
-<td>182</td>
-<td>188</td>
-<td>180</td>
-<td>154</td>
-<td>101</td>
-<td>144</td>
-<td>110</td>
-<td>112</td>
+<td>257</td>
+<td>241</td>
+<td>273</td>
+<td>163</td>
+<td>250</td>
+<td>245</td>
+<td>148</td>
+<td>98</td>
+<td>104</td>
+<td>100</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>or_</td>
-<td>189</td>
-<td>195</td>
-<td>177</td>
-<td>175</td>
-<td>189</td>
-<td>164</td>
-<td>120</td>
-<td>102</td>
-<td>126</td>
-<td>107</td>
+<td>303</td>
+<td>294</td>
+<td>289</td>
+<td>206</td>
+<td>263</td>
+<td>225</td>
+<td>165</td>
+<td>123</td>
+<td>158</td>
+<td>97</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>xor</td>
-<td>251</td>
-<td>275</td>
-<td>263</td>
-<td>254</td>
-<td>265</td>
-<td>195</td>
-<td>133</td>
-<td>122</td>
-<td>126</td>
-<td>119</td>
+<td>246</td>
+<td>264</td>
+<td>245</td>
+<td>178</td>
+<td>220</td>
+<td>203</td>
+<td>105</td>
+<td>92</td>
+<td>137</td>
+<td>103</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>invert</td>
-<td>334</td>
-<td>266</td>
-<td>353</td>
+<td>338</td>
+<td>278</td>
+<td>328</td>
+<td>309</td>
 <td>296</td>
-<td>302</td>
-<td>227</td>
-<td>164</td>
-<td>176</td>
-<td>177</td>
-<td>247</td>
+<td>264</td>
+<td>120</td>
+<td>163</td>
+<td>143</td>
+<td>166</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>eq</td>
-<td>93</td>
-<td>97</td>
-<td>77</td>
-<td>121</td>
-<td>79</td>
-<td>132</td>
+<td>83</td>
+<td>87</td>
 <td>85</td>
-<td>135</td>
-<td>95</td>
+<td>80</td>
+<td>84</td>
+<td>120</td>
+<td>87</td>
+<td>125</td>
 <td>92</td>
-<td>116</td>
-<td>94</td>
+<td>93</td>
+<td>107</td>
+<td>99</td>
 </tr>
 <tr class="row-odd"><td>gt</td>
-<td>83</td>
-<td>76</td>
-<td>79</td>
-<td>80</td>
-<td>126</td>
-<td>80</td>
-<td>92</td>
-<td>92</td>
-<td>82</td>
-<td>125</td>
-<td>134</td>
-<td>115</td>
-</tr>
-<tr class="row-even"><td>ge</td>
-<td>101</td>
-<td>96</td>
+<td>78</td>
+<td>121</td>
+<td>98</td>
 <td>78</td>
 <td>113</td>
-<td>126</td>
-<td>127</td>
-<td>81</td>
-<td>158</td>
-<td>89</td>
-<td>114</td>
-<td>110</td>
-<td>109</td>
+<td>111</td>
+<td>100</td>
+<td>166</td>
+<td>119</td>
+<td>125</td>
+<td>141</td>
+<td>93</td>
+</tr>
+<tr class="row-even"><td>ge</td>
+<td>103</td>
+<td>91</td>
+<td>98</td>
+<td>98</td>
+<td>88</td>
+<td>140</td>
+<td>103</td>
+<td>133</td>
+<td>94</td>
+<td>120</td>
+<td>116</td>
+<td>149</td>
 </tr>
 <tr class="row-odd"><td>lt</td>
-<td>112</td>
-<td>118</td>
-<td>112</td>
-<td>75</td>
-<td>76</td>
-<td>88</td>
+<td>117</td>
+<td>110</td>
+<td>115</td>
+<td>82</td>
+<td>102</td>
+<td>113</td>
+<td>124</td>
+<td>148</td>
+<td>141</td>
 <td>128</td>
-<td>80</td>
-<td>127</td>
-<td>138</td>
-<td>119</td>
-<td>112</td>
+<td>122</td>
+<td>109</td>
 </tr>
 <tr class="row-even"><td>le</td>
-<td>94</td>
-<td>102</td>
-<td>111</td>
-<td>119</td>
-<td>84</td>
-<td>137</td>
-<td>119</td>
-<td>129</td>
-<td>122</td>
+<td>101</td>
+<td>127</td>
+<td>98</td>
+<td>99</td>
+<td>91</td>
+<td>125</td>
 <td>121</td>
-<td>122</td>
-<td>106</td>
+<td>113</td>
+<td>125</td>
+<td>121</td>
+<td>125</td>
+<td>108</td>
 </tr>
 <tr class="row-odd"><td>ne</td>
-<td>118</td>
-<td>115</td>
-<td>118</td>
-<td>79</td>
-<td>123</td>
-<td>84</td>
-<td>119</td>
-<td>89</td>
-<td>125</td>
-<td>126</td>
-<td>105</td>
-<td>90</td>
+<td>121</td>
+<td>120</td>
+<td>143</td>
+<td>81</td>
+<td>151</td>
+<td>117</td>
+<td>134</td>
+<td>173</td>
+<td>155</td>
+<td>142</td>
+<td>108</td>
+<td>102</td>
 </tr>
 <tr class="row-even"><td>lshift</td>
-<td>187</td>
-<td>197</td>
-<td>183</td>
-<td>181</td>
-<td>242</td>
-<td>160</td>
-<td>138</td>
-<td>124</td>
-<td>144</td>
-<td>118</td>
+<td>223</td>
+<td>289</td>
+<td>211</td>
+<td>252</td>
+<td>184</td>
+<td>205</td>
+<td>112</td>
+<td>100</td>
+<td>111</td>
+<td>102</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-odd"><td>rshift</td>
-<td>204</td>
-<td>267</td>
-<td>212</td>
-<td>258</td>
-<td>181</td>
-<td>211</td>
-<td>127</td>
-<td>150</td>
-<td>115</td>
-<td>149</td>
+<td>200</td>
+<td>202</td>
+<td>209</td>
+<td>199</td>
+<td>284</td>
+<td>166</td>
+<td>132</td>
+<td>99</td>
+<td>135</td>
+<td>103</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
 <tr class="row-even"><td>abs_</td>
-<td>149</td>
+<td>130</td>
 <td>&#160;</td>
-<td>149</td>
+<td>136</td>
 <td>&#160;</td>
-<td>157</td>
+<td>133</td>
 <td>&#160;</td>
-<td>113</td>
+<td>77</td>
 <td>&#160;</td>
-<td>103</td>
+<td>82</td>
 <td>&#160;</td>
-<td>185</td>
-<td>108</td>
+<td>161</td>
+<td>78</td>
 </tr>
 <tr class="row-odd"><td>acos</td>
 <td>&#160;</td>
@@ -6166,8 +6522,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>15</td>
-<td>13</td>
+<td>16</td>
+<td>11</td>
 </tr>
 <tr class="row-even"><td>acosh</td>
 <td>&#160;</td>
@@ -6181,7 +6537,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>11</td>
-<td>6.2</td>
+<td>6.3</td>
 </tr>
 <tr class="row-odd"><td>asin</td>
 <td>&#160;</td>
@@ -6194,8 +6550,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>14</td>
-<td>12</td>
+<td>17</td>
+<td>10.0</td>
 </tr>
 <tr class="row-even"><td>asinh</td>
 <td>&#160;</td>
@@ -6208,8 +6564,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.7</td>
-<td>7.1</td>
+<td>6.8</td>
+<td>6.5</td>
 </tr>
 <tr class="row-odd"><td>atan</td>
 <td>&#160;</td>
@@ -6223,7 +6579,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>16</td>
-<td>13</td>
+<td>11</td>
 </tr>
 <tr class="row-even"><td>atan2</td>
 <td>&#160;</td>
@@ -6236,8 +6592,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.7</td>
-<td>8.2</td>
+<td>9.6</td>
+<td>6.1</td>
 </tr>
 <tr class="row-odd"><td>atanh</td>
 <td>&#160;</td>
@@ -6251,7 +6607,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>7.4</td>
-<td>8.0</td>
+<td>7.7</td>
 </tr>
 <tr class="row-even"><td>ceil</td>
 <td>&#160;</td>
@@ -6264,8 +6620,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>300</td>
-<td>214</td>
+<td>248</td>
+<td>293</td>
 </tr>
 <tr class="row-odd"><td>copysign</td>
 <td>&#160;</td>
@@ -6278,8 +6634,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>327</td>
-<td>213</td>
+<td>282</td>
+<td>167</td>
 </tr>
 <tr class="row-even"><td>cos</td>
 <td>&#160;</td>
@@ -6292,8 +6648,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>17</td>
-<td>8.4</td>
+<td>15</td>
+<td>6.1</td>
 </tr>
 <tr class="row-odd"><td>cosh</td>
 <td>&#160;</td>
@@ -6306,8 +6662,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>12</td>
-<td>7.5</td>
+<td>13</td>
+<td>8.0</td>
 </tr>
 <tr class="row-even"><td>degrees</td>
 <td>&#160;</td>
@@ -6320,8 +6676,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>281</td>
-<td>170</td>
+<td>221</td>
+<td>137</td>
 </tr>
 <tr class="row-odd"><td>erf</td>
 <td>&#160;</td>
@@ -6335,7 +6691,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>17</td>
-<td>14</td>
+<td>12</td>
 </tr>
 <tr class="row-even"><td>erfc</td>
 <td>&#160;</td>
@@ -6348,8 +6704,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.2</td>
-<td>7.0</td>
+<td>11</td>
+<td>7.5</td>
 </tr>
 <tr class="row-odd"><td>exp</td>
 <td>&#160;</td>
@@ -6362,8 +6718,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>16</td>
-<td>9.0</td>
+<td>24</td>
+<td>8.5</td>
 </tr>
 <tr class="row-even"><td>expm1</td>
 <td>&#160;</td>
@@ -6376,8 +6732,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.9</td>
-<td>7.1</td>
+<td>8.2</td>
+<td>7.5</td>
 </tr>
 <tr class="row-odd"><td>fabs</td>
 <td>&#160;</td>
@@ -6390,20 +6746,20 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>197</td>
-<td>132</td>
+<td>300</td>
+<td>177</td>
 </tr>
 <tr class="row-even"><td>factorial</td>
-<td>168</td>
-<td>193</td>
-<td>197</td>
-<td>139</td>
-<td>181</td>
-<td>182</td>
-<td>128</td>
-<td>103</td>
-<td>118</td>
-<td>109</td>
+<td>178</td>
+<td>185</td>
+<td>138</td>
+<td>179</td>
+<td>180</td>
+<td>156</td>
+<td>111</td>
+<td>88</td>
+<td>123</td>
+<td>90</td>
 <td>&#160;</td>
 <td>&#160;</td>
 </tr>
@@ -6418,8 +6774,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>267</td>
-<td>210</td>
+<td>361</td>
+<td>143</td>
 </tr>
 <tr class="row-even"><td>fma</td>
 <td>&#160;</td>
@@ -6432,8 +6788,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>174</td>
-<td>46</td>
+<td>147</td>
+<td>40</td>
 </tr>
 <tr class="row-odd"><td>fmod</td>
 <td>&#160;</td>
@@ -6446,8 +6802,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>13</td>
 <td>14</td>
+<td>13</td>
 </tr>
 <tr class="row-even"><td>gamma</td>
 <td>&#160;</td>
@@ -6475,7 +6831,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>29</td>
-<td>16</td>
+<td>14</td>
 </tr>
 <tr class="row-even"><td>isfinite</td>
 <td>&#160;</td>
@@ -6488,8 +6844,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>137</td>
-<td>125</td>
+<td>134</td>
+<td>99</td>
 </tr>
 <tr class="row-odd"><td>isinf</td>
 <td>&#160;</td>
@@ -6502,8 +6858,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>149</td>
-<td>133</td>
+<td>141</td>
+<td>115</td>
 </tr>
 <tr class="row-even"><td>isnan</td>
 <td>&#160;</td>
@@ -6516,8 +6872,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>177</td>
-<td>182</td>
+<td>185</td>
+<td>150</td>
 </tr>
 <tr class="row-odd"><td>ldexp</td>
 <td>&#160;</td>
@@ -6530,8 +6886,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>33</td>
-<td>32</td>
+<td>35</td>
+<td>34</td>
 </tr>
 <tr class="row-even"><td>lgamma</td>
 <td>&#160;</td>
@@ -6544,8 +6900,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>9.3</td>
-<td>6.0</td>
+<td>10</td>
+<td>6.4</td>
 </tr>
 <tr class="row-odd"><td>log</td>
 <td>&#160;</td>
@@ -6558,8 +6914,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>30</td>
-<td>8.2</td>
+<td>32</td>
+<td>7.9</td>
 </tr>
 <tr class="row-even"><td>log10</td>
 <td>&#160;</td>
@@ -6573,7 +6929,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>16</td>
-<td>7.9</td>
+<td>6.8</td>
 </tr>
 <tr class="row-odd"><td>log1p</td>
 <td>&#160;</td>
@@ -6586,8 +6942,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>10.0</td>
-<td>11</td>
+<td>8.3</td>
+<td>10</td>
 </tr>
 <tr class="row-even"><td>log2</td>
 <td>&#160;</td>
@@ -6600,8 +6956,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>25</td>
-<td>12</td>
+<td>26</td>
+<td>11</td>
 </tr>
 <tr class="row-odd"><td>radians</td>
 <td>&#160;</td>
@@ -6614,8 +6970,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>181</td>
-<td>115</td>
+<td>185</td>
+<td>118</td>
 </tr>
 <tr class="row-even"><td>sin</td>
 <td>&#160;</td>
@@ -6629,7 +6985,7 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>17</td>
-<td>8.1</td>
+<td>7.4</td>
 </tr>
 <tr class="row-odd"><td>sinh</td>
 <td>&#160;</td>
@@ -6642,8 +6998,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.6</td>
-<td>5.6</td>
+<td>5.8</td>
+<td>5.5</td>
 </tr>
 <tr class="row-even"><td>sqrt</td>
 <td>&#160;</td>
@@ -6656,8 +7012,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>31</td>
-<td>25</td>
+<td>49</td>
+<td>34</td>
 </tr>
 <tr class="row-odd"><td>tan</td>
 <td>&#160;</td>
@@ -6670,8 +7026,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.3</td>
-<td>5.2</td>
+<td>6.9</td>
+<td>5.1</td>
 </tr>
 <tr class="row-even"><td>tanh</td>
 <td>&#160;</td>
@@ -6684,8 +7040,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>6.3</td>
-<td>6.9</td>
+<td>6.1</td>
+<td>6.2</td>
 </tr>
 <tr class="row-odd"><td>trunc</td>
 <td>&#160;</td>
@@ -6698,8 +7054,8 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>295</td>
-<td>279</td>
+<td>426</td>
+<td>158</td>
 </tr>
 </tbody>
 </table>
@@ -6715,10 +7071,10 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>Average:</td>
-<td>100</td>
+<td>98</td>
 </tr>
 <tr class="row-odd"><td>Maximum:</td>
-<td>353</td>
+<td>426</td>
 </tr>
 <tr class="row-even"><td>Minimum:</td>
 <td>1.3</td>
@@ -6729,8 +7085,1801 @@ default state) and SIMD acceleration was enabled (the normal default).</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="simd-optimisations">
-<h4><a class="toc-backref" href="#id155">SIMD Optimisations</a><a class="headerlink" href="#simd-optimisations" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="optmised-performance-with-simd">
+<h4><a class="toc-backref" href="#id155">Optmised Performance (with SIMD)</a><a class="headerlink" href="#optmised-performance-with-simd" title="Permalink to this headline">¶</a></h4>
+<p>In this set of tests, all arithmatic error checking was disabled (not the
+default state) and SIMD acceleration was enabled (the normal default).</p>
+<p>Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>aall</td>
+<td>101</td>
+<td>109</td>
+<td>53</td>
+<td>46</td>
+<td>23</td>
+<td>29</td>
+<td>8.4</td>
+<td>12</td>
+<td>8.9</td>
+<td>12</td>
+<td>44</td>
+<td>22</td>
+</tr>
+<tr class="row-odd"><td>aany</td>
+<td>63</td>
+<td>51</td>
+<td>33</td>
+<td>30</td>
+<td>15</td>
+<td>18</td>
+<td>4.5</td>
+<td>6.3</td>
+<td>3.8</td>
+<td>5.9</td>
+<td>20</td>
+<td>10</td>
+</tr>
+<tr class="row-even"><td>afilter</td>
+<td>120</td>
+<td>122</td>
+<td>127</td>
+<td>125</td>
+<td>119</td>
+<td>103</td>
+<td>125</td>
+<td>124</td>
+<td>124</td>
+<td>122</td>
+<td>131</td>
+<td>118</td>
+</tr>
+<tr class="row-odd"><td>amax</td>
+<td>81</td>
+<td>80</td>
+<td>41</td>
+<td>40</td>
+<td>75</td>
+<td>111</td>
+<td>14</td>
+<td>15</td>
+<td>15</td>
+<td>17</td>
+<td>111</td>
+<td>62</td>
+</tr>
+<tr class="row-even"><td>amin</td>
+<td>77</td>
+<td>76</td>
+<td>39</td>
+<td>39</td>
+<td>111</td>
+<td>81</td>
+<td>15</td>
+<td>16</td>
+<td>15</td>
+<td>14</td>
+<td>104</td>
+<td>38</td>
+</tr>
+<tr class="row-odd"><td>asum</td>
+<td>13</td>
+<td>15</td>
+<td>13</td>
+<td>14</td>
+<td>12</td>
+<td>15</td>
+<td>13</td>
+<td>14</td>
+<td>13</td>
+<td>15</td>
+<td>23</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>compress</td>
+<td>36</td>
+<td>36</td>
+<td>40</td>
+<td>24</td>
+<td>30</td>
+<td>17</td>
+<td>39</td>
+<td>29</td>
+<td>40</td>
+<td>25</td>
+<td>32</td>
+<td>31</td>
+</tr>
+<tr class="row-odd"><td>count</td>
+<td>199</td>
+<td>206</td>
+<td>142</td>
+<td>210</td>
+<td>150</td>
+<td>113</td>
+<td>111</td>
+<td>111</td>
+<td>104</td>
+<td>93</td>
+<td>78</td>
+<td>82</td>
+</tr>
+<tr class="row-even"><td>cycle</td>
+<td>88</td>
+<td>88</td>
+<td>78</td>
+<td>88</td>
+<td>85</td>
+<td>65</td>
+<td>90</td>
+<td>59</td>
+<td>89</td>
+<td>55</td>
+<td>52</td>
+<td>55</td>
+</tr>
+<tr class="row-odd"><td>dropwhile</td>
+<td>227</td>
+<td>223</td>
+<td>226</td>
+<td>221</td>
+<td>194</td>
+<td>202</td>
+<td>191</td>
+<td>183</td>
+<td>180</td>
+<td>181</td>
+<td>192</td>
+<td>179</td>
+</tr>
+<tr class="row-even"><td>findindex</td>
+<td>200</td>
+<td>195</td>
+<td>89</td>
+<td>87</td>
+<td>56</td>
+<td>56</td>
+<td>16</td>
+<td>22</td>
+<td>17</td>
+<td>23</td>
+<td>65</td>
+<td>32</td>
+</tr>
+<tr class="row-odd"><td>findindices</td>
+<td>26</td>
+<td>21</td>
+<td>28</td>
+<td>23</td>
+<td>27</td>
+<td>23</td>
+<td>27</td>
+<td>23</td>
+<td>26</td>
+<td>22</td>
+<td>29</td>
+<td>28</td>
+</tr>
+<tr class="row-even"><td>repeat</td>
+<td>127</td>
+<td>135</td>
+<td>129</td>
+<td>118</td>
+<td>123</td>
+<td>42</td>
+<td>126</td>
+<td>39</td>
+<td>116</td>
+<td>38</td>
+<td>115</td>
+<td>97</td>
+</tr>
+<tr class="row-odd"><td>takewhile</td>
+<td>257</td>
+<td>232</td>
+<td>253</td>
+<td>257</td>
+<td>232</td>
+<td>185</td>
+<td>152</td>
+<td>144</td>
+<td>187</td>
+<td>150</td>
+<td>279</td>
+<td>178</td>
+</tr>
+<tr class="row-even"><td>add</td>
+<td>1538</td>
+<td>1395</td>
+<td>970</td>
+<td>906</td>
+<td>427</td>
+<td>346</td>
+<td>112</td>
+<td>85</td>
+<td>123</td>
+<td>107</td>
+<td>450</td>
+<td>168</td>
+</tr>
+<tr class="row-odd"><td>truediv</td>
+<td>66</td>
+<td>57</td>
+<td>61</td>
+<td>68</td>
+<td>72</td>
+<td>66</td>
+<td>63</td>
+<td>61</td>
+<td>64</td>
+<td>54</td>
+<td>182</td>
+<td>150</td>
+</tr>
+<tr class="row-even"><td>floordiv</td>
+<td>37</td>
+<td>32</td>
+<td>39</td>
+<td>35</td>
+<td>36</td>
+<td>29</td>
+<td>36</td>
+<td>28</td>
+<td>35</td>
+<td>27</td>
+<td>183</td>
+<td>151</td>
+</tr>
+<tr class="row-odd"><td>mod</td>
+<td>25</td>
+<td>27</td>
+<td>21</td>
+<td>33</td>
+<td>33</td>
+<td>30</td>
+<td>32</td>
+<td>25</td>
+<td>31</td>
+<td>29</td>
+<td>117</td>
+<td>105</td>
+</tr>
+<tr class="row-even"><td>mul</td>
+<td>1200</td>
+<td>1053</td>
+<td>817</td>
+<td>704</td>
+<td>405</td>
+<td>348</td>
+<td>82</td>
+<td>80</td>
+<td>84</td>
+<td>69</td>
+<td>520</td>
+<td>196</td>
+</tr>
+<tr class="row-odd"><td>neg</td>
+<td>1065</td>
+<td>&#160;</td>
+<td>646</td>
+<td>&#160;</td>
+<td>383</td>
+<td>&#160;</td>
+<td>67</td>
+<td>&#160;</td>
+<td>89</td>
+<td>&#160;</td>
+<td>178</td>
+<td>86</td>
+</tr>
+<tr class="row-even"><td>pow</td>
+<td>50</td>
+<td>47</td>
+<td>41</td>
+<td>43</td>
+<td>29</td>
+<td>49</td>
+<td>15</td>
+<td>45</td>
+<td>16</td>
+<td>58</td>
+<td>7.6</td>
+<td>14</td>
+</tr>
+<tr class="row-odd"><td>sub</td>
+<td>1475</td>
+<td>1484</td>
+<td>955</td>
+<td>868</td>
+<td>415</td>
+<td>340</td>
+<td>96</td>
+<td>85</td>
+<td>127</td>
+<td>93</td>
+<td>419</td>
+<td>130</td>
+</tr>
+<tr class="row-even"><td>and_</td>
+<td>2241</td>
+<td>2061</td>
+<td>923</td>
+<td>791</td>
+<td>429</td>
+<td>404</td>
+<td>156</td>
+<td>153</td>
+<td>119</td>
+<td>116</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>or_</td>
+<td>2275</td>
+<td>2154</td>
+<td>1055</td>
+<td>1072</td>
+<td>514</td>
+<td>475</td>
+<td>166</td>
+<td>143</td>
+<td>162</td>
+<td>104</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>xor</td>
+<td>2020</td>
+<td>2130</td>
+<td>881</td>
+<td>951</td>
+<td>430</td>
+<td>410</td>
+<td>105</td>
+<td>104</td>
+<td>104</td>
+<td>104</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>invert</td>
+<td>2664</td>
+<td>3213</td>
+<td>1342</td>
+<td>1734</td>
+<td>670</td>
+<td>846</td>
+<td>138</td>
+<td>160</td>
+<td>141</td>
+<td>200</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>eq</td>
+<td>1082</td>
+<td>1237</td>
+<td>563</td>
+<td>580</td>
+<td>300</td>
+<td>324</td>
+<td>90</td>
+<td>128</td>
+<td>91</td>
+<td>88</td>
+<td>324</td>
+<td>183</td>
+</tr>
+<tr class="row-odd"><td>gt</td>
+<td>1251</td>
+<td>1574</td>
+<td>733</td>
+<td>574</td>
+<td>388</td>
+<td>403</td>
+<td>112</td>
+<td>161</td>
+<td>126</td>
+<td>100</td>
+<td>316</td>
+<td>150</td>
+</tr>
+<tr class="row-even"><td>ge</td>
+<td>1066</td>
+<td>1189</td>
+<td>555</td>
+<td>552</td>
+<td>310</td>
+<td>319</td>
+<td>107</td>
+<td>132</td>
+<td>103</td>
+<td>100</td>
+<td>384</td>
+<td>180</td>
+</tr>
+<tr class="row-odd"><td>lt</td>
+<td>1041</td>
+<td>1303</td>
+<td>752</td>
+<td>629</td>
+<td>423</td>
+<td>417</td>
+<td>125</td>
+<td>148</td>
+<td>145</td>
+<td>137</td>
+<td>361</td>
+<td>191</td>
+</tr>
+<tr class="row-even"><td>le</td>
+<td>1121</td>
+<td>1223</td>
+<td>554</td>
+<td>539</td>
+<td>342</td>
+<td>344</td>
+<td>112</td>
+<td>101</td>
+<td>124</td>
+<td>117</td>
+<td>324</td>
+<td>167</td>
+</tr>
+<tr class="row-odd"><td>ne</td>
+<td>1128</td>
+<td>1296</td>
+<td>620</td>
+<td>603</td>
+<td>380</td>
+<td>398</td>
+<td>128</td>
+<td>168</td>
+<td>152</td>
+<td>135</td>
+<td>315</td>
+<td>173</td>
+</tr>
+<tr class="row-even"><td>lshift</td>
+<td>208</td>
+<td>269</td>
+<td>212</td>
+<td>254</td>
+<td>187</td>
+<td>207</td>
+<td>93</td>
+<td>102</td>
+<td>107</td>
+<td>90</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>rshift</td>
+<td>204</td>
+<td>202</td>
+<td>208</td>
+<td>200</td>
+<td>288</td>
+<td>160</td>
+<td>127</td>
+<td>96</td>
+<td>131</td>
+<td>96</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>abs_</td>
+<td>1366</td>
+<td>&#160;</td>
+<td>924</td>
+<td>&#160;</td>
+<td>329</td>
+<td>&#160;</td>
+<td>79</td>
+<td>&#160;</td>
+<td>85</td>
+<td>&#160;</td>
+<td>163</td>
+<td>82</td>
+</tr>
+<tr class="row-odd"><td>acos</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>16</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>acosh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>11</td>
+<td>6.3</td>
+</tr>
+<tr class="row-odd"><td>asin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>17</td>
+<td>9.9</td>
+</tr>
+<tr class="row-even"><td>asinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.5</td>
+<td>6.6</td>
+</tr>
+<tr class="row-odd"><td>atan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>16</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>atan2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>9.9</td>
+<td>6.4</td>
+</tr>
+<tr class="row-odd"><td>atanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>7.3</td>
+<td>7.7</td>
+</tr>
+<tr class="row-even"><td>ceil</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>872</td>
+<td>307</td>
+</tr>
+<tr class="row-odd"><td>copysign</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>284</td>
+<td>167</td>
+</tr>
+<tr class="row-even"><td>cos</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>15</td>
+<td>6.3</td>
+</tr>
+<tr class="row-odd"><td>cosh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>13</td>
+<td>8.0</td>
+</tr>
+<tr class="row-even"><td>degrees</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>549</td>
+<td>183</td>
+</tr>
+<tr class="row-odd"><td>erf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>18</td>
+<td>14</td>
+</tr>
+<tr class="row-even"><td>erfc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>11</td>
+<td>7.6</td>
+</tr>
+<tr class="row-odd"><td>exp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>24</td>
+<td>8.7</td>
+</tr>
+<tr class="row-even"><td>expm1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>7.8</td>
+<td>7.1</td>
+</tr>
+<tr class="row-odd"><td>fabs</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>291</td>
+<td>184</td>
+</tr>
+<tr class="row-even"><td>factorial</td>
+<td>171</td>
+<td>180</td>
+<td>142</td>
+<td>181</td>
+<td>181</td>
+<td>152</td>
+<td>108</td>
+<td>99</td>
+<td>108</td>
+<td>95</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>floor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>628</td>
+<td>238</td>
+</tr>
+<tr class="row-even"><td>fma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>145</td>
+<td>41</td>
+</tr>
+<tr class="row-odd"><td>fmod</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>13</td>
+<td>13</td>
+</tr>
+<tr class="row-even"><td>gamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.6</td>
+<td>1.3</td>
+</tr>
+<tr class="row-odd"><td>hypot</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>29</td>
+<td>14</td>
+</tr>
+<tr class="row-even"><td>isfinite</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>121</td>
+<td>111</td>
+</tr>
+<tr class="row-odd"><td>isinf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>138</td>
+<td>115</td>
+</tr>
+<tr class="row-even"><td>isnan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>196</td>
+<td>148</td>
+</tr>
+<tr class="row-odd"><td>ldexp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>37</td>
+<td>36</td>
+</tr>
+<tr class="row-even"><td>lgamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>10</td>
+<td>6.1</td>
+</tr>
+<tr class="row-odd"><td>log</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>32</td>
+<td>7.9</td>
+</tr>
+<tr class="row-even"><td>log10</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>16</td>
+<td>7.0</td>
+</tr>
+<tr class="row-odd"><td>log1p</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>8.3</td>
+<td>11</td>
+</tr>
+<tr class="row-even"><td>log2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>27</td>
+<td>12</td>
+</tr>
+<tr class="row-odd"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>495</td>
+<td>154</td>
+</tr>
+<tr class="row-even"><td>sin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>17</td>
+<td>7.5</td>
+</tr>
+<tr class="row-odd"><td>sinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.0</td>
+<td>5.5</td>
+</tr>
+<tr class="row-even"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>208</td>
+<td>82</td>
+</tr>
+<tr class="row-odd"><td>tan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.3</td>
+<td>5.0</td>
+</tr>
+<tr class="row-even"><td>tanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>6.1</td>
+<td>6.1</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>729</td>
+<td>200</td>
+</tr>
+</tbody>
+</table>
+<table border="1" class="docutils">
+<colgroup>
+<col width="58%" />
+<col width="42%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Stat</th>
+<th class="head">Value</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Average:</td>
+<td>245</td>
+</tr>
+<tr class="row-odd"><td>Maximum:</td>
+<td>3213</td>
+</tr>
+<tr class="row-even"><td>Minimum:</td>
+<td>1.3</td>
+</tr>
+<tr class="row-odd"><td>Array size:</td>
+<td>100000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="math-error-disable-optimisation-effects">
+<h4><a class="toc-backref" href="#id156">Math Error Disable Optimisation Effects</a><a class="headerlink" href="#math-error-disable-optimisation-effects" title="Permalink to this headline">¶</a></h4>
+<p>This set of tests shows what the performance effects of disabling math
+error checking are for those functions which support it. Note that very
+small deviations may reflect benchmark timing errors rather than actual
+differences.</p>
+<p>The most notable point is that in many cases there is little or nothing
+to be gained in terms of performance by disabling error checking.</p>
+<p>Some compilers may generate SIMD optimisations automatically, skewing
+the apparent results.</p>
+<p>Relative Performance with and without math Optimisations - Unoptimsed / Optimised Time.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">function</th>
+<th class="head">b</th>
+<th class="head">B</th>
+<th class="head">h</th>
+<th class="head">H</th>
+<th class="head">i</th>
+<th class="head">I</th>
+<th class="head">l</th>
+<th class="head">L</th>
+<th class="head">q</th>
+<th class="head">Q</th>
+<th class="head">f</th>
+<th class="head">d</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>asum</td>
+<td>1.6</td>
+<td>1.6</td>
+<td>1.6</td>
+<td>1.6</td>
+<td>1.6</td>
+<td>1.7</td>
+<td>1.6</td>
+<td>1.7</td>
+<td>1.6</td>
+<td>1.7</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>add</td>
+<td>2.7</td>
+<td>1.7</td>
+<td>2.8</td>
+<td>2.1</td>
+<td>2.2</td>
+<td>1.7</td>
+<td>3.3</td>
+<td>2.5</td>
+<td>3.4</td>
+<td>2.3</td>
+<td>1.9</td>
+<td>2.6</td>
+</tr>
+<tr class="row-even"><td>truediv</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>0.9</td>
+<td>0.9</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.1</td>
+<td>1.1</td>
+<td>1.2</td>
+<td>1.1</td>
+<td>1.6</td>
+<td>2.3</td>
+</tr>
+<tr class="row-odd"><td>floordiv</td>
+<td>1.1</td>
+<td>0.9</td>
+<td>1.2</td>
+<td>0.9</td>
+<td>1.0</td>
+<td>0.8</td>
+<td>1.1</td>
+<td>0.9</td>
+<td>1.2</td>
+<td>1.0</td>
+<td>1.3</td>
+<td>2.2</td>
+</tr>
+<tr class="row-even"><td>mod</td>
+<td>1.0</td>
+<td>0.9</td>
+<td>1.0</td>
+<td>1.0</td>
+<td>1.1</td>
+<td>1.1</td>
+<td>1.0</td>
+<td>1.1</td>
+<td>0.9</td>
+<td>1.1</td>
+<td>1.3</td>
+<td>1.6</td>
+</tr>
+<tr class="row-odd"><td>mul</td>
+<td>8.6</td>
+<td>5.5</td>
+<td>12</td>
+<td>7.3</td>
+<td>20</td>
+<td>2.0</td>
+<td>17</td>
+<td>2.5</td>
+<td>17</td>
+<td>2.0</td>
+<td>1.5</td>
+<td>2.2</td>
+</tr>
+<tr class="row-even"><td>neg</td>
+<td>1.0</td>
+<td>&#160;</td>
+<td>1.5</td>
+<td>&#160;</td>
+<td>1.3</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>&#160;</td>
+<td>0.8</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>pow</td>
+<td>0.8</td>
+<td>0.9</td>
+<td>0.8</td>
+<td>0.9</td>
+<td>0.7</td>
+<td>0.8</td>
+<td>0.7</td>
+<td>0.9</td>
+<td>0.7</td>
+<td>1.0</td>
+<td>0.9</td>
+<td>1.1</td>
+</tr>
+<tr class="row-even"><td>sub</td>
+<td>1.7</td>
+<td>1.0</td>
+<td>1.7</td>
+<td>1.1</td>
+<td>1.7</td>
+<td>1.2</td>
+<td>1.9</td>
+<td>1.9</td>
+<td>1.7</td>
+<td>1.8</td>
+<td>1.7</td>
+<td>2.2</td>
+</tr>
+<tr class="row-odd"><td>abs_</td>
+<td>1.0</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>acos</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>acosh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>asin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.1</td>
+</tr>
+<tr class="row-odd"><td>asinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>atan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>atan2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>0.9</td>
+<td>0.8</td>
+</tr>
+<tr class="row-even"><td>atanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>ceil</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.6</td>
+</tr>
+<tr class="row-even"><td>copysign</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.4</td>
+<td>2.2</td>
+</tr>
+<tr class="row-odd"><td>cos</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>cosh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>degrees</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.5</td>
+<td>1.1</td>
+</tr>
+<tr class="row-even"><td>erf</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>erfc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>exp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>expm1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>fabs</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>factorial</td>
+<td>0.9</td>
+<td>0.8</td>
+<td>0.7</td>
+<td>0.8</td>
+<td>1.0</td>
+<td>0.8</td>
+<td>1.1</td>
+<td>1.1</td>
+<td>1.2</td>
+<td>1.1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>floor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.6</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>fma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.2</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>fmod</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>gamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>hypot</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>0.9</td>
+</tr>
+<tr class="row-odd"><td>ldexp</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.3</td>
+</tr>
+<tr class="row-even"><td>lgamma</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>0.9</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>log</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>log10</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>log1p</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>log2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.1</td>
+</tr>
+<tr class="row-odd"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.4</td>
+</tr>
+<tr class="row-even"><td>sin</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>sinh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.1</td>
+</tr>
+<tr class="row-even"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>tan</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.1</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>tanh</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.0</td>
+<td>1.0</td>
+</tr>
+<tr class="row-odd"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.6</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="simd-optimisation-effects">
+<h4><a class="toc-backref" href="#id157">SIMD Optimisation Effects</a><a class="headerlink" href="#simd-optimisation-effects" title="Permalink to this headline">¶</a></h4>
 <p>This set of tests shows what the effect of SIMD optimisations are for those
 functions which support it. SIMD optimisations are enabled by default except in
 a few cases where they conflict with math error checking (in which case error
@@ -6772,60 +8921,60 @@ Unoptimsed / Optimised Time.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>aall</td>
-<td>12</td>
+<td>13</td>
+<td>13</td>
+<td>5.4</td>
+<td>6.0</td>
+<td>2.8</td>
+<td>3.1</td>
 <td>&#160;</td>
-<td>7.2</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>&#160;</td>
 <td>3.4</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>2.5</td>
-<td>1.8</td>
+<td>1.9</td>
 </tr>
 <tr class="row-odd"><td>aany</td>
-<td>12</td>
-<td>&#160;</td>
-<td>6.4</td>
-<td>&#160;</td>
+<td>13</td>
+<td>9.1</td>
+<td>8.0</td>
+<td>7.1</td>
+<td>3.2</td>
 <td>3.6</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>&#160;</td>
-<td>3.1</td>
 <td>1.8</td>
+<td>1.6</td>
 </tr>
 <tr class="row-even"><td>amax</td>
-<td>2.6</td>
-<td>2.7</td>
-<td>1.3</td>
-<td>1.4</td>
-<td>3.2</td>
+<td>3.1</td>
+<td>3.7</td>
+<td>1.8</td>
+<td>2.0</td>
+<td>3.6</td>
 <td>4.9</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>5.8</td>
-<td>3.1</td>
+<td>5.3</td>
+<td>2.9</td>
 </tr>
 <tr class="row-odd"><td>amin</td>
-<td>3.8</td>
-<td>3.7</td>
-<td>1.9</td>
-<td>1.9</td>
-<td>4.5</td>
+<td>3.6</td>
+<td>4.0</td>
+<td>1.6</td>
+<td>2.0</td>
+<td>4.7</td>
+<td>4.1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
 <td>3.3</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>5.6</td>
-<td>1.3</td>
+<td>1.2</td>
 </tr>
 <tr class="row-even"><td>asum</td>
 <td>&#160;</td>
@@ -6838,29 +8987,330 @@ Unoptimsed / Optimised Time.</p>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>3.9</td>
-<td>2.0</td>
+<td>3.7</td>
+<td>1.9</td>
 </tr>
 <tr class="row-odd"><td>findindex</td>
+<td>10</td>
+<td>9.9</td>
+<td>4.4</td>
+<td>4.2</td>
+<td>3.5</td>
+<td>3.2</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>5.6</td>
+<td>1.9</td>
+</tr>
+<tr class="row-even"><td>add</td>
+<td>5.8</td>
+<td>5.9</td>
+<td>3.7</td>
+<td>3.7</td>
+<td>2.5</td>
+<td>1.9</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>2.0</td>
+<td>1.5</td>
+</tr>
+<tr class="row-odd"><td>mul</td>
+<td>7.5</td>
+<td>6.6</td>
+<td>4.7</td>
+<td>4.5</td>
+<td>2.4</td>
+<td>2.6</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.1</td>
+<td>2.1</td>
+</tr>
+<tr class="row-even"><td>neg</td>
+<td>7.9</td>
+<td>&#160;</td>
+<td>3.5</td>
+<td>&#160;</td>
+<td>2.4</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>sub</td>
+<td>9.4</td>
+<td>9.3</td>
+<td>6.0</td>
+<td>6.1</td>
+<td>2.8</td>
+<td>2.0</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.9</td>
+<td>1.3</td>
+</tr>
+<tr class="row-even"><td>and_</td>
+<td>8.7</td>
+<td>8.6</td>
+<td>3.4</td>
+<td>4.9</td>
+<td>1.7</td>
+<td>1.6</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>or_</td>
+<td>7.5</td>
+<td>7.3</td>
+<td>3.6</td>
+<td>5.2</td>
+<td>2.0</td>
+<td>2.1</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>xor</td>
+<td>8.2</td>
+<td>8.1</td>
+<td>3.6</td>
+<td>5.4</td>
+<td>2.0</td>
+<td>2.0</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>invert</td>
+<td>7.9</td>
 <td>12</td>
+<td>4.1</td>
+<td>5.6</td>
+<td>2.3</td>
+<td>3.2</td>
 <td>&#160;</td>
-<td>6.7</td>
 <td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-even"><td>eq</td>
+<td>13</td>
+<td>14</td>
+<td>6.6</td>
+<td>7.2</td>
+<td>3.6</td>
+<td>2.7</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.0</td>
+<td>1.8</td>
+</tr>
+<tr class="row-odd"><td>gt</td>
+<td>16</td>
+<td>13</td>
+<td>7.5</td>
+<td>7.4</td>
+<td>3.4</td>
+<td>3.6</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>2.2</td>
+<td>1.6</td>
+</tr>
+<tr class="row-even"><td>ge</td>
+<td>10</td>
+<td>13</td>
+<td>5.7</td>
+<td>5.6</td>
+<td>3.5</td>
+<td>2.3</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.3</td>
+<td>1.2</td>
+</tr>
+<tr class="row-odd"><td>lt</td>
+<td>8.9</td>
+<td>12</td>
+<td>6.5</td>
+<td>7.7</td>
+<td>4.1</td>
+<td>3.7</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.0</td>
+<td>1.7</td>
+</tr>
+<tr class="row-even"><td>le</td>
+<td>11</td>
+<td>9.6</td>
+<td>5.6</td>
+<td>5.5</td>
+<td>3.7</td>
 <td>2.8</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
+<td>2.6</td>
+<td>1.5</td>
+</tr>
+<tr class="row-odd"><td>ne</td>
+<td>9.4</td>
+<td>11</td>
+<td>4.3</td>
+<td>7.5</td>
+<td>2.5</td>
+<td>3.4</td>
 <td>&#160;</td>
-<td>3.7</td>
-<td>2.0</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>2.9</td>
+<td>1.7</td>
+</tr>
+<tr class="row-even"><td>abs_</td>
+<td>10</td>
+<td>&#160;</td>
+<td>6.8</td>
+<td>&#160;</td>
+<td>2.5</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+</tr>
+<tr class="row-odd"><td>ceil</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>3.5</td>
+<td>1.0</td>
+</tr>
+<tr class="row-even"><td>degrees</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>2.5</td>
+<td>1.3</td>
+</tr>
+<tr class="row-odd"><td>floor</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.7</td>
+<td>1.7</td>
+</tr>
+<tr class="row-even"><td>radians</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>2.7</td>
+<td>1.3</td>
+</tr>
+<tr class="row-odd"><td>sqrt</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>4.2</td>
+<td>2.4</td>
+</tr>
+<tr class="row-even"><td>trunc</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>1.7</td>
+<td>1.3</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div class="section" id="array-size-versus-performance">
-<h4><a class="toc-backref" href="#id156">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
-<p>Benchmark the effects of array size on a selected arrayfunc function.</p>
+<h4><a class="toc-backref" href="#id158">Array Size Versus Performance</a><a class="headerlink" href="#array-size-versus-performance" title="Permalink to this headline">¶</a></h4>
+<p>The following shoes the effects of array size on a selected arrayfunc function
+benchmark.</p>
+<p>As array size increases, function call overhead decreases as a proportion of
+total run time.</p>
+<p>Declines in performance when the array exceeds a certain size may be related to
+hardware cache effects. Arrayfunc functions together with their data may be
+able to reside entirely in cache, but larger arrays may require repeated cache
+reloads. This threshold will depend upon the particular hardware being used.</p>
 <p>Add two arrays - times faster than Python, unoptimised.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -6896,102 +9346,102 @@ Unoptimsed / Optimised Time.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>10</td>
-<td>1.8</td>
+<td>2.2</td>
+<td>1.6</td>
 <td>1.7</td>
-<td>1.6</td>
-<td>1.6</td>
+<td>1.5</td>
 <td>1.6</td>
 <td>1.3</td>
+<td>1.6</td>
+<td>1.1</td>
 <td>1.5</td>
-<td>1.2</td>
-<td>1.4</td>
-<td>1.2</td>
-<td>1.4</td>
-<td>1.4</td>
+<td>1.1</td>
+<td>1.3</td>
+<td>1.3</td>
 </tr>
 <tr class="row-odd"><td>100</td>
 <td>13</td>
-<td>13</td>
-<td>13</td>
+<td>11</td>
 <td>12</td>
-<td>13</td>
-<td>9.5</td>
-<td>11</td>
-<td>9.1</td>
-<td>11</td>
-<td>8.9</td>
-<td>11</td>
 <td>10</td>
+<td>12</td>
+<td>8.5</td>
+<td>11</td>
+<td>8.4</td>
+<td>10</td>
+<td>8.5</td>
+<td>9.6</td>
+<td>9.8</td>
 </tr>
 <tr class="row-even"><td>1000</td>
-<td>57</td>
-<td>73</td>
-<td>62</td>
-<td>70</td>
-<td>62</td>
 <td>56</td>
-<td>59</td>
-<td>52</td>
-<td>54</td>
-<td>51</td>
-<td>67</td>
+<td>65</td>
+<td>58</td>
 <td>60</td>
+<td>45</td>
+<td>49</td>
+<td>45</td>
+<td>45</td>
+<td>43</td>
+<td>45</td>
+<td>51</td>
+<td>49</td>
 </tr>
 <tr class="row-odd"><td>10000</td>
-<td>84</td>
-<td>150</td>
+<td>89</td>
+<td>124</td>
+<td>91</td>
+<td>110</td>
+<td>72</td>
+<td>102</td>
+<td>73</td>
+<td>87</td>
+<td>72</td>
+<td>91</td>
+<td>109</td>
 <td>103</td>
-<td>140</td>
-<td>116</td>
-<td>121</td>
-<td>106</td>
-<td>107</td>
-<td>90</td>
-<td>119</td>
-<td>141</td>
-<td>128</td>
 </tr>
 <tr class="row-even"><td>100000</td>
-<td>87</td>
-<td>158</td>
-<td>110</td>
-<td>152</td>
-<td>127</td>
-<td>129</td>
-<td>80</td>
+<td>95</td>
+<td>140</td>
+<td>96</td>
+<td>117</td>
+<td>79</td>
+<td>118</td>
+<td>53</td>
+<td>50</td>
+<td>57</td>
+<td>55</td>
+<td>124</td>
 <td>63</td>
-<td>71</td>
-<td>59</td>
-<td>150</td>
-<td>80</td>
 </tr>
 <tr class="row-odd"><td>1000000</td>
-<td>87</td>
-<td>131</td>
-<td>102</td>
-<td>121</td>
-<td>86</td>
-<td>79</td>
-<td>59</td>
-<td>48</td>
-<td>58</td>
+<td>81</td>
+<td>123</td>
+<td>90</td>
+<td>107</td>
+<td>72</td>
+<td>76</td>
 <td>50</td>
-<td>116</td>
-<td>65</td>
+<td>43</td>
+<td>51</td>
+<td>42</td>
+<td>88</td>
+<td>49</td>
 </tr>
 <tr class="row-even"><td>10000000</td>
-<td>90</td>
-<td>145</td>
-<td>96</td>
-<td>131</td>
-<td>101</td>
-<td>87</td>
-<td>61</td>
-<td>47</td>
-<td>61</td>
-<td>49</td>
-<td>114</td>
-<td>65</td>
+<td>92</td>
+<td>132</td>
+<td>89</td>
+<td>112</td>
+<td>83</td>
+<td>80</td>
+<td>54</td>
+<td>16</td>
+<td>19</td>
+<td>30</td>
+<td>88</td>
+<td>50</td>
 </tr>
 </tbody>
 </table>
@@ -7030,109 +9480,109 @@ Unoptimsed / Optimised Time.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>10</td>
+<td>1.4</td>
+<td>1.1</td>
 <td>1.2</td>
 <td>1.1</td>
+<td>1.2</td>
 <td>1.0</td>
+<td>1.2</td>
+<td>0.9</td>
 <td>1.1</td>
-<td>1.1</td>
-<td>0.8</td>
-<td>1.1</td>
-<td>0.8</td>
-<td>1.0</td>
-<td>0.8</td>
+<td>0.9</td>
 <td>1.0</td>
 <td>1.0</td>
 </tr>
 <tr class="row-odd"><td>100</td>
-<td>9.0</td>
-<td>8.6</td>
-<td>9.1</td>
-<td>8.3</td>
+<td>10</td>
 <td>8.8</td>
-<td>6.4</td>
-<td>8.4</td>
-<td>6.6</td>
-<td>8.0</td>
+<td>10.0</td>
+<td>8.2</td>
+<td>9.8</td>
+<td>7.0</td>
+<td>9.2</td>
 <td>6.7</td>
-<td>8.4</td>
-<td>8.0</td>
+<td>9.1</td>
+<td>7.1</td>
+<td>8.1</td>
+<td>8.1</td>
 </tr>
 <tr class="row-even"><td>1000</td>
-<td>65</td>
-<td>59</td>
-<td>68</td>
-<td>59</td>
+<td>92</td>
+<td>84</td>
+<td>91</td>
+<td>77</td>
+<td>67</td>
+<td>60</td>
 <td>58</td>
-<td>47</td>
-<td>58</td>
-<td>46</td>
-<td>58</td>
-<td>44</td>
-<td>65</td>
-<td>62</td>
+<td>41</td>
+<td>54</td>
+<td>42</td>
+<td>67</td>
+<td>52</td>
 </tr>
 <tr class="row-odd"><td>10000</td>
-<td>166</td>
-<td>176</td>
-<td>217</td>
-<td>165</td>
-<td>166</td>
-<td>117</td>
-<td>174</td>
-<td>136</td>
-<td>159</td>
-<td>132</td>
-<td>235</td>
-<td>197</td>
+<td>580</td>
+<td>517</td>
+<td>486</td>
+<td>439</td>
+<td>299</td>
+<td>230</td>
+<td>157</td>
+<td>109</td>
+<td>158</td>
+<td>105</td>
+<td>280</td>
+<td>175</td>
 </tr>
 <tr class="row-even"><td>100000</td>
-<td>199</td>
-<td>208</td>
-<td>277</td>
-<td>208</td>
-<td>216</td>
-<td>137</td>
-<td>151</td>
+<td>1525</td>
+<td>1423</td>
+<td>967</td>
+<td>899</td>
+<td>443</td>
+<td>345</td>
 <td>134</td>
-<td>133</td>
-<td>108</td>
-<td>312</td>
-<td>158</td>
+<td>79</td>
+<td>125</td>
+<td>86</td>
+<td>426</td>
+<td>122</td>
 </tr>
 <tr class="row-odd"><td>1000000</td>
-<td>202</td>
-<td>193</td>
-<td>231</td>
-<td>171</td>
-<td>136</td>
-<td>107</td>
-<td>79</td>
-<td>63</td>
-<td>79</td>
+<td>835</td>
+<td>737</td>
+<td>248</td>
+<td>243</td>
+<td>124</td>
+<td>110</td>
+<td>68</td>
+<td>53</td>
 <td>67</td>
-<td>165</td>
-<td>84</td>
+<td>54</td>
+<td>127</td>
+<td>65</td>
 </tr>
 <tr class="row-even"><td>10000000</td>
-<td>198</td>
-<td>192</td>
-<td>247</td>
-<td>174</td>
-<td>146</td>
-<td>111</td>
-<td>84</td>
-<td>58</td>
-<td>79</td>
-<td>62</td>
-<td>158</td>
-<td>82</td>
+<td>530</td>
+<td>459</td>
+<td>260</td>
+<td>222</td>
+<td>129</td>
+<td>78</td>
+<td>66</td>
+<td>31</td>
+<td>53</td>
+<td>55</td>
+<td>119</td>
+<td>68</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
 <div class="section" id="platform-effects">
-<h3><a class="toc-backref" href="#id157">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id159">Platform Effects</a><a class="headerlink" href="#platform-effects" title="Permalink to this headline">¶</a></h3>
 <p>The platform, including CPU, OS, compiler, and compiler version can
 affect performance, and this influence can change significantly for
 different functions.</p>
@@ -7143,7 +9593,7 @@ that you will be using.</p>
 </div>
 <hr class="docutils" />
 <div class="section" id="id12">
-<h2><a class="toc-backref" href="#id158">Platform support</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id160">Platform support</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
 <p>Arrayfunc is written in ‘C’ and uses the standard C libraries to implement the
 underlying math functions. Arrayfunc has been tested on the following platforms.</p>
 <table border="1" class="docutils">
@@ -7166,20 +9616,20 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 <td>GCC</td>
 <td>3.6</td>
 </tr>
-<tr class="row-odd"><td>Ubuntu 18.10</td>
+<tr class="row-odd"><td>Ubuntu 19.04</td>
 <td>64 bit</td>
+<td>GCC</td>
+<td>3.7</td>
+</tr>
+<tr class="row-even"><td>Debian 10</td>
+<td>32 bit</td>
 <td>GCC</td>
 <td>3.6</td>
 </tr>
-<tr class="row-even"><td>Debian 9</td>
-<td>32 bit</td>
-<td>GCC</td>
-<td>3.5</td>
-</tr>
-<tr class="row-odd"><td>Debian 9</td>
+<tr class="row-odd"><td>Debian 10</td>
 <td>64 bit</td>
 <td>GCC</td>
-<td>3.5</td>
+<td>3.6</td>
 </tr>
 <tr class="row-even"><td>OpenSuse 15</td>
 <td>64 bit</td>
@@ -7402,8 +9852,10 @@ were conducted using VMs running on x86 hardware.</p>
 <li><a class="reference internal" href="#variables-affecting-performance">Variables affecting Performance</a></li>
 <li><a class="reference internal" href="#typical-performance-readings">Typical Performance Readings</a><ul>
 <li><a class="reference internal" href="#non-optmised-performance">Non-Optmised Performance</a></li>
-<li><a class="reference internal" href="#optmised-performance">Optmised Performance</a></li>
-<li><a class="reference internal" href="#simd-optimisations">SIMD Optimisations</a></li>
+<li><a class="reference internal" href="#optmised-performance-no-simd">Optmised Performance (No SIMD)</a></li>
+<li><a class="reference internal" href="#optmised-performance-with-simd">Optmised Performance (with SIMD)</a></li>
+<li><a class="reference internal" href="#math-error-disable-optimisation-effects">Math Error Disable Optimisation Effects</a></li>
+<li><a class="reference internal" href="#simd-optimisation-effects">SIMD Optimisation Effects</a></li>
 <li><a class="reference internal" href="#array-size-versus-performance">Array Size Versus Performance</a></li>
 </ul>
 </li>

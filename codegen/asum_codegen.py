@@ -334,7 +334,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		// unsigned char
 		case 'B' : {
 			resultull = asum_unsigned_char(arraydata.arraylength, arraydata.array1.B, &errflag, arraydata.ignoreerrors);
-			sumreturn = PyLong_FromUnsignedLong(resultull);
+			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed short
@@ -346,7 +346,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		// unsigned short
 		case 'H' : {
 			resultull = asum_unsigned_short(arraydata.arraylength, arraydata.array1.H, &errflag, arraydata.ignoreerrors);
-			sumreturn = PyLong_FromUnsignedLong(resultull);
+			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed int
@@ -358,7 +358,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		// unsigned int
 		case 'I' : {
 			resultull = asum_unsigned_int(arraydata.arraylength, arraydata.array1.I, &errflag, arraydata.ignoreerrors);
-			sumreturn = PyLong_FromUnsignedLong(resultull);
+			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed long
@@ -370,7 +370,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		// unsigned long
 		case 'L' : {
 			resultull = asum_unsigned_long(arraydata.arraylength, arraydata.array1.L, &errflag, arraydata.ignoreerrors);
-			sumreturn = PyLong_FromUnsignedLong(resultull);
+			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// signed long long
@@ -382,7 +382,7 @@ static PyObject *py_%(funclabel)s(PyObject *self, PyObject *args, PyObject *keyw
 		// unsigned long long
 		case 'Q' : {
 			resultull = asum_unsigned_long_long(arraydata.arraylength, arraydata.array1.Q, &errflag, arraydata.ignoreerrors);
-			sumreturn = PyLong_FromUnsignedLong(resultull);
+			sumreturn = PyLong_FromUnsignedLongLong(resultull);
 			break;
 		}
 		// float

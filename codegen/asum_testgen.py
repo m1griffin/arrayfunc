@@ -264,6 +264,7 @@ class asum_parameter_%(typecode)s(unittest.TestCase):
 op_template_overflow = '''
 
 ##############################################################################
+%(ovflclassskip)s
 class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 	"""Test asum for numeric overflow.
 	op_template_overflow
@@ -324,6 +325,7 @@ class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 
 
 	########################################################
+	%(ovfltestskip)s
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted %(rotplaces)s.
 		"""
@@ -332,6 +334,7 @@ class asum_overflow_%(testval)s_%(rotplaces)s_%(typecode)s(unittest.TestCase):
 
 
 	########################################################
+	%(ovfltestskip)s
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code %(typecode)s. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted %(rotplaces)s.
 		"""
@@ -545,6 +548,23 @@ class asum_nonfinite_%(rotplaces)s_%(arrayevenodd)s_arraysize_%(typecode)s(unitt
 
 # ==============================================================================
 
+# Overflow tests for array type 'L'. With some architectures, we cannot 
+# overflow because the integers are too small.
+OvflClassSkip = """# Whether this test can be peformed depends on the integer word sizes in for this architecture.
+@unittest.skipIf(arrayfunc.arraylimits.L_max != arrayfunc.arraylimits.Q_max, 
+		'Skip test if L integer is not equal to Q.')"""
+
+
+
+# Overflow tests for array type 'f'. With 32 bit x86 Debian array type 'f', there
+# is an apparent bug which allows float values to exceed the maximum float value
+# without overflowing to infinity.
+OvflTestSkip = """# There seems to be a problem with 32 bit Debian with array type 'f'.
+	# Intermediate values can exceed the maximum array type value without
+	# the value overflowing to infinity. This does not happen on x86_64, or
+	# 32 bit ARM.
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')"""
 
 # ==============================================================================
 
@@ -593,6 +613,20 @@ def genoverflowtestdata(arraystested, maxormin):
 
 	# Convert the data into a list of dictionaries.
 	testdata = [dict(x) for x in combos]
+
+	# Add in the overflow test skip data.
+	for x in testdata:
+		# 32 bit integer arrays are different on 32 bit versus 64 bit platforms.
+		if x['typecode'] in ('l', 'L'):
+			x['ovflclassskip'] = OvflClassSkip
+		else:
+			x['ovflclassskip'] = ''
+
+		# On 32 bit x86 float arrays, float numbers do not behave correctly.
+		if x['typecode'] == 'f':
+			x['ovfltestskip'] = OvflTestSkip
+		else:
+			x['ovfltestskip'] = ''
 
 
 	return testdata
