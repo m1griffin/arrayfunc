@@ -2572,6 +2572,7 @@ Call formats: \n\
   mod(array1, param, maxlen=y) \n\
   mod(array1, param, matherrors=False) \n\
 \n\
+\n\
 * array1 - The first input data array to be examined. If no output  \n\
   array is provided the results will overwrite the input data.  \n\
 * param - A non-array numeric parameter.  \n\

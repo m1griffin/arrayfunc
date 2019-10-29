@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -28,6 +28,12 @@
 #include "Python.h"
 
 #include "simddefs.h"
+
+
+#ifdef AF_HASSIMD_ARM
+#include <sys/auxv.h>
+#include <asm/hwcap.h>
+#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -55,7 +61,9 @@ static struct PyModuleDef simdsupportmodule = {
 
 /* Return True if the SIMD level in the CPU is sufficient to support the library. */
 signed int hassimdlevel(void) {
-#ifdef AF_HASSIMD
+
+// For x86-64.
+#ifdef AF_HASSIMD_X86
 
 	// Initialise the CPU test.
 	__builtin_cpu_init();
@@ -67,6 +75,16 @@ signed int hassimdlevel(void) {
 		return 0;
 	}
 #endif
+
+// For ARMv7 NEON.
+#ifdef AF_HASSIMD_ARM
+	if (getauxval(AT_HWCAP) & HWCAP_NEON) {
+		return 1;
+	} else {
+		return 0;
+	}
+#endif
+
 
 	return 0;
 

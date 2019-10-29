@@ -75,8 +75,13 @@ ops_head = """//----------------------------------------------------------------
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "%(funclabel)s_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "%(funclabel)s_simd_arm.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -120,7 +125,7 @@ template_simdsupport = """
    data = The input data array.
    Returns: The %(optype)simum value found.
 */
-#ifdef AF_HASSIMD
+%(simdplatform)s
 %(resultcasts)s a%(optype)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
 
 	// array index counter. 
@@ -137,16 +142,16 @@ template_simdsupport = """
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Initialise the comparison values.
-	%(optype)sslice = (%(simdattr)s) %(simdload)s(%(simdcast)s&data[0]);
+	%(optype)sslice = %(vldinstr)s &data[0]);
 
 	// Use SIMD.
 	for(x = %(simdwidth)s; x < alignedlength; x += %(simdwidth)s) {
-		dataslice = (%(simdattr)s) %(simdload)s(%(simdcast)s&data[x]);
+		dataslice = %(vldinstr)s &data[x]);
 		%(optype)sslice = %(simdop)s (%(optype)sslice, dataslice);
 	}
 
 	// Find the %(optype)s within the slice.
-	%(simdstore)s(%(simdcast)s%(optype)svals, (%(simdstoreattr)s) %(optype)sslice);
+	%(vstinstr1)s %(optype)svals, %(vstinstr2)s  %(optype)sslice);
 	%(optype)sfound = %(optype)svals[0];
 	for (y = 1; y < %(simdwidth)s; y++) {
 		if (%(optype)svals[y] %(compare_ops)s %(optype)sfound) {
@@ -178,13 +183,13 @@ template_opselect = """
 */
 %(resultcasts)s a%(optype)s_%(funcmodifier)s_select(Py_ssize_t arraylen, int nosimd, %(arraytype)s *data) { 
 
-	#ifdef AF_HASSIMD
+	%(simdplatform)s
 	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return %(funclabel)s_%(funcmodifier)s_simd(arraylen, data);
 	} else {
 	#endif
 		return %(funclabel)s_%(funcmodifier)s(arraylen, data);
-	#ifdef AF_HASSIMD
+	%(simdplatform)s
 	}
 	#endif
 
@@ -402,6 +407,10 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # ==============================================================================
 
+# These get substituted into function call templates.
+SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
+SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)'
+SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 
 # ==============================================================================
 
@@ -451,24 +460,11 @@ optype = {'amax' : 'max',
 # ==============================================================================
 
 # Various SIMD instruction information which varies according to array type.
-simdvalues = {
-'b' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'B' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'h' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'SHORTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'H' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'SHORTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'i' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'INTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'I' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdstoreattr' : 'v16qi', 'simdwidth' : 'INTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu', 'simdstore' : '__builtin_ia32_storedqu'},
-'l' : {'hassimd' : False},
-'L' : {'hassimd' : False},
-'q' : {'hassimd' : False},
-'Q' : {'hassimd' : False},
-'f' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v4sf', 'simdstoreattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 'simdload' : '__builtin_ia32_loadups', 'simdstore' : '__builtin_ia32_storeups'},
-'d' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v2df', 'simdstoreattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd', 'simdstore' : '__builtin_ia32_storeupd'},
-}
 
 
 # The SIMD op.
-simdops = {
+# For x86-64.
+simdops_x86 = {
 	# The SIMD op for min.
 	'amin' : {
 		'b' : '__builtin_ia32_pminsb128',
@@ -493,6 +489,129 @@ simdops = {
 		},
 }
 
+# For ARM NEON.
+simdops_arm = {
+	# The SIMD op for min.
+	'amin' : {
+		'b' : 'vmin_s8',
+		'B' : 'vmin_u8',
+		'h' : 'vmin_s16',
+		'H' : 'vmin_u16',
+		'i' : 'vmin_s32',
+		'I' : 'vmin_u32',
+		'f' : 'vmin_f32',
+		},
+		# The SIMD op for max.
+	'amax' : {
+		'b' : 'vmax_s8',
+		'B' : 'vmax_u8',
+		'h' : 'vmax_s16',
+		'H' : 'vmax_u16',
+		'i' : 'vmax_s32',
+		'I' : 'vmax_u32',
+		'f' : 'vmax_f32',
+		},
+}
+
+
+# Various SIMD instruction information which varies according to array type.
+# For x86-64.
+simdvalues_x86 = {
+'b' : {'simdattr' : 'v16qi', 
+		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : ''},
+'B' : {'simdattr' : 'v16qi', 
+		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : ''},
+'h' : {'simdattr' : 'v8hi', 
+		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : '(v16qi)'},
+'H' : {'simdattr' : 'v8hi', 
+		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : '(v16qi)'},
+'i' : {'simdattr' : 'v4si', 
+		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : '(v16qi)'},
+'I' : {'simdattr' : 'v4si', 
+		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *)', 
+		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
+		'vstinstr2' : '(v16qi)'},
+'f' : {'simdattr' : 'v4sf', 
+		'vldinstr' : '(v4sf) __builtin_ia32_loadups(', 
+		'vstinstr1' : '__builtin_ia32_storeups(',
+		'vstinstr2' : '(v4sf)'},
+'d' : {'simdattr' : 'v2df', 
+		'vldinstr' : '(v2df) __builtin_ia32_loadupd(', 
+		'vstinstr1' : '__builtin_ia32_storeupd(',
+		'vstinstr2' : '(v2df)'},
+}
+
+
+# For ARM NEON.
+simdvalues_arm = {
+'b' : {'simdattr' : 'int8x8_t', 
+		'vldinstr' : 'vld1_s8(', 
+		'vstinstr1' : 'vst1_s8(',
+		'vstinstr2' : ''},
+'B' : {'simdattr' : 'uint8x8_t', 
+		'vldinstr' : 'vld1_u8(', 
+		'vstinstr1' : 'vst1_u8(',
+		'vstinstr2' : ''},
+'h' : {'simdattr' : 'int16x4_t', 
+		'vldinstr' : 'vld1_s16(', 
+		'vstinstr1' : 'vst1_s16(',
+		'vstinstr2' : ''},
+'H' : {'simdattr' : 'uint16x4_t', 
+		'vldinstr' : 'vld1_u16(', 
+		'vstinstr1' : ' vst1_u16(',
+		'vstinstr2' : ''},
+'i' : {'simdattr' : 'int32x2_t ', 
+		'vldinstr' : 'vld1_s32(', 
+		'vstinstr1' : 'vst1_s32(',
+		'vstinstr2' : ''},
+'I' : {'simdattr' : 'uint32x2_t', 
+		'vldinstr' : 'vld1_u32(', 
+		'vstinstr1' : 'vst1_u32(',
+		'vstinstr2' : ''},
+'f' : {'simdattr' : 'float32x2_t', 
+		'vldinstr' : 'vld1_f32(', 
+		'vstinstr1' : 'vst1_f32(',
+		'vstinstr2' : ''},
+}
+
+
+
+# Width of array elements.
+simdwidth = {'b' : 'CHARSIMDSIZE',
+		'B' : 'CHARSIMDSIZE',
+		'h' : 'SHORTSIMDSIZE',
+		'H' : 'SHORTSIMDSIZE',
+		'i' : 'INTSIMDSIZE',
+		'I' : 'INTSIMDSIZE',
+		'f' : 'FLOATSIMDSIZE',
+		'd' : 'DOUBLESIMDSIZE',
+		}
+
+
+# ==============================================================================
+
+# Return the platform SIMD enable C macro. 
+# This is for the platform independent file, and not the plaform specific
+# SIMD files.
+def findsimdplatform(arraycode):
+
+	# The calls to SIMD support code are platform dependent.
+	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
+		return SIMD_platform_x86
+	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
+		return SIMD_platform_x86_ARM
+	else:
+		return 'Error: Template error, this should not be here.'
 
 # ==============================================================================
 
@@ -529,8 +648,9 @@ for funcname in completefuncnames:
 			f.write(opstemplate % opdata)
 
 			# Select using either the SIMD or non-SIMD version.
-			if simdvalues[arraycode]['hassimd']:
-				opdata['simdwidth'] = simdvalues[arraycode]['simdwidth']
+			if (arraycode in simdvalues_x86) or (arraycode in simdvalues_arm):
+				opdata['simdwidth'] = simdwidth[arraycode]
+				opdata['simdplatform'] = findsimdplatform(arraycode)
 				f.write(template_opselect % opdata)
 
 
@@ -545,7 +665,8 @@ for funcname in completefuncnames:
 
 
 # ==============================================================================
-# This outputs the SIMD version.
+
+# This outputs the SIMD version for x86-64.
 
 # The original date of the SIMD C code.
 simdcodedate = '16-Apr-2019'
@@ -566,7 +687,7 @@ for funcname in completefuncnames:
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		if simdvalues[arraycode]['hassimd']:
+		if arraycode in simdvalues_x86:
 
 			outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
 						'optype' : optype[funcname],
@@ -574,13 +695,13 @@ for funcname in completefuncnames:
 						'funcmodifier' : arraytype.replace(' ', '_'), 
 						'resultcasts' : resultcasts[arraycode],
 						'compare_ops' : compare_ops[funcname],
-						'simdattr' : simdvalues[arraycode]['simdattr'],
-						'simdwidth' : simdvalues[arraycode]['simdwidth'],
-						'simdload' : simdvalues[arraycode]['simdload'],
-						'simdcast' : simdvalues[arraycode]['simdcast'],
-						'simdstore' : simdvalues[arraycode]['simdstore'],
-						'simdstoreattr'  : simdvalues[arraycode]['simdstoreattr'],
-						'simdop' : simdops[funcname][arraycode],
+						'simdwidth' : simdwidth[arraycode],
+						'simdplatform' : SIMD_platform_x86,
+						'simdattr' : simdvalues_x86[arraycode]['simdattr'],
+						'vldinstr' : simdvalues_x86[arraycode]['vldinstr'],
+						'vstinstr1' : simdvalues_x86[arraycode]['vstinstr1'],
+						'vstinstr2' : simdvalues_x86[arraycode]['vstinstr2'],
+						'simdop' : simdops_x86[funcname][arraycode],
 						})
 
 
@@ -605,3 +726,64 @@ for funcname in completefuncnames:
 # ==============================================================================
 
 
+
+# ==============================================================================
+
+# This outputs the SIMD version for ARM NEON.
+
+# The original date of the SIMD C code.
+simdcodedate = '08-Oct-2019'
+simdfilename = '_simd_arm'
+
+# This outputs the SIMD version.
+
+for funcname in completefuncnames:
+
+	outputlist = []
+
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+	# Output the generated code.
+	for arraycode in codegen_common.arraycodes:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+
+		if arraycode in simdvalues_arm:
+
+			outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
+						'optype' : optype[funcname],
+						'arraytype' : arraytype, 
+						'funcmodifier' : arraytype.replace(' ', '_'), 
+						'resultcasts' : resultcasts[arraycode],
+						'compare_ops' : compare_ops[funcname],
+						'simdwidth' : simdwidth[arraycode],
+						'simdplatform' : SIMD_platform_ARM,
+						'simdattr' : simdvalues_arm[arraycode]['simdattr'],
+						'vldinstr' : simdvalues_arm[arraycode]['vldinstr'],
+						'vstinstr1' : simdvalues_arm[arraycode]['vstinstr1'],
+						'vstinstr2' : simdvalues_arm[arraycode]['vstinstr2'],
+						'simdop' : simdops_arm[funcname][arraycode],
+						})
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs', 'simdmacromsg_arm'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================

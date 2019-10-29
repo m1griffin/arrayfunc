@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2016    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -36,30 +36,58 @@
 #ifdef __x86_64__
 #ifdef __GNUC__
 #ifndef __clang__
-#define AF_HASSIMD
+#define AF_HASSIMD_X86
 #endif
 #endif
 #endif
+
+
+// This is the equivalent for ARM. We support ARMv7 only and only with GCC.
+#ifdef __GNUC__
+#ifndef __clang__
+#ifdef __arm__
+#ifdef __ARM_ARCH_7A__
+
+#define AF_HASSIMD_ARM
+
+#endif
+#endif
+#endif
+#endif
+
+
+
 
 /*--------------------------------------------------------------------------- */
 
-#ifdef AF_HASSIMD
+// This is for x86-64 only with 128 bit SIMD registers.
+#ifdef AF_HASSIMD_X86
 
 typedef char v16qi __attribute__ ((vector_size (16)));
-
 typedef short int v8hi __attribute__ ((vector_size (16)));
 typedef int v4si __attribute__ ((vector_size (16)));
 typedef float v4sf __attribute__ ((vector_size (16)));
 typedef double v2df __attribute__ ((vector_size (16)));
 
-#endif
-
-/*--------------------------------------------------------------------------- */
 
 #define CHARSIMDSIZE 16
 #define SHORTSIMDSIZE 8
 #define INTSIMDSIZE 4
 #define FLOATSIMDSIZE 4
 #define DOUBLESIMDSIZE 2
+
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+// This is for ARM NEON only, with 64 bit SIMD registers.
+#ifdef AF_HASSIMD_ARM
+
+#define CHARSIMDSIZE 8
+#define SHORTSIMDSIZE 4
+#define INTSIMDSIZE 2
+#define FLOATSIMDSIZE 2
+
+#endif
 
 /*--------------------------------------------------------------------------- */

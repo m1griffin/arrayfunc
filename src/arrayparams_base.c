@@ -197,9 +197,7 @@ void makefmtstr(char *basestr, char *funcname, char *formatstr) {
 	// we could have a programming error.
 	assert((strlen(basestr) + strlen(funcname)) < FMTSTRLEN);
 
-	strcpy(formatstr, basestr);
-	strncat(formatstr, funcname, strlen(funcname));
-
+	strcat(strcpy(formatstr, basestr), funcname);
 }
 
 /*--------------------------------------------------------------------------- */

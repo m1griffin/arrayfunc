@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     12-Mar-2019
-// Ver:      20-Mar-2019.
+// Ver:      20-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //

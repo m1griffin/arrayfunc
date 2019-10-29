@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     1-Apr-2019
-// Ver:      06-Apr-2019.
+// Ver:      20-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -51,7 +51,7 @@
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char param) {
 
 	// array index counter. 
@@ -83,7 +83,7 @@ void mul_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -96,7 +96,7 @@ void mul_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3) {
 
 	// array index counter. 
@@ -128,7 +128,7 @@ void mul_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -141,7 +141,7 @@ void mul_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char *data2) {
 
 	// array index counter. 
@@ -173,7 +173,7 @@ void mul_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -186,7 +186,7 @@ void mul_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3) {
 
 	// array index counter. 
@@ -218,7 +218,7 @@ void mul_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -231,7 +231,7 @@ void mul_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2) {
 
 	// array index counter. 
@@ -255,7 +255,7 @@ void mul_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -268,7 +268,7 @@ void mul_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2, signed char *data3) {
 
 	// array index counter. 
@@ -288,11 +288,11 @@ void mul_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v16qi)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -314,7 +314,7 @@ void mul_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param) {
 
 	// array index counter. 
@@ -346,7 +346,7 @@ void mul_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -359,7 +359,7 @@ void mul_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned char *data3) {
 
 	// array index counter. 
@@ -391,7 +391,7 @@ void mul_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -404,7 +404,7 @@ void mul_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned char *data2) {
 
 	// array index counter. 
@@ -436,7 +436,7 @@ void mul_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -449,7 +449,7 @@ void mul_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_4_simd(Py_ssize_t arraylen, unsigned char param, unsigned char *data2, unsigned char *data3) {
 
 	// array index counter. 
@@ -481,7 +481,7 @@ void mul_unsigned_char_4_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -494,7 +494,7 @@ void mul_unsigned_char_4_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2) {
 
 	// array index counter. 
@@ -518,7 +518,7 @@ void mul_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -531,7 +531,7 @@ void mul_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_char_6_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2, unsigned char *data3) {
 
 	// array index counter. 
@@ -551,11 +551,11 @@ void mul_unsigned_char_6_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v16qi)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x],  resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -577,7 +577,7 @@ void mul_unsigned_char_6_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed short param) {
 
 	// array index counter. 
@@ -609,7 +609,7 @@ void mul_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -622,7 +622,7 @@ void mul_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3) {
 
 	// array index counter. 
@@ -654,7 +654,7 @@ void mul_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -667,7 +667,7 @@ void mul_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed short *data2) {
 
 	// array index counter. 
@@ -699,7 +699,7 @@ void mul_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -712,7 +712,7 @@ void mul_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3) {
 
 	// array index counter. 
@@ -744,7 +744,7 @@ void mul_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -757,7 +757,7 @@ void mul_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2) {
 
 	// array index counter. 
@@ -781,7 +781,7 @@ void mul_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -794,7 +794,7 @@ void mul_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2, signed short *data3) {
 
 	// array index counter. 
@@ -814,11 +814,11 @@ void mul_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v8hi)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -840,7 +840,7 @@ void mul_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed sh
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param) {
 
 	// array index counter. 
@@ -872,7 +872,7 @@ void mul_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -885,7 +885,7 @@ void mul_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3) {
 
 	// array index counter. 
@@ -917,7 +917,7 @@ void mul_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -930,7 +930,7 @@ void mul_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsigned short *data2) {
 
 	// array index counter. 
@@ -962,7 +962,7 @@ void mul_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsign
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -975,7 +975,7 @@ void mul_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsign
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_4_simd(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3) {
 
 	// array index counter. 
@@ -1007,7 +1007,7 @@ void mul_unsigned_short_4_simd(Py_ssize_t arraylen, unsigned short param, unsign
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1020,7 +1020,7 @@ void mul_unsigned_short_4_simd(Py_ssize_t arraylen, unsigned short param, unsign
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2) {
 
 	// array index counter. 
@@ -1044,7 +1044,7 @@ void mul_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1057,7 +1057,7 @@ void mul_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_short_6_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned short *data3) {
 
 	// array index counter. 
@@ -1077,11 +1077,11 @@ void mul_unsigned_short_6_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v8hi)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1103,7 +1103,7 @@ void mul_unsigned_short_6_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int param) {
 
 	// array index counter. 
@@ -1135,7 +1135,7 @@ void mul_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1148,7 +1148,7 @@ void mul_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3) {
 
 	// array index counter. 
@@ -1180,7 +1180,7 @@ void mul_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1193,7 +1193,7 @@ void mul_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *data2) {
 
 	// array index counter. 
@@ -1225,7 +1225,7 @@ void mul_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *da
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1238,7 +1238,7 @@ void mul_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *da
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3) {
 
 	// array index counter. 
@@ -1270,7 +1270,7 @@ void mul_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *da
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1283,7 +1283,7 @@ void mul_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *da
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2) {
 
 	// array index counter. 
@@ -1307,7 +1307,7 @@ void mul_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1320,7 +1320,7 @@ void mul_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3) {
 
 	// array index counter. 
@@ -1340,11 +1340,11 @@ void mul_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v4si)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1366,7 +1366,7 @@ void mul_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param) {
 
 	// array index counter. 
@@ -1398,7 +1398,7 @@ void mul_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1411,7 +1411,7 @@ void mul_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3) {
 
 	// array index counter. 
@@ -1443,7 +1443,7 @@ void mul_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1456,7 +1456,7 @@ void mul_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_3_simd(Py_ssize_t arraylen, unsigned int param, unsigned int *data2) {
 
 	// array index counter. 
@@ -1488,7 +1488,7 @@ void mul_unsigned_int_3_simd(Py_ssize_t arraylen, unsigned int param, unsigned i
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1501,7 +1501,7 @@ void mul_unsigned_int_3_simd(Py_ssize_t arraylen, unsigned int param, unsigned i
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_4_simd(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3) {
 
 	// array index counter. 
@@ -1533,7 +1533,7 @@ void mul_unsigned_int_4_simd(Py_ssize_t arraylen, unsigned int param, unsigned i
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1546,7 +1546,7 @@ void mul_unsigned_int_4_simd(Py_ssize_t arraylen, unsigned int param, unsigned i
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2) {
 
 	// array index counter. 
@@ -1570,7 +1570,7 @@ void mul_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1583,7 +1583,7 @@ void mul_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_unsigned_int_6_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3) {
 
 	// array index counter. 
@@ -1603,11 +1603,11 @@ void mul_unsigned_int_6_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
 	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright =(v4si)  __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storedqu((char *)&data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1629,7 +1629,7 @@ void mul_unsigned_int_6_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned 
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 
 	// array index counter. 
@@ -1647,7 +1647,7 @@ void mul_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(opvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1657,11 +1657,11 @@ void mul_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data1[x]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data1[x],  resultslice);
+		__builtin_ia32_storeups( &data1[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1674,7 +1674,7 @@ void mul_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *data3) {
 
 	// array index counter. 
@@ -1692,7 +1692,7 @@ void mul_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *dat
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(opvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1702,11 +1702,11 @@ void mul_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *dat
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data1[x]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data3[x],  resultslice);
+		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1719,7 +1719,7 @@ void mul_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *dat
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 
 	// array index counter. 
@@ -1737,7 +1737,7 @@ void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v4sf) __builtin_ia32_loadups(opvals);
+	datasliceleft = (v4sf) __builtin_ia32_loadups( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1747,11 +1747,11 @@ void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v4sf) __builtin_ia32_loadups(&data2[x]);
+		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data2[x],  resultslice);
+		__builtin_ia32_storeups( &data2[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1764,7 +1764,7 @@ void mul_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3) {
 
 	// array index counter. 
@@ -1782,7 +1782,7 @@ void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *dat
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v4sf) __builtin_ia32_loadups(opvals);
+	datasliceleft = (v4sf) __builtin_ia32_loadups( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1792,11 +1792,11 @@ void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *dat
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v4sf) __builtin_ia32_loadups(&data2[x]);
+		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data3[x],  resultslice);
+		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1809,7 +1809,7 @@ void mul_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *dat
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 
 	// array index counter. 
@@ -1828,12 +1828,12 @@ void mul_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data1[x]);
-		datasliceright = (v4sf) __builtin_ia32_loadups(&data2[x]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
+		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data1[x],  resultslice);
+		__builtin_ia32_storeups( &data1[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1846,7 +1846,7 @@ void mul_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3) {
 
 	// array index counter. 
@@ -1865,12 +1865,12 @@ void mul_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *da
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data1[x]);
-		datasliceright =(v4sf)  __builtin_ia32_loadups(&data2[x]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
+		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeups(&data3[x],  resultslice);
+		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1892,7 +1892,7 @@ void mul_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *da
    param = The parameter to be applied to each array element.
 */
 // param_arr_num_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 
 	// array index counter. 
@@ -1910,7 +1910,7 @@ void mul_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(opvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1920,11 +1920,11 @@ void mul_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data1[x]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data1[x],  resultslice);
+		__builtin_ia32_storeupd( &data1[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1937,7 +1937,7 @@ void mul_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 
 
 // param_arr_num_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double *data3) {
 
 	// array index counter. 
@@ -1955,7 +1955,7 @@ void mul_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double 
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(opvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1965,11 +1965,11 @@ void mul_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double 
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data1[x]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data3[x],  resultslice);
+		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -1982,7 +1982,7 @@ void mul_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double 
 
 
 // param_num_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 
 	// array index counter. 
@@ -2000,7 +2000,7 @@ void mul_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v2df) __builtin_ia32_loadupd(opvals);
+	datasliceleft = (v2df) __builtin_ia32_loadupd( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -2010,11 +2010,11 @@ void mul_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v2df) __builtin_ia32_loadupd(&data2[x]);
+		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data2[x],  resultslice);
+		__builtin_ia32_storeupd( &data2[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -2027,7 +2027,7 @@ void mul_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 
 
 // param_num_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double *data3) {
 
 	// array index counter. 
@@ -2045,7 +2045,7 @@ void mul_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double 
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v2df) __builtin_ia32_loadupd(opvals);
+	datasliceleft = (v2df) __builtin_ia32_loadupd( opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -2055,11 +2055,11 @@ void mul_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double 
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v2df) __builtin_ia32_loadupd(&data2[x]);
+		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data3[x],  resultslice);
+		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -2072,7 +2072,7 @@ void mul_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double 
 
 
 // param_arr_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 
 	// array index counter. 
@@ -2091,12 +2091,12 @@ void mul_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data1[x]);
-		datasliceright = (v2df) __builtin_ia32_loadupd(&data2[x]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
+		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data1[x],  resultslice);
+		__builtin_ia32_storeupd( &data1[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
@@ -2109,7 +2109,7 @@ void mul_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 
 
 // param_arr_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void mul_double_6_simd(Py_ssize_t arraylen, double *data1, double *data2, double *data3) {
 
 	// array index counter. 
@@ -2128,12 +2128,12 @@ void mul_double_6_simd(Py_ssize_t arraylen, double *data1, double *data2, double
 	// Perform the main operation using SIMD instructions.
 	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data1[x]);
-		datasliceright =(v2df)  __builtin_ia32_loadupd(&data2[x]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
+		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
 		resultslice = datasliceleft * datasliceright;
 		// Store the result.
-		__builtin_ia32_storeupd(&data3[x],  resultslice);
+		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.

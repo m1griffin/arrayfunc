@@ -41,8 +41,13 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "amin_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "amin_simd_arm.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -79,13 +84,13 @@ signed long long amin_signed_char(Py_ssize_t arraylen, signed char *data) {
 */
 signed long long amin_signed_char_select(Py_ssize_t arraylen, int nosimd, signed char *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return amin_signed_char_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_char(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -125,13 +130,13 @@ unsigned long long amin_unsigned_char(Py_ssize_t arraylen, unsigned char *data) 
 */
 unsigned long long amin_unsigned_char_select(Py_ssize_t arraylen, int nosimd, unsigned char *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return amin_unsigned_char_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_char(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -171,13 +176,13 @@ signed long long amin_signed_short(Py_ssize_t arraylen, signed short *data) {
 */
 signed long long amin_signed_short_select(Py_ssize_t arraylen, int nosimd, signed short *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return amin_signed_short_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_short(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -217,13 +222,13 @@ unsigned long long amin_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 */
 unsigned long long amin_unsigned_short_select(Py_ssize_t arraylen, int nosimd, unsigned short *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return amin_unsigned_short_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_short(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -263,13 +268,13 @@ signed long long amin_signed_int(Py_ssize_t arraylen, signed int *data) {
 */
 signed long long amin_signed_int_select(Py_ssize_t arraylen, int nosimd, signed int *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return amin_signed_int_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_int(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -309,13 +314,13 @@ unsigned long long amin_unsigned_int(Py_ssize_t arraylen, unsigned int *data) {
 */
 unsigned long long amin_unsigned_int_select(Py_ssize_t arraylen, int nosimd, unsigned int *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return amin_unsigned_int_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_int(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -451,13 +456,13 @@ double amin_float(Py_ssize_t arraylen, float *data) {
 */
 double amin_float_select(Py_ssize_t arraylen, int nosimd, float *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return amin_float_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_float(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	}
 	#endif
 
@@ -497,13 +502,13 @@ double amin_double(Py_ssize_t arraylen, double *data) {
 */
 double amin_double_select(Py_ssize_t arraylen, int nosimd, double *data) { 
 
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86)
 	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		return amin_double_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_double(arraylen, data);
-	#ifdef AF_HASSIMD
+	#if defined(AF_HASSIMD_X86)
 	}
 	#endif
 

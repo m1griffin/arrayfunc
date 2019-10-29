@@ -417,7 +417,8 @@ _COutputHeaderOptions = {
 	'math' : '#include <math.h>', 
 	'arithcalcs' : '#include "arithcalcs.h"', 
 	'simddefs' : '#include "simddefs.h"', 
-	'simdmacromsg' : '#ifdef AF_HASSIMD\n#include "%(funcname)s_simd_x86.h"\n#endif',
+	'simdmacromsg' : '#ifdef AF_HASSIMD_X86\n#include "%(funcname)s_simd_x86.h"\n#endif',
+	'simdmacromsg_arm' : '#ifdef AF_HASSIMD_ARM\n#include "arm_neon.h"\n#endif',
 	'acalcvm_ops' : '#include "acalcvm_ops.h"',
 	'guardbands' : '#include "convguardbands.h"',
 	'arrayfunc' : '#include "arrayfunc.h"',
@@ -543,7 +544,7 @@ def GenSIMDCHeaderText(outputlist, funcname):
 # ==============================================================================
 
 # Read the C function names from the SIMD header files.
-def GetHeaderFileDataSIMD():
+def GetHeaderFileDataSIMD(filepath):
 	"""Get the names of functions which have SIMD acceleration. This
 		works by reading the C source code header file names and 
 		extracting the name of the function from the file names. This 
@@ -552,12 +553,12 @@ def GetHeaderFileDataSIMD():
 		and extracts the data types from it. 
 		The C source code files must be in a specific position relative
 		to this script.
-	Parameters: None.
+	Parameters: filepath (string): Get the path defining the SIMD files.
 		Returns: (list) a list of arrayfunc function names and the data
 			types used by that arrayfunc function.
 	"""
 	# Get a list of the SIMD related header files.
-	filelist=glob.glob('../src/*_simd_*.h')
+	filelist=glob.glob(filepath)
 	filelist.sort()
 
 	filedata = []

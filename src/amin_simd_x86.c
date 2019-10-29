@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     16-Apr-2019
-// Ver:      24-Jul-2019.
+// Ver:      19-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -48,7 +48,7 @@
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
 
 	// array index counter. 
@@ -74,7 +74,7 @@ signed long long amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals,   minslice);
 	minfound = minvals[0];
 	for (y = 1; y < CHARSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -101,7 +101,7 @@ signed long long amin_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
 
 	// array index counter. 
@@ -127,7 +127,7 @@ unsigned long long amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals,   minslice);
 	minfound = minvals[0];
 	for (y = 1; y < CHARSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -154,7 +154,7 @@ unsigned long long amin_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amin_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
 
 	// array index counter. 
@@ -180,7 +180,7 @@ signed long long amin_signed_short_simd(Py_ssize_t arraylen, signed short *data)
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals, (v16qi)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < SHORTSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -207,7 +207,7 @@ signed long long amin_signed_short_simd(Py_ssize_t arraylen, signed short *data)
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
 
 	// array index counter. 
@@ -233,7 +233,7 @@ unsigned long long amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals, (v16qi)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < SHORTSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -260,7 +260,7 @@ unsigned long long amin_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
 
 	// array index counter. 
@@ -286,7 +286,7 @@ signed long long amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals, (v16qi)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < INTSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -313,7 +313,7 @@ signed long long amin_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
 
 	// array index counter. 
@@ -339,7 +339,7 @@ unsigned long long amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *dat
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storedqu((char *) minvals, (v16qi) minslice);
+	__builtin_ia32_storedqu((char *) minvals, (v16qi)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < INTSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -366,7 +366,7 @@ unsigned long long amin_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *dat
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 double amin_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
@@ -383,16 +383,16 @@ double amin_float_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v4sf) __builtin_ia32_loadups(&data[0]);
+	minslice = (v4sf) __builtin_ia32_loadups( &data[0]);
 
 	// Use SIMD.
 	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
-		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
+		dataslice = (v4sf) __builtin_ia32_loadups( &data[x]);
 		minslice = __builtin_ia32_minps (minslice, dataslice);
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storeups(minvals, (v4sf) minslice);
+	__builtin_ia32_storeups( minvals, (v4sf)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < FLOATSIMDSIZE; y++) {
 		if (minvals[y] < minfound) {
@@ -419,7 +419,7 @@ double amin_float_simd(Py_ssize_t arraylen, float *data) {
    data = The input data array.
    Returns: The minimum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 double amin_double_simd(Py_ssize_t arraylen, double *data) { 
 
 	// array index counter. 
@@ -436,16 +436,16 @@ double amin_double_simd(Py_ssize_t arraylen, double *data) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Initialise the comparison values.
-	minslice = (v2df) __builtin_ia32_loadupd(&data[0]);
+	minslice = (v2df) __builtin_ia32_loadupd( &data[0]);
 
 	// Use SIMD.
 	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
-		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
+		dataslice = (v2df) __builtin_ia32_loadupd( &data[x]);
 		minslice = __builtin_ia32_minpd (minslice, dataslice);
 	}
 
 	// Find the min within the slice.
-	__builtin_ia32_storeupd(minvals, (v2df) minslice);
+	__builtin_ia32_storeupd( minvals, (v2df)  minslice);
 	minfound = minvals[0];
 	for (y = 1; y < DOUBLESIMDSIZE; y++) {
 		if (minvals[y] < minfound) {

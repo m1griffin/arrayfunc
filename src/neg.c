@@ -39,8 +39,13 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "neg_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "neg_simd_arm.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -59,7 +64,7 @@ signed int neg_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, s
 	Py_ssize_t x;
 
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -115,7 +120,7 @@ signed int neg_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data,
 	Py_ssize_t x;
 
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -171,7 +176,7 @@ signed int neg_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, sig
 	Py_ssize_t x;
 
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		if (hasoutputarray) {

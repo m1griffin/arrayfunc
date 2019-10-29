@@ -41,8 +41,13 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "gt_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "gt_simd_arm.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -60,7 +65,7 @@ char gt_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_signed_char_1_simd(arraylen, data1, param);
@@ -82,7 +87,7 @@ char gt_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signed
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_signed_char_3_simd(arraylen, param, data2);
@@ -104,7 +109,7 @@ char gt_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_signed_char_5_simd(arraylen, data1, data2);
@@ -133,7 +138,7 @@ char gt_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_unsigned_char_1_simd(arraylen, data1, param);
@@ -155,7 +160,7 @@ char gt_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, un
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_unsigned_char_3_simd(arraylen, param, data2);
@@ -177,7 +182,7 @@ char gt_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return gt_unsigned_char_5_simd(arraylen, data1, data2);
@@ -206,7 +211,7 @@ char gt_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_signed_short_1_simd(arraylen, data1, param);
@@ -228,7 +233,7 @@ char gt_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, sign
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_signed_short_3_simd(arraylen, param, data2);
@@ -250,7 +255,7 @@ char gt_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_signed_short_5_simd(arraylen, data1, data2);
@@ -279,7 +284,7 @@ char gt_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_unsigned_short_1_simd(arraylen, data1, param);
@@ -301,7 +306,7 @@ char gt_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param, 
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_unsigned_short_3_simd(arraylen, param, data2);
@@ -323,7 +328,7 @@ char gt_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return gt_unsigned_short_5_simd(arraylen, data1, data2);
@@ -352,7 +357,7 @@ char gt_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_signed_int_1_simd(arraylen, data1, param);
@@ -374,7 +379,7 @@ char gt_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed i
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_signed_int_3_simd(arraylen, param, data2);
@@ -396,7 +401,7 @@ char gt_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_signed_int_5_simd(arraylen, data1, data2);
@@ -425,7 +430,7 @@ char gt_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_unsigned_int_1_simd(arraylen, data1, param);
@@ -447,7 +452,7 @@ char gt_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsi
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_unsigned_int_3_simd(arraylen, param, data2);
@@ -469,7 +474,7 @@ char gt_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return gt_unsigned_int_5_simd(arraylen, data1, data2);
@@ -706,7 +711,7 @@ char gt_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float param) {
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return gt_float_1_simd(arraylen, data1, param);
@@ -728,7 +733,7 @@ char gt_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2) {
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return gt_float_3_simd(arraylen, param, data2);
@@ -750,7 +755,7 @@ char gt_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *data2) {
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return gt_float_5_simd(arraylen, data1, data2);
@@ -779,7 +784,7 @@ char gt_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double param) {
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		return gt_double_1_simd(arraylen, data1, param);
@@ -801,7 +806,7 @@ char gt_double_3(Py_ssize_t arraylen, int nosimd, double param, double *data2) {
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		return gt_double_3_simd(arraylen, param, data2);
@@ -823,7 +828,7 @@ char gt_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *data2) 
 	// array index counter.
 	Py_ssize_t x;
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		return gt_double_5_simd(arraylen, data1, data2);

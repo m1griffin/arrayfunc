@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      11-Sep-2019.
+// Ver:      19-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -51,7 +51,7 @@
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 double asum_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
@@ -102,7 +102,7 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 double asum_double_simd(Py_ssize_t arraylen, double *data) { 
 
 	// array index counter. 

@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     16-Apr-2019
-// Ver:      06-Jul-2019.
+// Ver:      19-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -52,7 +52,7 @@
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -62,14 +62,15 @@ signed int aany_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -77,7 +78,7 @@ signed int aany_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -111,7 +112,7 @@ signed int aany_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -121,14 +122,15 @@ signed int aany_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -136,7 +138,7 @@ signed int aany_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -170,7 +172,7 @@ signed int aany_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -180,14 +182,15 @@ signed int aany_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -195,7 +198,7 @@ signed int aany_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -229,7 +232,7 @@ signed int aany_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -239,14 +242,15 @@ signed int aany_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -254,7 +258,7 @@ signed int aany_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -288,7 +292,7 @@ signed int aany_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -298,14 +302,15 @@ signed int aany_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -313,7 +318,7 @@ signed int aany_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -347,7 +352,7 @@ signed int aany_le_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, signed char param1) { 
 
 	// array index counter. 
@@ -357,14 +362,15 @@ signed int aany_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -372,7 +378,7 @@ signed int aany_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -406,7 +412,7 @@ signed int aany_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data, sign
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -416,14 +422,15 @@ signed int aany_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -431,7 +438,7 @@ signed int aany_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -465,7 +472,7 @@ signed int aany_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -475,14 +482,15 @@ signed int aany_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -490,7 +498,7 @@ signed int aany_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -524,7 +532,7 @@ signed int aany_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -534,14 +542,15 @@ signed int aany_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -549,7 +558,7 @@ signed int aany_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -583,7 +592,7 @@ signed int aany_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -593,14 +602,15 @@ signed int aany_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -608,7 +618,7 @@ signed int aany_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -642,7 +652,7 @@ signed int aany_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -652,14 +662,15 @@ signed int aany_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -667,7 +678,7 @@ signed int aany_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -701,7 +712,7 @@ signed int aany_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, unsigned char param1) { 
 
 	// array index counter. 
@@ -711,14 +722,15 @@ signed int aany_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v16qi datasliceleft, datasliceright, resultslice;
+	v16qi datasliceleft, datasliceright;
+	v16qi resultslice;
 	unsigned char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -726,7 +738,7 @@ signed int aany_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -760,7 +772,7 @@ signed int aany_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data, 
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -770,14 +782,15 @@ signed int aany_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -785,7 +798,7 @@ signed int aany_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -819,7 +832,7 @@ signed int aany_eq_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -829,14 +842,15 @@ signed int aany_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -844,7 +858,7 @@ signed int aany_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -878,7 +892,7 @@ signed int aany_gt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -888,14 +902,15 @@ signed int aany_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -903,7 +918,7 @@ signed int aany_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -937,7 +952,7 @@ signed int aany_ge_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -947,14 +962,15 @@ signed int aany_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -962,7 +978,7 @@ signed int aany_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -996,7 +1012,7 @@ signed int aany_lt_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -1006,14 +1022,15 @@ signed int aany_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1021,7 +1038,7 @@ signed int aany_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -1055,7 +1072,7 @@ signed int aany_le_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, signed short param1) { 
 
 	// array index counter. 
@@ -1065,14 +1082,15 @@ signed int aany_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1080,7 +1098,7 @@ signed int aany_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -1114,7 +1132,7 @@ signed int aany_ne_signed_short_simd(Py_ssize_t arraylen, signed short *data, si
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1124,14 +1142,15 @@ signed int aany_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1139,7 +1158,7 @@ signed int aany_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -1173,7 +1192,7 @@ signed int aany_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1183,14 +1202,15 @@ signed int aany_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1198,7 +1218,7 @@ signed int aany_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -1232,7 +1252,7 @@ signed int aany_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1242,14 +1262,15 @@ signed int aany_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1257,7 +1278,7 @@ signed int aany_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -1291,7 +1312,7 @@ signed int aany_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1301,14 +1322,15 @@ signed int aany_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1316,7 +1338,7 @@ signed int aany_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -1350,7 +1372,7 @@ signed int aany_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1360,14 +1382,15 @@ signed int aany_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1375,7 +1398,7 @@ signed int aany_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -1409,7 +1432,7 @@ signed int aany_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data, unsigned short param1) { 
 
 	// array index counter. 
@@ -1419,14 +1442,15 @@ signed int aany_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v8hi datasliceleft, datasliceright, resultslice;
+	v8hi datasliceleft, datasliceright;
+	v8hi resultslice;
 	unsigned short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1434,7 +1458,7 @@ signed int aany_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -1468,7 +1492,7 @@ signed int aany_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1478,14 +1502,15 @@ signed int aany_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1493,7 +1518,7 @@ signed int aany_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -1527,7 +1552,7 @@ signed int aany_eq_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1537,14 +1562,15 @@ signed int aany_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1552,7 +1578,7 @@ signed int aany_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -1586,7 +1612,7 @@ signed int aany_gt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1596,14 +1622,15 @@ signed int aany_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1611,7 +1638,7 @@ signed int aany_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -1645,7 +1672,7 @@ signed int aany_ge_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1655,14 +1682,15 @@ signed int aany_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1670,7 +1698,7 @@ signed int aany_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -1704,7 +1732,7 @@ signed int aany_lt_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1714,14 +1742,15 @@ signed int aany_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1729,7 +1758,7 @@ signed int aany_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -1763,7 +1792,7 @@ signed int aany_le_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed int param1) { 
 
 	// array index counter. 
@@ -1773,14 +1802,15 @@ signed int aany_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1788,7 +1818,7 @@ signed int aany_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -1822,7 +1852,7 @@ signed int aany_ne_signed_int_simd(Py_ssize_t arraylen, signed int *data, signed
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -1832,14 +1862,15 @@ signed int aany_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1847,7 +1878,7 @@ signed int aany_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -1881,7 +1912,7 @@ signed int aany_eq_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -1891,14 +1922,15 @@ signed int aany_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1906,7 +1938,7 @@ signed int aany_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -1940,7 +1972,7 @@ signed int aany_gt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -1950,14 +1982,15 @@ signed int aany_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -1965,7 +1998,7 @@ signed int aany_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -1999,7 +2032,7 @@ signed int aany_ge_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -2009,14 +2042,15 @@ signed int aany_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2024,7 +2058,7 @@ signed int aany_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -2058,7 +2092,7 @@ signed int aany_lt_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -2068,14 +2102,15 @@ signed int aany_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2083,7 +2118,7 @@ signed int aany_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -2117,7 +2152,7 @@ signed int aany_le_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, unsigned int param1) { 
 
 	// array index counter. 
@@ -2127,14 +2162,15 @@ signed int aany_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4si datasliceleft, datasliceright, resultslice;
+	v4si datasliceleft, datasliceright;
+	v4si resultslice;
 	unsigned int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) compvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2142,7 +2178,7 @@ signed int aany_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data[index]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -2176,7 +2212,7 @@ signed int aany_ne_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data, un
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2186,14 +2222,15 @@ signed int aany_eq_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2201,7 +2238,7 @@ signed int aany_eq_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -2235,7 +2272,7 @@ signed int aany_eq_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2245,14 +2282,15 @@ signed int aany_gt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2260,7 +2298,7 @@ signed int aany_gt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -2294,7 +2332,7 @@ signed int aany_gt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2304,14 +2342,15 @@ signed int aany_ge_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2319,7 +2358,7 @@ signed int aany_ge_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -2353,7 +2392,7 @@ signed int aany_ge_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2363,14 +2402,15 @@ signed int aany_lt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2378,7 +2418,7 @@ signed int aany_lt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -2412,7 +2452,7 @@ signed int aany_lt_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2422,14 +2462,15 @@ signed int aany_le_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2437,7 +2478,7 @@ signed int aany_le_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -2471,7 +2512,7 @@ signed int aany_le_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_float_simd(Py_ssize_t arraylen, float *data, float param1) { 
 
 	// array index counter. 
@@ -2481,14 +2522,15 @@ signed int aany_ne_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v4sf datasliceleft, datasliceright, resultslice;
+	v4sf datasliceleft, datasliceright;
+	v4sf resultslice;
 	float compvals[FLOATSIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < FLOATSIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v4sf) __builtin_ia32_loadups(compvals);
+	datasliceright = (v4sf) __builtin_ia32_loadups(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2496,7 +2538,7 @@ signed int aany_ne_float_simd(Py_ssize_t arraylen, float *data, float param1) {
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
-		datasliceleft = (v4sf) __builtin_ia32_loadups(&data[index]);
+		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;
@@ -2530,7 +2572,7 @@ signed int aany_ne_float_simd(Py_ssize_t arraylen, float *data, float param1) {
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_eq_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2540,14 +2582,15 @@ signed int aany_eq_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2555,7 +2598,7 @@ signed int aany_eq_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft == datasliceright;
@@ -2589,7 +2632,7 @@ signed int aany_eq_double_simd(Py_ssize_t arraylen, double *data, double param1)
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_gt_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2599,14 +2642,15 @@ signed int aany_gt_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2614,7 +2658,7 @@ signed int aany_gt_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft > datasliceright;
@@ -2648,7 +2692,7 @@ signed int aany_gt_double_simd(Py_ssize_t arraylen, double *data, double param1)
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ge_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2658,14 +2702,15 @@ signed int aany_ge_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2673,7 +2718,7 @@ signed int aany_ge_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft >= datasliceright;
@@ -2707,7 +2752,7 @@ signed int aany_ge_double_simd(Py_ssize_t arraylen, double *data, double param1)
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_lt_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2717,14 +2762,15 @@ signed int aany_lt_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2732,7 +2778,7 @@ signed int aany_lt_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft < datasliceright;
@@ -2766,7 +2812,7 @@ signed int aany_lt_double_simd(Py_ssize_t arraylen, double *data, double param1)
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_le_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2776,14 +2822,15 @@ signed int aany_le_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2791,7 +2838,7 @@ signed int aany_le_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft <= datasliceright;
@@ -2825,7 +2872,7 @@ signed int aany_le_double_simd(Py_ssize_t arraylen, double *data, double param1)
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed int aany_ne_double_simd(Py_ssize_t arraylen, double *data, double param1) { 
 
 	// array index counter. 
@@ -2835,14 +2882,15 @@ signed int aany_ne_double_simd(Py_ssize_t arraylen, double *data, double param1)
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	v2df datasliceleft, datasliceright, resultslice;
+	v2df datasliceleft, datasliceright;
+	v2df resultslice;
 	double compvals[DOUBLESIMDSIZE];
 
 	// Initialise the comparison values.
 	for (y = 0; y < DOUBLESIMDSIZE; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = (v2df) __builtin_ia32_loadupd(compvals);
+	datasliceright = (v2df) __builtin_ia32_loadupd(  compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -2850,7 +2898,7 @@ signed int aany_ne_double_simd(Py_ssize_t arraylen, double *data, double param1)
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
-		datasliceleft = (v2df) __builtin_ia32_loadupd(&data[index]);
+		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft != datasliceright;

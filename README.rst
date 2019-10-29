@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 4.3.1 for 2019-09-17
+:Version: 5.0.0 for 2019-10-29
 :Copyright: 2014 - 2019
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -297,12 +297,13 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
-Ubuntu 19.04       64 bit    GCC                         3.7
+Ubuntu 19.10       64 bit    GCC                         3.7
 Debian 10          32 bit    GCC                         3.6
 Debian 10          64 bit    GCC                         3.6
 OpenSuse 15        64 bit    GCC                         3.6
-Centos 7           64 bit    GCC                         3.6
+Centos 8           64 bit    GCC                         3.6
 FreeBSD 12         64 bit    LLVM                        3.6
+OpenBSD 6.5        64 bit    LLVM                        3.6
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
 Raspbian (RPi 3)   32 bit    GCC                         3.5
 ================= ========  ========================== =========================
@@ -336,6 +337,13 @@ example::
 Release History
 ===============
 
+* 5.0.0 - The main focus of this release has been adding SIMD 
+          acceleration support to the ARMv7 platform  (e.g. Raspberry 
+          Pi 3). Also added SIMD support to 'lshift' and 'rshift' on
+          x86-64 and ARM. Changed arrayparamsbase to fix compiler 
+          warning on newer versions of GCC, but no change in actual
+          operation. Updated supported OS versions tested, and added
+          OpenBSD to supported platform list.
 * 4.3.1 - Numerous performance inprovements through the use of SIMD
           acceleration in many functions. See the documentation to
           see which functions are affected. Restrictions on the use of 

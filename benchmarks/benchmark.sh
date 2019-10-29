@@ -4,13 +4,16 @@
 
 # ==============================================================================
 
+# Get the command line arguments.
+argsvals=$( echo $@ )
 
 echo "Testing benchmarks." $(date)
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')
 
-./benchmarks.py
+# The benchmarks.
+./benchmarks.py $argsvals
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')

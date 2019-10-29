@@ -26,322 +26,105 @@
 
 # ==============================================================================
 
+import glob
+import itertools
+
 import codegen_common
 
+# ==============================================================================
+
+funccategories = [
+('mathematical', 'Mathematical operator functions'), 
+('compare', 'Comparison operator functions'), 
+('bitwise', 'Bitwise operator functions'), 
+('logarithmic', 'Power and logarithmic functions'),
+('hyperbolic', 'Hyperbolic functions'),
+('trigonometric', 'Trigonometric functions'), 
+('angular', 'Angular conversion'), 
+('representation', 'Number-theoretic and representation functions'), 
+('special', 'Special functions'), 
+('additional', 'Additional functions'), 
+]
 
 # ==============================================================================
 
-# The documentation templates are assembled from these fragments.
-
-# This is the start to all the documentation templates.
-doctempl1 = '''
-%(funcname_esc)s
-_____________________________
-
-Calculate %(funcname_esc)s over the values in an array. 
-
-======================  ========================================================
-Equivalent to:          %(opcodedocs)s
-Array types supported:  %(arraytypes)s
-Exceptions raised:      %(matherrors)s
-======================  ========================================================
-
-Call formats::
-
-'''
-
-
-doctempl2a = '''
-  %(funcname)s(array1, param)
-  %(funcname)s(array1, param, outparray)
-  %(funcname)s(param, array1)
-  %(funcname)s(param, array1, outparray)
-  %(funcname)s(array1, array2)
-  %(funcname)s(array1, array2, outparray)
-  %(funcname)s(array1, param, maxlen=y)
-  %(funcname)s(array1, param, matherrors=False)
-
-'''
-
-doctemplbinops2a = '''
-  %(funcname)s(array1, param)
-  %(funcname)s(array1, param, outparray)
-  %(funcname)s(param, array1)
-  %(funcname)s(param, array1, outparray)
-  %(funcname)s(array1, array2)
-  %(funcname)s(array1, array2, outparray)
-  %(funcname)s(array1, param, maxlen=y)
-
-'''
-
-doctemplbinops2b = '''
-  %(funcname)s(array1, param)
-  %(funcname)s(array1, param, outparray)
-  %(funcname)s(param, array1)
-  %(funcname)s(param, array1, outparray)
-  %(funcname)s(array1, array2)
-  %(funcname)s(array1, array2, outparray)
-  %(funcname)s(array1, param, maxlen=y)
-  %(funcname)s(array1, param, nosimd=False)
-
-'''
-
-
-doctempl2c = '''
-  result = %(funcname)s(array1, param)
-  result = %(funcname)s(param, array1)
-  result = %(funcname)s(array1, array2)
-  result = %(funcname)s(array1, param, maxlen=y)
-  result = %(funcname)s(array1, param, nosimd=False)
-
-'''
-
-doctempl2d = '''
-    %(funcname)s(array1)
-    %(funcname)s(array1, outparray)
-    %(funcname)s(array1, maxlen=y)
-    %(funcname)s(array1, matherrors=False))
-
-'''
-
-
-doctempl2e = '''
-    %(funcname)s(array1)
-    %(funcname)s(array1, outparray)
-    %(funcname)s(array1, maxlen=y)
-
-'''
-
-doctempl2f = '''
-    %(funcname)s(array1, array2, array3) 
-    %(funcname)s(array1, array2, array3, outparray) 
-    %(funcname)s(array1, array2, param3) 
-    %(funcname)s(array1, array2, param3, outparray) 
-    %(funcname)s(array1, param2, array3) 
-    %(funcname)s(array1, param2, array3, outparray) 
-    %(funcname)s(array1, param2, param3) 
-    %(funcname)s(array1, param2, param3, outparray) 
-    %(funcname)s(array1, array2, array3, maxlen=y) 
-    %(funcname)s(array1, array2, array3, matherrors=False) 
-
-'''
-
-
-doctempl2g = '''
-    %(funcname)s(array1)
-    %(funcname)s(array1, outparray)
-    %(funcname)s(array1, maxlen=y)
-    %(funcname)s(array1, matherrors=False))
-    %(funcname)s(array1, nosimd=False))
-
-'''
-
-doctempl2h = '''
-  %(funcname)s(array1, param)
-  %(funcname)s(array1, param, outparray)
-  %(funcname)s(param, array1)
-  %(funcname)s(param, array1, outparray)
-  %(funcname)s(array1, array2)
-  %(funcname)s(array1, array2, outparray)
-  %(funcname)s(array1, param, maxlen=y)
-  %(funcname)s(array1, param, matherrors=False)
-  %(funcname)s(array1, param, nosimd=False)
-
-'''
-
-doctempl2ldexp = '''
-    %(funcname)s(array1, exp)
-    %(funcname)s(array1, exp, outparray)
-    %(funcname)s(array1, exp, maxlen=y)
-    %(funcname)s(array1, exp, matherrors=False))
-
-'''
-
-doctempl2mathnan = '''
-    result = %(funcname)s(array1)
-    result = %(funcname)s(array1, maxlen=y)
-
-'''
-
-
-doctempl3arr1 = '''* array1 - The first input data array to be examined. If no output 
-  array is provided the results will overwrite the input data. 
-'''
-
-
-doctempl3param = '''* param - A non-array numeric parameter. 
-'''
-
-
-doctempl3param2 = '''* param2 - A non-array numeric parameter which is 
-  used in place of array2. 
-'''
-
-
-doctempl3param3 = '''* param3 - A non-array numeric parameter which is 
-  used in place of array3. 
-'''
-
-doctempl3arr2 = '''* array2 - A second input data array. Each element in this array is 
-  applied to the corresponding element in the first array. 
-'''
-
-
-doctempl3arr3 = '''* array3 - A third input data array. Each element in this array is 
-  applied to the corresponding element in the first array. 
-'''
-
-
-doctempl3arrout = '''* outparray - The output array. This parameter is optional. 
-'''
-
-doctempl3maxlen = '''* maxlen - Limit the length of the array used. This must be a valid 
-  positive integer. If a zero or negative length, or a value which is 
-  greater than the actual length of the array is specified, this 
-  parameter is ignored. 
-'''
-
-doctempl3err = '''* matherrors - If true, arithmetic error checking is disabled. The 
-  default is false.
-'''
-
-doctempl3exp = '''* exp - The exponent to apply to the input array. This must be an integer.
-'''
-
-
-doctempl3resultcomp = '''* result - A boolean value corresponding to the result of all the comparison
-  operations. If all comparison operations result in true, the return value
-  will be true. If any of them result in false, the return value will be
-  false.
-'''
-
-
-doctempl3resultnan = '''* result - A boolean value corresponding to the result of all the 
-  comparison operations. If at least one comparison operation results in true, 
-  the return value will be true. If none of them result in true, the return 
-  value will be false.
-'''
-
-doctempl3simd = '''* nosimd - If True, SIMD acceleration is disabled. This parameter is
-  optional. The default is FALSE.
-'''
+def GetCSourceFiles():
+	'''Get the list of C source files.
+	'''
+	# The list of files actually present.
+	filelist=glob.glob('../src/*.c')
+	filelist.sort()
+	return filelist
 
 
 # ==============================================================================
 
-
-template_mathop = [doctempl1, doctempl2a, 
-	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
-	doctempl3maxlen, doctempl3err]
-
-template_mathop_simd = [doctempl1, doctempl2h, 
-	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
-	doctempl3maxlen, doctempl3err, doctempl3simd]
-
-
-template_binop = [doctempl1, doctemplbinops2a, 
-	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
-	doctempl3maxlen]
-
-template_binop2 = [doctempl1, doctemplbinops2b, 
-	doctempl3arr1, doctempl3param, doctempl3arr2, doctempl3arrout, 
-	doctempl3maxlen, doctempl3simd]
-
-
-template_comp = [doctempl1, doctempl2c, 
-	doctempl3arr1, doctempl3param, doctempl3arr2, 
-	doctempl3maxlen, doctempl3resultcomp, doctempl3simd]
-
-template_mathfunc_2 = template_mathop
-
-template_mathfunc_3 = [doctempl1, doctempl2f, 
-	doctempl3arr1, doctempl3arr2, doctempl3param2, 
-	doctempl3arr3, doctempl3param3, doctempl3arrout,
-	doctempl3maxlen, doctempl3err]
-
-
-template_mathfunc_1 = [doctempl1, doctempl2d, 
-	doctempl3arr1, doctempl3arrout, doctempl3maxlen, doctempl3err]
-
-template_mathfunc_1s = [doctempl1, doctempl2g, 
-	doctempl3arr1, doctempl3arrout, doctempl3maxlen, doctempl3err, doctempl3simd]
-
-
-template_mathfunc_1simd = template_mathfunc_1s
-
-
-template_uniop = [doctempl1, doctempl2g, 
-	doctempl3arr1, doctempl3maxlen, doctempl3err, doctempl3simd]
-
-template_factorial = [doctempl1, doctempl2d, 
-	doctempl3arr1, doctempl3maxlen, doctempl3err]
-
-
-template_ldexpfunc_2 = [doctempl1, doctempl2ldexp, 
-	doctempl3arr1, doctempl3exp, doctempl3arrout, 
-	doctempl3maxlen, doctempl3err]
-
-template_mathfuncnan = [doctempl1, doctempl2mathnan,
-	doctempl3arr1, doctempl3maxlen, doctempl3resultnan]
-
-template_invert = [doctempl1, doctempl2e, 
-	doctempl3arr1, doctempl3arrout, 
-	doctempl3maxlen]
-
-# ==============================================================================
-
-doctemplates = {
-	'template_invert' : template_invert, 
-	'template_mathfunc_1s' : template_mathfunc_1s, 
-	'template_mathfunc_1simd' : template_mathfunc_1simd, 
-	'template_mathfuncnan' : template_mathfuncnan, 
-	'template_ldexpfunc_2' : template_ldexpfunc_2, 
-	'template_uniop' : template_uniop,
-	'template_factorial' : template_factorial,
-	'template_mathfunc_1' : template_mathfunc_1,
-	'template_mathfunc_2' : template_mathfunc_2, 
-	'template_comp' : template_comp, 
-	'template_binop' : template_binop, 
-	'template_binop2' : template_binop2, 
-	'template_mathop' : template_mathop, 
-	'template_mathop_simd' : template_mathop_simd, 
-	'template_mathfunc_3' : template_mathfunc_3 
-}
-
-funccategories = {
-'mathematical' : ('0', 'Mathematical operator functions'), 
-'compare' : ('1', 'Comparison operator functions'), 
-'bitwise' : ('2', 'Bitwise operator functions'), 
-'logarithmic' : ('3', 'Power and logarithmic functions'),
-'hyperbolic' : ('4', 'Hyperbolic functions'),
-'trigonometric' : ('5', 'Trigonometric functions'), 
-'angular' : ('6', 'Angular conversion'), 
-'representation' : ('7', 'Number-theoretic and representation functions'), 
-'special' : ('8', 'Special functions'), 
-'additional' : ('9', 'Additional functions'), 
-}
-
-
-
-# These are used to create the summary table of function names and description.
-
-
-mathtableheader = '''
-=========== ===============================================
-  Function              Equivalent to
-=========== ==============================================='''
-
-mathtablefooter = '=========== ==============================================='
-
+def GetFuncConfigData():
+	'''Get the function data from the configuration spreadsheet.
+	'''
+	# Read the operator and function definition data.
+	return list(codegen_common.ReadCSVData('funcs.csv'))
 
 
 # ==============================================================================
 
-# Write the results to disk.
-def WriteTableSIMD(cheaderdata, outputfile):
-	"""Parameters: cheaderdata (list) = The list of functions and what array 
-			types they support.
-			outputfile (file object) = The output file object to write to.
+def sanitizer(x):
+	'''Sanitizier function. This escapes trailing underscore characters
+	for the sake of ReST format where this is a formatting character.
+	'''
+	# Don't change anything if it is in the form of the function call.
+	if ('and_(' in x) or ('or_(' in x) or ('abs_(' in x):
+		return x
+
+	if 'and_' in x:
+		return x.replace('and_', 'and\_')
+	elif 'or_' in x:
+		return x.replace('or_', 'or\_')
+	elif 'abs_' in x:
+		return x.replace('abs_', 'abs\_')
+	else:
+		return x
+
+def FindFuncDocs(filelist, funcnames, funcdata):
+	'''Get the function documentation directly from the C source code. 
+	The list of functions is based on the function configuraiton spreadsheet.
+	Parameters:
+		filelist (list) = A list of the C file names present.
+		funcnames (list) = A list of the function names.
+	'''
+	# Find which files in the list are actually present.
+	funcspresent = [x for x in funcnames if ('../src/' + x + '.c') in filelist]
+
+	funcsdocs = {}
+
+	# Get the documentation directly from the C source file.
+	for func in funcspresent:
+		with open('../src/' + func + '.c') as f:
+			funcdata = f.readlines()
+			# The documentation starts with PyDoc_STRVAR and ends with the closing function bracket.
+			docdata = itertools.takewhile(lambda x: '");' not in x, itertools.dropwhile(lambda x: 'PyDoc_STRVAR' not in x, funcdata))
+			# Sanitize the data by removing the C language string literal control characters, plus end of line blanks.
+			docdatastripped = [x.replace('\\n\\', '').rstrip() for x in list(docdata)[1:]]
+			# Sanitize some more. There will be a quote character which will be at the start of the function.
+			docdatastripped[0] = docdatastripped[0].replace('"', '')
+			# Some function names need the trailing '_' character escaped as this is a
+			# formatting character for ReST documents.
+			docsantizied = [sanitizer(x) for x in docdatastripped]
+			# Add some formatting to the display of call formats. To do this we need to
+			# add another colon character.
+			callformats = [x.replace('Call formats:', 'Call formats::') for x in docsantizied]
+				
+		funcsdocs[func] = ['\n\n',] + callformats
+
+	return funcsdocs
+
+# ==============================================================================
+
+
+def GetSIMDTable(filepath):
+	"""Create a table of which functions support which array types with SIMD.
+	Parameters: (string) filepath = The path to the SIMD files.
+	This returns a list of formatted strings.
 	"""
 	columnwidth = 3
 	tableheader = {'func' : 'function'}
@@ -352,7 +135,17 @@ def WriteTableSIMD(cheaderdata, outputfile):
 	tableformat = '%(func)10s ' + ' '.join(['%(' + codegen_common.arraytypes[x] + (')%is' % columnwidth) for x in codegen_common.arraycodes]) + '\n'
 
 
-	TableData = []
+	# Get a list of the C function names and their array types from the SIMD
+	# related C header files.
+	cheaderdata = codegen_common.GetHeaderFileDataSIMD(filepath)
+
+
+	tabledata = []
+	tabledata.append(tableformat % tablesep)
+	tabledata.append(tableformat % tableheader)
+	tabledata.append(tableformat % tablesep)
+
+
 	for func, arrstat in cheaderdata:
 		arrformat = dict([(x, 'X' if y else ' ') for x,y in arrstat.items()])
 
@@ -363,113 +156,180 @@ def WriteTableSIMD(cheaderdata, outputfile):
 		else:
 			arrformat['func'] = func
 		
-		TableData.append(tableformat % arrformat)
+		tabledata.append(tableformat % arrformat)
 
+	tabledata.append(tableformat % tablesep)
 
-	outputfile.write('\n\n\nDocuments which functions have SIMD support.\n\n')
-
-	outputfile.write(tableformat % tablesep)
-	outputfile.write(tableformat % tableheader)
-	outputfile.write(tableformat % tablesep)
-	outputfile.write(''.join(TableData))
-	outputfile.write(tableformat % tablesep)
-
+	return ''.join(tabledata)
 
 
 # ==============================================================================
 
+def MakeFuncDocs(funccategories, funcsdocs, funcdata):
+	'''Extract the function documentation and order them in the correct
+	categories.
+	Parameters: funccategories = The function categories.
+		funcsdocs = The function documentation.
+	Returns: The function documentation as a block of text.
+	'''
+	opdocs = []
+
+	# The function categories
+	for cat in funccategories:
+		# Get all the names of the functions in this category.
+		funcnames = [x['funcname'] for x in funcdata if x['category'] == cat[0]]
+		funcnames.sort()
+
+		# Create the category title. But first add some blank lines.
+		opdocs.append('\n\n')
+		opdocs.append(cat[1])
+		opdocs.append('-' * len(cat[1]))
+
+		# Gather all the documentation for that section.
+		sectiondocs = [funcsdocs.get(x, '') for x in funcnames]
+
+		secdocs = ['\n'.join(x) for x in sectiondocs]
+
+		opdocs.append('\n'.join(secdocs))
+
+
+	return '\n'.join(opdocs)
+
 
 # ==============================================================================
 
-# Read the operator and function definition data.
-opdata = list(codegen_common.ReadCSVData('funcs.csv'))
+def MakeSummaryTable(funccategories, funcsdocs, funcdata):
+	'''Extract the function documentation and order them in the correct
+	categories in the form of a one line summary based on the equivalent
+	Python operation.
+	Parameters: funccategories = The function categories.
+		funcsdocs = The function documentation.
+	Returns: The function summary as a block of text.
+	'''
+	funcnames = [x['funcname'] for x in funcdata]
+	functitlesize = max([len(x) for x in funcnames])
+	functitlepad = max(functitlesize, len('Function')) + 2
 
+	summdocs = []
+	tablesep = '=' * functitlepad + ' ' + '=' * 50
 
-# Create and decorate the sorting keys.
-for x in opdata:
-	x['sortkey'] = funccategories[x['category']][0] + x['category']
+	tablehead = tablesep + '\n' + 'Function'.center(functitlepad) + '      Equivalent to' + '\n' + tablesep
 
-# Now sort the list.
-sorteddata = sorted(opdata, key=lambda x: x.get('sortkey'))
+	# The function categories
+	for cat in funccategories:
+		# Get all the names of the functions in this category.
+		funcnames = [x['funcname'] for x in funcdata if x['category'] == cat[0]]
+		funcnames.sort()
+
+		# Create the category title. But first add some blank lines.
+		summdocs.append('\n\n')
+		summdocs.append(cat[1])
+		summdocs.append('-' * len(cat[1]))
+
+		summdocs.append('\n' + tablehead)
+
+		# Gather all the documentation for that section.
+		for func in funcnames:
+			# Extract just the equivalent operation. 
+			equiv = ''.join([x for x in funcsdocs[func] if 'Equivalent to' in x])
+			equivtext = equiv.partition(':')[2].lstrip().rstrip()
+
+			# Escape the function name in the event it contains underscores.
+			# This is required for RST when converting to PDF or HTML. 
+			funcrst = sanitizer(func)
+			# Format the line.
+			summdocs.append(funcrst.rjust(functitlepad) + ' ' + equivtext)
+
+		summdocs.append(tablesep)
+
+	return '\n'.join(summdocs)
 
 
 # ==============================================================================
 
-prevcat = ''
-summtable = []
+# Create the data.
+
+# The list of C source files.
+filelist = GetCSourceFiles()
+# The function config data from the config spreadsheet.
+funcdata = GetFuncConfigData()
+# Split out just the function names.
+funcnames = [x['funcname'] for x in funcdata]
+# Extract the function documentation from the C source files.
+funcsdocs = FindFuncDocs(filelist, funcnames, funcdata)
+
+# Get the x86 and ARM SIMD files.
+simddata_x86 = GetSIMDTable('../src/*_simd_x86.h')
+simddata_arm = GetSIMDTable('../src/*_simd_arm.h')
+
+# Format the main function documentation.
+opdocs = MakeFuncDocs(funccategories, funcsdocs, funcdata)
+
+# Format the function summary table.
+summtable = MakeSummaryTable(funccategories, funcsdocs, funcdata)
 
 
-# The main description of the functions. Note this does not cover
-# all functions.
-with open('docs_math.txt', 'w') as f:
+# ==============================================================================
 
-	f.write('.. contents:: Table of Contents\n\n')
+# Import the benchmark data.
 
-	# Handle each function in sequence.
-	for op in sorteddata:
+def GetBenchmarkData():
+	'''Read the benchmark data and extract the benchmarks.
+	'''
+	# These are the benchmark table headings. These are used to find
+	# the start and stop of each benchmark table.
+	pytitle = 'Relative Performance - Python Time'
+	simdtitle = 'Relative Performance with SIMD Optimisations'
+	simdrel = 'Relative Performance with and without SIMD Optimisations'
+	pyabsolute = 'Python native time in micro-seconds'
 
-		supportedarrays = codegen_common.FormatDocsArrayTypes(op['arraytypes'])
+	with open('../benchmarks/benchmarkdata.txt') as f:
+		benchdata = f.readlines()
 
+	# Get the Python native time.
+	pybench = ''.join(itertools.takewhile(lambda x: simdtitle not in x, itertools.dropwhile(lambda x: pytitle not in x, benchdata)))
+	simdbench = ''.join(itertools.takewhile(lambda x: simdrel not in x, itertools.dropwhile(lambda x: simdtitle not in x, benchdata)))
+	simdrelbench = ''.join(itertools.takewhile(lambda x: pyabsolute not in x, itertools.dropwhile(lambda x: simdrel not in x, benchdata)))
 
-		# We use the C source code template to decide what sort of documentation
-		# template we need to use. 
-		doctmp = ''.join(doctemplates[op['c_code_template']])
+	return pybench, simdbench, simdrelbench
 
-		# We need to escape any function names ending with an underscore to 
-		# prevent it being interpreted as a formatting character. 
-		if op['funcname'].endswith('_'):
-			funcesc = op['funcname'].rstrip('_') + '\_'
-		else:
-			funcesc = op['funcname']
-
-		docdata = {'funcname' : op['funcname'], 
-				'funcname_esc' : funcesc,
-				'opcodedocs' : op['opcodedocs'],
-				'arraytypes' : supportedarrays,
-				'matherrors' : ', '.join(op['matherrors'].split(','))}
+pybench, simdbench, simdrelbench = GetBenchmarkData()
 
 
-		# Write the category description whenever it changes.
-		if op['category'] != prevcat:
-			catname = funccategories[op['category']][1]
-			f.write('\n' + catname + '\n')
-			f.write('-' * len(catname) + '\n\n')
+# ==============================================================================
 
-			# Do not need this for first table.
-			if len(summtable) > 0:
-				summtable.append(mathtablefooter + '\n')
+def GetArraySizeBenchData():
+	'''Read in the array size benchmark data.
+	'''
+	with open('../benchmarks/bencharraysize.txt') as f:
+		benchdata = f.readlines()
 
-			# For summary table.
-			summtable.append(catname)
-			summtable.append('-' * len(catname) + '\n')
-			summtable.append(mathtableheader)
+	arraysizebench = ''.join(itertools.dropwhile(lambda x: 'Add constant to array' not in x, benchdata))
 
-			prevcat = op['category']
+	return arraysizebench
 
-		# Write out the documentation for that function.
-		f.write(doctmp % docdata)
+arraysizebench = GetArraySizeBenchData()
 
-		# Append to the summary table.
-		summtable.append(funcesc.rjust(11) + ' ' + op['opcodedocs'])
+# ==============================================================================
 
+# Insert the data into the documentation template.
+def WriteDocs(summtable, opdocs, simddata_x86, simddata_arm, 
+		pybench, simdbench, simdrelbench, arraysizebench):
+	'''Write out the documentation based on the template.
+	'''
+	# Read in the entire template file.
+	with open('docmathtemplate.rst', 'r') as f:
+		doctmpl = f.read()
 
-# The summary table.
-with open('docs_summary.txt', 'w') as f:
+	# Write out the completed documentation file complete with data.
+	with open('ArrayFunc.rst', 'w') as f:
+		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, 
+			simddata_x86 = simddata_x86, simddata_arm = simddata_arm,
+			pybench = pybench, simdbench = simdbench, simdrelbench = simdrelbench,
+			arraysizebench = arraysizebench))
 
-	# Now write out the summary table.
-	summtable.append(mathtablefooter)
-	f.write('\n\n\n')
-	f.write('\n'.join(summtable))
-	f.write('\n')
+# Write out the documentation file.
+WriteDocs(summtable, opdocs, simddata_x86, simddata_arm, 
+		pybench, simdbench, simdrelbench, arraysizebench)
 
-
-
-# Get a list of the C function names and their array types from the SIMD
-# related C header files.
-cheaderdata = codegen_common.GetHeaderFileDataSIMD()
-
-# The summary table.
-with open('docs_simdtable.txt', 'w') as f:
-	WriteTableSIMD(cheaderdata, f)
-
-
+# ==============================================================================

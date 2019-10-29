@@ -213,6 +213,7 @@ Call formats: \n\
     fabs(array1, maxlen=y) \n\
     fabs(array1, matherrors=False)) \n\
 \n\
+\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
 * outparray - The output array. This parameter is optional. \n\

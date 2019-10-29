@@ -41,7 +41,7 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "asum_simd_x86.h"
 #endif
 
@@ -433,7 +433,7 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 	float partialsum = 0.0;
 
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 	// SIMD version. Only use this if overflow checking is disabled.
 	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return asum_float_simd(arraylen, data);
@@ -477,7 +477,7 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 	double partialsum = 0.0;
 
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 	// SIMD version. Only use this if overflow checking is disabled.
 	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		return asum_double_simd(arraylen, data);

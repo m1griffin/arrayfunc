@@ -41,7 +41,7 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "trunc_simd_x86.h"
 #endif
 
@@ -61,7 +61,7 @@ signed int trunc_float(Py_ssize_t arraylen, int nosimd, float *data, float *data
 
 
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -117,7 +117,7 @@ signed int trunc_double(Py_ssize_t arraylen, int nosimd, double *data, double *d
 
 
 
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -243,6 +243,7 @@ Call formats: \n\
     trunc(array1, maxlen=y) \n\
     trunc(array1, matherrors=False)) \n\
     trunc(array, nosimd=False) \n\\n\
+\n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data. \n\
 * outparray - The output array. This parameter is optional. \n\

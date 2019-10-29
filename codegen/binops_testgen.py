@@ -1055,7 +1055,7 @@ class %(funclabel)s_opt_nosimd_param_errors_%(typelabel)s(unittest.TestCase):
 
 
 # This is a list of which of the functions implements SIMD.
-HasSIMD = ('and_', 'or_', 'xor')
+HasSIMD = ('and_', 'or_', 'xor', 'lshift', 'rshift')
 
 
 # ==============================================================================

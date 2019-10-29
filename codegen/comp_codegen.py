@@ -74,8 +74,13 @@ mathops_head = """//------------------------------------------------------------
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "%(funclabel)s_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "%(funclabel)s_simd_arm.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -143,6 +148,7 @@ char %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, int nosimd, %(arrayty
 
 # ==============================================================================
 
+
 # The actual compare operations using SIMD operations.
 ops_simdsupport = """
 /*--------------------------------------------------------------------------- */
@@ -153,7 +159,7 @@ ops_simdsupport = """
    param = The parameter to be applied to each array element.
 */
 // param_arr_num
-#ifdef AF_HASSIMD
+%(simdplatform)s
 char %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *data1, %(arraytype)s param) { 
 
 	// array index counter. 
@@ -163,14 +169,15 @@ char %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdrsltattr)s resultslice;
 	%(arraytype)s compvals[%(simdwidth)s];
 
 	// Initialise the comparison values.
 	for (y = 0; y < %(simdwidth)s; y++) {
 		compvals[y] = param;
 	}
-	datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)scompvals);
+	datasliceright = %(vldinstr)s compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -178,12 +185,12 @@ char %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[index]);
+		datasliceleft = %(vldinstr)s &data1[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft %(compare_ops)s datasliceright;
 		// Compare the results of the SIMD operation.
-		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
+		if (!(%(vresult)s)) {
 			return 0;
 		}
 	}
@@ -210,14 +217,15 @@ char %(funclabel)s_%(funcmodifier)s_3_simd(Py_ssize_t arraylen, %(arraytype)s pa
 	Py_ssize_t alignedlength;
 	unsigned int y;
 
-	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdrsltattr)s resultslice;
 	%(arraytype)s compvals[%(simdwidth)s];
 
 	// Initialise the comparison values.
 	for (y = 0; y < %(simdwidth)s; y++) {
 		compvals[y] = param;
 	}
-	datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)scompvals);
+	datasliceleft = %(vldinstr)s compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
@@ -225,12 +233,12 @@ char %(funclabel)s_%(funcmodifier)s_3_simd(Py_ssize_t arraylen, %(arraytype)s pa
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)s&data2[index]);
+		datasliceright = %(vldinstr)s &data2[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft %(compare_ops)s datasliceright;
 		// Compare the results of the SIMD operation.
-		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
+		if (!(%(vresult)s)) {
 			return 0;
 		}
 	}
@@ -256,7 +264,8 @@ char %(funclabel)s_%(funcmodifier)s_5_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
 
-	%(simdattr)s datasliceleft, datasliceright, resultslice;
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdrsltattr)s resultslice;
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -265,13 +274,13 @@ char %(funclabel)s_%(funcmodifier)s_5_simd(Py_ssize_t arraylen, %(arraytype)s *d
 
 	// Perform the main operation using SIMD instructions.
 	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceleft = (%(simdattr)s) %(simdload)s(%(simdcast)s&data1[index]);
-		datasliceright = (%(simdattr)s) %(simdload)s(%(simdcast)s&data2[index]);
+		datasliceleft = %(vldinstr)s &data1[index]);
+		datasliceright = %(vldinstr)s &data2[index]);
 		// The actual SIMD operation. The compiler generates the correct SIMD
 		// operations, and stores them as a vector.
 		resultslice = datasliceleft %(compare_ops)s datasliceright;
 		// Compare the results of the SIMD operation.
-		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
+		if (!(%(vresult)s)) {
 			return 0;
 		}
 	}
@@ -290,6 +299,7 @@ char %(funclabel)s_%(funcmodifier)s_5_simd(Py_ssize_t arraylen, %(arraytype)s *d
 #endif
 
 """
+
 
 # ==============================================================================
 
@@ -448,7 +458,7 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 # ==============================================================================
 
 # SIMD call, version 1.
-SIMD_call_1 = '''\n#ifdef AF_HASSIMD
+SIMD_calltemplate_1 = '''\n%(simdplatform)s
 	// SIMD version.
 	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return %(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data1, param);
@@ -456,7 +466,7 @@ SIMD_call_1 = '''\n#ifdef AF_HASSIMD
 #endif\n'''
 
 # SIMD call, version 3.
-SIMD_call_3 = '''\n#ifdef AF_HASSIMD
+SIMD_calltemplate_3 = '''\n%(simdplatform)s
 	// SIMD version.
 	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return %(funclabel)s_%(funcmodifier)s_3_simd(arraylen, param, data2);
@@ -465,7 +475,7 @@ SIMD_call_3 = '''\n#ifdef AF_HASSIMD
 
 
 # SIMD call, version 5.
-SIMD_call_5 = '''\n#ifdef AF_HASSIMD
+SIMD_calltemplate_5 = '''\n%(simdplatform)s
 	// SIMD version.
 	if (!nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return %(funclabel)s_%(funcmodifier)s_5_simd(arraylen, data1, data2);
@@ -475,21 +485,93 @@ SIMD_call_5 = '''\n#ifdef AF_HASSIMD
 
 # ==============================================================================
 
+# These get substituted into function call templates.
+SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
+SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)'
+SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
+
+
+# ==============================================================================
+
+
 # Various SIMD instruction information which varies according to array type.
-simdvalues = {
-'b' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'B' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v16qi', 'simdwidth' : 'CHARSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'h' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdwidth' : 'SHORTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'H' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v8hi', 'simdwidth' : 'SHORTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'i' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdwidth' : 'INTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'I' : {'hassimd' : True, 'simdcast' : '(char *) ', 'simdattr' : 'v4si', 'simdwidth' : 'INTSIMDSIZE', 'simdload' : '__builtin_ia32_lddqu'},
-'l' : {'hassimd' : False},
-'L' : {'hassimd' : False},
-'q' : {'hassimd' : False},
-'Q' : {'hassimd' : False},
-'f' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 'simdload' : '__builtin_ia32_loadups'},
-'d' : {'hassimd' : True, 'simdcast' : '', 'simdattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd'},
+# For x86-64.
+x86vresult = '__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff'
+simdvalues_x86 = {
+'b' : {'simdattr' : 'v16qi', 'simdrsltattr' : 'v16qi',
+		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'B' : {'simdattr' : 'v16qi', 'simdrsltattr' : 'v16qi',
+		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'h' : {'simdattr' : 'v8hi', 'simdrsltattr' : 'v8hi',
+		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'H' : {'simdattr' : 'v8hi', 'simdrsltattr' : 'v8hi',
+		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'i' : {'simdattr' : 'v4si', 'simdrsltattr' : 'v4si',
+		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'I' : {'simdattr' : 'v4si', 'simdrsltattr' : 'v4si',
+		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+		'vresult' : x86vresult},
+'f' : {'simdattr' : 'v4sf', 'simdrsltattr' : 'v4sf',
+		'vldinstr' : '(v4sf) __builtin_ia32_loadups( ', 
+		'vresult' : x86vresult},
+'d' : {'simdattr' : 'v2df', 'simdrsltattr' : 'v2df',
+		'vldinstr' : '(v2df) __builtin_ia32_loadupd( ', 
+		'vresult' : x86vresult},
 }
+
+
+# For ARM NEON.
+# Benchmarking has shown that some SIMD operations are slower than the
+# non-SIMD versions and so are not used here.
+simdvalues_arm = {
+'b' : {'simdattr' : 'int8x8_t', 'simdrsltattr' : 'uint8x8_t',
+		'vldinstr' : 'vld1_s8(', 
+		'vresult' : 'vreinterpret_u64_u8(resultslice) == 0xffffffffffffffff'},
+'B' : {'simdattr' : 'uint8x8_t', 'simdrsltattr' : 'uint8x8_t',
+		'vldinstr' : 'vld1_u8(', 
+		'vresult' : 'vreinterpret_u64_u8(resultslice) == 0xffffffffffffffff'},
+'h' : {'simdattr' : 'int16x4_t', 'simdrsltattr' : 'uint16x4_t',
+		'vldinstr' : 'vld1_s16(', 
+		'vresult' : 'vreinterpret_u64_u16(resultslice) == 0xffffffffffffffff'},
+'H' : {'simdattr' : 'uint16x4_t',  'simdrsltattr' : 'uint16x4_t',
+		'vldinstr' : 'vld1_u16(', 
+		'vresult' : 'vreinterpret_u64_u16(resultslice) == 0xffffffffffffffff'},
+}
+
+
+# Width of array elements.
+simdwidth = {'b' : 'CHARSIMDSIZE',
+		'B' : 'CHARSIMDSIZE',
+		'h' : 'SHORTSIMDSIZE',
+		'H' : 'SHORTSIMDSIZE',
+		'i' : 'INTSIMDSIZE',
+		'I' : 'INTSIMDSIZE',
+		'f' : 'FLOATSIMDSIZE',
+		'd' : 'DOUBLESIMDSIZE',
+		}
+
+
+# ==============================================================================
+
+# Return the platform SIMD enable C macro. 
+# This is for the platform independent file, and not the plaform specific
+# SIMD files.
+def findsimdplatform(arraycode):
+
+	# The calls to SIMD support code are platform dependent.
+	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
+		return SIMD_platform_x86
+	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
+		return SIMD_platform_x86_ARM
+	else:
+		return 'Error: Template error, this should not be here.'
+
+# ==============================================================================
 
 
 # ==============================================================================
@@ -537,13 +619,15 @@ for func in funclist:
 
 			# Each call to an SIMD function comes in three different versions due
 			# to there being three different parameter formats.
-			if simdvalues[arraycode]['hassimd']:
-				simdfunccall = {'simdwidth' : simdvalues[arraycode]['simdwidth'], 
+			if (arraycode in simdvalues_x86) or (arraycode in simdvalues_arm):
+				simdfunccall = {'simdwidth' : simdwidth[arraycode], 
 					'funclabel' : funcdata['funclabel'],
-					'funcmodifier' : funcdata['funcmodifier']}
-				simd_call_1 = SIMD_call_1 % simdfunccall
-				simd_call_3 = SIMD_call_3 % simdfunccall
-				simd_call_5 = SIMD_call_5 % simdfunccall
+					'funcmodifier' : funcdata['funcmodifier'],
+					'simdplatform' : findsimdplatform(arraycode),}
+
+				simd_call_1 = SIMD_calltemplate_1 % simdfunccall
+				simd_call_3 = SIMD_calltemplate_3 % simdfunccall
+				simd_call_5 = SIMD_calltemplate_5 % simdfunccall
 			else:
 				simd_call_1 = ''
 				simd_call_3 = ''
@@ -582,7 +666,7 @@ for func in funclist:
 simdcodedate = '16-Jan-2018'
 simdfilename = '_simd_x86'
 
-# This outputs the SIMD version.
+# This outputs the SIMD version for x86-64.
 
 for func in funclist:
 
@@ -595,23 +679,25 @@ for func in funclist:
 
 
 	# Output the generated code.
-	for funtypes in codegen_common.arraycodes:
+	for arraycode in codegen_common.arraycodes:
 
-		if simdvalues[funtypes]['hassimd']:
-			arraytype = codegen_common.arraytypes[funtypes]
+		if (arraycode in simdvalues_x86):
+			arraytype = codegen_common.arraytypes[arraycode]
 
 			# The compare_ops symbols is the same for integer and floating point.
 			datavals = {'funclabel' : funcname,
 						'arraytype' : arraytype, 
 						'funcmodifier' : arraytype.replace(' ', '_'),
-						'arraycode' : funtypes,
-						'arraytype' : codegen_common.arraytypes[funtypes],
+						'simdwidth' : simdwidth[arraycode],
+						'simdplatform' : SIMD_platform_x86,
+						'arraycode' : arraycode,
+						'arraytype' : codegen_common.arraytypes[arraycode],
 						'compare_ops' : func['c_operator_i'],
 						}
 
 
 			# Start of function definition.
-			datavals.update(simdvalues[funtypes])
+			datavals.update(simdvalues_x86[arraycode])
 			outputlist.append(ops_simdsupport % datavals)
 
 
@@ -636,3 +722,64 @@ for func in funclist:
 
 # ==============================================================================
 
+# ==============================================================================
+
+# The original date of the SIMD C code.
+simdcodedate = '06-Oct-2019'
+simdfilename = '_simd_arm'
+
+# This outputs the SIMD version for ARM NEON.
+
+for func in funclist:
+
+	outputlist = []
+
+	funcname = func['funcname']
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+
+	# Output the generated code.
+	for arraycode in codegen_common.arraycodes:
+
+		if arraycode in simdvalues_arm:
+			arraytype = codegen_common.arraytypes[arraycode]
+
+			# The compare_ops symbols is the same for integer and floating point.
+			datavals = {'funclabel' : funcname,
+						'arraytype' : arraytype, 
+						'funcmodifier' : arraytype.replace(' ', '_'),
+						'simdwidth' : simdwidth[arraycode],
+						'simdplatform' : SIMD_platform_ARM,
+						'arraycode' : arraycode,
+						'arraytype' : codegen_common.arraytypes[arraycode],
+						'compare_ops' : func['c_operator_i'],
+						}
+
+
+			# Start of function definition.
+			datavals.update(simdvalues_arm[arraycode])
+			outputlist.append(ops_simdsupport % datavals)
+
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs', 'simdmacromsg_arm'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================

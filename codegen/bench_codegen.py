@@ -65,6 +65,7 @@ import array
 import itertools
 import math
 import platform
+import sys
 
 import arrayfunc
 
@@ -110,7 +111,15 @@ allinvertlimits = {
 # header files which must be present in the expected place when the 
 # benchmark program is generated.
 
-SIMDFuncs = %(SIMD_data)s
+SIMDFuncs_x86 = %(SIMD_data_x86)s
+
+SIMDFuncs_arm = %(SIMD_data_arm)s
+
+# Detect the hardware platform, and assign the correct platform data table to it.
+if '-armv' in platform.platform():
+	SIMDFuncs = SIMDFuncs_arm
+else:
+	SIMDFuncs = SIMDFuncs_x86
 
 # This one is a list of functions which use the 'matherrors' option.
 OptFuncs = %(Opt_data)s
@@ -148,7 +157,7 @@ def pyfindindex(datax, compval):
 		return -1
 
 
-def pycount(arraycode, pyitercounts, data):
+def pycount(arraycode, pyitercounts, data, arraysize):
 	"""Used to emulate the count arrayfunc function.
 	"""
 	# This is used to prevent integers exceeding the maximum size
@@ -170,10 +179,10 @@ def pycount(arraycode, pyitercounts, data):
 
 	if arraycode in ('b', 'B', 'h', 'H'):
 		mask = rollmasks[arraycode]
-		for x, y in zip(itertools.count(0), itertools.repeat(0, ARRAYSIZE)):
+		for x, y in zip(itertools.count(0), itertools.repeat(0, arraysize)):
 			data[x] = x & mask
 	else:
-		for x, y in zip(itertools.count(0), itertools.repeat(0, ARRAYSIZE)):
+		for x, y in zip(itertools.count(0), itertools.repeat(0, arraysize)):
 			data[x] = x
 
 
@@ -199,10 +208,10 @@ class benchmark_%(funcname)s:
 		self.supportedarrays = %(supportedarrays)s
 		self.pyitercounts = 1
 		self.afitercounts = 1
+		self.afiternosidmcounts = 1
 		self.InitResults()
 		self.funcname = '%(funcname)s'
 		self.runtimetarget = 0.1
-		self.needsydatafix = %(needsydatafix)s
 
 		# We need to escape any function names ending with an underscore to 
 		# prevent it being interpreted as a formatting character in restructured
@@ -221,47 +230,43 @@ class benchmark_%(funcname)s:
 		# Ensure the data is in the right format for the array type.
 		if arraycode in (%(floatarrays)s):
 			xdata = [float(x) for x in %(test_op_x)s]
-			ydata = [float(x) for x in %(test_op_y)s]
-			zdata = [float(x) for x in %(test_op_z)s]
 			self.truediv_type = float
 		else:
 			xdata = [int(x) for x in %(test_op_x)s]
-			ydata = [int(x) for x in %(test_op_y)s]
-			zdata = [int(x) for x in %(test_op_z)s]
 			self.truediv_type = int
 
-
-		# Some operations have negative test data which must be fixed up for
-		# unsigned integer arrays.
-		if self.needsydatafix and (arraycode in (%(unsignedint)s)):
-			ydata = [abs(x) for x in ydata]
-
-		self.datax = array.array(arraycode, (x for x,y in zip(itertools.cycle(xdata), itertools.repeat(0, ARRAYSIZE))))
-		assert len(self.datax) == ARRAYSIZE, 'self.datax is not expected length %%d' %% len(self.datax)
+		self.datax = array.array(arraycode, (x for x,y in zip(itertools.cycle(xdata), itertools.repeat(0, self.arraysize))))
+		assert len(self.datax) == self.arraysize, 'self.datax is not expected length %%d' %% len(self.datax)
 
 		self.arraylength = len(self.datax)
 
-		# Not all functions have y data. Avoiding allocating unused arrays 
-		# saves time when running the benchmark.
-		if 'datay' in %(arraysreq)s:
-			self.datay = array.array(arraycode, (x for x,y in zip(itertools.cycle(ydata), itertools.repeat(0, ARRAYSIZE))))
-			assert len(self.datay) == ARRAYSIZE, 'self.datay is not expected length %%d' %% len(self.datay)
+		# Y data.
+		ydata = %(test_op_y)s
+		if len(ydata) > 0:
+			yvalue = abs(ydata[-1])
+			if arraycode in (%(floatarrays)s):
+				self.yvalue = float(yvalue)
+			else:
+				self.yvalue = int(yvalue)
 		else:
-			self.datay = None
+			self.yvalue = None
 
-
-		# As with above, not all functions have z data. Avoiding allocating 
-		# unused arrays saves time when running the benchmark.
-		if 'dataz' in %(arraysreq)s:
-			self.dataz = array.array(arraycode, (x for x,y in zip(itertools.cycle(zdata), itertools.repeat(0, ARRAYSIZE))))
-			assert len(self.dataz) == ARRAYSIZE, 'self.dataz is not expected length %%d' %% len(self.dataz)
+		# Z data.
+		zdata = %(test_op_z)s
+		if len(zdata) > 0:
+			zvalue = abs(zdata[-1])
+			if arraycode in (%(floatarrays)s):
+				self.zvalue = float(zvalue)
+			else:
+				self.zvalue = int(zvalue)
 		else:
-			self.dataz = None
+			self.zvalue = None
 
 
+		# Output array.
 		if 'dataout' in %(arraysreq)s:
 			self.dataout = array.array(arraycode, itertools.repeat(0, self.arraylength))
-			assert len(self.dataout) == ARRAYSIZE, 'self.dataout is not expected length %%d' %% len(self.dataout)
+			assert len(self.dataout) == self.arraysize, 'self.dataout is not expected length %%d' %% len(self.dataout)
 		else:
 			self.dataout = None
 
@@ -274,12 +279,6 @@ class benchmark_%(funcname)s:
 			self.ldexp_y = None
 
 
-		# This is used for some optimised tests.
-		if len(ydata) > 0:
-			self.yvalue = abs(ydata[-1])
-		else:
-			self.yvalue = None
-
 
 		# This is used for some tests.
 		if arraycode in ('f', 'd'):
@@ -291,7 +290,7 @@ class benchmark_%(funcname)s:
 		# Used for compress.
 		if '%(funcname)s' == 'compress':
 			self.compdata = array.array(arraycode, [1,0,1,0])
-			self.pycomp = array.array(arraycode, (x for x,y in zip(itertools.cycle(self.compdata), itertools.repeat(0, ARRAYSIZE))))
+			self.pycomp = array.array(arraycode, (x for x,y in zip(itertools.cycle(self.compdata), itertools.repeat(0, self.arraysize))))
 
 		# Used for cycle.
 		self.startcycle = comptype(arraycode, 0)
@@ -300,7 +299,7 @@ class benchmark_%(funcname)s:
 
 		# Used for findindices.
 		if 'fidataout' in %(arraysreq)s:
-			self.fidataout = array.array('q', itertools.repeat(0, ARRAYSIZE))
+			self.fidataout = array.array('q', itertools.repeat(0, self.arraysize))
 
 
 	########################################################
@@ -312,8 +311,8 @@ class benchmark_%(funcname)s:
 		self.RelData = dict.fromkeys(arraycodes, None)
 
 		self.PyDataFast = dict.fromkeys(arraycodes, None)
-		self.AfDataFast = dict.fromkeys(arraycodes, None)
-		self.RelDataFast = dict.fromkeys(arraycodes, None)
+		self.AfDataNoSIMD = dict.fromkeys(arraycodes, None)
+		self.RelDataNoSIMD = dict.fromkeys(arraycodes, None)
 		self.RelDataOpt = dict.fromkeys(arraycodes, None)
 		self.AfDataSIMD = dict.fromkeys(arraycodes, None)
 		self.RelDataSIMD = dict.fromkeys(arraycodes, None)
@@ -323,7 +322,9 @@ class benchmark_%(funcname)s:
 		self.RelativeResults = ''
 
 		self.AfResultsFast = ''
+		self.FuncResultsFast = ''
 		self.RelativeResultsFast = ''
+		self.FuncResultsSIMD = ''
 		self.RelativeResultsSIMD = ''
 		self.RelOpt = ''
 		self.RelSIMD = ''
@@ -384,11 +385,11 @@ class benchmark_%(funcname)s:
 	def simdcalc(self, arraycode, afval, affastval):
 		"""This is used to calculate and format the relative SIMD performance.
 		"""
-		if not SIMDFuncs[self.funcname][arraycode]:
+		if not arraycode in SIMDFuncs[self.funcname]:
 			calcval = None
 		else:
 			calcval = afval/affastval
-		
+
 		return self.fmtreldata(calcval)
 
 
@@ -425,76 +426,78 @@ class benchmark_%(funcname)s:
 
 
 	########################################################
-	def RunTests(self):
-		"""Run all the tests.
+	def calibrateruntime(self, arraycode):
+		"""Calibrate the run time.
 		"""
+		self.pyitercounts = 1
+		self.afitercounts = 50
+		self.afiternosidmcounts = 50
 
 		# First, do a timing calibration run.
 		# Python native time.
-		for arraycode in self.supportedarrays:
-			pytime = self.BenchmarkPython(arraycode)
-			self.pythontime.append(pytime)
-
+		pytime = self.BenchmarkPython(arraycode)
 
 		# Arrayfunc time.
-		for arraycode in self.supportedarrays:
-			aftime = self.BenchmarkAF(arraycode)
-			self.aftime.append(aftime)
+		aftime = self.BenchmarkAF(arraycode)
 
 
 		# Now calculate the average execution time and adjust the iterations
 		# so that the tests will take approximately 0.1 seconds.
-		self.pyitercounts = int(self.runtimetarget / (sum(self.pythontime) / len(self.pythontime))) + 1
-		self.afitercounts = int(self.runtimetarget / (sum(self.aftime) / len(self.pythontime))) + 1
+		# The time returned by the benchmark function is per iteration, so 
+		# we don't need to adjust for this again.
+		self.pyitercounts = int(self.runtimetarget / pytime)
+		self.afitercounts = int(self.runtimetarget / aftime)
 
-		# Make sure we don't do so few iterations that test results
-		# vary too much due to quantization errors. 
-		if self.pyitercounts < 10:
-			self.pyitercounts = 20
-		if self.afitercounts < 100:
-			self.afitercounts = 100
+		# Make sure the iteration count is at least 1.
+		if self.pyitercounts < 1:
+			self.pyitercounts = 1
+		if self.afitercounts < 1:
+			self.afitercounts = 1
 
-		# Clear the results from the calibration run.
-		self.InitResults()
 
-		# Now repeat using the stabilized timing calibration data.
-		# Python native time.
+		# Arrayfunc time without SIMD for functions with SIMD.
+		if self.funcname in SIMDFuncs:
+			aftimenosimd = self.BenchmarkAFNoSIMD(arraycode)
+			self.afiternosidmcounts = int(self.runtimetarget / aftimenosimd)
+			if self.afiternosidmcounts < 1:
+				self.afiternosidmcounts = 1
+
+
+	########################################################
+	def RunTests(self, arraysize):
+		"""Run all the tests.
+		"""
+		self.arraysize = arraysize
+
+		# Test using each array type.
 		for arraycode in self.supportedarrays:
+			self.InitDataArrays(arraycode)
+
+			# Calibrate the run time to set the number of test iterations
+			# to meet a target test run time.
+			self.calibrateruntime(arraycode)
+
+			# Python native time.
 			self.PyData[arraycode] = self.BenchmarkPython(arraycode)
 
-		# Arrayfunc time.
-		for arraycode in self.supportedarrays:
+			# Arrayfunc time.
 			self.AfData[arraycode] = self.BenchmarkAF(arraycode)
+			
 
-		# Repeat using optimised options and call forms.
-		# Arrayfunc time.
-		for arraycode in self.supportedarrays:
-			self.AfDataFast[arraycode] = self.BenchmarkAFFast(arraycode)
-
-
-		# Repeat using SIMD options and call forms.
-		# Arrayfunc time.
-		for arraycode in self.supportedarrays:
-			self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
+			# If the function supports SIMD operations, repeat the test
+			# with SIMD turned off and on. Some function calls only support
+			# SIMD if error checking is turned off, so we must do this again
+			# to be sure we have data both ways.
+			if self.funcname in SIMDFuncs:
+				self.AfDataNoSIMD[arraycode] = self.BenchmarkAFNoSIMD(arraycode)
+				self.AfDataSIMD[arraycode] = self.BenchmarkAFSIMD(arraycode)
 
 
+
+		# Calculate and format the results on the collected data.
 		# Relative time, Python versus Arrayfunc.
 		reldata, self.relativetime = self.comparedata(self.PyData, self.AfData)
 		self.RelData.update(reldata)
-
-
-		# Relative time, Python versus optimised Arrayfunc.
-		reldatafast, self.relativetimefast = self.comparedata(self.PyData, self.AfDataFast)
-		self.RelDataFast.update(reldatafast)
-
-		# Relative time, Python versus SIMD optimised Arrayfunc.
-		reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
-		self.RelDataSIMD.update(reldatasimd)
-
-		# Relative time, non-optimised Arrayfunc versus optimised Arrayfunc.
-		reldataopt, self.relativetimeopt = self.comparedata(self.AfData, self.AfDataFast)
-		self.RelDataOpt.update(reldataopt)
-
 
 		# Format the results strings.
 		self.PyResults = self.formattimedata(self.PyData)
@@ -502,23 +505,31 @@ class benchmark_%(funcname)s:
 		self.RelativeResults = self.formatreldata(self.RelData)
 
 
-		# Format the fast result strings.
-		self.FuncResultsFast = self.formattimedata(self.AfDataFast)
-		self.RelativeResultsFast = self.formatreldata(self.RelDataFast)
-
-
-		# Format the fast result strings.
-		self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
-		self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
-
-		# Format the optimised versus not optimsed result strings.
-		if self.funcname in OptFuncs:
-			self.RelOpt = self.formatreldata(self.RelDataOpt)
-
-		# Calculate and format the results comparing the non-SIMD and SIMD results
-		# for functions with SIMD support.
+		# Calculate the SIMD data results of we did those tests.
 		if self.funcname in SIMDFuncs:
-			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataFast[x], self.AfDataSIMD[x]) for x in arraycodes])
+
+			# Calculate and format the results comparing the non-SIMD and SIMD results.
+			self.RelSIMD = self.escfname + ' '.join([self.simdcalc(x, self.AfDataNoSIMD[x], self.AfDataSIMD[x]) for x in arraycodes])
+
+
+			# Relative time, Python versus SIMD optimised Arrayfunc.
+			reldatasimd, self.relativetimesimd = self.comparedata(self.PyData, self.AfDataSIMD)
+			self.RelDataSIMD.update(reldatasimd)
+
+
+			# Format the fast result strings.
+			self.FuncResultsFast = self.formattimedata(self.AfDataNoSIMD)
+			self.RelativeResultsFast = self.formatreldata(self.RelDataNoSIMD)
+
+
+			# Format the fast result strings.
+			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
+			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
+
+			# Format the optimised versus not optimsed result strings.
+			if self.funcname in OptFuncs:
+				self.RelOpt = self.formatreldata(self.RelDataOpt)
+
 
 
 	########################################################
@@ -533,13 +544,11 @@ class benchmark_%(funcname)s:
 			invertop = self.invertpyunsigned
 
 
-		# Initialise the test data arrays. We provide a local reference to
-		# the arrays to make the representation simpler.
-		self.InitDataArrays(arraycode)
+		# We provide a local reference to the arrays to make the representation simpler.
 		datax = self.datax
-		datay = self.datay
-		dataz = self.dataz
 		dataout = self.dataout
+		yvalue = self.yvalue
+		zvalue = self.zvalue
 		# Used for ldexp only.
 		ldexp_y = self.ldexp_y
 		truediv_type = self.truediv_type
@@ -551,6 +560,7 @@ class benchmark_%(funcname)s:
 
 		# Time for python.
 		starttime = time.perf_counter()
+
 		if %(singledatafunc)s:
 			for x in range(self.pyitercounts):
 				for i in range(self.arraylength):
@@ -573,15 +583,13 @@ class benchmark_%(funcname)s:
 		# This is used for some tests only. 
 		result = True
 
-		# Initialise the test data arrays again with fresh data. 
-		self.InitDataArrays(arraycode)
+		# We provide a local reference to the arrays to make the representation simpler.
 		datax = self.datax
-		datay = self.datay
-		dataz = self.dataz
 		dataout = self.dataout
+		yvalue = self.yvalue
+		zvalue = self.zvalue
 		# Used for ldexp only.
 		ldexp_y = self.ldexp_y
-
 
 
 		# Time for arrayfunc version.
@@ -597,30 +605,28 @@ class benchmark_%(funcname)s:
 
 
 	########################################################
-	def BenchmarkAFFast(self, arraycode):
-		"""Measure execution time for arrayfunc with optimised calls.
+	def BenchmarkAFNoSIMD(self, arraycode):
+		"""Measure execution time for arrayfunc with SIMD turned off calls.
 		"""
 		# This is used for some tests only. 
 		result = True
 
-		# Initialise the test data arrays again with fresh data. 
-		self.InitDataArrays(arraycode)
+		# We provide a local reference to the arrays to make the representation simpler.
 		datax = self.datax
-		datay = self.datay
-		dataz = self.dataz
 		dataout = self.dataout
 		yvalue = self.yvalue
+		zvalue = self.zvalue
 		# Used for ldexp only.
 		ldexp_y = self.ldexp_y
 
 
 		# Time for arrayfunc version.
 		starttime = time.perf_counter()
-		for i in range(self.afitercounts):
+		for i in range(self.afiternosidmcounts):
 			%(arrayfuncequfast)s
 		endtime = time.perf_counter()
 
-		aftime = (endtime - starttime) / self.afitercounts
+		aftime = (endtime - starttime) / self.afiternosidmcounts
 
 		return aftime
 
@@ -633,13 +639,11 @@ class benchmark_%(funcname)s:
 		# This is used for some tests only. 
 		result = True
 
-		# Initialise the test data arrays again with fresh data. 
-		self.InitDataArrays(arraycode)
+		# We provide a local reference to the arrays to make the representation simpler.
 		datax = self.datax
-		datay = self.datay
-		dataz = self.dataz
 		dataout = self.dataout
 		yvalue = self.yvalue
+		zvalue = self.zvalue
 		# Used for ldexp only.
 		ldexp_y = self.ldexp_y
 
@@ -664,11 +668,18 @@ class benchmark_%(funcname)s:
 # This accumulate the list of tests to run.
 benchclasslisttemplate = """
 
-BenchClasses = [%s]
+BenchClassesAll = [%s]
 
 arraycodes = %s
 
-TestLabels = [y for x,y in BenchClasses]
+
+# Check if specific tests were requested. If so, then perform only those tests.
+cmdline = sys.argv
+
+if len(cmdline) > 1:
+	BenchClasses = [x for x in BenchClassesAll if x[1] in cmdline]
+else:
+	BenchClasses = BenchClassesAll
 
 """
 
@@ -726,7 +737,6 @@ RelativeResultsFast = []
 RelativeResultsSIMD = []
 
 numstats = []
-numstatsfast = []
 numstatssimd = []
 OptResults = []
 SIMDResults = []
@@ -734,24 +744,27 @@ SIMDResults = []
 
 # Run the tests.
 for benchcode, funcname in BenchClasses:
-	print(funcname)
+	print('Testing %s ... ' % funcname, end = '', flush = True)
 	bc = benchcode()
-	bc.RunTests()
+	starttime = time.perf_counter()
+	bc.RunTests(ARRAYSIZE)
+	print('%.2f seconds.' % (time.perf_counter() - starttime))
 
 	
 	RelativeResults.append(bc.RelativeResults)
-	RelativeResultsFast.append(bc.RelativeResultsFast)
-	RelativeResultsSIMD.append(bc.RelativeResultsSIMD)
 	PyResults.append(bc.PyResults)
 	FuncResults.append(bc.FuncResults)
-	FuncResultsFast.append(bc.FuncResultsFast)
-	FuncResultsSIMD.append(bc.FuncResultsSIMD)
-	OptResults.append(bc.RelOpt)
-	SIMDResults.append(bc.RelSIMD)
-
 	numstats.extend(bc.relativetime)
-	numstatsfast.extend(bc.relativetimefast)
-	numstatssimd.extend(bc.relativetimesimd)
+
+	# Only for SIMD functions.
+	if funcname in SIMDFuncs:
+		RelativeResultsFast.append(bc.RelativeResultsFast)
+		RelativeResultsSIMD.append(bc.RelativeResultsSIMD)
+		FuncResultsFast.append(bc.FuncResultsFast)
+		FuncResultsSIMD.append(bc.FuncResultsSIMD)
+		OptResults.append(bc.RelOpt)
+		SIMDResults.append(bc.RelSIMD)
+		numstatssimd.extend(bc.relativetimesimd)
 
 
 ##############################################################################
@@ -769,7 +782,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 	# The relative performance stats in default configuration.
 
-	f.write('Relative Performance - Python Time / Arrayfunc Time.\\n')
+	f.write('Relative Performance - Python Time / Arrayfunc Time.\\n\\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))
@@ -793,38 +806,6 @@ with open('benchmarkdata.txt', 'w') as f:
 	f.write('Array size: %d\\n' % ARRAYSIZE)
 	f.write('=========== ========\\n')
 
-	##########################################################################
-
-	f.write('\\n\\n\\n')
-
-
-	# The relative performance stats in optimised configuration.
-
-	f.write('Relative Performance with Optimisations - Python Time / Arrayfunc Time.\\n')
-	f.write(FormatTableSep(RELCOLWIDTH))
-	f.write(FormatHeaderLabels(RELCOLWIDTH))
-	f.write(FormatTableSep(RELCOLWIDTH))
-	
-	f.write('\\n'.join(RelativeResultsFast) + '\\n')
-
-	f.write(FormatTableSep(RELCOLWIDTH))
-
-
-	avgvalfast = sum(numstatsfast) / len(numstatsfast)
-	maxvalfast = max(numstatsfast)
-	minvalfast = min(numstatsfast)
-
-
-	f.write('\\n\\n\\n')
-	f.write('=========== ========\\n')
-	f.write('Stat         Value\\n')
-	f.write('=========== ========\\n')
-	f.write('Average:    %0.0f\\n' % avgvalfast)
-	f.write('Maximum:    %0.0f\\n' % maxvalfast)
-	f.write('Minimum:    %0.1f\\n' % minvalfast)
-	f.write('Array size: %d\\n' % ARRAYSIZE)
-	f.write('=========== ========\\n')
-
 
 	##########################################################################
 
@@ -833,7 +814,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 	# The relative performance stats in SIMD optimised configuration.
 
-	f.write('Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.\\n')
+	f.write('Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.\\n\\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))
@@ -843,9 +824,14 @@ with open('benchmarkdata.txt', 'w') as f:
 	f.write(FormatTableSep(RELCOLWIDTH))
 
 
-	avgvalsimd = sum(numstatssimd) / len(numstatssimd)
-	maxvalsimd = max(numstatssimd)
-	minvalsimd = min(numstatssimd)
+	if len(numstatssimd) > 0:
+		avgvalsimd = sum(numstatssimd) / len(numstatssimd)
+		maxvalsimd = max(numstatssimd)
+		minvalsimd = min(numstatssimd)
+	else:
+		avgvalsimd = 0.0
+		maxvalsimd = 0.0
+		minvalsimd = 0.0
 
 
 	f.write('\\n\\n\\n')
@@ -859,24 +845,12 @@ with open('benchmarkdata.txt', 'w') as f:
 	f.write('=========== ========\\n')
 
 
-	##########################################################################
-
-	f.write('\\n\\n\\n')
-
-	f.write('Relative Performance with and without math Optimisations - Unoptimsed / Optimised Time.\\n')
-	f.write(FormatTableSep(RELCOLWIDTH))
-	f.write(FormatHeaderLabels(RELCOLWIDTH))
-	f.write(FormatTableSep(RELCOLWIDTH))
-	
-	f.write('\\n'.join([x for x in OptResults if x]) + '\\n')
-
-	f.write(FormatTableSep(RELCOLWIDTH))
 
 	##########################################################################
 
 	f.write('\\n\\n\\n')
 
-	f.write('Relative Performance with and without SIMD Optimisations - Optimsed / SIMD Time.\\n')
+	f.write('Relative Performance with and without SIMD Optimisations - Optimsed / SIMD Time.\\n\\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))
@@ -912,7 +886,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 
 
-	f.write('\\n\\nOptimised time in micro-seconds.\\n')
+	f.write('\\n\\nNon-SIMD time in micro-seconds. Math error checking turned off.\\n')
 	f.write(FormatTableSep(ABSCOLWIDTH))
 	f.write(FormatHeaderLabels(ABSCOLWIDTH))
 	f.write(FormatTableSep(ABSCOLWIDTH))
@@ -940,6 +914,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 # ==============================================================================
 
+
 # This defines the python code form of the benchmark equations.
 pyequ = {'test_template_noparams' : 'dataout[i] = %(pyop)s(datax[i])',
 	'test_template_noparams_1simd' : 'dataout[i] = %(pyop)s(datax[i])',
@@ -948,32 +923,32 @@ pyequ = {'test_template_noparams' : 'dataout[i] = %(pyop)s(datax[i])',
 	'test_template_factorial' : 'dataout[i] = %(pyop)s(datax[i])',
 	'test_template_nonfinite' : 'result = %(pyop)s(datax[i])',
 	'test_template_ldexp' : 'dataout[i] = %(pyop)s(datax[i], ldexp_y)',
-	'test_template' : 'dataout[i] = %(pyop)s(datax[i], datay[i])',
-	'test_template_binop' : 'dataout[i] = datax[i] %(pyop)s datay[i]',
-	'test_template_binop2' : 'dataout[i] = datax[i] %(pyop)s datay[i]',
-	'test_template_comp' : 'result = datax[i] %(pyop)s datay[i]',
-	'test_template_op' : 'dataout[i] = datax[i] %(pyop)s datay[i]',
-	'test_template_op_simd' : 'dataout[i] = datax[i] %(pyop)s datay[i]',
-	'test_template_fma' : 'dataout[i] = datax[i] * datay[i] + dataz[i]',
+	'test_template' : 'dataout[i] = %(pyop)s(datax[i], yvalue)',
+	'test_template_binop' : 'dataout[i] = datax[i] %(pyop)s yvalue',
+	'test_template_binop2' : 'dataout[i] = datax[i] %(pyop)s yvalue',
+	'test_template_comp' : 'result = datax[i] %(pyop)s yvalue',
+	'test_template_op' : 'dataout[i] = datax[i] %(pyop)s yvalue',
+	'test_template_op_simd' : 'dataout[i] = datax[i] %(pyop)s yvalue',
+	'test_template_fma' : 'dataout[i] = datax[i] * yvalue + zvalue',
 }
 
 
 # This defines the arrayfunc code form of the benchmark equations.
 arrayfuncequ = {'test_template_noparams' : 'arrayfunc.%s(datax, dataout)',
-	'test_template_noparams_1simd' : 'arrayfunc.%s(datax, dataout, nosimd=True)',
+	'test_template_noparams_1simd' : 'arrayfunc.%s(datax, dataout)',
 	'test_template_noparams' : 'arrayfunc.%s(datax, dataout)',
-	'test_template_invert' : 'arrayfunc.%s(datax, dataout, nosimd=True)',
-	'test_template_uniop' : 'arrayfunc.%s(datax, dataout, nosimd=True)',
+	'test_template_invert' : 'arrayfunc.%s(datax, dataout)',
+	'test_template_uniop' : 'arrayfunc.%s(datax, dataout)',
 	'test_template_factorial' : 'arrayfunc.%s(datax, dataout)',
 	'test_template_nonfinite' : 'result = arrayfunc.%s(datax)',
 	'test_template_ldexp' : 'arrayfunc.%s(datax, ldexp_y, dataout)',
-	'test_template' : 'arrayfunc.%s(datax, datay, dataout)',
-	'test_template_binop' : 'arrayfunc.%s(datax, datay, dataout)',
-	'test_template_binop2' : 'arrayfunc.%s(datax, datay, dataout, nosimd=True)',
-	'test_template_comp' : 'result = arrayfunc.%s(datax, datay, nosimd=True)',
-	'test_template_op' : 'arrayfunc.%s(datax, datay, dataout)',
-	'test_template_op_simd' : 'arrayfunc.%s(datax, datay, dataout, nosimd=True)',
-	'test_template_fma' : 'arrayfunc.%s(datax, datay, dataz, dataout)',
+	'test_template' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_binop' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_binop2' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_comp' : 'result = arrayfunc.%s(datax, yvalue)',
+	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout)',
 }
 
 
@@ -986,12 +961,12 @@ arrayfuncequfast = {'test_template_noparams' : 'arrayfunc.%s(datax, dataout, mat
 	'test_template_nonfinite' : 'result = arrayfunc.%s(datax)',
 	'test_template_ldexp' : 'arrayfunc.%s(datax, ldexp_y, dataout, matherrors=True)',
 	'test_template' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
-	'test_template_binop' : 'arrayfunc.%s(datax, yvalue, dataout)',
+	'test_template_binop' : 'arrayfunc.%s(datax, yvalue, dataout, nosimd=True)',
 	'test_template_binop2' : 'arrayfunc.%s(datax, yvalue, dataout, nosimd=True)',
 	'test_template_comp' : 'result = arrayfunc.%s(datax, yvalue, nosimd=True)',
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True, nosimd=True)',
-	'test_template_fma' : 'arrayfunc.%s(datax, datay, dataz, dataout, matherrors=True)',
+	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout, matherrors=True)',
 	
 }
 
@@ -1010,13 +985,13 @@ arrayfuncequsimd = {'test_template_noparams' : 'arrayfunc.%s(datax, dataout, mat
 	'test_template_comp' : 'result = arrayfunc.%s(datax, yvalue)',
 	'test_template_op' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
 	'test_template_op_simd' : 'arrayfunc.%s(datax, yvalue, dataout, matherrors=True)',
-	'test_template_fma' : 'arrayfunc.%s(datax, datay, dataz, dataout, matherrors=True)',
+	'test_template_fma' : 'arrayfunc.%s(datax, yvalue, zvalue, dataout, matherrors=True)',
 	
 }
 
-
 # This defines how may arrays are used. This will allow avoiding initialising
-# arrays which are not needed, to save time.
+# arrays which are not needed, to save time. Some other functions require a 
+# special output array, which is why we can't simply make this a boolean value.
 arraysreq = {'test_template_noparams' : "('dataout')",
 	'test_template_noparams_1simd' : "('dataout')",
 	'test_template_invert' : "('dataout')",
@@ -1024,16 +999,15 @@ arraysreq = {'test_template_noparams' : "('dataout')",
 	'test_template_factorial' : "('dataout')",
 	'test_template_nonfinite' : "()",
 	'test_template_ldexp' : "('dataout')",
-	'test_template' : "('dataout', 'datay')",
-	'test_template_binop' : "('dataout', 'datay')",
-	'test_template_binop2' : "('dataout', 'datay')",
-	'test_template_comp' : "('datay')",
-	'test_template_op' : "('dataout', 'datay')",
-	'test_template_op_simd' : "('dataout', 'datay')",
-	'test_template_fma' : "('dataout', 'datay', 'dataz')",
+	'test_template' : "('dataout')",
+	'test_template_binop' : "('dataout')",
+	'test_template_binop2' : "('dataout')",
+	'test_template_comp' : "()",
+	'test_template_op' : "('dataout')",
+	'test_template_op_simd' : "('dataout')",
+	'test_template_fma' : "('dataout')",
 
 }
-
 
 # ==============================================================================
 
@@ -1042,7 +1016,7 @@ floatarrays = "'" + "', '".join(codegen_common.floatarrays) + "'"
 unsignedint = "'" + "', '".join(codegen_common.unsignedint) + "'"
 
 
-
+# Function definitions for the non-mathematical functions.
 benchfuncs = [
 
 	{'funcname' : 'aall',
@@ -1050,7 +1024,7 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = all(datax)',
-	'arrayfuncequ' : "result = arrayfunc.aall('>', datax, self.compval, nosimd=True)",
+	'arrayfuncequ' : "result = arrayfunc.aall('>', datax, self.compval)",
 	'arrayfuncequfast' : "result = arrayfunc.aall('>', datax, self.compval, nosimd=True)",
 	'arrayfuncequsimd' : "result = arrayfunc.aall('>', datax, self.compval)",
 	'compval' : 5,
@@ -1059,11 +1033,11 @@ benchfuncs = [
 
 
 	{'funcname' : 'aany',
-	'test_op_x' : 'itertools.chain(itertools.repeat(0, ARRAYSIZE // 2), itertools.repeat(10, ARRAYSIZE // 2))', 
+	'test_op_x' : 'itertools.chain(itertools.repeat(0, self.arraysize // 2), itertools.repeat(10, self.arraysize // 2))', 
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = any(datax)',
-	'arrayfuncequ' : "result = arrayfunc.aany('>', datax, self.compval, nosimd=True)",
+	'arrayfuncequ' : "result = arrayfunc.aany('>', datax, self.compval)",
 	'arrayfuncequfast' : "result = arrayfunc.aany('>', datax, self.compval, nosimd=True)",
 	'arrayfuncequsimd' : "result = arrayfunc.aany('>', datax, self.compval)",
 	'compval' : 50,
@@ -1075,11 +1049,11 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = array.array(arraycode, filter(lambda x: x < self.compval, datax))',
-	'arrayfuncequ' : "result = arrayfunc.afilter('<', datax, datay, self.compval)",
-	'arrayfuncequfast' : "result = arrayfunc.afilter('<', datax, datay, self.compval)",
-	'arrayfuncequsimd' : "result = arrayfunc.afilter('<', datax, datay, self.compval)",
+	'arrayfuncequ' : "result = arrayfunc.afilter('<', datax, dataout, self.compval)",
+	'arrayfuncequfast' : "result = arrayfunc.afilter('<', datax, dataout, self.compval)",
+	'arrayfuncequsimd' : "result = arrayfunc.afilter('<', datax, dataout, self.compval)",
 	'compval' : 5,
-	'arraysreq' : "('datay')",
+	'arraysreq' : "('dataout')",
 	},
 
 	{'funcname' : 'amax',
@@ -1087,7 +1061,7 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = max(datax)',
-	'arrayfuncequ' : "result = arrayfunc.amax(datax, nosimd=True)",
+	'arrayfuncequ' : "result = arrayfunc.amax(datax)",
 	'arrayfuncequfast' : "result = arrayfunc.amax(datax, nosimd=True)",
 	'arrayfuncequsimd' : "result = arrayfunc.amax(datax)",
 	'compval' : 5,
@@ -1099,7 +1073,7 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = min(datax)',
-	'arrayfuncequ' : "result = arrayfunc.amin(datax, nosimd=True)",
+	'arrayfuncequ' : "result = arrayfunc.amin(datax)",
 	'arrayfuncequfast' : "result = arrayfunc.amin(datax, nosimd=True)",
 	'arrayfuncequsimd' : "result = arrayfunc.amin(datax)",
 	'compval' : 5,
@@ -1111,7 +1085,7 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = sum(datax)',
-	'arrayfuncequ' : 'result = arrayfunc.asum(datax, nosimd=True)',
+	'arrayfuncequ' : 'result = arrayfunc.asum(datax)',
 	'arrayfuncequfast' : 'result = arrayfunc.asum(datax, matherrors=True, nosimd=True)',
 	'arrayfuncequsimd' : 'result = arrayfunc.asum(datax, matherrors=True)',
 	'compval' : 0,
@@ -1136,7 +1110,7 @@ benchfuncs = [
 	'test_op_x' : '[0]', 
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
-	'pyequ' : 'result = pycount(arraycode, self.pyitercounts, datax)',
+	'pyequ' : 'result = pycount(arraycode, self.pyitercounts, datax, self.arraysize)',
 	'arrayfuncequ' : 'arrayfunc.count(datax, self.compval)',
 	'arrayfuncequfast' : 'arrayfunc.count(datax, self.compval)',
 	'arrayfuncequsimd' : 'arrayfunc.count(datax, self.compval)',
@@ -1150,7 +1124,7 @@ benchfuncs = [
 	'test_op_x' : '[0]', 
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
-	'pyequ' : 'result = array.array(arraycode, [x for x,y in zip(itertools.cycle([1, 2, 3, 4]), itertools.repeat(0, ARRAYSIZE))])',
+	'pyequ' : 'result = array.array(arraycode, [x for x,y in zip(itertools.cycle([1, 2, 3, 4]), itertools.repeat(0, self.arraysize))])',
 	'arrayfuncequ' : 'arrayfunc.cycle(datax, self.startcycle, self.endcycle)',
 	'arrayfuncequfast' : 'arrayfunc.cycle(datax, self.startcycle, self.endcycle)',
 	'arrayfuncequsimd' : 'arrayfunc.cycle(datax, self.startcycle, self.endcycle)',
@@ -1177,7 +1151,7 @@ benchfuncs = [
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
 	'pyequ' : 'result = pyfindindex(datax, self.compval)',
-	'arrayfuncequ' : "result = arrayfunc.findindex('==', self.datax, self.compval, nosimd=True)",
+	'arrayfuncequ' : "result = arrayfunc.findindex('==', self.datax, self.compval)",
 	'arrayfuncequfast' : "result = arrayfunc.findindex('==', self.datax, self.compval, nosimd=True)",
 	'arrayfuncequsimd' : "result = arrayfunc.findindex('==', self.datax, self.compval)",
 	'compval' : 10,
@@ -1202,7 +1176,7 @@ benchfuncs = [
 	'test_op_x' : '[0]', 
 	'test_op_y' : '[0]',
 	'test_op_z' : '[0]',
-	'pyequ' : 'datax = array.array(arraycode, itertools.repeat(self.compval, ARRAYSIZE))',
+	'pyequ' : 'datax = array.array(arraycode, itertools.repeat(self.compval, self.arraysize))',
 	'arrayfuncequ' : "arrayfunc.repeat(datax, self.compval)",
 	'arrayfuncequfast' : "arrayfunc.repeat(datax, self.compval)",
 	'arrayfuncequsimd' : "arrayfunc.repeat(datax, self.compval)",
@@ -1225,8 +1199,6 @@ benchfuncs = [
 
 ]
 
-
-
 # ==============================================================================
 
 # Output data used for benchmarking.
@@ -1237,14 +1209,14 @@ def writeBenchMarkData(cheaderdata):
 	for funcname, ardata in cheaderdata:
 		# First check to see if SIMD is supported at all for this function.
 		if any(ardata.values()):
-			reformatted.append((funcname, dict([(arcodelookup[x],y) for x,y in ardata.items()])))
+			reformatted.append((funcname, ''.join([arcodelookup[x] for x,y in ardata.items() if y])))
 
 	# Convert to a dictionary in a string.
 	reformatstr = str(dict(reformatted))
 	# Now, reformat the string so that each function appears on a 
 	# separate line. This prevents the data string from being one long line.
-	finalformat = reformatstr.replace('},', '},\n')
-	
+	finalformat = reformatstr.replace(',', ',\n')
+
 	return finalformat
 
 
@@ -1256,10 +1228,15 @@ opdata = codegen_common.ReadCSVData('funcs.csv')
 
 # Get a list of the C function names and their array types from the SIMD
 # related C header source files.
-cheaderdata = codegen_common.GetHeaderFileDataSIMD()
+# For x86-64
+cheaderdata_x86 = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_x86.h')
+
+# For ARM.
+cheaderdata_arm = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_arm.h')
 
 # Reformat the SIMD data into a string containing the dictionary.
-SIMD_data = writeBenchMarkData(cheaderdata)
+SIMD_data_x86 = writeBenchMarkData(cheaderdata_x86)
+SIMD_data_arm = writeBenchMarkData(cheaderdata_arm)
 
 
 # Get the names of functions which use 'matherrors'.
@@ -1282,7 +1259,8 @@ benchclasses = []
 # Data for the copyright header files.
 headerdate = codegen_common.FormatHeaderData('benchmarks', '20-Dec-2018', '')
 
-headerdate['SIMD_data'] = SIMD_data
+headerdate['SIMD_data_x86'] = SIMD_data_x86
+headerdate['SIMD_data_arm'] = SIMD_data_arm
 headerdate['Opt_data'] = Opt_data
 
 
@@ -1353,7 +1331,7 @@ with open('benchmarks.py', 'w') as f:
 		# causes errors when saving into an integer array. To solve this,
 		# we call a type conversion function which select at run time.
 		if opvalues['funcname'] == 'truediv':
-			opvalues['pyequ'] = 'dataout[i] = truediv_type(datax[i] / datay[i])'
+			opvalues['pyequ'] = 'dataout[i] = truediv_type(datax[i] / yvalue)'
 
 
 		# Now put it together into a single class.
@@ -1365,7 +1343,7 @@ with open('benchmarks.py', 'w') as f:
 
 
 	# The list of benchmark class names.
-	f.write(benchclasslisttemplate % (', '.join(benchclasses), codegen_common.arraycodes))
+	f.write(benchclasslisttemplate % (',\n'.join(benchclasses), codegen_common.arraycodes))
 
 
 	# This writes the code to execute all the tests.

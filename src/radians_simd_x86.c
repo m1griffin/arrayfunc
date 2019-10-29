@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     24-Mar-2019
-// Ver:      08-Apr-2019.
+// Ver:      20-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -58,8 +58,8 @@
 
 /*--------------------------------------------------------------------------- */
 
-#ifdef AF_HASSIMD
-// Used to calculate degrees to radians.
+#ifdef AF_HASSIMD_X86
+// Used to calculate degrees to radians for x86-64.
 const v2df DEGTORAD_D_VEC = {DEGTORAD_D, DEGTORAD_D};
 const v4sf DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F, DEGTORAD_F, DEGTORAD_F};
 #endif
@@ -73,7 +73,7 @@ const v4sf DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F, DEGTORAD_F, DEGTORAD_F};
    dataout = The output data array.
 */
 // param_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void radians_float_1_simd(Py_ssize_t arraylen, float *data) {
 
 	// array index counter. 
@@ -109,7 +109,7 @@ void radians_float_1_simd(Py_ssize_t arraylen, float *data) {
 
 
 // param_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void radians_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 
 	// array index counter. 
@@ -151,7 +151,7 @@ void radians_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
    dataout = The output data array.
 */
 // param_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void radians_double_1_simd(Py_ssize_t arraylen, double *data) {
 
 	// array index counter. 
@@ -187,7 +187,7 @@ void radians_double_1_simd(Py_ssize_t arraylen, double *data) {
 
 
 // param_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void radians_double_2_simd(Py_ssize_t arraylen, double *data, double *dataout) {
 
 	// array index counter. 

@@ -75,7 +75,7 @@ asum_head = """//---------------------------------------------------------------
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 #include "asum_simd_x86.h"
 #endif
 
@@ -191,7 +191,7 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 	%(arraytype)s partialsum = 0.0;
 
 
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 	// SIMD version. Only use this if overflow checking is disabled.
 	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
 		return asum_%(funcmodifier)s_simd(arraylen, data);
@@ -233,7 +233,7 @@ simdsupport = """
    nosimd = If true, disable SIMD.
    Returns: The sum of the array.
 */
-#ifdef AF_HASSIMD
+#ifdef AF_HASSIMD_X86
 double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) { 
 
 	// array index counter. 

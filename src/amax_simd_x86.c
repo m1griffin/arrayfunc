@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     16-Apr-2019
-// Ver:      24-Jul-2019.
+// Ver:      19-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -48,7 +48,7 @@
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) { 
 
 	// array index counter. 
@@ -74,7 +74,7 @@ signed long long amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals,   maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < CHARSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -101,7 +101,7 @@ signed long long amax_signed_char_simd(Py_ssize_t arraylen, signed char *data) {
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *data) { 
 
 	// array index counter. 
@@ -127,7 +127,7 @@ unsigned long long amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals,   maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < CHARSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -154,7 +154,7 @@ unsigned long long amax_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amax_signed_short_simd(Py_ssize_t arraylen, signed short *data) { 
 
 	// array index counter. 
@@ -180,7 +180,7 @@ signed long long amax_signed_short_simd(Py_ssize_t arraylen, signed short *data)
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals, (v16qi)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < SHORTSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -207,7 +207,7 @@ signed long long amax_signed_short_simd(Py_ssize_t arraylen, signed short *data)
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short *data) { 
 
 	// array index counter. 
@@ -233,7 +233,7 @@ unsigned long long amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals, (v16qi)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < SHORTSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -260,7 +260,7 @@ unsigned long long amax_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 signed long long amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) { 
 
 	// array index counter. 
@@ -286,7 +286,7 @@ signed long long amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals, (v16qi)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < INTSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -313,7 +313,7 @@ signed long long amax_signed_int_simd(Py_ssize_t arraylen, signed int *data) {
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 unsigned long long amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *data) { 
 
 	// array index counter. 
@@ -339,7 +339,7 @@ unsigned long long amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *dat
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storedqu((char *) maxvals, (v16qi) maxslice);
+	__builtin_ia32_storedqu((char *) maxvals, (v16qi)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < INTSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -366,7 +366,7 @@ unsigned long long amax_unsigned_int_simd(Py_ssize_t arraylen, unsigned int *dat
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 double amax_float_simd(Py_ssize_t arraylen, float *data) { 
 
 	// array index counter. 
@@ -383,16 +383,16 @@ double amax_float_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v4sf) __builtin_ia32_loadups(&data[0]);
+	maxslice = (v4sf) __builtin_ia32_loadups( &data[0]);
 
 	// Use SIMD.
 	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
-		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
+		dataslice = (v4sf) __builtin_ia32_loadups( &data[x]);
 		maxslice = __builtin_ia32_maxps (maxslice, dataslice);
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storeups(maxvals, (v4sf) maxslice);
+	__builtin_ia32_storeups( maxvals, (v4sf)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < FLOATSIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {
@@ -419,7 +419,7 @@ double amax_float_simd(Py_ssize_t arraylen, float *data) {
    data = The input data array.
    Returns: The maximum value found.
 */
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 double amax_double_simd(Py_ssize_t arraylen, double *data) { 
 
 	// array index counter. 
@@ -436,16 +436,16 @@ double amax_double_simd(Py_ssize_t arraylen, double *data) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Initialise the comparison values.
-	maxslice = (v2df) __builtin_ia32_loadupd(&data[0]);
+	maxslice = (v2df) __builtin_ia32_loadupd( &data[0]);
 
 	// Use SIMD.
 	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
-		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
+		dataslice = (v2df) __builtin_ia32_loadupd( &data[x]);
 		maxslice = __builtin_ia32_maxpd (maxslice, dataslice);
 	}
 
 	// Find the max within the slice.
-	__builtin_ia32_storeupd(maxvals, (v2df) maxslice);
+	__builtin_ia32_storeupd( maxvals, (v2df)  maxslice);
 	maxfound = maxvals[0];
 	for (y = 1; y < DOUBLESIMDSIZE; y++) {
 		if (maxvals[y] > maxfound) {

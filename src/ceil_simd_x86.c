@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     24-Mar-2019
-// Ver:      08-Apr-2019.
+// Ver:      20-Oct-2019.
 //
 //------------------------------------------------------------------------------
 //
@@ -49,7 +49,7 @@
    dataout = The output data array.
 */
 // param_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void ceil_float_1_simd(Py_ssize_t arraylen, float *data) {
 
 	// array index counter. 
@@ -85,7 +85,7 @@ void ceil_float_1_simd(Py_ssize_t arraylen, float *data) {
 
 
 // param_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void ceil_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 
 	// array index counter. 
@@ -127,7 +127,7 @@ void ceil_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
    dataout = The output data array.
 */
 // param_arr_none
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void ceil_double_1_simd(Py_ssize_t arraylen, double *data) {
 
 	// array index counter. 
@@ -163,7 +163,7 @@ void ceil_double_1_simd(Py_ssize_t arraylen, double *data) {
 
 
 // param_arr_arr
-#ifdef AF_HASSIMD
+#if defined(AF_HASSIMD_X86)
 void ceil_double_2_simd(Py_ssize_t arraylen, double *data, double *dataout) {
 
 	// array index counter. 

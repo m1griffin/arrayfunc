@@ -41,6 +41,21 @@
 
 /*--------------------------------------------------------------------------- */
 
+
+#include "simddefs.h"
+
+#ifdef AF_HASSIMD_X86
+#include "rshift_simd_x86.h"
+#endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "rshift_simd_arm.h"
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -56,6 +71,14 @@ void rshift_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		rshift_signed_char_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -68,6 +91,14 @@ void rshift_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		rshift_signed_char_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -140,6 +171,14 @@ void rshift_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		rshift_unsigned_char_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -152,6 +191,14 @@ void rshift_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		rshift_unsigned_char_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -224,6 +271,14 @@ void rshift_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		rshift_signed_short_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -236,6 +291,14 @@ void rshift_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1,
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		rshift_signed_short_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -308,6 +371,14 @@ void rshift_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		rshift_unsigned_short_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -320,6 +391,14 @@ void rshift_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *da
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		rshift_unsigned_short_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -392,6 +471,14 @@ void rshift_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		rshift_signed_int_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -404,6 +491,14 @@ void rshift_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		rshift_signed_int_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -476,6 +571,14 @@ void rshift_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	// array index counter.
 	Py_ssize_t x;
 
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		rshift_unsigned_int_1_simd(arraylen, data1, param);
+		return;
+	}
+#endif
+
 	for(x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] >> param;
 	}
@@ -488,6 +591,14 @@ void rshift_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 
 	// array index counter.
 	Py_ssize_t x;
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	// SIMD version.
+	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		rshift_unsigned_int_2_simd(arraylen, data1, param, data3);
+		return;
+	}
+#endif
 
 	for(x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] >> param;
@@ -896,7 +1007,7 @@ static PyObject *py_rshift(PyObject *self, PyObject *args, PyObject *keywds) {
 
 	// Get the parameters passed from Python. Does not have "matherrors". 
 	// Some functions using this template do have "nosimd".
-	arraydata = getparams_two(self, args, keywds, 0, 0, "rshift");
+	arraydata = getparams_two(self, args, keywds, 0, 1, "rshift");
 
 	// If there was an error, we count on the parameter parsing function to 
 	// release the buffers if this was necessary.
@@ -1261,6 +1372,7 @@ Call formats: \n\
   rshift(array1, array2) \n\
   rshift(array1, array2, outparray) \n\
   rshift(array1, param, maxlen=y) \n\
+  rshift(array1, param, nosimd=False) \n\\n\
 \n\
 * array1 - The first input data array to be examined. If no output \n\
   array is provided the results will overwrite the input data.  \n\
@@ -1272,6 +1384,8 @@ Call formats: \n\
   positive integer. If a zero or negative length, or a value which is  \n\
   greater than the actual length of the array is specified, this  \n\
   parameter is ignored.  \n\
+* nosimd - If True, SIMD acceleration is disabled. This parameter is \n\
+  optional. The default is FALSE.  \n\
 ");
 
 
