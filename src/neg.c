@@ -79,23 +79,23 @@ signed int neg_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -135,23 +135,23 @@ signed int neg_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -191,23 +191,23 @@ signed int neg_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, sig
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == INT_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == INT_MIN) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -235,23 +235,23 @@ signed int neg_signed_long(Py_ssize_t arraylen, int nosimd, signed long *data, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -279,23 +279,23 @@ signed int neg_signed_long_long(Py_ssize_t arraylen, int nosimd, signed long lon
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -323,23 +323,23 @@ signed int neg_float(Py_ssize_t arraylen, int nosimd, float *data, float *dataou
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -367,23 +367,23 @@ signed int neg_double(Py_ssize_t arraylen, int nosimd, double *data, double *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}

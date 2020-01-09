@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Oct-2019.
+# Ver:      02-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -52,8 +52,7 @@ import arrayfunc
 
 ##############################################################################
 class mul_general_even_arraysize_b(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -73,6 +72,31 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'b' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -83,29 +107,184 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('b', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'b' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'b' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.b_min
+			maxval = arrayfunc.arraylimits.b_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'b' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'b' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code b.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -118,12 +297,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -136,14 +315,14 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -157,14 +336,14 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -179,13 +358,13 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -198,13 +377,13 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -217,15 +396,15 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -239,15 +418,15 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -262,12 +441,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -280,12 +459,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -298,14 +477,14 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -319,14 +498,14 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -341,13 +520,13 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -360,13 +539,13 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -379,15 +558,15 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -401,15 +580,15 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -424,10 +603,11 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -439,10 +619,11 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -454,12 +635,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -473,12 +654,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -492,11 +673,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -509,11 +691,12 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -525,13 +708,13 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -548,8 +731,7 @@ class mul_general_even_arraysize_b(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_b(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -569,6 +751,31 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'b' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -579,29 +786,184 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('b', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'b' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'b' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.b_min
+			maxval = arrayfunc.arraylimits.b_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'b' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'b' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code b.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -614,12 +976,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -632,14 +994,14 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -653,14 +1015,14 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -675,13 +1037,13 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -694,13 +1056,13 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -713,15 +1075,15 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -735,15 +1097,15 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datax)
+				data1 = array.array('b', self.datax_an)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -758,12 +1120,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -776,12 +1138,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -794,14 +1156,14 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -815,14 +1177,14 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -837,13 +1199,13 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -856,13 +1218,13 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -875,15 +1237,15 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -897,15 +1259,15 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('b', self.datay)
+				data1 = array.array('b', self.datay_na)
 				dataout = array.array('b', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -920,10 +1282,11 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -935,10 +1298,11 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -950,12 +1314,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -969,12 +1333,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -988,11 +1352,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -1005,11 +1370,12 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -1021,13 +1387,13 @@ class mul_general_odd_arraysize_b(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code b.
 		"""
-		data1 = array.array('b', self.datax)
-		data2 = array.array('b', self.datay)
+		data1 = array.array('b', self.datax_aa)
+		data2 = array.array('b', self.datay_aa)
 		dataout = array.array('b', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -2849,8 +3215,7 @@ class overflow_signed_min1neg_b(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_B(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -2870,6 +3235,31 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'B' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -2880,29 +3270,184 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('B', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'B' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'B' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.B_min
+			maxval = arrayfunc.arraylimits.B_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'B' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'B' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code B.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -2915,12 +3460,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -2933,14 +3478,14 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -2954,14 +3499,14 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -2976,13 +3521,13 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -2995,13 +3540,13 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -3014,15 +3559,15 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -3036,15 +3581,15 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -3059,12 +3604,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -3077,12 +3622,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -3095,14 +3640,14 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -3116,14 +3661,14 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -3138,13 +3683,13 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -3157,13 +3702,13 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -3176,15 +3721,15 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -3198,15 +3743,15 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -3221,10 +3766,11 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -3236,10 +3782,11 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -3251,12 +3798,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -3270,12 +3817,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -3289,11 +3836,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -3306,11 +3854,12 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -3322,13 +3871,13 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -3345,8 +3894,7 @@ class mul_general_even_arraysize_B(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_B(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -3366,6 +3914,31 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'B' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -3376,29 +3949,184 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('B', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'B' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'B' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.B_min
+			maxval = arrayfunc.arraylimits.B_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'B' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'B' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code B.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -3411,12 +4139,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -3429,14 +4157,14 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -3450,14 +4178,14 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -3472,13 +4200,13 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -3491,13 +4219,13 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -3510,15 +4238,15 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -3532,15 +4260,15 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datax)
+				data1 = array.array('B', self.datax_an)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -3555,12 +4283,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -3573,12 +4301,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -3591,14 +4319,14 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -3612,14 +4340,14 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -3634,13 +4362,13 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -3653,13 +4381,13 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -3672,15 +4400,15 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -3694,15 +4422,15 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('B', self.datay)
+				data1 = array.array('B', self.datay_na)
 				dataout = array.array('B', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -3717,10 +4445,11 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -3732,10 +4461,11 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -3747,12 +4477,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -3766,12 +4496,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -3785,11 +4515,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -3802,11 +4533,12 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -3818,13 +4550,13 @@ class mul_general_odd_arraysize_B(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code B.
 		"""
-		data1 = array.array('B', self.datax)
-		data2 = array.array('B', self.datay)
+		data1 = array.array('B', self.datax_aa)
+		data2 = array.array('B', self.datay_aa)
 		dataout = array.array('B', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -5222,8 +5954,7 @@ class overflow_signed_max2_B(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_h(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -5243,6 +5974,31 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'h' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -5253,29 +6009,184 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('h', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'h' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'h' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'h' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'h' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code h.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -5288,12 +6199,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -5306,14 +6217,14 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -5327,14 +6238,14 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -5349,13 +6260,13 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -5368,13 +6279,13 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -5387,15 +6298,15 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -5409,15 +6320,15 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -5432,12 +6343,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -5450,12 +6361,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -5468,14 +6379,14 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -5489,14 +6400,14 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -5511,13 +6422,13 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -5530,13 +6441,13 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -5549,15 +6460,15 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -5571,15 +6482,15 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -5594,10 +6505,11 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -5609,10 +6521,11 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -5624,12 +6537,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -5643,12 +6556,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -5662,11 +6575,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -5679,11 +6593,12 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -5695,13 +6610,13 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -5718,8 +6633,7 @@ class mul_general_even_arraysize_h(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_h(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -5739,6 +6653,31 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'h' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -5749,29 +6688,184 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('h', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'h' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'h' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'h' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'h' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code h.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -5784,12 +6878,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -5802,14 +6896,14 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -5823,14 +6917,14 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -5845,13 +6939,13 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -5864,13 +6958,13 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -5883,15 +6977,15 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -5905,15 +6999,15 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datax)
+				data1 = array.array('h', self.datax_an)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -5928,12 +7022,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -5946,12 +7040,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -5964,14 +7058,14 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -5985,14 +7079,14 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -6007,13 +7101,13 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -6026,13 +7120,13 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -6045,15 +7139,15 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -6067,15 +7161,15 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('h', self.datay)
+				data1 = array.array('h', self.datay_na)
 				dataout = array.array('h', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -6090,10 +7184,11 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -6105,10 +7200,11 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -6120,12 +7216,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -6139,12 +7235,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -6158,11 +7254,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -6175,11 +7272,12 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -6191,13 +7289,13 @@ class mul_general_odd_arraysize_h(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code h.
 		"""
-		data1 = array.array('h', self.datax)
-		data2 = array.array('h', self.datay)
+		data1 = array.array('h', self.datax_aa)
+		data2 = array.array('h', self.datay_aa)
 		dataout = array.array('h', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -8019,8 +9117,7 @@ class overflow_signed_min1neg_h(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_H(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -8040,6 +9137,31 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'H' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -8050,29 +9172,184 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('H', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'H' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'H' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.H_min
+			maxval = arrayfunc.arraylimits.H_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'H' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'H' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code H.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -8085,12 +9362,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -8103,14 +9380,14 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -8124,14 +9401,14 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -8146,13 +9423,13 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -8165,13 +9442,13 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -8184,15 +9461,15 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -8206,15 +9483,15 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -8229,12 +9506,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -8247,12 +9524,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -8265,14 +9542,14 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -8286,14 +9563,14 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -8308,13 +9585,13 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -8327,13 +9604,13 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -8346,15 +9623,15 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -8368,15 +9645,15 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -8391,10 +9668,11 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -8406,10 +9684,11 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -8421,12 +9700,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -8440,12 +9719,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -8459,11 +9738,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -8476,11 +9756,12 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -8492,13 +9773,13 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -8515,8 +9796,7 @@ class mul_general_even_arraysize_H(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_H(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -8536,6 +9816,31 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'H' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -8546,29 +9851,184 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('H', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'H' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'H' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.H_min
+			maxval = arrayfunc.arraylimits.H_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'H' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'H' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code H.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -8581,12 +10041,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -8599,14 +10059,14 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -8620,14 +10080,14 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -8642,13 +10102,13 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -8661,13 +10121,13 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -8680,15 +10140,15 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -8702,15 +10162,15 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datax)
+				data1 = array.array('H', self.datax_an)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -8725,12 +10185,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -8743,12 +10203,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -8761,14 +10221,14 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -8782,14 +10242,14 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -8804,13 +10264,13 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -8823,13 +10283,13 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -8842,15 +10302,15 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -8864,15 +10324,15 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('H', self.datay)
+				data1 = array.array('H', self.datay_na)
 				dataout = array.array('H', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -8887,10 +10347,11 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -8902,10 +10363,11 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -8917,12 +10379,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -8936,12 +10398,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -8955,11 +10417,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -8972,11 +10435,12 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -8988,13 +10452,13 @@ class mul_general_odd_arraysize_H(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code H.
 		"""
-		data1 = array.array('H', self.datax)
-		data2 = array.array('H', self.datay)
+		data1 = array.array('H', self.datax_aa)
+		data2 = array.array('H', self.datay_aa)
 		dataout = array.array('H', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -10392,8 +11856,7 @@ class overflow_signed_max2_H(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_i(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -10413,6 +11876,31 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'i' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -10423,29 +11911,184 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('i', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'i' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'i' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'i' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'i' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code i.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -10458,12 +12101,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -10476,14 +12119,14 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -10497,14 +12140,14 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -10519,13 +12162,13 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -10538,13 +12181,13 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -10557,15 +12200,15 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -10579,15 +12222,15 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -10602,12 +12245,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -10620,12 +12263,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -10638,14 +12281,14 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -10659,14 +12302,14 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -10681,13 +12324,13 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -10700,13 +12343,13 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -10719,15 +12362,15 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -10741,15 +12384,15 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -10764,10 +12407,11 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -10779,10 +12423,11 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -10794,12 +12439,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -10813,12 +12458,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -10832,11 +12477,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -10849,11 +12495,12 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -10865,13 +12512,13 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -10888,8 +12535,7 @@ class mul_general_even_arraysize_i(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_i(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -10909,6 +12555,31 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'i' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -10919,29 +12590,184 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('i', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'i' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'i' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'i' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'i' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code i.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -10954,12 +12780,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -10972,14 +12798,14 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -10993,14 +12819,14 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -11015,13 +12841,13 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -11034,13 +12860,13 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -11053,15 +12879,15 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -11075,15 +12901,15 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datax)
+				data1 = array.array('i', self.datax_an)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -11098,12 +12924,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -11116,12 +12942,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -11134,14 +12960,14 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -11155,14 +12981,14 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -11177,13 +13003,13 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -11196,13 +13022,13 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -11215,15 +13041,15 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -11237,15 +13063,15 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('i', self.datay)
+				data1 = array.array('i', self.datay_na)
 				dataout = array.array('i', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -11260,10 +13086,11 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -11275,10 +13102,11 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -11290,12 +13118,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -11309,12 +13137,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -11328,11 +13156,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -11345,11 +13174,12 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -11361,13 +13191,13 @@ class mul_general_odd_arraysize_i(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code i.
 		"""
-		data1 = array.array('i', self.datax)
-		data2 = array.array('i', self.datay)
+		data1 = array.array('i', self.datax_aa)
+		data2 = array.array('i', self.datay_aa)
 		dataout = array.array('i', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -13189,8 +15019,7 @@ class overflow_signed_min1neg_i(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_I(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -13210,6 +15039,31 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'I' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -13220,29 +15074,184 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('I', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'I' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'I' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.I_min
+			maxval = arrayfunc.arraylimits.I_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'I' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'I' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code I.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -13255,12 +15264,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -13273,14 +15282,14 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -13294,14 +15303,14 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -13316,13 +15325,13 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -13335,13 +15344,13 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -13354,15 +15363,15 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -13376,15 +15385,15 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -13399,12 +15408,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -13417,12 +15426,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -13435,14 +15444,14 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -13456,14 +15465,14 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -13478,13 +15487,13 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -13497,13 +15506,13 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -13516,15 +15525,15 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -13538,15 +15547,15 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -13561,10 +15570,11 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -13576,10 +15586,11 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -13591,12 +15602,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -13610,12 +15621,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -13629,11 +15640,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -13646,11 +15658,12 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -13662,13 +15675,13 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -13685,8 +15698,7 @@ class mul_general_even_arraysize_I(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_I(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -13706,6 +15718,31 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'I' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -13716,29 +15753,184 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('I', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'I' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'I' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.I_min
+			maxval = arrayfunc.arraylimits.I_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'I' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'I' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code I.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -13751,12 +15943,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -13769,14 +15961,14 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -13790,14 +15982,14 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -13812,13 +16004,13 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -13831,13 +16023,13 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -13850,15 +16042,15 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -13872,15 +16064,15 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datax)
+				data1 = array.array('I', self.datax_an)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -13895,12 +16087,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -13913,12 +16105,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -13931,14 +16123,14 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -13952,14 +16144,14 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -13974,13 +16166,13 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -13993,13 +16185,13 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -14012,15 +16204,15 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -14034,15 +16226,15 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('I', self.datay)
+				data1 = array.array('I', self.datay_na)
 				dataout = array.array('I', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -14057,10 +16249,11 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -14072,10 +16265,11 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -14087,12 +16281,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -14106,12 +16300,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -14125,11 +16319,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -14142,11 +16337,12 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -14158,13 +16354,13 @@ class mul_general_odd_arraysize_I(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code I.
 		"""
-		data1 = array.array('I', self.datax)
-		data2 = array.array('I', self.datay)
+		data1 = array.array('I', self.datax_aa)
+		data2 = array.array('I', self.datay_aa)
 		dataout = array.array('I', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -15562,8 +17758,7 @@ class overflow_signed_max2_I(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_l(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -15583,6 +17778,31 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'l' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -15593,29 +17813,184 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('l', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'l' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'l' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.l_min
+			maxval = arrayfunc.arraylimits.l_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'l' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'l' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code l.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -15628,12 +18003,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -15646,14 +18021,14 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -15667,14 +18042,14 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -15689,13 +18064,13 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -15708,13 +18083,13 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -15727,15 +18102,15 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -15749,15 +18124,15 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -15772,12 +18147,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -15790,12 +18165,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -15808,14 +18183,14 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -15829,14 +18204,14 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -15851,13 +18226,13 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -15870,13 +18245,13 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -15889,15 +18264,15 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -15911,15 +18286,15 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -15934,10 +18309,11 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -15949,10 +18325,11 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -15964,12 +18341,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -15983,12 +18360,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -16002,11 +18379,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -16019,11 +18397,12 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -16035,13 +18414,13 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -16058,8 +18437,7 @@ class mul_general_even_arraysize_l(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_l(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -16079,6 +18457,31 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'l' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -16089,29 +18492,184 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('l', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'l' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'l' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.l_min
+			maxval = arrayfunc.arraylimits.l_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'l' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'l' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code l.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -16124,12 +18682,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -16142,14 +18700,14 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -16163,14 +18721,14 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -16185,13 +18743,13 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -16204,13 +18762,13 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -16223,15 +18781,15 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -16245,15 +18803,15 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datax)
+				data1 = array.array('l', self.datax_an)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -16268,12 +18826,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -16286,12 +18844,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -16304,14 +18862,14 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -16325,14 +18883,14 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -16347,13 +18905,13 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -16366,13 +18924,13 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -16385,15 +18943,15 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -16407,15 +18965,15 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('l', self.datay)
+				data1 = array.array('l', self.datay_na)
 				dataout = array.array('l', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -16430,10 +18988,11 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -16445,10 +19004,11 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -16460,12 +19020,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -16479,12 +19039,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -16498,11 +19058,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -16515,11 +19076,12 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -16531,13 +19093,13 @@ class mul_general_odd_arraysize_l(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code l.
 		"""
-		data1 = array.array('l', self.datax)
-		data2 = array.array('l', self.datay)
+		data1 = array.array('l', self.datax_aa)
+		data2 = array.array('l', self.datay_aa)
 		dataout = array.array('l', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -18359,8 +20921,7 @@ class overflow_signed_min1neg_l(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_L(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -18380,6 +20941,31 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'L' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -18390,29 +20976,184 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('L', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'L' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'L' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.L_min
+			maxval = arrayfunc.arraylimits.L_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'L' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'L' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code L.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -18425,12 +21166,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -18443,14 +21184,14 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -18464,14 +21205,14 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -18486,13 +21227,13 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -18505,13 +21246,13 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -18524,15 +21265,15 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -18546,15 +21287,15 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -18569,12 +21310,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -18587,12 +21328,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -18605,14 +21346,14 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -18626,14 +21367,14 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -18648,13 +21389,13 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -18667,13 +21408,13 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -18686,15 +21427,15 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -18708,15 +21449,15 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -18731,10 +21472,11 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -18746,10 +21488,11 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -18761,12 +21504,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -18780,12 +21523,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -18799,11 +21542,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -18816,11 +21560,12 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -18832,13 +21577,13 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -18855,8 +21600,7 @@ class mul_general_even_arraysize_L(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_L(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -18876,6 +21620,31 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'L' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -18886,29 +21655,184 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('L', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'L' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'L' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.L_min
+			maxval = arrayfunc.arraylimits.L_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'L' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'L' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code L.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -18921,12 +21845,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -18939,14 +21863,14 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -18960,14 +21884,14 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -18982,13 +21906,13 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -19001,13 +21925,13 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -19020,15 +21944,15 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -19042,15 +21966,15 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datax)
+				data1 = array.array('L', self.datax_an)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -19065,12 +21989,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -19083,12 +22007,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -19101,14 +22025,14 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -19122,14 +22046,14 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -19144,13 +22068,13 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -19163,13 +22087,13 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -19182,15 +22106,15 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -19204,15 +22128,15 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('L', self.datay)
+				data1 = array.array('L', self.datay_na)
 				dataout = array.array('L', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -19227,10 +22151,11 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -19242,10 +22167,11 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -19257,12 +22183,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -19276,12 +22202,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -19295,11 +22221,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -19312,11 +22239,12 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -19328,13 +22256,13 @@ class mul_general_odd_arraysize_L(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code L.
 		"""
-		data1 = array.array('L', self.datax)
-		data2 = array.array('L', self.datay)
+		data1 = array.array('L', self.datax_aa)
+		data2 = array.array('L', self.datay_aa)
 		dataout = array.array('L', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -20732,8 +23660,7 @@ class overflow_signed_max2_L(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_q(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -20753,6 +23680,31 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'q' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -20763,29 +23715,184 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('q', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'q' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'q' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'q' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'q' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code q.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -20798,12 +23905,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -20816,14 +23923,14 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -20837,14 +23944,14 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -20859,13 +23966,13 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -20878,13 +23985,13 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -20897,15 +24004,15 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -20919,15 +24026,15 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -20942,12 +24049,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -20960,12 +24067,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -20978,14 +24085,14 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -20999,14 +24106,14 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -21021,13 +24128,13 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -21040,13 +24147,13 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -21059,15 +24166,15 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -21081,15 +24188,15 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -21104,10 +24211,11 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -21119,10 +24227,11 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -21134,12 +24243,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -21153,12 +24262,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -21172,11 +24281,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -21189,11 +24299,12 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -21205,13 +24316,13 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -21228,8 +24339,7 @@ class mul_general_even_arraysize_q(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_q(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3,-2,-1,0,1,2,3.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -21249,6 +24359,31 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'q' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -21259,29 +24394,184 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('q', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3,-2,-1,0,1,2,3]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'q' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'q' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'q' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'q' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code q.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -21294,12 +24584,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -21312,14 +24602,14 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -21333,14 +24623,14 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -21355,13 +24645,13 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -21374,13 +24664,13 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -21393,15 +24683,15 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -21415,15 +24705,15 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datax)
+				data1 = array.array('q', self.datax_an)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -21438,12 +24728,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -21456,12 +24746,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -21474,14 +24764,14 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -21495,14 +24785,14 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -21517,13 +24807,13 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -21536,13 +24826,13 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -21555,15 +24845,15 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -21577,15 +24867,15 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('q', self.datay)
+				data1 = array.array('q', self.datay_na)
 				dataout = array.array('q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -21600,10 +24890,11 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -21615,10 +24906,11 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -21630,12 +24922,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -21649,12 +24941,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -21668,11 +24960,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -21685,11 +24978,12 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -21701,13 +24995,13 @@ class mul_general_odd_arraysize_q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code q.
 		"""
-		data1 = array.array('q', self.datax)
-		data2 = array.array('q', self.datay)
+		data1 = array.array('q', self.datax_aa)
+		data2 = array.array('q', self.datay_aa)
 		dataout = array.array('q', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -23529,8 +26823,7 @@ class overflow_signed_min1neg_q(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_Q(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -23550,6 +26843,31 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'Q' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -23560,29 +26878,184 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('Q', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'Q' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'Q' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.Q_min
+			maxval = arrayfunc.arraylimits.Q_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'Q' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'Q' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code Q.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -23595,12 +27068,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -23613,14 +27086,14 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -23634,14 +27107,14 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -23656,13 +27129,13 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -23675,13 +27148,13 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -23694,15 +27167,15 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -23716,15 +27189,15 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -23739,12 +27212,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -23757,12 +27230,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -23775,14 +27248,14 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -23796,14 +27269,14 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -23818,13 +27291,13 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -23837,13 +27310,13 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -23856,15 +27329,15 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -23878,15 +27351,15 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -23901,10 +27374,11 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -23916,10 +27390,11 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -23931,12 +27406,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -23950,12 +27425,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -23969,11 +27444,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -23986,11 +27462,12 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -24002,13 +27479,13 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -24025,8 +27502,7 @@ class mul_general_even_arraysize_Q(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_Q(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data 0,1,2,3,4,5,6.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -24046,6 +27522,31 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'Q' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -24056,29 +27557,184 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5,6,7,8,9]), range(testdatasize))]
-		self.datax = array.array('Q', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5,6]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'Q' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'Q' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.Q_min
+			maxval = arrayfunc.arraylimits.Q_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'Q' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'Q' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code Q.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -24091,12 +27747,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -24109,14 +27765,14 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -24130,14 +27786,14 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -24152,13 +27808,13 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -24171,13 +27827,13 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -24190,15 +27846,15 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -24212,15 +27868,15 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datax)
+				data1 = array.array('Q', self.datax_an)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -24235,12 +27891,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -24253,12 +27909,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -24271,14 +27927,14 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -24292,14 +27948,14 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -24314,13 +27970,13 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -24333,13 +27989,13 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -24352,15 +28008,15 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -24374,15 +28030,15 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('Q', self.datay)
+				data1 = array.array('Q', self.datay_na)
 				dataout = array.array('Q', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -24397,10 +28053,11 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -24412,10 +28069,11 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -24427,12 +28085,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -24446,12 +28104,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -24465,11 +28123,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -24482,11 +28141,12 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -24498,13 +28158,13 @@ class mul_general_odd_arraysize_Q(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code Q.
 		"""
-		data1 = array.array('Q', self.datax)
-		data2 = array.array('Q', self.datay)
+		data1 = array.array('Q', self.datax_aa)
+		data2 = array.array('Q', self.datay_aa)
 		dataout = array.array('Q', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -25902,8 +29562,7 @@ class overflow_signed_max2_Q(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_f(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -25923,6 +29582,31 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'f' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -25933,29 +29617,184 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
-		self.datax = array.array('f', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'f' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'f' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.f_min
+			maxval = arrayfunc.arraylimits.f_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'f' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'f' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code f.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -25968,12 +29807,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -25986,14 +29825,14 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -26007,14 +29846,14 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -26029,13 +29868,13 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -26048,13 +29887,13 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -26067,15 +29906,15 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -26089,15 +29928,15 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -26112,12 +29951,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -26130,12 +29969,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -26148,14 +29987,14 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -26169,14 +30008,14 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -26191,13 +30030,13 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -26210,13 +30049,13 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -26229,15 +30068,15 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -26251,15 +30090,15 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -26274,10 +30113,11 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -26289,10 +30129,11 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -26304,12 +30145,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -26323,12 +30164,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -26342,11 +30183,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -26359,11 +30201,12 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -26375,13 +30218,13 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -26398,8 +30241,7 @@ class mul_general_even_arraysize_f(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_f(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -26419,6 +30261,31 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'f' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -26429,29 +30296,184 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
-		self.datax = array.array('f', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'f' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'f' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.f_min
+			maxval = arrayfunc.arraylimits.f_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'f' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'f' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code f.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -26464,12 +30486,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -26482,14 +30504,14 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -26503,14 +30525,14 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -26525,13 +30547,13 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -26544,13 +30566,13 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -26563,15 +30585,15 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -26585,15 +30607,15 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datax)
+				data1 = array.array('f', self.datax_an)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -26608,12 +30630,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -26626,12 +30648,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -26644,14 +30666,14 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -26665,14 +30687,14 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -26687,13 +30709,13 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -26706,13 +30728,13 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -26725,15 +30747,15 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -26747,15 +30769,15 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('f', self.datay)
+				data1 = array.array('f', self.datay_na)
 				dataout = array.array('f', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -26770,10 +30792,11 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -26785,10 +30808,11 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -26800,12 +30824,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -26819,12 +30843,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -26838,11 +30862,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -26855,11 +30880,12 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -26871,13 +30897,13 @@ class mul_general_odd_arraysize_f(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code f.
 		"""
-		data1 = array.array('f', self.datax)
-		data2 = array.array('f', self.datay)
+		data1 = array.array('f', self.datax_aa)
+		data2 = array.array('f', self.datay_aa)
 		dataout = array.array('f', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -29336,8 +33362,7 @@ class mul_ninf_errors_f(unittest.TestCase):
 
 ##############################################################################
 class mul_general_even_arraysize_d(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -29357,6 +33382,31 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'd' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -29367,29 +33417,184 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 			testdatasize = 160
 		if 'even' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
-		self.datax = array.array('d', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'd' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'd' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.d_min
+			maxval = arrayfunc.arraylimits.d_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'd' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'd' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code d.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -29402,12 +33607,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -29420,14 +33625,14 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -29441,14 +33646,14 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -29463,13 +33668,13 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -29482,13 +33687,13 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -29501,15 +33706,15 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -29523,15 +33728,15 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -29546,12 +33751,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -29564,12 +33769,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -29582,14 +33787,14 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -29603,14 +33808,14 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -29625,13 +33830,13 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -29644,13 +33849,13 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -29663,15 +33868,15 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -29685,15 +33890,15 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -29708,10 +33913,11 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -29723,10 +33929,11 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -29738,12 +33945,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -29757,12 +33964,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -29776,11 +33983,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -29793,11 +34001,12 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -29809,13 +34018,13 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)
@@ -29832,8 +34041,7 @@ class mul_general_even_arraysize_d(unittest.TestCase):
 
 ##############################################################################
 class mul_general_odd_arraysize_d(unittest.TestCase):
-	"""Test mul for basic general function operation using numeric 
-	data -3.0,-2.0,-1.0,0.0,1.0,2.0,3.0.
+	"""Test mul for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -29853,6 +34061,31 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('*' == '/') and 'd' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x * y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -29863,29 +34096,184 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 			testdatasize = 160
 		if 'odd' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0]), range(testdatasize))]
-		self.datax = array.array('d', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([-3.0,-2.0,-1.0,0.0,1.0,2.0,3.0]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if 'd' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif 'd' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.d_min
+			maxval = arrayfunc.arraylimits.d_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '*' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '*' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '*' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '*' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '*' == '%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x % y) < minval) or ((x % y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x % y) < minval) or ((x % y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '*' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '*')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if 'd' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif 'd' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_mul_check_test_data(self):
+		"""Test mul to ensure we have valid data present - Array code d.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_mul_basic_array_num_none_a1(self):
 		"""Test mul as *array-num-none* for basic function - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval)
 
@@ -29898,12 +34286,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a2(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, matherrors=True)
 
@@ -29916,14 +34304,14 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a3(self):
 		"""Test mul as *array-num-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, maxlen=limited)
@@ -29937,14 +34325,14 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_none_a4(self):
 		"""Test mul as *array-num-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(data1, testval, matherrors=True, maxlen=limited)
@@ -29959,13 +34347,13 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b1(self):
 		"""Test mul as *array-num-array* for basic function - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout)
 
@@ -29978,13 +34366,13 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b2(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [x * testval for x in data1] 
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True)
 
@@ -29997,15 +34385,15 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b3(self):
 		"""Test mul as *array-num-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, maxlen=limited)
@@ -30019,15 +34407,15 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_num_array_b4(self):
 		"""Test mul as *array-num-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datax)
+				data1 = array.array('d', self.datax_an)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [x * testval for x in data1] 
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -30042,12 +34430,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c1(self):
 		"""Test mul as *num-array-none* for basic function - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1)
 
@@ -30060,12 +34448,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c2(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, matherrors=True)
 
@@ -30078,14 +34466,14 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c3(self):
 		"""Test mul as *num-array-none* for basic function with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, maxlen=limited)
@@ -30099,14 +34487,14 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_none_c4(self):
 		"""Test mul as *num-array-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.mul(testval, data1, matherrors=True, maxlen=limited)
@@ -30121,13 +34509,13 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d1(self):
 		"""Test mul as *num-array-array* for basic function - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout)
 
@@ -30140,13 +34528,13 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d2(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
-				expected =  [testval * x for x in data1] 
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True)
 
@@ -30159,15 +34547,15 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d3(self):
 		"""Test mul as *num-array-array* for basic function with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, maxlen=limited)
@@ -30181,15 +34569,15 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_num_array_array_d4(self):
 		"""Test mul as *num-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('d', self.datay)
+				data1 = array.array('d', self.datay_na)
 				dataout = array.array('d', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout =  [testval * x for x in data1] 
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.mul(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -30204,10 +34592,11 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e1(self):
 		"""Test mul as *array-array-none* for basic function - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -30219,10 +34608,11 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e2(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -30234,12 +34624,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e3(self):
 		"""Test mul as *array-array-none* for basic function with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, maxlen=limited)
@@ -30253,12 +34643,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_none_e4(self):
 		"""Test mul as *array-array-none* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.mul(data1, data2, matherrors=True, maxlen=limited)
@@ -30272,11 +34662,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f1(self):
 		"""Test mul as *array-array-array* for basic function - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -30289,11 +34680,12 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f2(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
-		expected =  [x * y for (x, y) in zip(data1, data2)] 
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.mul(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -30305,13 +34697,13 @@ class mul_general_odd_arraysize_d(unittest.TestCase):
 	def test_mul_basic_array_array_array_f3(self):
 		"""Test mul as *array-array-array* for basic function with matherrors=True and with array limit - Array code d.
 		"""
-		data1 = array.array('d', self.datax)
-		data2 = array.array('d', self.datay)
+		data1 = array.array('d', self.datax_aa)
+		data2 = array.array('d', self.datay_aa)
 		dataout = array.array('d', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout =  [x * y for (x, y) in zip(data1, data2)] 
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.mul(data1, data2, dataout, matherrors=True, maxlen=limited)

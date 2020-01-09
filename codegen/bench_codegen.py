@@ -526,7 +526,7 @@ class benchmark_%(funcname)s:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -850,7 +850,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 	f.write('\\n\\n\\n')
 
-	f.write('Relative Performance with and without SIMD Optimisations - Optimsed / SIMD Time.\\n\\n')
+	f.write('Relative Performance with and without SIMD Optimisations - Optimised / SIMD Time.\\n\\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))

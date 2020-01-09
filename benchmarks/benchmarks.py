@@ -5,11 +5,11 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      28-Oct-2019.
+# Ver:      05-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ allinvertlimits = {
 SIMDFuncs_x86 = {'aall': 'bBhHiIfd',
  'aany': 'bBhHiIfd',
  'abs_': 'bhi',
- 'add': 'bBhHiIfd',
+ 'add': 'bhifd',
  'amax': 'bBhHiIfd',
  'amin': 'bBhHiIfd',
  'and_': 'bBhHiI',
@@ -93,16 +93,15 @@ SIMDFuncs_x86 = {'aall': 'bBhHiIfd',
  'gt': 'bBhHiIfd',
  'invert': 'bBhHiI',
  'le': 'bBhHiIfd',
- 'lshift': 'bBhHiI',
+ 'lshift': 'hHiI',
  'lt': 'bBhHiIfd',
- 'mul': 'bBhHiIfd',
  'ne': 'bBhHiIfd',
  'neg': 'bhi',
  'or_': 'bBhHiI',
  'radians': 'fd',
- 'rshift': 'bBhHiI',
+ 'rshift': 'HI',
  'sqrt': 'fd',
- 'sub': 'bBhHiIfd',
+ 'sub': 'bhifd',
  'trunc': 'fd',
  'xor': 'bBhHiI'}
 
@@ -536,7 +535,7 @@ class benchmark_aall:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -1001,7 +1000,7 @@ class benchmark_aany:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -1466,7 +1465,7 @@ class benchmark_afilter:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -1931,7 +1930,7 @@ class benchmark_amax:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -2396,7 +2395,7 @@ class benchmark_amin:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -2861,7 +2860,7 @@ class benchmark_asum:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -3326,7 +3325,7 @@ class benchmark_compress:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -3791,7 +3790,7 @@ class benchmark_count:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -4256,7 +4255,7 @@ class benchmark_cycle:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -4721,7 +4720,7 @@ class benchmark_dropwhile:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -5186,7 +5185,7 @@ class benchmark_findindex:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -5651,7 +5650,7 @@ class benchmark_findindices:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -6116,7 +6115,7 @@ class benchmark_repeat:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -6581,7 +6580,7 @@ class benchmark_takewhile:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -7046,7 +7045,7 @@ class benchmark_add:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -7511,7 +7510,7 @@ class benchmark_truediv:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -7976,7 +7975,7 @@ class benchmark_floordiv:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -8441,7 +8440,7 @@ class benchmark_mod:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -8906,7 +8905,7 @@ class benchmark_mul:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -9371,7 +9370,7 @@ class benchmark_neg:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -9836,7 +9835,7 @@ class benchmark_pow:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -10301,7 +10300,7 @@ class benchmark_sub:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -10766,7 +10765,7 @@ class benchmark_and_:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -11231,7 +11230,7 @@ class benchmark_or_:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -11696,7 +11695,7 @@ class benchmark_xor:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -12161,7 +12160,7 @@ class benchmark_invert:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -12626,7 +12625,7 @@ class benchmark_eq:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -13091,7 +13090,7 @@ class benchmark_gt:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -13556,7 +13555,7 @@ class benchmark_ge:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -14021,7 +14020,7 @@ class benchmark_lt:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -14486,7 +14485,7 @@ class benchmark_le:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -14951,7 +14950,7 @@ class benchmark_ne:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -15416,7 +15415,7 @@ class benchmark_lshift:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -15881,7 +15880,7 @@ class benchmark_rshift:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -16346,7 +16345,7 @@ class benchmark_abs_:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -16811,7 +16810,7 @@ class benchmark_acos:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -17276,7 +17275,7 @@ class benchmark_acosh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -17741,7 +17740,7 @@ class benchmark_asin:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -18206,7 +18205,7 @@ class benchmark_asinh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -18671,7 +18670,7 @@ class benchmark_atan:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -19136,7 +19135,7 @@ class benchmark_atan2:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -19601,7 +19600,7 @@ class benchmark_atanh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -20066,7 +20065,7 @@ class benchmark_ceil:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -20531,7 +20530,7 @@ class benchmark_copysign:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -20996,7 +20995,7 @@ class benchmark_cos:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -21461,7 +21460,7 @@ class benchmark_cosh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -21926,7 +21925,7 @@ class benchmark_degrees:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -22391,7 +22390,7 @@ class benchmark_erf:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -22856,7 +22855,7 @@ class benchmark_erfc:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -23321,7 +23320,7 @@ class benchmark_exp:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -23786,7 +23785,7 @@ class benchmark_expm1:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -24251,7 +24250,7 @@ class benchmark_fabs:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -24716,7 +24715,7 @@ class benchmark_factorial:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -25181,7 +25180,7 @@ class benchmark_floor:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -25646,7 +25645,7 @@ class benchmark_fma:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -26111,7 +26110,7 @@ class benchmark_fmod:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -26576,7 +26575,7 @@ class benchmark_gamma:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -27041,7 +27040,7 @@ class benchmark_hypot:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -27506,7 +27505,7 @@ class benchmark_isfinite:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -27971,7 +27970,7 @@ class benchmark_isinf:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -28436,7 +28435,7 @@ class benchmark_isnan:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -28901,7 +28900,7 @@ class benchmark_ldexp:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -29366,7 +29365,7 @@ class benchmark_lgamma:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -29831,7 +29830,7 @@ class benchmark_log:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -30296,7 +30295,7 @@ class benchmark_log10:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -30761,7 +30760,7 @@ class benchmark_log1p:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -31226,7 +31225,7 @@ class benchmark_log2:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -31691,7 +31690,7 @@ class benchmark_radians:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -32156,7 +32155,7 @@ class benchmark_sin:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -32621,7 +32620,7 @@ class benchmark_sinh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -33086,7 +33085,7 @@ class benchmark_sqrt:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -33551,7 +33550,7 @@ class benchmark_tan:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -34016,7 +34015,7 @@ class benchmark_tanh:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -34481,7 +34480,7 @@ class benchmark_trunc:
 			self.FuncResultsSIMD = self.formattimedata(self.AfDataSIMD)
 			self.RelativeResultsSIMD = self.formatreldata(self.RelDataSIMD)
 
-			# Format the optimised versus not optimsed result strings.
+			# Format the optimised versus not optimised result strings.
 			if self.funcname in OptFuncs:
 				self.RelOpt = self.formatreldata(self.RelDataOpt)
 
@@ -34867,7 +34866,7 @@ with open('benchmarkdata.txt', 'w') as f:
 
 	f.write('\n\n\n')
 
-	f.write('Relative Performance with and without SIMD Optimisations - Optimsed / SIMD Time.\n\n')
+	f.write('Relative Performance with and without SIMD Optimisations - Optimised / SIMD Time.\n\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))

@@ -92,23 +92,23 @@ signed int %(funclabel)s_float(Py_ssize_t arraylen,%(nosimddecl)s float *data, f
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(floatfunc)s;
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(floatfunc)s;
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(floatfunc)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(floatfunc)s;
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -136,23 +136,23 @@ signed int %(funclabel)s_double(Py_ssize_t arraylen,%(nosimddecl)s double *data,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(doublefunc)s;
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(doublefunc)s;
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(doublefunc)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(doublefunc)s;
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -320,7 +320,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(simdload)s(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
@@ -330,7 +330,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data[x] = %(simdcleanup)s;
 	}
 
@@ -356,7 +356,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(simdload)s(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
@@ -366,7 +366,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		dataout[x] = %(simdcleanup)s;
 	}
 
@@ -551,51 +551,62 @@ simdvalues_x86 = {
 'd' : {'simdattr' : 'v2df', 'simdload' : '__builtin_ia32_loadupd', 'simdstore' : '__builtin_ia32_storeupd'},
 }
 
-# This is the ARM version. This is for single precision float only.
-simdvalues_arm = {'simdattr' : 'float32x2_t', 'simdload' : 'vld1_f32', 'simdstore' : 'vst1_f32'}
-
-
-# SIMD width depends on array type.
-simdwidth = {'f' : 'FLOATSIMDSIZE', 'd' : 'DOUBLESIMDSIZE'}
-
 
 # The SIMD operations used for each function for x86-64.
 simdop_x86 = {
 'f' : {'ceil' : '__builtin_ia32_roundps (datasliceleft, 0b10)', 
 		'floor' : '__builtin_ia32_roundps (datasliceleft, 0b01)',
 		'trunc' : '__builtin_ia32_roundps (datasliceleft, 0b11)',
-		'degrees' : 'datasliceleft * RADTODEG_F_VEC',
-		'radians' : 'datasliceleft * DEGTORAD_F_VEC',
+		'degrees' : '__builtin_ia32_mulps (datasliceleft, RADTODEG_F_VEC)',
+		'radians' : '__builtin_ia32_mulps (datasliceleft, DEGTORAD_F_VEC)',
 		'sqrt' : '__builtin_ia32_sqrtps(datasliceleft)',
 		},
 'd' : {'ceil' : '__builtin_ia32_roundpd (datasliceleft, 0b10)', 
 		'floor' : '__builtin_ia32_roundpd (datasliceleft, 0b01)',
 		'trunc' : '__builtin_ia32_roundpd (datasliceleft, 0b11)',
-		'degrees' : 'datasliceleft * RADTODEG_D_VEC',
-		'radians' : 'datasliceleft * DEGTORAD_D_VEC',
+		'degrees' : '__builtin_ia32_mulpd (datasliceleft, RADTODEG_D_VEC)',
+		'radians' : '__builtin_ia32_mulpd (datasliceleft, DEGTORAD_D_VEC)',
 		'sqrt' : '__builtin_ia32_sqrtpd(datasliceleft)',
 		},
 }
 
 
+# Which functions support x86 SIMD.
+x86_simdfuncnames = set(itertools.chain.from_iterable([x.keys() for x in simdop_x86.values()]))
+
+# ==============================================================================
+
+# This is the ARM version. This is for single precision float only.
+simdvalues_arm = {'simdattr' : 'float32x2_t', 'simdload' : 'vld1_f32', 'simdstore' : 'vst1_f32'}
+
+simdsupport_arm = ('f', )
+
+
 # The SIMD operations used for each function for ARM NEON.
 # This currently covers ARMv7 only.
-simdop_arm = {'degrees' : 'datasliceleft * RADTODEG_F_VEC',
-		'radians' : 'datasliceleft * DEGTORAD_F_VEC',
+simdop_arm = {'degrees' : 'vmul_f32 (datasliceleft, RADTODEG_F_VEC)',
+		'radians' : 'vmul_f32 (datasliceleft, DEGTORAD_F_VEC)',
 		}
 
+# Which functions support ARM SIMD.
+arm_simdfuncnames = list(simdop_arm.keys())
+
+# ==============================================================================
+
+# SIMD width depends on array type.
+simdwidth = {'f' : 'FLOATSIMDSIZE', 'd' : 'DOUBLESIMDSIZE'}
 
 # ==============================================================================
 
 # Return the platform SIMD enable C macro. 
 # This is for the platform independent file, and not the plaform specific
 # SIMD files.
-def findsimdplatform(arraycode):
+def findsimdplatform(arraycode, funcname):
 
 	# The calls to SIMD support code are platform dependent.
-	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
+	if (arraycode in simdvalues_x86) and (funcname not in arm_simdfuncnames):
 		return SIMD_platform_x86
-	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
+	elif (arraycode in simdvalues_x86) and (funcname in arm_simdfuncnames):
 		return SIMD_platform_x86_ARM
 	else:
 		return 'Error: Template error, this should not be here.'
@@ -613,13 +624,6 @@ oplist = codegen_common.ReadCSVData('funcs.csv')
 funclist = [x for x in oplist if x['c_code_template'] in ('template_mathfunc_1', 'template_mathfunc_1s', 'template_mathfunc_1simd')]
 
 simdlist = [x for x in funclist if x['c_code_template'] in ('template_mathfunc_1s', 'template_mathfunc_1simd')]
-
-# For ARM NEON.
-arm_neonlist = [x for x in simdlist if x['simd'] in ('neon',)]
-
-# This creates a list of which functions support arm neon simd. ARM does
-# not support all the same SIMD functions which x86 does. 
-arm_neon_funcs = [x['funcname'] for x in arm_neonlist]
 
 # ==============================================================================
 
@@ -645,17 +649,19 @@ for func in funclist:
 		# ARM NEON does not support all the same functions as x86 SIMD.
 		# We assume that if the function supports ARM NEON, then it
 		# also supports x86 SIMD.
-		if funcname in arm_neon_funcs:
+		if (funcname in x86_simdfuncnames) and (funcname in arm_simdfuncnames):
 			includeoptions = includeoptions_simd_x86_arm % {'funclabel' : funcname}
-		else:
+		elif funcname in x86_simdfuncnames:
 			includeoptions = includeoptions_simd_x86 % {'funclabel' : funcname}
+		else:
+			print('Error - funcs1_codegen simd support selection error.')
 
 		# For single precision floating point.
 		arraytype = codegen_common.arraytypes['f']
 		simdfunccall = {'simdwidth' : simdwidth['f'], 
 			'funclabel' : funcname,
 			'funcmodifier' : arraytype.replace(' ', '_'),
-			'simdplatform' : findsimdplatform('f')}
+			'simdplatform' : findsimdplatform('f', funcname)}
 		simd_call_f = SIMD_call % simdfunccall
 
 		# For double precision floating point.
@@ -798,7 +804,10 @@ simdfilename = '_simd_arm'
 
 # This outputs the SIMD version for ARM NEON.
 
-for func in arm_neonlist:
+armsimdlist = [x for x in simdlist if x['funcname'] in arm_simdfuncnames]
+
+
+for func in armsimdlist:
 	
 	outputlist = []
 

@@ -76,11 +76,11 @@ void invert_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, sign
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -114,11 +114,11 @@ void invert_unsigned_char(Py_ssize_t arraylen, int nosimd, unsigned char *data, 
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -152,11 +152,11 @@ void invert_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data, si
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -190,11 +190,11 @@ void invert_unsigned_short(Py_ssize_t arraylen, int nosimd, unsigned short *data
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -228,11 +228,11 @@ void invert_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, signed
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -266,11 +266,11 @@ void invert_unsigned_int(Py_ssize_t arraylen, int nosimd, unsigned int *data, un
 #endif
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -292,11 +292,11 @@ void invert_signed_long(Py_ssize_t arraylen, int nosimd, signed long *data, sign
 
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -318,11 +318,11 @@ void invert_unsigned_long(Py_ssize_t arraylen, int nosimd, unsigned long *data, 
 
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -344,11 +344,11 @@ void invert_signed_long_long(Py_ssize_t arraylen, int nosimd, signed long long *
 
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}
@@ -370,11 +370,11 @@ void invert_unsigned_long_long(Py_ssize_t arraylen, int nosimd, unsigned long lo
 
 
 	if (hasoutputarray) {		
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			dataout[x] = ~data[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data[x] = ~data[x];
 		}
 	}

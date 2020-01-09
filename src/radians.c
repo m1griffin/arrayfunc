@@ -80,7 +80,7 @@ signed int radians_float(Py_ssize_t arraylen, int nosimd, float *data, float *da
 
 
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -95,23 +95,23 @@ signed int radians_float(Py_ssize_t arraylen, int nosimd, float *data, float *da
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = DEGTORAD_F * data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = DEGTORAD_F * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = DEGTORAD_F * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = DEGTORAD_F * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -151,23 +151,23 @@ signed int radians_double(Py_ssize_t arraylen, int nosimd, double *data, double 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = DEGTORAD_D * data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = DEGTORAD_D * data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = DEGTORAD_D * data[x];
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = DEGTORAD_D * data[x];
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}

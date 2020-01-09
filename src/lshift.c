@@ -71,7 +71,7 @@ void lshift_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		lshift_signed_char_1_simd(arraylen, data1, param);
@@ -79,7 +79,7 @@ void lshift_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -92,7 +92,7 @@ void lshift_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		lshift_signed_char_2_simd(arraylen, data1, param, data3);
@@ -100,7 +100,7 @@ void lshift_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -112,7 +112,7 @@ void lshift_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, si
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -124,7 +124,7 @@ void lshift_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param, si
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -138,7 +138,7 @@ void lshift_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -150,7 +150,7 @@ void lshift_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -171,7 +171,7 @@ void lshift_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		lshift_unsigned_char_1_simd(arraylen, data1, param);
@@ -179,7 +179,7 @@ void lshift_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -192,7 +192,7 @@ void lshift_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		lshift_unsigned_char_2_simd(arraylen, data1, param, data3);
@@ -200,7 +200,7 @@ void lshift_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -212,7 +212,7 @@ void lshift_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -224,7 +224,7 @@ void lshift_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char param
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -238,7 +238,7 @@ void lshift_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -250,7 +250,7 @@ void lshift_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -279,7 +279,7 @@ void lshift_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -300,7 +300,7 @@ void lshift_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -312,7 +312,7 @@ void lshift_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -324,7 +324,7 @@ void lshift_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short param, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -338,7 +338,7 @@ void lshift_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -350,7 +350,7 @@ void lshift_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -379,7 +379,7 @@ void lshift_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -400,7 +400,7 @@ void lshift_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -412,7 +412,7 @@ void lshift_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short par
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -424,7 +424,7 @@ void lshift_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short par
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -438,7 +438,7 @@ void lshift_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -450,7 +450,7 @@ void lshift_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -479,7 +479,7 @@ void lshift_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -500,7 +500,7 @@ void lshift_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -512,7 +512,7 @@ void lshift_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -524,7 +524,7 @@ void lshift_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -538,7 +538,7 @@ void lshift_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -550,7 +550,7 @@ void lshift_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -579,7 +579,7 @@ void lshift_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -600,7 +600,7 @@ void lshift_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -612,7 +612,7 @@ void lshift_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -624,7 +624,7 @@ void lshift_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -638,7 +638,7 @@ void lshift_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -650,7 +650,7 @@ void lshift_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -671,7 +671,7 @@ void lshift_signed_long_1(Py_ssize_t arraylen, int nosimd, signed long *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -684,7 +684,7 @@ void lshift_signed_long_2(Py_ssize_t arraylen, int nosimd, signed long *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -696,7 +696,7 @@ void lshift_signed_long_3(Py_ssize_t arraylen, int nosimd, signed long param, si
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -708,7 +708,7 @@ void lshift_signed_long_4(Py_ssize_t arraylen, int nosimd, signed long param, si
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -722,7 +722,7 @@ void lshift_signed_long_5(Py_ssize_t arraylen, int nosimd, signed long *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -734,7 +734,7 @@ void lshift_signed_long_6(Py_ssize_t arraylen, int nosimd, signed long *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -755,7 +755,7 @@ void lshift_unsigned_long_1(Py_ssize_t arraylen, int nosimd, unsigned long *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -768,7 +768,7 @@ void lshift_unsigned_long_2(Py_ssize_t arraylen, int nosimd, unsigned long *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -780,7 +780,7 @@ void lshift_unsigned_long_3(Py_ssize_t arraylen, int nosimd, unsigned long param
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -792,7 +792,7 @@ void lshift_unsigned_long_4(Py_ssize_t arraylen, int nosimd, unsigned long param
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -806,7 +806,7 @@ void lshift_unsigned_long_5(Py_ssize_t arraylen, int nosimd, unsigned long *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -818,7 +818,7 @@ void lshift_unsigned_long_6(Py_ssize_t arraylen, int nosimd, unsigned long *data
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -839,7 +839,7 @@ void lshift_signed_long_long_1(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -852,7 +852,7 @@ void lshift_signed_long_long_2(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -864,7 +864,7 @@ void lshift_signed_long_long_3(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -876,7 +876,7 @@ void lshift_signed_long_long_4(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -890,7 +890,7 @@ void lshift_signed_long_long_5(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -902,7 +902,7 @@ void lshift_signed_long_long_6(Py_ssize_t arraylen, int nosimd, signed long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 
@@ -923,7 +923,7 @@ void lshift_unsigned_long_long_1(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << param;
 	}
 
@@ -936,7 +936,7 @@ void lshift_unsigned_long_long_2(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << param;
 	}
 
@@ -948,7 +948,7 @@ void lshift_unsigned_long_long_3(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param << data2[x];
 	}
 
@@ -960,7 +960,7 @@ void lshift_unsigned_long_long_4(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param << data2[x];
 	}
 
@@ -974,7 +974,7 @@ void lshift_unsigned_long_long_5(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] << data2[x];
 	}
 
@@ -986,7 +986,7 @@ void lshift_unsigned_long_long_6(Py_ssize_t arraylen, int nosimd, unsigned long 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] << data2[x];
 	}
 

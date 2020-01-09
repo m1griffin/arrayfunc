@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Oct-2019.
+# Ver:      02-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_b(unittest.TestCase):
+class invert_general_even_arraysize_nosimd_simd_b(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_invert
 	"""
@@ -84,214 +84,36 @@ class invert_general_even_arraysize_with_simd_b(unittest.TestCase):
 					'Q' : arrayfunc.arraylimits.Q_max} 
 
 		if 'even' == 'even':
-			testdatasize = 160
+			testdatasize = 320
 		if 'even' == 'odd':
-			testdatasize = 159
+			testdatasize = 319
 		paramitersize = 5
 
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
+		decentre = testdatasize // 2
 
-		self.data = array.array('b', xdata)
-		self.dataout = array.array('b', [0]*len(self.data))
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
 
-		self.expected = [self.InvertPy('b', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
 
 
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code b.
-		"""
-		arrayfunc.invert(self.data )
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
 
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
 
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
 
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code b.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code b.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code b.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_b(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('b', xdata)
-		self.dataout = array.array('b', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('b', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code b.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code b.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code b.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code b.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_b(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
 
 		self.data = array.array('b', xdata)
 		self.dataout = array.array('b', [0]*len(self.data))
@@ -342,6 +164,4881 @@ class invert_general_even_arraysize_without_simd_b(unittest.TestCase):
 		"""Test invert to output array with array maxlen  - Array code b.
 		"""
 		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('b', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code b.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('b', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code b.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('b', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code b.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code b.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_B(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('B', xdata)
+		self.dataout = array.array('B', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('B', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code B.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_B(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('B', xdata)
+		self.dataout = array.array('B', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('B', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code B.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_B(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('B', xdata)
+		self.dataout = array.array('B', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('B', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code B.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_B(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('B', xdata)
+		self.dataout = array.array('B', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('B', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code B.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code B.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('h', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code h.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('h', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code h.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('h', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code h.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('h', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code h.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code h.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_H(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('H', xdata)
+		self.dataout = array.array('H', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('H', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code H.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_H(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('H', xdata)
+		self.dataout = array.array('H', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('H', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code H.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_H(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('H', xdata)
+		self.dataout = array.array('H', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('H', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code H.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_H(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('H', xdata)
+		self.dataout = array.array('H', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('H', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code H.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code H.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('i', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code i.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('i', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code i.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('i', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code i.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('i', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code i.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code i.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_I(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('I', xdata)
+		self.dataout = array.array('I', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('I', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code I.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_I(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('I', xdata)
+		self.dataout = array.array('I', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('I', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code I.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_I(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('I', xdata)
+		self.dataout = array.array('I', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('I', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code I.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_I(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('I', xdata)
+		self.dataout = array.array('I', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('I', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code I.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code I.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('l', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code l.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('l', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code l.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('l', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code l.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('l', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code l.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code l.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_L(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('L', xdata)
+		self.dataout = array.array('L', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('L', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code L.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_L(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('L', xdata)
+		self.dataout = array.array('L', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('L', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code L.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_L(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('L', xdata)
+		self.dataout = array.array('L', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('L', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code L.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_L(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('L', xdata)
+		self.dataout = array.array('L', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('L', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code L.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code L.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code q.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code q.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code q.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code q.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_nosimd_simd_Q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('Q', xdata)
+		self.dataout = array.array('Q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('Q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code Q.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_even_arraysize_withsimd_simd_Q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('Q', xdata)
+		self.dataout = array.array('Q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('Q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code Q.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_nosimd_simd_Q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('Q', xdata)
+		self.dataout = array.array('Q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('Q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code Q.
+		"""
+		arrayfunc.invert(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class invert_general_odd_arraysize_withsimd_simd_Q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_invert
+	"""
+
+	##############################################################################
+	def InvertPy(self, typecode, val):
+		"""This allows for the invert operation to handle both signed and 
+		unsigned integers.
+		"""
+		# Python native integers are signed.
+		if typecode in ('b', 'h', 'i', 'l', 'q'):
+			return ~val
+		# Unsigned integers require more work to invert.
+		else:
+			maxval = self.IPLims[typecode]
+			if val >= 0:
+				return maxval - val
+			else:
+				return maxval + val
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The maximum values for selected array types.
+		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
+					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
+					'Q' : arrayfunc.arraylimits.Q_max} 
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# We don't test the minimum signed integer value as we are not testing
+		# the behaviour of integer overflows in this series of tests.
+		if minval < 0:
+			minval = minval + 1
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		self.data = array.array('Q', xdata)
+		self.dataout = array.array('Q', [0]*len(self.data))
+
+		self.expected = [self.InvertPy('Q', x) for x in self.data]
+
+		self.limited = len(self.data) // 2
+
+		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
+		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
+
+
+	########################################################
+	def test_invert_inplace(self):
+		"""Test invert in place - Array code Q.
+		"""
+		arrayfunc.invert(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_inplace_maxlen(self):
+		"""Test invert in place with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray(self):
+		"""Test invert to output array - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_invert_outputarray_maxlen(self):
+		"""Test invert to output array with array maxlen  - Array code Q.
+		"""
+		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -518,309 +5215,6 @@ class invert_opt_param_errors_b(unittest.TestCase):
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_B(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('B', xdata)
-		self.dataout = array.array('B', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('B', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code B.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_B(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('B', xdata)
-		self.dataout = array.array('B', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('B', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code B.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_B(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('B', xdata)
-		self.dataout = array.array('B', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('B', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code B.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code B.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
 class invert_param_errors_B(unittest.TestCase):
 	"""Test invert for invalid array and numeric parameters.
 	param_invalid_template
@@ -978,309 +5372,6 @@ class invert_opt_param_errors_B(unittest.TestCase):
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.invert()
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_with_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('h', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code h.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('h', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code h.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('h', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code h.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code h.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
 
 
 ##############################################################################
@@ -1452,309 +5543,6 @@ class invert_opt_param_errors_h(unittest.TestCase):
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_H(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('H', xdata)
-		self.dataout = array.array('H', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('H', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code H.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_H(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('H', xdata)
-		self.dataout = array.array('H', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('H', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code H.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_H(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('H', xdata)
-		self.dataout = array.array('H', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('H', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code H.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code H.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
 class invert_param_errors_H(unittest.TestCase):
 	"""Test invert for invalid array and numeric parameters.
 	param_invalid_template
@@ -1912,309 +5700,6 @@ class invert_opt_param_errors_H(unittest.TestCase):
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.invert()
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_with_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('i', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code i.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('i', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code i.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('i', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code i.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code i.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
 
 
 ##############################################################################
@@ -2386,309 +5871,6 @@ class invert_opt_param_errors_i(unittest.TestCase):
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_I(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('I', xdata)
-		self.dataout = array.array('I', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('I', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code I.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_I(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('I', xdata)
-		self.dataout = array.array('I', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('I', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code I.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_I(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('I', xdata)
-		self.dataout = array.array('I', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('I', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code I.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code I.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
 class invert_param_errors_I(unittest.TestCase):
 	"""Test invert for invalid array and numeric parameters.
 	param_invalid_template
@@ -2846,309 +6028,6 @@ class invert_opt_param_errors_I(unittest.TestCase):
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.invert()
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_with_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('l', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code l.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('l', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code l.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('l', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code l.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code l.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
 
 
 ##############################################################################
@@ -3320,309 +6199,6 @@ class invert_opt_param_errors_l(unittest.TestCase):
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_L(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('L', xdata)
-		self.dataout = array.array('L', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('L', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code L.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_L(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('L', xdata)
-		self.dataout = array.array('L', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('L', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code L.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_L(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('L', xdata)
-		self.dataout = array.array('L', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('L', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code L.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code L.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
 class invert_param_errors_L(unittest.TestCase):
 	"""Test invert for invalid array and numeric parameters.
 	param_invalid_template
@@ -3787,309 +6363,6 @@ class invert_opt_param_errors_L(unittest.TestCase):
 
 
 ##############################################################################
-class invert_general_even_arraysize_with_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code q.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code q.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code q.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
 class invert_param_errors_q(unittest.TestCase):
 	"""Test invert for invalid array and numeric parameters.
 	param_invalid_template
@@ -4247,309 +6520,6 @@ class invert_opt_param_errors_q(unittest.TestCase):
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.invert()
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_with_simd_Q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('Q', xdata)
-		self.dataout = array.array('Q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('Q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code Q.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_odd_arraysize_with_simd_Q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('Q', xdata)
-		self.dataout = array.array('Q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('Q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code Q.
-		"""
-		arrayfunc.invert(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
-
-
-##############################################################################
-class invert_general_even_arraysize_without_simd_Q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_invert
-	"""
-
-	##############################################################################
-	def InvertPy(self, typecode, val):
-		"""This allows for the invert operation to handle both signed and 
-		unsigned integers.
-		"""
-		# Python native integers are signed.
-		if typecode in ('b', 'h', 'i', 'l', 'q'):
-			return ~val
-		# Unsigned integers require more work to invert.
-		else:
-			maxval = self.IPLims[typecode]
-			if val >= 0:
-				return maxval - val
-			else:
-				return maxval + val
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# The maximum values for selected array types.
-		self.IPLims = {'B' : arrayfunc.arraylimits.B_max , 'H' : arrayfunc.arraylimits.H_max, 
-					'I' : arrayfunc.arraylimits.I_max, 'L' : arrayfunc.arraylimits.L_max,
-					'Q' : arrayfunc.arraylimits.Q_max} 
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-		xdata = [x for x,y in zip(itertools.cycle([1,2,3,4,5,6,7,8,9,10]), range(testdatasize))]
-
-		self.data = array.array('Q', xdata)
-		self.dataout = array.array('Q', [0]*len(self.data))
-
-		self.expected = [self.InvertPy('Q', x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-		self.expectedlimit1 = self.expected[0:self.limited] + list(self.data)[self.limited:]
-		self.expectedlimit2 = self.expected[0:self.limited] + list(self.dataout)[self.limited:]
-
-
-	########################################################
-	def test_invert_inplace(self):
-		"""Test invert in place - Array code Q.
-		"""
-		arrayfunc.invert(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_inplace_maxlen(self):
-		"""Test invert in place with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), self.expectedlimit1):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray(self):
-		"""Test invert to output array - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_invert_outputarray_maxlen(self):
-		"""Test invert to output array with array maxlen  - Array code Q.
-		"""
-		arrayfunc.invert(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), self.expectedlimit2):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
 
 
 ##############################################################################

@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     09-Dec-2017.
-# Ver:      19-Oct-2019.
+# Ver:      02-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class abs__general_even_arraysize_with_simd_b(unittest.TestCase):
+class abs__general_even_arraysize_nosimd_simd_b(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -78,326 +78,40 @@ class abs__general_even_arraysize_with_simd_b(unittest.TestCase):
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
 		if 'even' == 'even':
-			testdatasize = 160
+			testdatasize = 320
 		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
+			testdatasize = 319
 
+		decentre = testdatasize // 2
 
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('b', xdata)
-		self.dataout = array.array('b', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_b(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
+		if 'b' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.b_min + 1
+			maxval = arrayfunc.arraylimits.b_max
 		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
 
 
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
 
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
 
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('b', xdata)
-		self.dataout = array.array('b', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code b.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code b.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_b(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
 
 		self.data = array.array('b', xdata)
 		self.dataout = array.array('b', [0]*len(self.data))
 
-		self.expected = [abs(x) for x in self.data]
 
 		self.limited = len(self.data) // 2
 
@@ -502,6 +216,4758 @@ class abs__general_even_arraysize_without_simd_b(unittest.TestCase):
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
 
 		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'b' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.b_min + 1
+			maxval = arrayfunc.arraylimits.b_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'b' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.b_min + 1
+			maxval = arrayfunc.arraylimits.b_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'b' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.b_min + 1
+			maxval = arrayfunc.arraylimits.b_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('b', xdata)
+		self.dataout = array.array('b', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code b.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code b.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'h' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.h_min + 1
+			maxval = arrayfunc.arraylimits.h_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'h' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.h_min + 1
+			maxval = arrayfunc.arraylimits.h_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'h' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.h_min + 1
+			maxval = arrayfunc.arraylimits.h_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'h' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.h_min + 1
+			maxval = arrayfunc.arraylimits.h_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('h', xdata)
+		self.dataout = array.array('h', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code h.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'i' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.i_min + 1
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'i' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.i_min + 1
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'i' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.i_min + 1
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'i' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.i_min + 1
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('i', xdata)
+		self.dataout = array.array('i', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code i.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'l' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.l_min + 1
+			maxval = arrayfunc.arraylimits.l_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'l' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.l_min + 1
+			maxval = arrayfunc.arraylimits.l_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'l' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.l_min + 1
+			maxval = arrayfunc.arraylimits.l_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'l' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.l_min + 1
+			maxval = arrayfunc.arraylimits.l_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('l', xdata)
+		self.dataout = array.array('l', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code l.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'q' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.q_min + 1
+			maxval = arrayfunc.arraylimits.q_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'q' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.q_min + 1
+			maxval = arrayfunc.arraylimits.q_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'q' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.q_min + 1
+			maxval = arrayfunc.arraylimits.q_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'q' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.q_min + 1
+			maxval = arrayfunc.arraylimits.q_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('q', xdata)
+		self.dataout = array.array('q', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code q.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'f' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.f_min + 1
+			maxval = arrayfunc.arraylimits.f_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'f' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.f_min + 1
+			maxval = arrayfunc.arraylimits.f_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'f' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.f_min + 1
+			maxval = arrayfunc.arraylimits.f_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_f(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'f' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.f_min + 1
+			maxval = arrayfunc.arraylimits.f_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('f', xdata)
+		self.dataout = array.array('f', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code f.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_nosimd_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'd' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.d_min + 1
+			maxval = arrayfunc.arraylimits.d_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_even_arraysize_withsimd_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'even' == 'even':
+			testdatasize = 320
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'd' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.d_min + 1
+			maxval = arrayfunc.arraylimits.d_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_nosimd_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'd' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.d_min + 1
+			maxval = arrayfunc.arraylimits.d_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+##############################################################################
+
+
+
+##############################################################################
+class abs__general_odd_arraysize_withsimd_simd_d(unittest.TestCase):
+	"""Test for basic general tests.
+	test_template_uniop
+	"""
+
+
+	##############################################################################
+	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		# NaN cannot be compared using normal means.
+		if math.isnan(dataoutitem) and math.isnan(expecteditem):
+			pass
+		# Anything else can be compared normally.
+		else:
+			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		self.addTypeEqualityFunc(float, self.FloatassertEqual)
+
+		if 'odd' == 'even':
+			testdatasize = 320
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if 'd' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.d_min + 1
+			maxval = arrayfunc.arraylimits.d_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
+
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+
+		self.data = array.array('d', xdata)
+		self.dataout = array.array('d', [0]*len(self.data))
+
+
+		self.limited = len(self.data) // 2
+
+
+	########################################################
+	def test_abs__inplace_a1(self):
+		"""Test abs_ in place - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+
+		arrayfunc.abs_(self.data )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_a2(self):
+		"""Test abs_ in place with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_maxlen_a3(self):
+		"""Test abs_ in place with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__inplace_ov_maxlen_a4(self):
+		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
+
+		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.data), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_abs__outputarray_a5(self):
+		"""Test abs_ to output array - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_a6(self):
+		"""Test abs_ to output array with matherrors=True  - Array code d.
+		"""
+		expected = [abs(x) for x in self.data]
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_maxlen_a7(self):
+		"""Test abs_ to output array with array maxlen  - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_abs__outputarray_ov_maxlen_a8(self):
+		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
+		"""
+		pydataout = [abs(x) for x in self.data]
+		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
 
 		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -672,468 +5138,6 @@ class abs__opt_param_errors_b(unittest.TestCase):
 
 
 ##############################################################################
-class abs__general_even_arraysize_with_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_h(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('h', xdata)
-		self.dataout = array.array('h', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code h.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code h.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
 class abs__param_errors_h(unittest.TestCase):
 	"""Test abs_ for invalid array and numeric parameters.
 	param_invalid_template
@@ -1286,468 +5290,6 @@ class abs__opt_param_errors_h(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.inparray1b, self.dataout, nosimd='a')
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_with_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_i(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('i', xdata)
-		self.dataout = array.array('i', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code i.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code i.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
 
 
 ##############################################################################
@@ -1914,468 +5456,6 @@ class abs__opt_param_errors_i(unittest.TestCase):
 
 
 ##############################################################################
-class abs__general_even_arraysize_with_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_l(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('l', xdata)
-		self.dataout = array.array('l', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code l.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code l.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
 class abs__param_errors_l(unittest.TestCase):
 	"""Test abs_ for invalid array and numeric parameters.
 	param_invalid_template
@@ -2528,468 +5608,6 @@ class abs__opt_param_errors_l(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.inparray1b, self.dataout, nosimd='a')
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_with_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_q(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('q', xdata)
-		self.dataout = array.array('q', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code q.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code q.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
 
 
 ##############################################################################
@@ -3156,468 +5774,6 @@ class abs__opt_param_errors_q(unittest.TestCase):
 
 
 ##############################################################################
-class abs__general_even_arraysize_with_simd_f(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('f', xdata)
-		self.dataout = array.array('f', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_f(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('f', xdata)
-		self.dataout = array.array('f', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_f(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('f', xdata)
-		self.dataout = array.array('f', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code f.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code f.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
 class abs__param_errors_f(unittest.TestCase):
 	"""Test abs_ for invalid array and numeric parameters.
 	param_invalid_template
@@ -3770,468 +5926,6 @@ class abs__opt_param_errors_f(unittest.TestCase):
 		# This is the actual test.
 		with self.assertRaises(TypeError):
 			arrayfunc.abs_(self.inparray1b, self.dataout, nosimd='a')
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_with_simd_d(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('d', xdata)
-		self.dataout = array.array('d', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_odd_arraysize_with_simd_d(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('d', xdata)
-		self.dataout = array.array('d', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-##############################################################################
-
-
-
-##############################################################################
-class abs__general_even_arraysize_without_simd_d(unittest.TestCase):
-	"""Test for basic general tests.
-	test_template_uniop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, expecteditem, dataoutitem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([-5,-4,-3,-2,-1,0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data = array.array('d', xdata)
-		self.dataout = array.array('d', [0]*len(self.data))
-
-		self.expected = [abs(x) for x in self.data]
-
-		self.limited = len(self.data) // 2
-
-
-	########################################################
-	def test_abs__inplace_a1(self):
-		"""Test abs_ in place - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-
-		arrayfunc.abs_(self.data , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_a2(self):
-		"""Test abs_ in place with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_maxlen_a3(self):
-		"""Test abs_ in place with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__inplace_ov_maxlen_a4(self):
-		"""Test abs_ in place with matherrors=True and array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
-
-		arrayfunc.abs_(self.data, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.data), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_abs__outputarray_a5(self):
-		"""Test abs_ to output array - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_a6(self):
-		"""Test abs_ to output array with matherrors=True  - Array code d.
-		"""
-		expected = [abs(x) for x in self.data]
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_maxlen_a7(self):
-		"""Test abs_ to output array with array maxlen  - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_abs__outputarray_ov_maxlen_a8(self):
-		"""Test abs_ to output array with matherrors=True and array maxlen - Array code d.
-		"""
-		pydataout = [abs(x) for x in self.data]
-		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-		arrayfunc.abs_(self.data, self.dataout, matherrors=True, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(list(self.dataout), expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
 
 
 ##############################################################################

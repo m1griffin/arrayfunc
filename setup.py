@@ -43,7 +43,7 @@ extensions = [
 
 	('add', ['src/add.c', 'src/add_simd_x86.c', 'src/add_simd_arm.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('sub', ['src/sub.c', 'src/sub_simd_x86.c', 'src/sub_simd_arm.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
-	('mul', ['src/mul.c', 'src/mul_simd_x86.c', 'src/mul_simd_arm.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
+	('mul', ['src/mul.c', 'src/mul_simd_arm.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('truediv', ['src/truediv.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('floordiv', ['src/floordiv.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
 	('mod', ['src/mod.c', 'src/arrayparams_two.c', 'src/arrayparams_base.c', 'src/arrayerrs.c']),
@@ -147,7 +147,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '5.0.0',
+	version = '5.1.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

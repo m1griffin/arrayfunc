@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     07-Oct-2019
-// Ver:      19-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -80,14 +80,13 @@ Py_ssize_t findindex_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vceq_s8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] == param1) {
 					return fineindex;
 				}
@@ -96,7 +95,7 @@ Py_ssize_t findindex_eq_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] == param1) {
 			return index;
 		}
@@ -144,14 +143,13 @@ Py_ssize_t findindex_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft > datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcgt_s8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] > param1) {
 					return fineindex;
 				}
@@ -160,7 +158,7 @@ Py_ssize_t findindex_gt_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] > param1) {
 			return index;
 		}
@@ -208,14 +206,13 @@ Py_ssize_t findindex_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft >= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcge_s8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] >= param1) {
 					return fineindex;
 				}
@@ -224,7 +221,7 @@ Py_ssize_t findindex_ge_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] >= param1) {
 			return index;
 		}
@@ -272,14 +269,13 @@ Py_ssize_t findindex_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft < datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vclt_s8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] < param1) {
 					return fineindex;
 				}
@@ -288,7 +284,7 @@ Py_ssize_t findindex_lt_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] < param1) {
 			return index;
 		}
@@ -336,14 +332,13 @@ Py_ssize_t findindex_le_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft <= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcle_s8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] <= param1) {
 					return fineindex;
 				}
@@ -352,7 +347,7 @@ Py_ssize_t findindex_le_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] <= param1) {
 			return index;
 		}
@@ -400,14 +395,13 @@ Py_ssize_t findindex_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft != datasliceright;
-		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
+		// The actual SIMD operation. 
+		resultslice = vceq_s8(datasliceleft, datasliceright);
+		if (vreinterpret_u64_u8(resultslice) != 0xffffffffffffffff) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] != param1) {
 					return fineindex;
 				}
@@ -416,7 +410,7 @@ Py_ssize_t findindex_ne_signed_char_simd(Py_ssize_t arraylen, signed char *data,
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] != param1) {
 			return index;
 		}
@@ -464,14 +458,13 @@ Py_ssize_t findindex_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vceq_u8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] == param1) {
 					return fineindex;
 				}
@@ -480,7 +473,7 @@ Py_ssize_t findindex_eq_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] == param1) {
 			return index;
 		}
@@ -528,14 +521,13 @@ Py_ssize_t findindex_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft > datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcgt_u8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] > param1) {
 					return fineindex;
 				}
@@ -544,7 +536,7 @@ Py_ssize_t findindex_gt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] > param1) {
 			return index;
 		}
@@ -592,14 +584,13 @@ Py_ssize_t findindex_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft >= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcge_u8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] >= param1) {
 					return fineindex;
 				}
@@ -608,7 +599,7 @@ Py_ssize_t findindex_ge_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] >= param1) {
 			return index;
 		}
@@ -656,14 +647,13 @@ Py_ssize_t findindex_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft < datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vclt_u8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] < param1) {
 					return fineindex;
 				}
@@ -672,7 +662,7 @@ Py_ssize_t findindex_lt_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] < param1) {
 			return index;
 		}
@@ -720,14 +710,13 @@ Py_ssize_t findindex_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft <= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcle_u8(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] <= param1) {
 					return fineindex;
 				}
@@ -736,7 +725,7 @@ Py_ssize_t findindex_le_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] <= param1) {
 			return index;
 		}
@@ -784,14 +773,13 @@ Py_ssize_t findindex_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = vld1_u8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft != datasliceright;
-		if (vreinterpret_u64_u8(resultslice) != 0x0000000000000000) {
+		// The actual SIMD operation. 
+		resultslice = vceq_u8(datasliceleft, datasliceright);
+		if (vreinterpret_u64_u8(resultslice) != 0xffffffffffffffff) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] != param1) {
 					return fineindex;
 				}
@@ -800,7 +788,7 @@ Py_ssize_t findindex_ne_unsigned_char_simd(Py_ssize_t arraylen, unsigned char *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] != param1) {
 			return index;
 		}
@@ -848,14 +836,13 @@ Py_ssize_t findindex_eq_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vceq_s16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] == param1) {
 					return fineindex;
 				}
@@ -864,7 +851,7 @@ Py_ssize_t findindex_eq_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] == param1) {
 			return index;
 		}
@@ -912,14 +899,13 @@ Py_ssize_t findindex_gt_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft > datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcgt_s16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] > param1) {
 					return fineindex;
 				}
@@ -928,7 +914,7 @@ Py_ssize_t findindex_gt_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] > param1) {
 			return index;
 		}
@@ -976,14 +962,13 @@ Py_ssize_t findindex_ge_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft >= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcge_s16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] >= param1) {
 					return fineindex;
 				}
@@ -992,7 +977,7 @@ Py_ssize_t findindex_ge_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] >= param1) {
 			return index;
 		}
@@ -1040,14 +1025,13 @@ Py_ssize_t findindex_lt_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft < datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vclt_s16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] < param1) {
 					return fineindex;
 				}
@@ -1056,7 +1040,7 @@ Py_ssize_t findindex_lt_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] < param1) {
 			return index;
 		}
@@ -1104,14 +1088,13 @@ Py_ssize_t findindex_le_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft <= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcle_s16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] <= param1) {
 					return fineindex;
 				}
@@ -1120,7 +1103,7 @@ Py_ssize_t findindex_le_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] <= param1) {
 			return index;
 		}
@@ -1168,14 +1151,13 @@ Py_ssize_t findindex_ne_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft != datasliceright;
-		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
+		// The actual SIMD operation. 
+		resultslice = vceq_s16(datasliceleft, datasliceright);
+		if (vreinterpret_u64_u16(resultslice) != 0xffffffffffffffff) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] != param1) {
 					return fineindex;
 				}
@@ -1184,7 +1166,7 @@ Py_ssize_t findindex_ne_signed_short_simd(Py_ssize_t arraylen, signed short *dat
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] != param1) {
 			return index;
 		}
@@ -1232,14 +1214,13 @@ Py_ssize_t findindex_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vceq_u16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] == param1) {
 					return fineindex;
 				}
@@ -1248,7 +1229,7 @@ Py_ssize_t findindex_eq_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] == param1) {
 			return index;
 		}
@@ -1296,14 +1277,13 @@ Py_ssize_t findindex_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft > datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcgt_u16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] > param1) {
 					return fineindex;
 				}
@@ -1312,7 +1292,7 @@ Py_ssize_t findindex_gt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] > param1) {
 			return index;
 		}
@@ -1360,14 +1340,13 @@ Py_ssize_t findindex_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft >= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcge_u16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] >= param1) {
 					return fineindex;
 				}
@@ -1376,7 +1355,7 @@ Py_ssize_t findindex_ge_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] >= param1) {
 			return index;
 		}
@@ -1424,14 +1403,13 @@ Py_ssize_t findindex_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft < datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vclt_u16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] < param1) {
 					return fineindex;
 				}
@@ -1440,7 +1418,7 @@ Py_ssize_t findindex_lt_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] < param1) {
 			return index;
 		}
@@ -1488,14 +1466,13 @@ Py_ssize_t findindex_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft <= datasliceright;
+		// The actual SIMD operation. 
+		resultslice = vcle_u16(datasliceleft, datasliceright);
 		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] <= param1) {
 					return fineindex;
 				}
@@ -1504,7 +1481,7 @@ Py_ssize_t findindex_le_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] <= param1) {
 			return index;
 		}
@@ -1552,14 +1529,13 @@ Py_ssize_t findindex_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = vld1_u16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft != datasliceright;
-		if (vreinterpret_u64_u16(resultslice) != 0x0000000000000000) {
+		// The actual SIMD operation. 
+		resultslice = vceq_u16(datasliceleft, datasliceright);
+		if (vreinterpret_u64_u16(resultslice) != 0xffffffffffffffff) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] != param1) {
 					return fineindex;
 				}
@@ -1568,7 +1544,7 @@ Py_ssize_t findindex_ne_unsigned_short_simd(Py_ssize_t arraylen, unsigned short 
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] != param1) {
 			return index;
 		}

@@ -31,13 +31,13 @@ import codegen_common
 
 # ==============================================================================
 
+
 # This template is for compare operations.
 test_template_comp = ''' 
 
 ##############################################################################
-class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
-	"""Test for basic general function operation using numeric 
-	data %(test_op_y)s.
+class %(funcname)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typecode)s_%(count)s(unittest.TestCase):
+	"""Test for basic general function operation using numeric data.
 	test_template_comp
 	"""
 
@@ -47,160 +47,209 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 		"""Initialise.
 		"""
 		if '%(arrayevenodd)s' == 'even':
-			testdatasize = 160
+			testdatasize = 512
 		if '%(arrayevenodd)s' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
+			testdatasize = 511
 
-		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([%(test_op_y)s]), range(testdatasize))]
-		ydatafail = [x for x,y in zip(itertools.cycle([%(test_op_y_fail)s]), range(testdatasize))]
+		# The maximum and minimum values used for 'f' and 'd' arrays are 
+		# limited here to within their precision so that small changes
+		# can be made to the test data when comparing values. 
+		# 'f' numbers have only 23 bits of precision and 'd' numbers have only 52 
+		# bits of precision, so they are limited here to the next lowest integer value. 
+		if '%(typecode)s' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif '%(typecode)s' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.%(typecode)s_min
+			maxval = arrayfunc.arraylimits.%(typecode)s_max
 
-		self.data1 = array.array('%(typecode)s', xdata)
-		self.data2 = array.array('%(typecode)s', ydata)
-		self.data2fail = array.array('%(typecode)s', ydatafail)
+		# We create numbers algorithmically in order to spread the 
+		# test values over the ranges of different integers.
+		# Create values near the bottom and top of the integer range.
+		baseval = minval + 10
+		topval = maxval - 10
+		maxint = maxval
 
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-		self.data2failparam = self.data2fail[:paramitersize]
+		# Pick something near the middle of the range, but with a bit of
+		# an aribitrary offset.
+		midval1 = ((maxval + minval) // 2) + 3
+		midval2 = ((maxval + minval) // 2) + 5
+		midval3 = ((maxval + minval) // 2) + 25
+
+
+		# The template has to conver integer to floating point parameters. 
+		if '%(typecode)s' in ('f', 'd'):
+			vals_param_array_num_pass = [float(x) for x in %(param_array_num_pass)s]
+			vals_param_array_num_fail = [float(x) for x in %(param_array_num_fail)s]
+			vals_param_num_array_pass = [float(x) for x in %(param_num_array_pass)s]
+			vals_param_num_array_fail = [float(x) for x in %(param_num_array_fail)s]
+		else:
+			vals_param_array_num_pass = %(param_array_num_pass)s
+			vals_param_array_num_fail = %(param_array_num_fail)s
+			vals_param_num_array_pass = %(param_num_array_pass)s
+			vals_param_num_array_fail = %(param_num_array_fail)s
+
+
+		# Now create the arrays and lists.
+		self.data_array_num = array.array('%(typecode)s', list(itertools.islice(itertools.cycle(%(data_array_num)s), testdatasize)))
+		self.param_array_num_pass = vals_param_array_num_pass
+		self.param_array_num_fail = vals_param_array_num_fail
+
+		self.data_num_array = array.array('%(typecode)s', list(itertools.islice(itertools.cycle(%(data_num_array)s), testdatasize)))
+		self.param_num_array_pass = vals_param_num_array_pass
+		self.param_num_array_fail = vals_param_num_array_fail
+
+		self.data_array_array = array.array('%(typecode)s', list(itertools.islice(itertools.cycle(%(data_array_array)s), testdatasize)))
+		self.data_array_array_pass = array.array('%(typecode)s', list(itertools.islice(itertools.cycle(%(data_array_array_pass)s), testdatasize)))
+		self.data_array_array_fail = array.array('%(typecode)s', list(itertools.islice(itertools.cycle(%(data_array_array_fail)s), testdatasize)))
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_num_a1(self):
-		"""Test %(funclabel)s as *array-num* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_num_a1(self):
+		"""Test %(funcname)s as *array-num* for basic function - Array code %(typecode)s.
 		"""
-		for testval in self.data2param:
+		for testval in self.param_array_num_pass:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				expected = all([x %(pyoperator)s testval for x in self.data1])
+				expected = all([x %(pyoperator)s testval for x in self.data_array_num])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval %(nosimd)s)
+				result = arrayfunc.%(funcname)s(self.data_array_num, testval %(nosimd)s)
 
+				self.assertTrue(expected)
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_num_a2(self):
-		"""Test %(funclabel)s as *array-num* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_num_a2(self):
+		"""Test %(funcname)s as *array-num* for basic function - Array code %(typecode)s.
 		"""
-		for testval in self.data2failparam:
+		for testval in self.param_array_num_fail:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				expected = all([x %(pyoperator)s testval for x in self.data1])
+				expected = all([x %(pyoperator)s testval for x in self.data_array_num])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval %(nosimd)s)
+				result = arrayfunc.%(funcname)s(self.data_array_num, testval %(nosimd)s)
 
+				self.assertFalse(expected)
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_num_a3(self):
-		"""Test %(funclabel)s as *array-num* for basic function with array limit - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_num_a3(self):
+		"""Test %(funcname)s as *array-num* for basic function with array limit - Array code %(typecode)s.
 		"""
-		for testval in self.data2param:
+		for testval in self.param_array_num_pass:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				limited = len(self.data1) // 2
+				limited = len(self.data_array_num) // 2
 
-				expected = all([x %(pyoperator)s testval for x in self.data1[0:limited]])
+				expected = all([x %(pyoperator)s testval for x in self.data_array_num[0:limited]])
 
-				result = arrayfunc.%(funcname)s(self.data1, testval, maxlen=limited %(nosimd)s)
+				result = arrayfunc.%(funcname)s(self.data_array_num, testval, maxlen=limited %(nosimd)s)
 
+				self.assertTrue(expected)
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_num_array_b1(self):
-		"""Test %(funclabel)s as *num-array* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_num_array_b1(self):
+		"""Test %(funcname)s as *num-array* for basic function - Array code %(typecode)s.
 		"""
-		for testval in self.data1param:
+		for testval in self.param_num_array_pass:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				expected = all([testval %(pyoperator)s x for x in self.data2])
+				expected = all([testval %(pyoperator)s x for x in self.data_num_array])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2 %(nosimd)s)
+				result = arrayfunc.%(funcname)s(testval, self.data_num_array %(nosimd)s)
 
+				self.assertTrue(expected)
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_num_array_b2(self):
-		"""Test %(funclabel)s as *num-array* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_num_array_b2(self):
+		"""Test %(funcname)s as *num-array* for basic function - Array code %(typecode)s.
 		"""
-		for testval in self.data1param:
+		for testval in self.param_num_array_fail:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				expected = all([testval %(pyoperator)s x for x in self.data2fail])
+				expected = all([testval %(pyoperator)s x for x in self.data_num_array])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2fail %(nosimd)s)
+				result = arrayfunc.%(funcname)s(testval, self.data_num_array %(nosimd)s)
 
+				self.assertFalse(expected)
 				self.assertFalse(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_num_array_b3(self):
-		"""Test %(funclabel)s as *num-array* for basic function with array limit - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_num_array_b3(self):
+		"""Test %(funcname)s as *num-array* for basic function with array limit - Array code %(typecode)s.
 		"""
-		for testval in self.data1param:
+		for testval in self.param_num_array_pass:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				limited = len(self.data1) // 2
+				limited = len(self.data_num_array) // 2
 
-				expected = all([testval %(pyoperator)s x for x in self.data2[0:limited]])
+				expected = all([testval %(pyoperator)s x for x in self.data_num_array[0:limited]])
 
-				result = arrayfunc.%(funcname)s(testval, self.data2, maxlen=limited %(nosimd)s)
+				result = arrayfunc.%(funcname)s(testval, self.data_num_array, maxlen=limited %(nosimd)s)
 
+				self.assertTrue(expected)
 				self.assertTrue(result)
 				self.assertIsInstance(result, bool)
 				self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_c1(self):
-		"""Test %(funclabel)s as *array-array* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_array_c1(self):
+		"""Test %(funcname)s as *array-array* for basic function - Array code %(typecode)s.
 		"""
-		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1, self.data2)])
-		result = arrayfunc.%(funcname)s(self.data1, self.data2 %(nosimd)s)
+		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data_array_array, self.data_array_array_pass)])
+		result = arrayfunc.%(funcname)s(self.data_array_array, self.data_array_array_pass %(nosimd)s)
 
+		self.assertTrue(expected)
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_c2(self):
-		"""Test %(funclabel)s as *array-array* for basic function - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_array_c2(self):
+		"""Test %(funcname)s as *array-array* for basic function - Array code %(typecode)s.
 		"""
-		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1, self.data2fail)])
-		result = arrayfunc.%(funcname)s(self.data1, self.data2fail %(nosimd)s)
+		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data_array_array, self.data_array_array_fail)])
+		result = arrayfunc.%(funcname)s(self.data_array_array, self.data_array_array_fail %(nosimd)s)
 
+		self.assertFalse(expected)
 		self.assertFalse(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
 
 
 	########################################################
-	def test_%(funclabel)s_basic_array_array_c3(self):
-		"""Test %(funclabel)s as *array-array* for basic function with array limit - Array code %(typelabel)s.
+	def test_%(funcname)s_basic_array_array_c3(self):
+		"""Test %(funcname)s as *array-array* for basic function with array limit - Array code %(typecode)s.
 		"""
-		limited = len(self.data1) // 2
+		limited = len(self.data_array_array) // 2
 
-		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data1[0:limited], self.data2[0:limited])])
+		expected = all([x %(pyoperator)s y for (x, y) in zip(self.data_array_array[0:limited], self.data_array_array_pass[0:limited])])
 
-		result = arrayfunc.%(funcname)s(self.data1, self.data2, maxlen=limited %(nosimd)s)
+		result = arrayfunc.%(funcname)s(self.data_array_array, self.data_array_array_pass, maxlen=limited %(nosimd)s)
 
+		self.assertTrue(expected)
 		self.assertTrue(result)
 		self.assertIsInstance(result, bool)
 		self.assertEqual(expected, result)
@@ -209,6 +258,9 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 ##############################################################################
 
 '''
+
+
+# ==============================================================================
 
 
 # ==============================================================================
@@ -928,6 +980,168 @@ numposdata2fail = {
 	'ne' : '5',
 }
 
+
+# ==============================================================================
+
+# ==============================================================================
+
+pyoperator = {
+	'eq' : '==',
+	'gt' : '>',
+	'ge' : '>=',
+	'lt' : '<',
+	'le' : '<=',
+	'ne' : '!=',
+}
+
+
+# Test data for the template test_template_comp.
+# This contains lists of test values to allow multiple tests sets
+# with the same template. This allows a broader range of data to
+# be tested.
+# This is in a format which is easier to view in an editor, rather than
+# easier to extract.
+
+testdata = {
+	'eq' : 
+	{
+	'data_array_num' :        ('[baseval, baseval, baseval]',  '[topval, topval, topval]'),
+	'param_array_num_pass' :  ('[baseval, baseval, baseval]',  '[topval, topval, topval]'),
+	'param_array_num_fail' :  ('[midval1, 0, midval2]',        '[0, midval1, midval3]'),
+
+	'param_num_array_pass' :  ('[baseval, baseval, baseval]',   '[topval, topval, topval]'),
+	'param_num_array_fail' :  ('[midval3, 0, maxint]',          '[midval3, 0, maxint]'),
+	'data_num_array' :        ('[baseval, baseval, baseval]',   '[topval, topval, topval]'),
+
+	'data_array_array' :      ('[baseval, baseval, baseval]',   '[topval, topval, topval]'),
+	'data_array_array_pass' : ('[baseval, baseval, baseval]',   '[topval, topval, topval]'),
+	'data_array_array_fail' : ('[midval2, midval3, midval1]',   '[midval1, 0, midval3]'),
+	},
+
+	'gt' : 
+	{
+	'data_array_num' :        ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]'),
+	'param_array_num_pass' :  ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]'),
+	'param_array_num_fail' :  ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]'),
+
+	'param_num_array_pass' :  ('[baseval + 20, baseval + 30, baseval + 40]', '[topval + 5, topval, maxint]'),
+	'param_num_array_fail' :  ('[baseval + 0, baseval + 1, baseval + 4]',    '[topval - 25, topval - 30, topval - 35]'),
+	'data_num_array' :        ('[baseval + 10, baseval + 15, baseval + 17]', '[topval - 10, topval - 15, topval - 20]'),
+
+	'data_array_array' :      ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]'),
+	'data_array_array_pass' : ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]'),
+	'data_array_array_fail' : ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]'),
+	},
+
+	'ge' : 
+	{
+	'data_array_num' :        ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+	'param_array_num_pass' :  ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]', '[baseval, baseval, baseval]'),
+	'param_array_num_fail' :  ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]',            '[baseval + 1, baseval + 2, baseval + 3]'),
+
+	'param_num_array_pass' :  ('[baseval + 20, baseval + 30, baseval + 40]', '[topval + 5, topval, maxint]',            '[baseval, baseval, baseval]'),
+	'param_num_array_fail' :  ('[baseval + 0, baseval + 1, baseval + 4]',    '[topval - 25, topval - 30, topval - 35]', '[baseval - 1, baseval - 2, baseval - 3]'),
+	'data_num_array' :        ('[baseval + 10, baseval + 15, baseval + 17]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+
+	'data_array_array' :      ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+	'data_array_array_pass' : ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]', '[baseval, baseval, baseval]'),
+	'data_array_array_fail' : ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]',            '[baseval + 1, baseval + 2, baseval + 3]'),
+	},
+
+	'lt' : 
+	{
+	'data_array_num' :        ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]'),
+	'param_array_num_pass' :  ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]'),
+	'param_array_num_fail' :  ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]'),
+
+	'param_num_array_pass' :  ('[baseval + 0, baseval + 1, baseval + 4]',    '[topval - 25, topval - 30, topval - 35]'),
+	'param_num_array_fail' :  ('[baseval + 20, baseval + 30, baseval + 40]', '[topval + 5, topval, maxint]'),
+	'data_num_array' :        ('[baseval + 10, baseval + 15, baseval + 17]', '[topval - 10, topval - 15, topval - 20]'),
+
+	'data_array_array' :      ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]'),
+	'data_array_array_pass' : ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]'),
+	'data_array_array_fail' : ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]'),
+	},
+
+	'le' : 
+	{
+	'data_array_num' :        ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+	'param_array_num_pass' :  ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]',            '[baseval, baseval, baseval]'),
+	'param_array_num_fail' :  ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]', '[baseval - 1, baseval - 2, baseval - 3]'),
+
+	'param_num_array_pass' :  ('[baseval + 0, baseval + 1, baseval + 4]',    '[topval - 25, topval - 30, topval - 35]', '[baseval, baseval, baseval]'),
+	'param_num_array_fail' :  ('[baseval + 20, baseval + 30, baseval + 40]', '[topval + 5, topval, maxint]',            '[baseval + 1, baseval + 2, baseval + 3]'),
+	'data_num_array' :        ('[baseval + 10, baseval + 15, baseval + 17]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+
+	'data_array_array' :      ('[baseval + 10, baseval + 20, baseval + 30]', '[topval - 10, topval - 15, topval - 20]', '[baseval, baseval, baseval]'),
+	'data_array_array_pass' : ('[baseval + 31, baseval + 35, topval]',       '[topval + 5, topval, maxint]',            '[baseval, baseval, baseval]'),
+	'data_array_array_fail' : ('[baseval + 1, baseval + 2, baseval + 3]',    '[topval - 25, topval - 30, topval - 35]', '[baseval - 1, baseval - 2, baseval - 3]'),
+	},
+
+	'ne' : 
+	{
+	'data_array_num' :        ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+	'param_array_num_pass' :  ('[midval1, 0, midval3]',       '[midval3, midval2, 0]'),
+	'param_array_num_fail' :  ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+
+	'param_num_array_pass' :  ('[midval1, midval3, 0]',       '[midval3, midval1, 0]'),
+	'param_num_array_fail' :  ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+	'data_num_array' :        ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+
+	'data_array_array' :      ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+	'data_array_array_pass' : ('[midval2, midval3, midval1]', '[midval1, 0, midval3]'),
+	'data_array_array_fail' : ('[baseval, baseval, baseval]', '[topval, topval, topval]'),
+	},
+
+}
+
+
+def makedata(funcname):
+	'''Make the combinations of data options for tests.
+	'''
+	# Get the data for one specific op.
+	op = testdata[funcname]
+
+	# Get how many tests are present. These should all be the same, so
+	# we look for the maximum in order to detect errors.
+	numtests = max([len(op[x]) for x in op])
+	mintests = min([len(op[x]) for x in op])
+	if numtests != mintests:
+		print('Error! This is a mismatch in the number of data sets for ', funcname)
+
+	count = tuple([('count', x) for x in range(0, numtests)])
+	typecode = [('typecode', x) for x in codegen_common.arraycodes]
+	arrayevenodd = (('arrayevenodd', 'even'), ('arrayevenodd', 'odd'))
+	simdpresent = (('simdpresent', 'nosimd'), ('simdpresent', 'withsimd'))
+
+	# This creates all the combinations of test data.
+	combos = [dict(x) for x in itertools.product(typecode, arrayevenodd, simdpresent, count)]
+
+	opdata = {}
+	# Cycle through the sets of test data.
+	for testnum in range(numtests):
+		# Get the data for one set of tests.
+		opdata[testnum] = dict([(x, op[x][testnum]) for x in op])
+
+	nosimd = {'nosimd' : {'nosimd' : ', nosimd=True'}, 'withsimd' : {'nosimd' : ''}}
+
+	# Update with the test data. These values don't represent independent combinations,
+	# but rather just additional data that goes along with other items already present.
+	for x in combos:
+		x.update(nosimd[x['simdpresent']])
+		x.update(opdata[x['count']])
+		x['funcname'] = funcname
+		x['pyoperator'] = pyoperator[funcname]
+
+	return combos
+
+
+
+# ==============================================================================
+
+
+
+
 # ==============================================================================
 
 # Read in the op codes.
@@ -953,6 +1167,11 @@ for func in funclist:
 	with open(filename, 'w') as f:
 		# The copyright header.
 		f.write(codegen_common.HeaderTemplate % headerdate)
+
+		# Tests for detailed functionality of operations.
+		for funcdata in makedata(funcname):
+			f.write(test_template_comp % funcdata)
+
 
 
 		# Check each array type.
@@ -997,19 +1216,19 @@ for func in funclist:
 			funcdata['simdpresent'] = 'with'
 			funcdata['nosimd'] = ''
 			funcdata['arrayevenodd'] = 'even'
-			f.write(test_template_comp % funcdata)
+			#f.write(test_template_comp % funcdata)
 
 			# With SIMD, odd data array size.
 			funcdata['simdpresent'] = 'with'
 			funcdata['nosimd'] = ''
 			funcdata['arrayevenodd'] = 'odd'
-			f.write(test_template_comp % funcdata)
+			#f.write(test_template_comp % funcdata)
 
 			# Without SIMD.
 			funcdata['simdpresent'] = 'without'
 			funcdata['nosimd'] = ', nosimd=True'
 			funcdata['arrayevenodd'] = 'even'
-			f.write(test_template_comp % funcdata)
+			#f.write(test_template_comp % funcdata)
 
 
 			#####

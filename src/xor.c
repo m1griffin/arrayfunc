@@ -79,7 +79,7 @@ void xor_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, sign
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -100,7 +100,7 @@ void xor_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, sign
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -120,7 +120,7 @@ void xor_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signe
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -140,7 +140,7 @@ void xor_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param, signe
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -162,7 +162,7 @@ void xor_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, sign
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -182,7 +182,7 @@ void xor_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1, sign
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -211,7 +211,7 @@ void xor_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -232,7 +232,7 @@ void xor_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data1, 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -252,7 +252,7 @@ void xor_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, u
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -272,7 +272,7 @@ void xor_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char param, u
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -294,7 +294,7 @@ void xor_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -314,7 +314,7 @@ void xor_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *data1, 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -343,7 +343,7 @@ void xor_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, si
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -364,7 +364,7 @@ void xor_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1, si
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -384,7 +384,7 @@ void xor_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -404,7 +404,7 @@ void xor_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short param, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -426,7 +426,7 @@ void xor_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, si
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -446,7 +446,7 @@ void xor_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *data1, si
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -475,7 +475,7 @@ void xor_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -496,7 +496,7 @@ void xor_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *data1
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -516,7 +516,7 @@ void xor_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -536,7 +536,7 @@ void xor_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short param,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -558,7 +558,7 @@ void xor_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -578,7 +578,7 @@ void xor_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short *data1
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -607,7 +607,7 @@ void xor_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -628,7 +628,7 @@ void xor_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, signed
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -648,7 +648,7 @@ void xor_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -668,7 +668,7 @@ void xor_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, signed 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -690,7 +690,7 @@ void xor_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -710,7 +710,7 @@ void xor_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, signed
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -739,7 +739,7 @@ void xor_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, un
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -760,7 +760,7 @@ void xor_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, un
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -780,7 +780,7 @@ void xor_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, uns
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -800,7 +800,7 @@ void xor_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, uns
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -822,7 +822,7 @@ void xor_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, un
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -842,7 +842,7 @@ void xor_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, un
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -863,7 +863,7 @@ void xor_signed_long_1(Py_ssize_t arraylen, int nosimd, signed long *data1, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -876,7 +876,7 @@ void xor_signed_long_2(Py_ssize_t arraylen, int nosimd, signed long *data1, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -888,7 +888,7 @@ void xor_signed_long_3(Py_ssize_t arraylen, int nosimd, signed long param, signe
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -900,7 +900,7 @@ void xor_signed_long_4(Py_ssize_t arraylen, int nosimd, signed long param, signe
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -914,7 +914,7 @@ void xor_signed_long_5(Py_ssize_t arraylen, int nosimd, signed long *data1, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -926,7 +926,7 @@ void xor_signed_long_6(Py_ssize_t arraylen, int nosimd, signed long *data1, sign
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -947,7 +947,7 @@ void xor_unsigned_long_1(Py_ssize_t arraylen, int nosimd, unsigned long *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -960,7 +960,7 @@ void xor_unsigned_long_2(Py_ssize_t arraylen, int nosimd, unsigned long *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -972,7 +972,7 @@ void xor_unsigned_long_3(Py_ssize_t arraylen, int nosimd, unsigned long param, u
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -984,7 +984,7 @@ void xor_unsigned_long_4(Py_ssize_t arraylen, int nosimd, unsigned long param, u
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -998,7 +998,7 @@ void xor_unsigned_long_5(Py_ssize_t arraylen, int nosimd, unsigned long *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -1010,7 +1010,7 @@ void xor_unsigned_long_6(Py_ssize_t arraylen, int nosimd, unsigned long *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -1031,7 +1031,7 @@ void xor_signed_long_long_1(Py_ssize_t arraylen, int nosimd, signed long long *d
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -1044,7 +1044,7 @@ void xor_signed_long_long_2(Py_ssize_t arraylen, int nosimd, signed long long *d
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -1056,7 +1056,7 @@ void xor_signed_long_long_3(Py_ssize_t arraylen, int nosimd, signed long long pa
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -1068,7 +1068,7 @@ void xor_signed_long_long_4(Py_ssize_t arraylen, int nosimd, signed long long pa
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -1082,7 +1082,7 @@ void xor_signed_long_long_5(Py_ssize_t arraylen, int nosimd, signed long long *d
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -1094,7 +1094,7 @@ void xor_signed_long_long_6(Py_ssize_t arraylen, int nosimd, signed long long *d
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 
@@ -1115,7 +1115,7 @@ void xor_unsigned_long_long_1(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ param;
 	}
 
@@ -1128,7 +1128,7 @@ void xor_unsigned_long_long_2(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ param;
 	}
 
@@ -1140,7 +1140,7 @@ void xor_unsigned_long_long_3(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data2[x] = param ^ data2[x];
 	}
 
@@ -1152,7 +1152,7 @@ void xor_unsigned_long_long_4(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = param ^ data2[x];
 	}
 
@@ -1166,7 +1166,7 @@ void xor_unsigned_long_long_5(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] ^ data2[x];
 	}
 
@@ -1178,7 +1178,7 @@ void xor_unsigned_long_long_6(Py_ssize_t arraylen, int nosimd, unsigned long lon
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] ^ data2[x];
 	}
 

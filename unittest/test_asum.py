@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      19-Oct-2019.
+# Ver:      02-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import arrayfunc
 
 
 ##############################################################################
-class asum_general_b(unittest.TestCase):
+class asum_general_even_b(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -60,8 +60,16 @@ class asum_general_b(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -147,7 +155,7 @@ class asum_general_b(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_B(unittest.TestCase):
+class asum_general_odd_b(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -156,8 +164,120 @@ class asum_general_B(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'b' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.b_max
+			MinVal = arrayfunc.arraylimits.b_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'b' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('b', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code b. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code b. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code b. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code b. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code b. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_B(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -243,7 +363,7 @@ class asum_general_B(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_h(unittest.TestCase):
+class asum_general_odd_B(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -252,8 +372,120 @@ class asum_general_h(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'B' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.B_max
+			MinVal = arrayfunc.arraylimits.B_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'B' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('B', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code B. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code B. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code B. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code B. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code B. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_h(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -339,7 +571,7 @@ class asum_general_h(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_H(unittest.TestCase):
+class asum_general_odd_h(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -348,8 +580,120 @@ class asum_general_H(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'h' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'h' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('h', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code h. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code h. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code h. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code h. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code h. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_H(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -435,7 +779,7 @@ class asum_general_H(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_i(unittest.TestCase):
+class asum_general_odd_H(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -444,8 +788,120 @@ class asum_general_i(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'H' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.H_max
+			MinVal = arrayfunc.arraylimits.H_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'H' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('H', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code H. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code H. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code H. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code H. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code H. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_i(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -531,7 +987,7 @@ class asum_general_i(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_I(unittest.TestCase):
+class asum_general_odd_i(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -540,8 +996,120 @@ class asum_general_I(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'i' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.i_max
+			MinVal = arrayfunc.arraylimits.i_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'i' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('i', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code i. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code i. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code i. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code i. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code i. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_I(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -627,7 +1195,7 @@ class asum_general_I(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_l(unittest.TestCase):
+class asum_general_odd_I(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -636,8 +1204,120 @@ class asum_general_l(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'I' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.I_max
+			MinVal = arrayfunc.arraylimits.I_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'I' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('I', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code I. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code I. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code I. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code I. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code I. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_l(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -723,7 +1403,7 @@ class asum_general_l(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_L(unittest.TestCase):
+class asum_general_odd_l(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -732,8 +1412,120 @@ class asum_general_L(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'l' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.l_max
+			MinVal = arrayfunc.arraylimits.l_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'l' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('l', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code l. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code l. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code l. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code l. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code l. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_L(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -819,7 +1611,7 @@ class asum_general_L(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_q(unittest.TestCase):
+class asum_general_odd_L(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -828,8 +1620,120 @@ class asum_general_q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'L' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.L_max
+			MinVal = arrayfunc.arraylimits.L_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'L' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('L', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code L. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code L. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code L. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code L. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code L. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_q(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -915,7 +1819,7 @@ class asum_general_q(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_Q(unittest.TestCase):
+class asum_general_odd_q(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -924,8 +1828,120 @@ class asum_general_Q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'q' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.q_max
+			MinVal = arrayfunc.arraylimits.q_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'q' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('q', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code q. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code q. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code q. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code q. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code q. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_Q(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -1011,7 +2027,7 @@ class asum_general_Q(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_f(unittest.TestCase):
+class asum_general_odd_Q(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -1020,8 +2036,120 @@ class asum_general_f(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'Q' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.Q_max
+			MinVal = arrayfunc.arraylimits.Q_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'Q' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('Q', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code Q. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code Q. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code Q. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code Q. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code Q. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_f(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -1107,7 +2235,7 @@ class asum_general_f(unittest.TestCase):
 
 
 ##############################################################################
-class asum_general_d(unittest.TestCase):
+class asum_general_odd_f(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -1116,8 +2244,224 @@ class asum_general_d(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'f' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.f_max
+			MinVal = arrayfunc.arraylimits.f_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'f' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('f', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code f. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code f. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code f. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code f. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code f. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_even_d(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'even' == 'odd':
+			arraylength = arraylength + 1
+
+
+		# For floating point data, limit the test data to the same range
+		# as smaller integer. This is to avoid problems with loss of
+		# precision when adding FP numbers of widely different sizes. 
+		if 'd' in ('f', 'd'):
+			MaxVal = arrayfunc.arraylimits.h_max
+			MinVal = arrayfunc.arraylimits.h_min
+		else:
+			MaxVal = arrayfunc.arraylimits.d_max
+			MinVal = arrayfunc.arraylimits.d_min
+
+
+		# The test values for the largest integer array types need to be
+		# scaled down more to prevent integer overflow.
+		if 'd' in ('L', 'Q'):
+			testscale = 100
+		else:
+			testscale = 10
+
+
+		# Set a range of data which will we know will sum to less than
+		# the maximum numeric size we can handle in C.
+		startdata = int(MinVal // testscale)
+		stopdata = int(MaxVal // testscale)
+		step = int((stopdata - startdata) // (arraylength // 2))
+		# For very small values, we need to avoid having a step of zero.
+		if step == 0:
+			step = 1
+		
+		# This produces a list of interleaved values arrays.
+		# For signed types, the positive and negative values are interleaved.
+		testvalues = list(itertools.chain.from_iterable(zip(range(startdata, stopdata, step), range(stopdata, startdata, -step))))
+		testdata = testvalues[:arraylength]
+
+
+		# Test arrays.
+		self.gentest = array.array('d', [x for x,y in zip(itertools.cycle(testdata), range(arraylength))])
+
+
+	########################################################
+	def test_asum_general_function_A1(self):
+		"""Test asum  - Array code d. General test.
+		"""
+		result = arrayfunc.asum(self.gentest)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_B1(self):
+		"""Test asum  - Array code d. Test optional maxlen parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+	########################################################
+	def test_asum_general_function_C1(self):
+		"""Test asum  - Array code d. Test optional matherrors parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, matherrors=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_D1(self):
+		"""Test asum  - Array code d. Test optional nosimd parameter.
+		"""
+		result = arrayfunc.asum(self.gentest, nosimd=True)
+		self.assertEqual(result, sum(self.gentest))
+
+
+	########################################################
+	def test_asum_general_function_E1(self):
+		"""Test asum  - Array code d. Test optional maxlen, matherrors, nosimd parameters together.
+		"""
+		result = arrayfunc.asum(self.gentest, maxlen=50, nosimd=True, matherrors=True)
+		self.assertEqual(result, sum(self.gentest[:50]))
+
+
+
+##############################################################################
+
+
+
+##############################################################################
+class asum_general_odd_d(unittest.TestCase):
+	"""Test asum for basic general function operation.
+	op_template_general
+	"""
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
+		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if 'odd' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of

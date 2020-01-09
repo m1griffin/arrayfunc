@@ -58,23 +58,23 @@ signed int atanh_float(Py_ssize_t arraylen, float *data, float *dataout, unsigne
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = atanhf(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = atanhf(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = atanhf(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = atanhf(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -102,23 +102,23 @@ signed int atanh_double(Py_ssize_t arraylen, double *data, double *dataout, unsi
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = atanh(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = atanh(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = atanh(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = atanh(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}

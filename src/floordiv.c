@@ -66,7 +66,7 @@ signed int floordiv_signed_char_1(Py_ssize_t arraylen, signed char *data1, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == SCHAR_MIN) {return ARR_ERR_OVFL;}
@@ -79,7 +79,7 @@ signed int floordiv_signed_char_1(Py_ssize_t arraylen, signed char *data1, signe
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -109,7 +109,7 @@ signed int floordiv_signed_char_2(Py_ssize_t arraylen, signed char *data1, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == SCHAR_MIN) {return ARR_ERR_OVFL;}
@@ -122,7 +122,7 @@ signed int floordiv_signed_char_2(Py_ssize_t arraylen, signed char *data1, signe
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -149,7 +149,7 @@ signed int floordiv_signed_char_3(Py_ssize_t arraylen, signed char param, signed
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SCHAR_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -163,7 +163,7 @@ signed int floordiv_signed_char_3(Py_ssize_t arraylen, signed char param, signed
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -192,7 +192,7 @@ signed int floordiv_signed_char_4(Py_ssize_t arraylen, signed char param, signed
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SCHAR_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -206,7 +206,7 @@ signed int floordiv_signed_char_4(Py_ssize_t arraylen, signed char param, signed
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -234,7 +234,7 @@ signed int floordiv_signed_char_5(Py_ssize_t arraylen, signed char *data1, signe
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -264,7 +264,7 @@ signed int floordiv_signed_char_6(Py_ssize_t arraylen, signed char *data1, signe
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -302,7 +302,7 @@ signed int floordiv_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, u
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -320,7 +320,7 @@ signed int floordiv_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, u
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -335,7 +335,7 @@ signed int floordiv_unsigned_char_3(Py_ssize_t arraylen, unsigned char param, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -351,7 +351,7 @@ signed int floordiv_unsigned_char_4(Py_ssize_t arraylen, unsigned char param, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -369,7 +369,7 @@ signed int floordiv_unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -385,7 +385,7 @@ signed int floordiv_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -417,7 +417,7 @@ signed int floordiv_signed_short_1(Py_ssize_t arraylen, signed short *data1, sig
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == SHRT_MIN) {return ARR_ERR_OVFL;}
@@ -430,7 +430,7 @@ signed int floordiv_signed_short_1(Py_ssize_t arraylen, signed short *data1, sig
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -460,7 +460,7 @@ signed int floordiv_signed_short_2(Py_ssize_t arraylen, signed short *data1, sig
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == SHRT_MIN) {return ARR_ERR_OVFL;}
@@ -473,7 +473,7 @@ signed int floordiv_signed_short_2(Py_ssize_t arraylen, signed short *data1, sig
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -500,7 +500,7 @@ signed int floordiv_signed_short_3(Py_ssize_t arraylen, signed short param, sign
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SHRT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -514,7 +514,7 @@ signed int floordiv_signed_short_3(Py_ssize_t arraylen, signed short param, sign
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -543,7 +543,7 @@ signed int floordiv_signed_short_4(Py_ssize_t arraylen, signed short param, sign
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SHRT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -557,7 +557,7 @@ signed int floordiv_signed_short_4(Py_ssize_t arraylen, signed short param, sign
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -585,7 +585,7 @@ signed int floordiv_signed_short_5(Py_ssize_t arraylen, signed short *data1, sig
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -615,7 +615,7 @@ signed int floordiv_signed_short_6(Py_ssize_t arraylen, signed short *data1, sig
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -653,7 +653,7 @@ signed int floordiv_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1,
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -671,7 +671,7 @@ signed int floordiv_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1,
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -686,7 +686,7 @@ signed int floordiv_unsigned_short_3(Py_ssize_t arraylen, unsigned short param, 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -702,7 +702,7 @@ signed int floordiv_unsigned_short_4(Py_ssize_t arraylen, unsigned short param, 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -720,7 +720,7 @@ signed int floordiv_unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1,
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -736,7 +736,7 @@ signed int floordiv_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1,
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -768,7 +768,7 @@ signed int floordiv_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == INT_MIN) {return ARR_ERR_OVFL;}
@@ -781,7 +781,7 @@ signed int floordiv_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed 
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -811,7 +811,7 @@ signed int floordiv_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == INT_MIN) {return ARR_ERR_OVFL;}
@@ -824,7 +824,7 @@ signed int floordiv_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed 
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -851,7 +851,7 @@ signed int floordiv_signed_int_3(Py_ssize_t arraylen, signed int param, signed i
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == INT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -865,7 +865,7 @@ signed int floordiv_signed_int_3(Py_ssize_t arraylen, signed int param, signed i
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -894,7 +894,7 @@ signed int floordiv_signed_int_4(Py_ssize_t arraylen, signed int param, signed i
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == INT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -908,7 +908,7 @@ signed int floordiv_signed_int_4(Py_ssize_t arraylen, signed int param, signed i
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -936,7 +936,7 @@ signed int floordiv_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed 
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -966,7 +966,7 @@ signed int floordiv_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed 
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -1004,7 +1004,7 @@ signed int floordiv_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, uns
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1022,7 +1022,7 @@ signed int floordiv_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, uns
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1037,7 +1037,7 @@ signed int floordiv_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsi
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1053,7 +1053,7 @@ signed int floordiv_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsi
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1071,7 +1071,7 @@ signed int floordiv_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1087,7 +1087,7 @@ signed int floordiv_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1119,7 +1119,7 @@ signed int floordiv_signed_long_1(Py_ssize_t arraylen, signed long *data1, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == LONG_MIN) {return ARR_ERR_OVFL;}
@@ -1132,7 +1132,7 @@ signed int floordiv_signed_long_1(Py_ssize_t arraylen, signed long *data1, signe
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -1162,7 +1162,7 @@ signed int floordiv_signed_long_2(Py_ssize_t arraylen, signed long *data1, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == LONG_MIN) {return ARR_ERR_OVFL;}
@@ -1175,7 +1175,7 @@ signed int floordiv_signed_long_2(Py_ssize_t arraylen, signed long *data1, signe
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -1202,7 +1202,7 @@ signed int floordiv_signed_long_3(Py_ssize_t arraylen, signed long param, signed
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1216,7 +1216,7 @@ signed int floordiv_signed_long_3(Py_ssize_t arraylen, signed long param, signed
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1245,7 +1245,7 @@ signed int floordiv_signed_long_4(Py_ssize_t arraylen, signed long param, signed
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1259,7 +1259,7 @@ signed int floordiv_signed_long_4(Py_ssize_t arraylen, signed long param, signed
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1287,7 +1287,7 @@ signed int floordiv_signed_long_5(Py_ssize_t arraylen, signed long *data1, signe
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -1317,7 +1317,7 @@ signed int floordiv_signed_long_6(Py_ssize_t arraylen, signed long *data1, signe
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -1355,7 +1355,7 @@ signed int floordiv_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, u
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1373,7 +1373,7 @@ signed int floordiv_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, u
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1388,7 +1388,7 @@ signed int floordiv_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1404,7 +1404,7 @@ signed int floordiv_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1422,7 +1422,7 @@ signed int floordiv_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1438,7 +1438,7 @@ signed int floordiv_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1470,7 +1470,7 @@ signed int floordiv_signed_long_long_1(Py_ssize_t arraylen, signed long long *da
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == LLONG_MIN) {return ARR_ERR_OVFL;}
@@ -1483,7 +1483,7 @@ signed int floordiv_signed_long_long_1(Py_ssize_t arraylen, signed long long *da
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -1513,7 +1513,7 @@ signed int floordiv_signed_long_long_2(Py_ssize_t arraylen, signed long long *da
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == LLONG_MIN) {return ARR_ERR_OVFL;}
@@ -1526,7 +1526,7 @@ signed int floordiv_signed_long_long_2(Py_ssize_t arraylen, signed long long *da
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -1553,7 +1553,7 @@ signed int floordiv_signed_long_long_3(Py_ssize_t arraylen, signed long long par
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LLONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1567,7 +1567,7 @@ signed int floordiv_signed_long_long_3(Py_ssize_t arraylen, signed long long par
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1596,7 +1596,7 @@ signed int floordiv_signed_long_long_4(Py_ssize_t arraylen, signed long long par
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LLONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1610,7 +1610,7 @@ signed int floordiv_signed_long_long_4(Py_ssize_t arraylen, signed long long par
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -1638,7 +1638,7 @@ signed int floordiv_signed_long_long_5(Py_ssize_t arraylen, signed long long *da
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -1668,7 +1668,7 @@ signed int floordiv_signed_long_long_6(Py_ssize_t arraylen, signed long long *da
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -1706,7 +1706,7 @@ signed int floordiv_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1724,7 +1724,7 @@ signed int floordiv_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1739,7 +1739,7 @@ signed int floordiv_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1755,7 +1755,7 @@ signed int floordiv_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1773,7 +1773,7 @@ signed int floordiv_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1789,7 +1789,7 @@ signed int floordiv_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1816,12 +1816,12 @@ signed int floordiv_float_1(Py_ssize_t arraylen, float *data1, float param, unsi
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -1846,12 +1846,12 @@ signed int floordiv_float_2(Py_ssize_t arraylen, float *data1, float param, floa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -1876,12 +1876,12 @@ signed int floordiv_float_3(Py_ssize_t arraylen, float param, float *data2, unsi
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = floorf(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = floorf(param / data2[x]);
 			if (!isfinite(data2[x])) {
@@ -1907,12 +1907,12 @@ signed int floordiv_float_4(Py_ssize_t arraylen, float param, float *data2, floa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1937,12 +1937,12 @@ signed int floordiv_float_5(Py_ssize_t arraylen, float *data1, float *data2, uns
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floorf(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -1967,12 +1967,12 @@ signed int floordiv_float_6(Py_ssize_t arraylen, float *data1, float *data2, flo
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floorf(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -2005,12 +2005,12 @@ signed int floordiv_double_1(Py_ssize_t arraylen, double *data1, double param, u
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -2035,12 +2035,12 @@ signed int floordiv_double_2(Py_ssize_t arraylen, double *data1, double param, d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -2065,12 +2065,12 @@ signed int floordiv_double_3(Py_ssize_t arraylen, double param, double *data2, u
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = floor(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = floor(param / data2[x]);
 			if (!isfinite(data2[x])) {
@@ -2096,12 +2096,12 @@ signed int floordiv_double_4(Py_ssize_t arraylen, double param, double *data2, d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -2126,12 +2126,12 @@ signed int floordiv_double_5(Py_ssize_t arraylen, double *data1, double *data2, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = floor(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -2156,12 +2156,12 @@ signed int floordiv_double_6(Py_ssize_t arraylen, double *data1, double *data2, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = floor(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {

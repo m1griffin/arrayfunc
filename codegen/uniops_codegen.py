@@ -105,23 +105,23 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arr
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(copname)s;
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(copname)s;
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = %(copname)s;
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = %(copname)s;
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -157,23 +157,23 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arr
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
@@ -207,23 +207,23 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arr
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
@@ -259,6 +259,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	Py_ssize_t alignedlength;
 
 	%(simdattr)s datasliceleft;
+	%(vsignparam)s
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -266,7 +267,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data[index]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
@@ -276,7 +277,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		data[index] = %(simdcleanup)s;
 	}
 
@@ -295,6 +296,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	Py_ssize_t alignedlength;
 
 	%(simdattr)s datasliceleft;
+	%(vsignparam)s
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -302,7 +304,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data[index]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
@@ -312,7 +314,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		dataout[index] = %(simdcleanup)s;
 	}
 
@@ -496,16 +498,29 @@ SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 # The SIMD operations used for each function.
 # For x86-64.
 simdop_x86 = {
-'b' : {'abs_' : '__builtin_ia32_pabsb128(datasliceleft)', 'neg' : '-datasliceleft'},
-'h' : {'abs_' : '__builtin_ia32_pabsw128(datasliceleft)', 'neg' : '-datasliceleft'},
-'i' : {'abs_' : '__builtin_ia32_pabsd128(datasliceleft)', 'neg' : '-datasliceleft'},
+'b' : {'abs_' : '__builtin_ia32_pabsb128(datasliceleft)', 'neg' : '__builtin_ia32_psignb128(datasliceleft, vsignparam)'},
+'h' : {'abs_' : '__builtin_ia32_pabsw128(datasliceleft)', 'neg' : '__builtin_ia32_psignw128(datasliceleft, vsignparam)'},
+'i' : {'abs_' : '__builtin_ia32_pabsd128(datasliceleft)', 'neg' : '__builtin_ia32_psignd128(datasliceleft, vsignparam)'},
 }
 
 # For ARM NEON.
 simdop_arm = {
-'b' : {'abs_' : 'vabs_s8(datasliceleft)', 'neg' : '-datasliceleft'},
-'h' : {'abs_' : 'vabs_s16(datasliceleft)', 'neg' : '-datasliceleft'},
-'i' : {'abs_' : 'vabs_s32(datasliceleft)', 'neg' : '-datasliceleft'},
+'b' : {'abs_' : 'vabs_s8(datasliceleft)', 'neg' : 'vneg_s8(datasliceleft)'},
+'h' : {'abs_' : 'vabs_s16(datasliceleft)', 'neg' : 'vneg_s16(datasliceleft)'},
+'i' : {'abs_' : 'vabs_s32(datasliceleft)', 'neg' : 'vneg_s32(datasliceleft)'},
+}
+
+# These are needed for neg for x86 only, as otherwise the vector literal just gets too long.
+vsignparam_x86 = {
+'b' : {'abs_' : '', 'neg' : 'v16qi vsignparam = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};'},
+'h' : {'abs_' : '', 'neg' : 'v8hi vsignparam = {-1, -1, -1, -1, -1, -1, -1, -1};'},
+'i' : {'abs_' : '', 'neg' : 'v4si vsignparam = {-1, -1, -1, -1};'},
+}
+
+vsignparam_arm = {
+'b' : {'abs_' : '', 'neg' : ''},
+'h' : {'abs_' : '', 'neg' : ''},
+'i' : {'abs_' : '', 'neg' : ''},
 }
 
 
@@ -715,6 +730,7 @@ for func in funclist:
 						'simdwidth' : simdwidth[arraycode],
 						'simdplatform' : SIMD_platform_x86,
 						'simdop' : simdop_x86[arraycode][funcname],
+						'vsignparam' : vsignparam_x86[arraycode][funcname],
 						'simdcleanup' : simdcleanup[funcname],
 						'simdattr' : simdvalues_x86[arraycode]['simdattr'],
 						'vldinstr' : simdvalues_x86[arraycode]['vldinstr'],
@@ -779,6 +795,7 @@ for func in funclist:
 						'simdwidth' : simdwidth[arraycode],
 						'simdplatform' : SIMD_platform_ARM,
 						'simdop' : simdop_arm[arraycode][funcname],
+						'vsignparam' : vsignparam_arm[arraycode][funcname],
 						'simdcleanup' : simdcleanup[funcname],
 						'simdattr' : simdvalues_arm[arraycode]['simdattr'],
 						'vldinstr' : simdvalues_arm[arraycode]['vldinstr'],

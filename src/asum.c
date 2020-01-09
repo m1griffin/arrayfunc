@@ -63,12 +63,12 @@ long long asum_signed_char(Py_ssize_t arraylen, signed char *data, signed int *e
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -102,12 +102,12 @@ unsigned long long asum_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -137,12 +137,12 @@ long long asum_signed_short(Py_ssize_t arraylen, signed short *data, signed int 
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -176,12 +176,12 @@ unsigned long long asum_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -211,12 +211,12 @@ long long asum_signed_int(Py_ssize_t arraylen, signed int *data, signed int *err
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -250,12 +250,12 @@ unsigned long long asum_unsigned_int(Py_ssize_t arraylen, unsigned int *data, si
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -285,12 +285,12 @@ long long asum_signed_long(Py_ssize_t arraylen, signed long *data, signed int *e
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -324,12 +324,12 @@ unsigned long long asum_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -359,12 +359,12 @@ long long asum_signed_long_long(Py_ssize_t arraylen, signed long long *data, sig
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -398,12 +398,12 @@ unsigned long long asum_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -443,12 +443,12 @@ double asum_float(Py_ssize_t arraylen, float *data, signed int *errflag, signed 
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 			if (!isfinite(partialsum)) {
 				*errflag = ARR_ERR_OVFL;
@@ -487,12 +487,12 @@ double asum_double(Py_ssize_t arraylen, double *data, signed int *errflag, signe
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 			if (!isfinite(partialsum)) {
 				*errflag = ARR_ERR_OVFL;

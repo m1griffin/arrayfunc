@@ -67,7 +67,7 @@ signed int aall_eq_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -90,7 +90,7 @@ signed int aall_gt_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -113,7 +113,7 @@ signed int aall_ge_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -136,7 +136,7 @@ signed int aall_lt_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -159,7 +159,7 @@ signed int aall_le_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -182,7 +182,7 @@ signed int aall_ne_signed_char(Py_ssize_t arraylen, signed char *data, signed ch
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -291,7 +291,7 @@ signed int aall_eq_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -314,7 +314,7 @@ signed int aall_gt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -337,7 +337,7 @@ signed int aall_ge_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -360,7 +360,7 @@ signed int aall_lt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -383,7 +383,7 @@ signed int aall_le_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -406,7 +406,7 @@ signed int aall_ne_unsigned_char(Py_ssize_t arraylen, unsigned char *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -515,7 +515,7 @@ signed int aall_eq_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -538,7 +538,7 @@ signed int aall_gt_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -561,7 +561,7 @@ signed int aall_ge_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -584,7 +584,7 @@ signed int aall_lt_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -607,7 +607,7 @@ signed int aall_le_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -630,7 +630,7 @@ signed int aall_ne_signed_short(Py_ssize_t arraylen, signed short *data, signed 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -739,7 +739,7 @@ signed int aall_eq_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -762,7 +762,7 @@ signed int aall_gt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -785,7 +785,7 @@ signed int aall_ge_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -808,7 +808,7 @@ signed int aall_lt_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -831,7 +831,7 @@ signed int aall_le_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -854,7 +854,7 @@ signed int aall_ne_unsigned_short(Py_ssize_t arraylen, unsigned short *data, uns
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -963,7 +963,7 @@ signed int aall_eq_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -986,7 +986,7 @@ signed int aall_gt_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1009,7 +1009,7 @@ signed int aall_ge_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1032,7 +1032,7 @@ signed int aall_lt_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1055,7 +1055,7 @@ signed int aall_le_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1078,7 +1078,7 @@ signed int aall_ne_signed_int(Py_ssize_t arraylen, signed int *data, signed int 
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1187,7 +1187,7 @@ signed int aall_eq_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1210,7 +1210,7 @@ signed int aall_gt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1233,7 +1233,7 @@ signed int aall_ge_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1256,7 +1256,7 @@ signed int aall_lt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1279,7 +1279,7 @@ signed int aall_le_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1302,7 +1302,7 @@ signed int aall_ne_unsigned_int(Py_ssize_t arraylen, unsigned int *data, unsigne
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1411,7 +1411,7 @@ signed int aall_eq_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1434,7 +1434,7 @@ signed int aall_gt_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1457,7 +1457,7 @@ signed int aall_ge_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1480,7 +1480,7 @@ signed int aall_lt_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1503,7 +1503,7 @@ signed int aall_le_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1526,7 +1526,7 @@ signed int aall_ne_signed_long(Py_ssize_t arraylen, signed long *data, signed lo
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1605,7 +1605,7 @@ signed int aall_eq_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1628,7 +1628,7 @@ signed int aall_gt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1651,7 +1651,7 @@ signed int aall_ge_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1674,7 +1674,7 @@ signed int aall_lt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1697,7 +1697,7 @@ signed int aall_le_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1720,7 +1720,7 @@ signed int aall_ne_unsigned_long(Py_ssize_t arraylen, unsigned long *data, unsig
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1799,7 +1799,7 @@ signed int aall_eq_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1822,7 +1822,7 @@ signed int aall_gt_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1845,7 +1845,7 @@ signed int aall_ge_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1868,7 +1868,7 @@ signed int aall_lt_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1891,7 +1891,7 @@ signed int aall_le_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1914,7 +1914,7 @@ signed int aall_ne_signed_long_long(Py_ssize_t arraylen, signed long long *data,
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -1993,7 +1993,7 @@ signed int aall_eq_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2016,7 +2016,7 @@ signed int aall_gt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2039,7 +2039,7 @@ signed int aall_ge_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2062,7 +2062,7 @@ signed int aall_lt_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2085,7 +2085,7 @@ signed int aall_le_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2108,7 +2108,7 @@ signed int aall_ne_unsigned_long_long(Py_ssize_t arraylen, unsigned long long *d
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2187,7 +2187,7 @@ signed int aall_eq_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2210,7 +2210,7 @@ signed int aall_gt_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2233,7 +2233,7 @@ signed int aall_ge_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2256,7 +2256,7 @@ signed int aall_lt_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2279,7 +2279,7 @@ signed int aall_le_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2302,7 +2302,7 @@ signed int aall_ne_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2411,7 +2411,7 @@ signed int aall_eq_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] == param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2434,7 +2434,7 @@ signed int aall_gt_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] > param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2457,7 +2457,7 @@ signed int aall_ge_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] >= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2480,7 +2480,7 @@ signed int aall_lt_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] < param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2503,7 +2503,7 @@ signed int aall_le_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] <= param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -2526,7 +2526,7 @@ signed int aall_ne_double(Py_ssize_t arraylen, double *data, double param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] != param1)) {
 			return ARR_ERR_NOTFOUND;
 		}

@@ -100,12 +100,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -123,12 +123,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -146,12 +146,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -169,12 +169,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -194,12 +194,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -217,12 +217,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -256,13 +256,13 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
 		ovtmp = %(intmaxvalue)s - param;
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -281,13 +281,13 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
 		ovtmp = %(intmaxvalue)s - param;
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -306,12 +306,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			ovtmp = %(intmaxvalue)s - data2[x];
 			if (param > ovtmp) {return ARR_ERR_OVFL;}
 			data2[x] = param %(copname)s data2[x];
@@ -331,12 +331,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			ovtmp = %(intmaxvalue)s - data2[x];
 			if (param > ovtmp) {return ARR_ERR_OVFL;}
 			data3[x] = param %(copname)s data2[x];
@@ -358,12 +358,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			ovtmp = %(intmaxvalue)s - data2[x];
 			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s data2[x];
@@ -383,12 +383,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			ovtmp = %(intmaxvalue)s - data2[x];
 			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s data2[x];
@@ -423,7 +423,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
@@ -434,14 +434,14 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 		}
 		if (param > 0) {
 			ovtmp = %(intmaxvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intminvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] %(copname)s param; 
 			}
@@ -461,26 +461,26 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = %(intmaxvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intminvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] %(copname)s param; 
 			}
@@ -500,7 +500,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
@@ -511,14 +511,14 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 		}
 		if (param > 0) {
 			ovtmp = %(intmaxvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = data2[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intminvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = data2[x] %(copname)s param; 
 			}
@@ -538,26 +538,26 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = %(intmaxvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data2[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intminvalue)s - param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data2[x] %(copname)s param; 
 			}
@@ -578,12 +578,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] > (%(intmaxvalue)s - data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] < (%(intminvalue)s - data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s data2[x];
@@ -602,12 +602,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] > (%(intmaxvalue)s - data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] < (%(intminvalue)s - data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s data2[x];
@@ -640,12 +640,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s param;
 		}
@@ -663,12 +663,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s param;
 		}
@@ -686,12 +686,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param %(copname)s data2[x];
 		}
@@ -709,12 +709,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param %(copname)s data2[x];
 		}
@@ -734,12 +734,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
@@ -757,12 +757,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
@@ -798,7 +798,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
@@ -809,14 +809,14 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 		}
 		if (param > 0) {
 			ovtmp = %(intminvalue)s + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intmaxvalue)s + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] %(copname)s param; 
 			}
@@ -836,26 +836,26 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = %(intminvalue)s + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] %(copname)s param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = %(intmaxvalue)s + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] %(copname)s param; 
 			}
@@ -875,28 +875,28 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - %(intmaxvalue)s;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param %(copname)s data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - %(intminvalue)s;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param %(copname)s data2[x]; 
 			}
@@ -916,28 +916,28 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - %(intmaxvalue)s;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param %(copname)s data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - %(intminvalue)s;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param %(copname)s data2[x]; 
 			}
@@ -958,12 +958,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (%(intminvalue)s + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (%(intmaxvalue)s + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] %(copname)s data2[x];
@@ -982,12 +982,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (%(intminvalue)s + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (%(intmaxvalue)s + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] %(copname)s data2[x];
@@ -1022,20 +1022,20 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data1[x] = 0;
 			}
 		} else {
 			// Signed integers do not have a symetrical range (e.g. -128 to 127). 
 			if (param == -1) {
-				for(x = 0; x < arraylen; x++) {
+				for (x = 0; x < arraylen; x++) {
 					if (data1[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 					data1[x] = data1[x] * param; 
 				}
@@ -1043,13 +1043,13 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 				ovtmp1 = %(intmaxvalue)s / param;
 				ovtmp2 = %(intminvalue)s / param;
 				if (param > 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data1[x] > ovtmp1) || (data1[x] < ovtmp2)) {return ARR_ERR_OVFL;}
 						data1[x] = data1[x] * param; 
 					}
 				}
 				if (param < 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data1[x] < ovtmp1) || (data1[x] > ovtmp2)) {return ARR_ERR_OVFL;}
 						data1[x] = data1[x] * param; 
 					}
@@ -1071,20 +1071,20 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = 0;
 			}
 		} else {
 			// Signed integers do not have a symetrical range (e.g. -128 to 127). 
 			if (param == -1) {
-				for(x = 0; x < arraylen; x++) {
+				for (x = 0; x < arraylen; x++) {
 					if (data1[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 					data3[x] = data1[x] * param; 
 				}
@@ -1092,13 +1092,13 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 				ovtmp1 = %(intmaxvalue)s / param;
 				ovtmp2 = %(intminvalue)s / param;
 				if (param > 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data1[x] > ovtmp1) || (data1[x] < ovtmp2)) {return ARR_ERR_OVFL;}
 						data3[x] = data1[x] * param; 
 					}
 				}
 				if (param < 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data1[x] < ovtmp1) || (data1[x] > ovtmp2)) {return ARR_ERR_OVFL;}
 						data3[x] = data1[x] * param; 
 					}
@@ -1120,20 +1120,20 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data2[x] = 0;
 			}
 		} else {
 			// Signed integers do not have a symetrical range (e.g. -128 to 127). 
 			if (param == -1) {
-				for(x = 0; x < arraylen; x++) {
+				for (x = 0; x < arraylen; x++) {
 					if (data2[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 					data2[x] = data2[x] * param; 
 				}
@@ -1141,13 +1141,13 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 				ovtmp1 = %(intmaxvalue)s / param;
 				ovtmp2 = %(intminvalue)s / param;
 				if (param > 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data2[x] > ovtmp1) || (data2[x] < ovtmp2)) {return ARR_ERR_OVFL;}
 						data2[x] = data2[x] * param; 
 					}
 				}
 				if (param < 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data2[x] < ovtmp1) || (data2[x] > ovtmp2)) {return ARR_ERR_OVFL;}
 						data2[x] = data2[x] * param; 
 					}
@@ -1169,20 +1169,20 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = 0;
 			}
 		} else {
 			// Signed integers do not have a symetrical range (e.g. -128 to 127). 
 			if (param == -1) {
-				for(x = 0; x < arraylen; x++) {
+				for (x = 0; x < arraylen; x++) {
 					if (data2[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 					data3[x] = data2[x] * param; 
 				}
@@ -1190,13 +1190,13 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 				ovtmp1 = %(intmaxvalue)s / param;
 				ovtmp2 = %(intminvalue)s / param;
 				if (param > 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data2[x] > ovtmp1) || (data2[x] < ovtmp2)) {return ARR_ERR_OVFL;}
 						data3[x] = data2[x] * param; 
 					}
 				}
 				if (param < 0) {
-					for(x = 0; x < arraylen; x++) {
+					for (x = 0; x < arraylen; x++) {
 						if ((data2[x] < ovtmp1) || (data2[x] > ovtmp2)) {return ARR_ERR_OVFL;}
 						data3[x] = data2[x] * param; 
 					}
@@ -1219,12 +1219,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && ((data1[x] > (%(intmaxvalue)s / data2[x])) || (data1[x] < (%(intminvalue)s / data2[x])))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < -1) && ((data1[x] < (%(intmaxvalue)s / data2[x])) || (data1[x] > (%(intminvalue)s / data2[x])))) {return ARR_ERR_OVFL;}
 			if ((data2[x] == -1) && (data1[x] == %(intminvalue)s)) {return ARR_ERR_OVFL;}
@@ -1244,12 +1244,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && ((data1[x] > (%(intmaxvalue)s / data2[x])) || (data1[x] < (%(intminvalue)s / data2[x])))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < -1) && ((data1[x] < (%(intmaxvalue)s / data2[x])) || (data1[x] > (%(intminvalue)s / data2[x])))) {return ARR_ERR_OVFL;}
 			if ((data2[x] == -1) && (data1[x] == %(intminvalue)s)) {return ARR_ERR_OVFL;}
@@ -1286,18 +1286,18 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_1)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data1[x] = 0; 
 			}
 		} else {
 			ovtmp = %(intmaxvalue)s / param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] * param; 
 			}
@@ -1317,18 +1317,18 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_2)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = 0; 
 			}
 		} else {
 			ovtmp = %(intmaxvalue)s / param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] * param; 
 			}
@@ -1348,18 +1348,18 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_3)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data2[x] = 0; 
 			}
 		} else {
 			ovtmp = %(intmaxvalue)s / param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = data2[x] * param; 
 			}
@@ -1379,18 +1379,18 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_4)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = 0; 
 			}
 		} else {
 			ovtmp = %(intmaxvalue)s / param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data2[x] * param; 
 			}
@@ -1411,12 +1411,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_5)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] != 0) && (data1[x] > (%(intmaxvalue)s / data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] * data2[x];
 		}
@@ -1434,12 +1434,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Math error checking disabled.
 	if (ignoreerrors) {
 %(simd_call_6)s
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] != 0) && (data1[x] > (%(intmaxvalue)s / data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] * data2[x];
 		}
@@ -1478,12 +1478,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -1504,12 +1504,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -1527,14 +1527,14 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -1554,14 +1554,14 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -1580,7 +1580,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == %(intminvalue)s)) {return ARR_ERR_OVFL;}
@@ -1598,7 +1598,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == %(intminvalue)s)) {return ARR_ERR_OVFL;}
@@ -1632,7 +1632,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1650,7 +1650,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1665,7 +1665,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1681,7 +1681,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1699,7 +1699,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1715,7 +1715,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1747,12 +1747,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s param;
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -1775,12 +1775,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s param;
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -1804,12 +1804,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = param %(copname)s data2[x];
 			if (!isfinite(data2[x])) {
@@ -1833,12 +1833,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param %(copname)s data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1863,12 +1863,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] %(copname)s data2[x];
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -1891,12 +1891,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] %(copname)s data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1941,7 +1941,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}
@@ -1954,7 +1954,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -1984,7 +1984,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			// Math error check.
 			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}
@@ -1997,7 +1997,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -2024,7 +2024,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2038,7 +2038,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2067,7 +2067,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			datatmp = data2[x];
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2081,7 +2081,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 			}
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2109,7 +2109,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -2139,7 +2139,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -2185,7 +2185,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -2203,7 +2203,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -2218,7 +2218,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -2234,7 +2234,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -2252,7 +2252,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -2268,7 +2268,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -2303,12 +2303,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -2333,12 +2333,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / param);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -2363,12 +2363,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = %(copname)s(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = %(copname)s(param / data2[x]);
 			if (!isfinite(data2[x])) {
@@ -2394,12 +2394,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(param / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -2424,12 +2424,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -2454,12 +2454,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -2506,7 +2506,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}		// Math error check.
 			dataouttmp = datatmp / param;
@@ -2517,7 +2517,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 			data1[x] = datatmp - param * dataouttmp;
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -2546,7 +2546,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}		// Math error check.
 			dataouttmp = datatmp / param;
@@ -2557,7 +2557,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 			data3[x] = datatmp - param * dataouttmp;
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
 			dataouttmp = datatmp / param;
 			// This check is required for floor division.
@@ -2583,7 +2583,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2596,7 +2596,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 			data2[x] = param - datatmp * dataouttmp;
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2624,7 +2624,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == %(intminvalue)s) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2637,7 +2637,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 			data3[x] = param - datatmp * dataouttmp;
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
@@ -2664,7 +2664,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -2692,7 +2692,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
@@ -2734,7 +2734,7 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen,%(nosimddecl)s %
 
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] %% param;
 	}
 	return ARR_NO_ERR;
@@ -2752,7 +2752,7 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen,%(nosimddecl)s %
 	// Cannot disable divide by zero checking because this causes a crash.
 	// Math error check.
 	if (param == 0) {return ARR_ERR_ZERODIV;}
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] %% param;
 	}
 	return ARR_NO_ERR;
@@ -2768,7 +2768,7 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen,%(nosimddecl)s %
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param %% data2[x];
@@ -2786,7 +2786,7 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen,%(nosimddecl)s %
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param %% data2[x];
@@ -2804,7 +2804,7 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen,%(nosimddecl)s %
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] %% data2[x];
@@ -2820,7 +2820,7 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen,%(nosimddecl)s %
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] %% data2[x];
@@ -2856,11 +2856,11 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -2885,11 +2885,11 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param * %(modfloor)s(data1[x] / param);
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -2915,11 +2915,11 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 			if (!isfinite(data2[x])) {
@@ -2945,11 +2945,11 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x] * %(modfloor)s(param / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -2974,12 +2974,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -3004,12 +3004,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x] * %(modfloor)s(data1[x] / data2[x]);
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -3053,12 +3053,12 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3078,12 +3078,12 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3103,12 +3103,12 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_%(funcmodifier)s(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_%(funcmodifier)s(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3128,12 +3128,12 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3153,12 +3153,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_%(funcmodifier)s(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_%(funcmodifier)s(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3178,12 +3178,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_%(funcmodifier)s(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -3218,11 +3218,11 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x], param);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3241,11 +3241,11 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x], param);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3264,11 +3264,11 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = %(copname)s(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = %(copname)s(param, data2[x]);
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3287,11 +3287,11 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(param, data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3310,12 +3310,12 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = %(copname)s(data1[x], data2[x]);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3334,12 +3334,12 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = %(copname)s(data1[x], data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -3389,17 +3389,17 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data1[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] %(copname)s param;
 	}
 
@@ -3434,17 +3434,17 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] %(copname)s param;
 	}
 
@@ -3479,17 +3479,17 @@ void %(funclabel)s_%(funcmodifier)s_3_simd(Py_ssize_t arraylen, %(arraytype)s pa
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceright = %(vldinstr)s &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data2[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param %(copname)s data2[x];
 	}
 
@@ -3524,17 +3524,17 @@ void %(funclabel)s_%(funcmodifier)s_4_simd(Py_ssize_t arraylen, %(arraytype)s pa
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceright = %(vldinstr)s &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param %(copname)s data2[x];
 	}
 
@@ -3560,18 +3560,18 @@ void %(funclabel)s_%(funcmodifier)s_5_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data1[x]);
 		datasliceright = %(vldinstr)s &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data1[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] %(copname)s data2[x];
 	}
 
@@ -3597,18 +3597,18 @@ void %(funclabel)s_%(funcmodifier)s_6_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += %(simdwidth)s) {
+	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data1[x]);
 		datasliceright = %(vldinstr)s &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft %(copname)s datasliceright;
+		resultslice = %(vopinstr)s(datasliceleft, datasliceright);
 		// Store the result.
 		%(vstinstr1)s &data3[x], %(vstinstr2)s resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] %(copname)s data2[x];
 	}
 
@@ -3892,11 +3892,21 @@ absfunc = {
 # ==============================================================================
 
 # This is required for SIMD operations only.
-includeoptions = '''#include "simddefs.h"
+includeoptions_both = '''#include "simddefs.h"
 
 #ifdef AF_HASSIMD_X86
 #include "%(funclabel)s_simd_x86.h"
 #endif
+
+#ifdef AF_HASSIMD_ARM
+#include "arm_neon.h"
+#include "%(funclabel)s_simd_arm.h"
+#endif
+'''
+
+
+# This is required for SIMD operations only.
+includeoptions_arm = '''#include "simddefs.h"
 
 #ifdef AF_HASSIMD_ARM
 #include "arm_neon.h"
@@ -4018,66 +4028,148 @@ opstemplates = {
 
 # Various SIMD instruction information which varies according to array type.
 # For x86-64.
-simdvalues_x86 = {
-'b' : {'simdattr' : 'v16qi', 
-		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : ''},
-'B' : {'simdattr' : 'v16qi', 
-		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : ''},
-'h' : {'simdattr' : 'v8hi', 
-		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : '(v16qi)'},
-'H' : {'simdattr' : 'v8hi', 
-		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : '(v16qi)'},
-'i' : {'simdattr' : 'v4si', 
-		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : '(v16qi)'},
-'I' : {'simdattr' : 'v4si', 
-		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *)', 
-		'vstinstr1' : '__builtin_ia32_storedqu((char *)',
-		'vstinstr2' : '(v16qi)'},
-'f' : {'simdattr' : 'v4sf', 
-		'vldinstr' : '(v4sf) __builtin_ia32_loadups(', 
-		'vstinstr1' : '__builtin_ia32_storeups(',
-		'vstinstr2' : '(v4sf)'},
-'d' : {'simdattr' : 'v2df', 
-		'vldinstr' : '(v2df) __builtin_ia32_loadupd(', 
-		'vstinstr1' : '__builtin_ia32_storeupd(',
-		'vstinstr2' : '(v2df)'},
+
+simdattr_x86 = {
+	'b' : 'v16qi', 
+	'B' : 'v16qi', 
+	'h' : 'v8hi', 
+	'H' : 'v8hi', 
+	'i' : 'v4si', 
+	'I' : 'v4si', 
+	'f' : 'v4sf',
+	'd' : 'v2df',
 }
 
+
+vldinstr_x86 = {
+	'b' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'B' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'h' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'H' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'i' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'I' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'f' : '(v4sf) __builtin_ia32_loadups(',
+	'd' : '(v2df) __builtin_ia32_loadupd(',
+}
+
+
+vstinstr1_x86 = {
+	'b' : '__builtin_ia32_storedqu((char *)', 
+	'B' : '__builtin_ia32_storedqu((char *)',
+	'h' : '__builtin_ia32_storedqu((char *)',
+	'H' : '__builtin_ia32_storedqu((char *)',
+	'i' : '__builtin_ia32_storedqu((char *)',
+	'I' : '__builtin_ia32_storedqu((char *)',
+	'f' : '__builtin_ia32_storeups(',
+	'd' : '__builtin_ia32_storeupd(',
+}
+
+
+vstinstr2_x86 = {
+	'b' : '', 
+	'B' : '', 
+	'h' : '(v16qi) ', 
+	'H' : '(v16qi) ', 
+	'i' : '(v16qi) ', 
+	'I' : '(v16qi) ', 
+	'f' : '(v4sf)',
+	'd' : '(v2df)',
+}
+
+
+# SIMD operations.
+simdop_x86 = {
+	'b' : {'add' : '(v16qi) __builtin_ia32_paddb128', 
+			'sub' : '(v16qi) __builtin_ia32_psubb128'},
+	'h' : {'add' : '(v8hi) __builtin_ia32_paddw128', 
+			'sub' : '(v8hi) __builtin_ia32_psubw128'},
+	'i' : {'add' : '(v4si) __builtin_ia32_paddd128', 
+			'sub' : '(v4si) __builtin_ia32_psubd128'},
+	'f' : {'add' : '__builtin_ia32_addps', 
+			'sub' : '__builtin_ia32_subps'},
+	'd' : {'add' : '__builtin_ia32_addpd', 
+			'sub' : '__builtin_ia32_subpd'},
+}
+
+
+# Which functions support x86 SIMD.
+x86_simdfuncnames = set(itertools.chain.from_iterable([x.keys() for x in simdop_x86.values()]))
+
+
+# A list of which array types are supported by x86 SIMD instructions.
+def x86_simdtypes(funcname):
+	return [x for x in simdop_x86.keys() if funcname in simdop_x86[x]]
+
+
+
+# ==============================================================================
 
 # For ARM NEON. These are for ARMv7.
 # Not all possible array types have been implemented as benchmarking
 # has shown that SIMD is actually slower for array types with larger
 # word sizes.
-simdvalues_arm = {
-'b' : {'simdattr' : 'int8x8_t', 
-		'vldinstr' : 'vld1_s8(', 
-		'vstinstr1' : 'vst1_s8(',
-		'vstinstr2' : ''},
-'B' : {'simdattr' : 'uint8x8_t', 
-		'vldinstr' : 'vld1_u8(', 
-		'vstinstr1' : 'vst1_u8(',
-		'vstinstr2' : ''},
-'h' : {'simdattr' : 'int16x4_t', 
-		'vldinstr' : 'vld1_s16(', 
-		'vstinstr1' : 'vst1_s16(',
-		'vstinstr2' : ''},
-'H' : {'simdattr' : 'uint16x4_t', 
-		'vldinstr' : 'vld1_u16(', 
-		'vstinstr1' : ' vst1_u16(',
-		'vstinstr2' : ''},
+
+simdattr_arm = {
+	'b' : 'int8x8_t',
+	'B' : 'uint8x8_t',
+	'h' : 'int16x4_t',
+	'H' : 'uint16x4_t',
 }
 
 
+vldinstr_arm = {
+	'b' : 'vld1_s8(',
+	'B' : 'vld1_u8(',
+	'h' : 'vld1_s16(',
+	'H' : 'vld1_u16(',
+}
+
+vstinstr1_arm = {
+	'b' : 'vst1_s8(',
+	'B' : 'vst1_u8(',
+	'h' : 'vst1_s16(',
+	'H' : ' vst1_u16(',
+}
+
+vstinstr2_arm = {
+	'b' : '',
+	'B' : '',
+	'h' : '',
+	'H' : '',
+}
+
+vstinstr2_arm = {
+	'b' : '',
+	'B' : '',
+	'h' : '',
+	'H' : '',
+}
+
+
+# SIMD operations.
+simdop_arm = {
+	'b' : {'add' : 'vadd_s8', 
+			'mul' : 'vmul_s8',
+			'sub' : 'vsub_s8'},
+	'B' : {'add' : 'vadd_u8', 
+			'mul' : 'vmul_u8',
+			'sub' : 'vsub_u8'},
+	'h' : {'add' : 'vadd_s16', 
+			'mul' : 'vmul_s16',
+			'sub' : 'vsub_s16'},
+	'H' : {'add' : 'vadd_u16', 
+			'mul' : 'vmul_u16',
+			'sub' : 'vsub_u16'},
+}
+
+# Which functions support ARM SIMD.
+arm_simdfuncnames = set(itertools.chain.from_iterable([x.keys() for x in simdop_arm.values()]))
+
+# A list of which array types are supported by ARM SIMD instructions.
+def arm_simdtypes(funcname):
+	return [x for x in simdop_arm.keys() if funcname in simdop_arm[x]]
+
+# ==============================================================================
 
 # Width of array elements.
 simdwidth = {'b' : 'CHARSIMDSIZE',
@@ -4105,13 +4197,18 @@ SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 # Return the platform SIMD enable C macro. 
 # This is for the platform independent file, and not the plaform specific
 # SIMD files.
-def findsimdplatform(arraycode):
+def findsimdplatform(arraycode, funcname):
+
+	# Which array types are value for x86 SIMD for this function.
+	x86_simdarrays = x86_simdtypes(funcname)
 
 	# The calls to SIMD support code are platform dependent.
-	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
+	if (arraycode in x86_simdarrays) and (arraycode not in simdop_arm):
 		return SIMD_platform_x86
-	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
+	elif (arraycode in x86_simdarrays) and (arraycode in simdop_arm):
 		return SIMD_platform_x86_ARM
+	elif (arraycode not in x86_simdarrays) and (arraycode in simdop_arm):
+		return SIMD_platform_ARM
 	else:
 		return 'Error: Template error, this should not be here.'
 
@@ -4133,19 +4230,22 @@ funclist = [x for x in oplist if x['c_code_template'] in ['template_mathop', 'te
 
 for func in funclist:
 
-	# Functions using SIMD.
-	hassimd = func['c_code_template'] == 'template_mathop_simd'
-
 	# Create the source code based on templates.
 	funcname = func['funcname']
 	filename = funcname + '.c'
 	pyoperator = func['pyoperator']
 
+	# Functions using SIMD.
+	hassimd_x86 = funcname in x86_simdfuncnames
+	hassimd_arm = funcname in arm_simdfuncnames
+
 	with open(filename, 'w') as f:
 
 		funcdata = {'funclabel' : funcname, 'includeoptions' : ''}
-		if hassimd:
-			funcdata['includeoptions'] = includeoptions% {'funclabel' : funcname}
+		if hassimd_x86:
+			funcdata['includeoptions'] = includeoptions_both % {'funclabel' : funcname}
+		elif hassimd_arm:
+			funcdata['includeoptions'] = includeoptions_arm % {'funclabel' : funcname}
 			
 		f.write(mathops_head % funcdata)
 		opscalltext = []
@@ -4194,11 +4294,11 @@ for func in funclist:
 				print('Error - Unsupported array code.', arraycode)
 
 
-			if hassimd and ((arraycode in simdvalues_x86) or (arraycode in simdvalues_arm)):
+			if (arraycode in x86_simdtypes(funcname)) or (arraycode in arm_simdtypes(funcname)):
 				simdfuncdata = {'simdwidth' : simdwidth[arraycode], 
 					'funclabel' : funcname,
 					'funcmodifier' : funcmodifier,
-					'simdplatform' : findsimdplatform(arraycode)}
+					'simdplatform' : findsimdplatform(arraycode, funcname)}
 				funcdata.update(dict([(x, y % simdfuncdata) for x,y in SIMD_call.items()]))
 				funcdata['nosimddecl'] = nosimddecl
 				funcdata['nosimdparam'] = nosimdparam
@@ -4215,7 +4315,7 @@ for func in funclist:
 			funcdata['arraycode'] = arraycode
 			opscalltext.append(opscall % funcdata)
 
-		if hassimd:
+		if hassimd_x86 or hassimd_arm:
 			helpsimd1 = helpsimd1_template % {'funclabel' : funcname}
 			helpsimd2 = helpsimd2_template
 			getsimdparam = '1'
@@ -4249,36 +4349,41 @@ simdcodedate = '1-Apr-2019'
 simdfilename = '_simd_x86'
 
 # Get just the functions which support SIMD.
-simdlist = [x for x in funclist if x['c_code_template'] == 'template_mathop_simd']
-
+simdlist = [x for x in oplist if x['funcname'] in x86_simdfuncnames]
 
 for func in simdlist:
 
 	outputlist = []
 
 	funcname = func['funcname']
-	pyoperator = func['pyoperator']
 
 	# This provides the description in the header of the file.
 	maindescription = 'Calculate the %s of values in an array.' % funcname
 
 
 	# Output the generated code.
-	for arraycode in simdvalues_x86:
+	for arraycode in [x for x in simdop_x86.keys() if funcname in simdop_x86[x]]:
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		# The compare_ops symbols is the same for integer and floating point.
+		# The main template values.
 		funcdata = {'funclabel' : funcname,
 					'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
 					'arraycode' : arraycode,
 					'arraytype' : codegen_common.arraytypes[arraycode],
 					'simdplatform' : SIMD_platform_x86,
-					'simdwidth' : simdwidth[arraycode]
+
+					'simdwidth' : simdwidth[arraycode],
+					'simdattr' : simdattr_x86[arraycode],
+					'vldinstr' : vldinstr_x86[arraycode],
+					'vstinstr1' : vstinstr1_x86[arraycode],
+					'vstinstr2' : vstinstr2_x86[arraycode],
+					'vopinstr' : simdop_x86[arraycode][funcname],
 					}
 
-		# Get the correct operator.
+		# Get the correct operator. Some operations use operators, and
+		# some use C function names. 
 		if arraycode == 'f':
 			funcdata['copname'] = func['c_operator_f']
 		elif arraycode == 'd':
@@ -4290,7 +4395,6 @@ for func in simdlist:
 
 
 		# Start of function definition.
-		funcdata.update(simdvalues_x86[arraycode])
 		outputlist.append(ops_simdsupport % funcdata)
 
 
@@ -4324,7 +4428,8 @@ simdcodedate = '8-Oct-2019'
 simdfilename = '_simd_arm'
 
 # Get just the functions which support SIMD.
-simdlist = [x for x in funclist if x['c_code_template'] == 'template_mathop_simd']
+simdlist = set(itertools.chain.from_iterable([x.keys() for x in simdop_arm.values()]))
+simdlist = [x for x in oplist if x['funcname'] in arm_simdfuncnames]
 
 
 for func in simdlist:
@@ -4332,25 +4437,31 @@ for func in simdlist:
 	outputlist = []
 
 	funcname = func['funcname']
-	pyoperator = func['pyoperator']
 
 	# This provides the description in the header of the file.
 	maindescription = 'Calculate the %s of values in an array.' % funcname
 
 
 	# Output the generated code.
-	for arraycode in simdvalues_arm:
+	for arraycode in [x for x in simdop_arm.keys() if funcname in simdop_arm[x]]:
+
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		# The compare_ops symbols is the same for integer and floating point.
+		# The main template values.
 		funcdata = {'funclabel' : funcname,
 					'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
 					'arraycode' : arraycode,
 					'arraytype' : codegen_common.arraytypes[arraycode],
 					'simdplatform' : SIMD_platform_ARM,
-					'simdwidth' : simdwidth[arraycode]
+
+					'simdwidth' : simdwidth[arraycode],
+					'simdattr' : simdattr_arm[arraycode],
+					'vldinstr' : vldinstr_arm[arraycode],
+					'vstinstr1' : vstinstr1_arm[arraycode],
+					'vstinstr2' : vstinstr2_arm[arraycode],
+					'vopinstr' : simdop_arm[arraycode][funcname],
 					}
 
 		# Get the correct operator.
@@ -4365,7 +4476,6 @@ for func in simdlist:
 
 
 		# Start of function definition.
-		funcdata.update(simdvalues_arm[arraycode])
 		outputlist.append(ops_simdsupport % funcdata)
 
 

@@ -76,23 +76,23 @@ signed int ceil_float(Py_ssize_t arraylen, int nosimd, float *data, float *datao
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = ceilf(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = ceilf(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = ceilf(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = ceilf(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -132,23 +132,23 @@ signed int ceil_double(Py_ssize_t arraylen, int nosimd, double *data, double *da
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = ceil(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = ceil(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = ceil(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = ceil(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}

@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 5.0.0 for 2019-10-29
-:Copyright: 2014 - 2019
+:Version: 5.1.0 for 2020-01-02
+:Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
 
@@ -337,6 +337,38 @@ example::
 Release History
 ===============
 
+* 5.1.0 - This is a bug fix release only, centred around SIMD issues on
+          x86-64 with GCC. In a previous release some of the x86-64 SIMD 
+          code had been changed to take advantage of a sort of assisted
+          auto-vectorisation present in GCC. However, certain operations
+          on certain integer sizes with certain array types will cause 
+          GCC to generate incorrect x86 SIMD operations, producting 
+          integer overflow. The functions known to be affected are aall, 
+          aany, findindex (B, H, I arrays), eq, ge, gt, le, lt, ne (B, 
+          H, I arrays), and rshift (h, i arrays). ARM was not affected. 
+          All auto-vectorisation, where used, has been changed back to 
+          manually generated SIMD operations for both x86 and ARM. 
+          Rshift no longer uses SIMD  operations for b, B, h, or i 
+          arrays on x86. Lshift no longer  supports SIMD operations on 
+          b or B arrays on x86. Add and sub no longer use SIMD for B, H,
+          and I arrays on x86. Mul no longer uses SIMD on x86 for any
+          array types. Where SIMD functionality has been removed on x86, 
+          it of course is still supported through normal portable CPU 
+          instructions. ARM SIMD support was not affected by these
+          changes. Lost SIMD acceleration will be returned to x86 in a
+          later release where possible after the necessary research has
+          been conducted. Unit tests have been updated to cover a 
+          greater range of integer values to test for this problem. 
+          Platforms using compilers other than GCC were not affected by 
+          this, as they did not use SIMD anyway. The main effect of this
+          present change is that some calculations may be slower for
+          some array types. The problem with GCC generating incorrect
+          SIMD instructions in some circumstances is apparently a known 
+          (but obscure) issue. This will be avoided in future releases
+          by sticking with manual SIMD built-ins. Some source code files 
+          have updated date stamps in this release but no substantive 
+          code changes due to the template system used to auto-generate 
+          code.
 * 5.0.0 - The main focus of this release has been adding SIMD 
           acceleration support to the ARMv7 platform  (e.g. Raspberry 
           Pi 3). Also added SIMD support to 'lshift' and 'rshift' on

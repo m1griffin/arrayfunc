@@ -58,23 +58,23 @@ signed int gamma_float(Py_ssize_t arraylen, float *data, float *dataout, unsigne
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = tgammaf(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = tgammaf(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {		
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = tgammaf(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = tgammaf(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}
@@ -102,23 +102,23 @@ signed int gamma_double(Py_ssize_t arraylen, double *data, double *dataout, unsi
 	// Math error checking disabled.
 	if (ignoreerrors) {
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = tgamma(data[x]);
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = tgamma(data[x]);
 			}
 		}
 	} else {
 	// Math error checking enabled.
 		if (hasoutputarray) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				dataout[x] = tgamma(data[x]);
 				if (!isfinite(dataout[x])) {return ARR_ERR_ARITHMETIC;}
 			}
 		} else {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data[x] = tgamma(data[x]);
 				if (!isfinite(data[x])) {return ARR_ERR_ARITHMETIC;}
 			}

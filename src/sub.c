@@ -80,7 +80,7 @@ signed int sub_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
@@ -91,14 +91,14 @@ signed int sub_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1
 		}
 		if (param > 0) {
 			ovtmp = SCHAR_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = SCHAR_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
@@ -126,26 +126,26 @@ signed int sub_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = SCHAR_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = SCHAR_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
@@ -173,28 +173,28 @@ signed int sub_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param,
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - SCHAR_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - SCHAR_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
@@ -222,28 +222,28 @@ signed int sub_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param,
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - SCHAR_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - SCHAR_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
@@ -272,12 +272,12 @@ signed int sub_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (SCHAR_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (SCHAR_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
@@ -304,12 +304,12 @@ signed int sub_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (SCHAR_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (SCHAR_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
@@ -337,7 +337,7 @@ signed int sub_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_1_simd(arraylen, data1, param);
@@ -345,12 +345,12 @@ signed int sub_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - param;
 		}
@@ -368,7 +368,7 @@ signed int sub_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_2_simd(arraylen, data1, param, data3);
@@ -376,12 +376,12 @@ signed int sub_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - param;
 		}
@@ -399,7 +399,7 @@ signed int sub_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_3_simd(arraylen, param, data2);
@@ -407,12 +407,12 @@ signed int sub_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char pa
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param - data2[x];
 		}
@@ -430,7 +430,7 @@ signed int sub_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_4_simd(arraylen, param, data2, data3);
@@ -438,12 +438,12 @@ signed int sub_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char pa
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param - data2[x];
 		}
@@ -463,7 +463,7 @@ signed int sub_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_5_simd(arraylen, data1, data2);
@@ -471,12 +471,12 @@ signed int sub_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
 		}
@@ -494,7 +494,7 @@ signed int sub_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			sub_unsigned_char_6_simd(arraylen, data1, data2, data3);
@@ -502,12 +502,12 @@ signed int sub_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
 		}
@@ -543,7 +543,7 @@ signed int sub_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
@@ -554,14 +554,14 @@ signed int sub_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *dat
 		}
 		if (param > 0) {
 			ovtmp = SHRT_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = SHRT_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
@@ -589,26 +589,26 @@ signed int sub_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = SHRT_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = SHRT_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
@@ -636,28 +636,28 @@ signed int sub_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short para
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - SHRT_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - SHRT_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
@@ -685,28 +685,28 @@ signed int sub_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short para
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - SHRT_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - SHRT_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
@@ -735,12 +735,12 @@ signed int sub_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (SHRT_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (SHRT_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
@@ -767,12 +767,12 @@ signed int sub_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (SHRT_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (SHRT_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
@@ -800,7 +800,7 @@ signed int sub_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_1_simd(arraylen, data1, param);
@@ -808,12 +808,12 @@ signed int sub_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - param;
 		}
@@ -831,7 +831,7 @@ signed int sub_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_2_simd(arraylen, data1, param, data3);
@@ -839,12 +839,12 @@ signed int sub_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - param;
 		}
@@ -862,7 +862,7 @@ signed int sub_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_3_simd(arraylen, param, data2);
@@ -870,12 +870,12 @@ signed int sub_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param - data2[x];
 		}
@@ -893,7 +893,7 @@ signed int sub_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_4_simd(arraylen, param, data2, data3);
@@ -901,12 +901,12 @@ signed int sub_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param - data2[x];
 		}
@@ -926,7 +926,7 @@ signed int sub_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_5_simd(arraylen, data1, data2);
@@ -934,12 +934,12 @@ signed int sub_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
 		}
@@ -957,7 +957,7 @@ signed int sub_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARM)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			sub_unsigned_short_6_simd(arraylen, data1, data2, data3);
@@ -965,12 +965,12 @@ signed int sub_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1006,7 +1006,7 @@ signed int sub_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
@@ -1017,14 +1017,14 @@ signed int sub_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 		}
 		if (param > 0) {
 			ovtmp = INT_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = INT_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
@@ -1052,26 +1052,26 @@ signed int sub_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = INT_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = INT_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
@@ -1099,28 +1099,28 @@ signed int sub_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, s
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == INT_MIN) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - INT_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - INT_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
@@ -1148,28 +1148,28 @@ signed int sub_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, s
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == INT_MIN) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - INT_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - INT_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
@@ -1198,12 +1198,12 @@ signed int sub_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (INT_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (INT_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
@@ -1230,12 +1230,12 @@ signed int sub_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (INT_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (INT_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
@@ -1255,7 +1255,7 @@ signed int sub_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, 
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int sub_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1263,20 +1263,12 @@ signed int sub_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - param;
 		}
@@ -1286,7 +1278,7 @@ signed int sub_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 }
 
 // param_arr_num_arr
-signed int sub_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1294,20 +1286,12 @@ signed int sub_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - param;
 		}
@@ -1317,7 +1301,7 @@ signed int sub_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 }
 
 // param_num_arr_none
-signed int sub_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1325,20 +1309,12 @@ signed int sub_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param - data2[x];
 		}
@@ -1348,7 +1324,7 @@ signed int sub_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int para
 }
 
 // param_num_arr_arr
-signed int sub_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1356,20 +1332,12 @@ signed int sub_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param - data2[x];
 		}
@@ -1381,7 +1349,7 @@ signed int sub_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int para
 
 
 // param_arr_arr_none
-signed int sub_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1389,20 +1357,12 @@ signed int sub_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1412,7 +1372,7 @@ signed int sub_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 }
 
 // param_arr_arr_arr
-signed int sub_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int sub_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1420,20 +1380,12 @@ signed int sub_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-			sub_unsigned_int_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
-		}
-#endif
-
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1461,7 +1413,7 @@ signed int sub_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed lon
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
@@ -1472,14 +1424,14 @@ signed int sub_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed lon
 		}
 		if (param > 0) {
 			ovtmp = LONG_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = LONG_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
@@ -1499,26 +1451,26 @@ signed int sub_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed lon
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = LONG_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = LONG_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
@@ -1538,28 +1490,28 @@ signed int sub_signed_long_3(Py_ssize_t arraylen, signed long param, signed long
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - LONG_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - LONG_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
@@ -1579,28 +1531,28 @@ signed int sub_signed_long_4(Py_ssize_t arraylen, signed long param, signed long
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - LONG_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - LONG_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
@@ -1621,12 +1573,12 @@ signed int sub_signed_long_5(Py_ssize_t arraylen, signed long *data1, signed lon
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (LONG_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (LONG_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
@@ -1645,12 +1597,12 @@ signed int sub_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed lon
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (LONG_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (LONG_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
@@ -1678,12 +1630,12 @@ signed int sub_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsign
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - param;
 		}
@@ -1701,12 +1653,12 @@ signed int sub_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsign
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - param;
 		}
@@ -1724,12 +1676,12 @@ signed int sub_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, unsigne
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param - data2[x];
 		}
@@ -1747,12 +1699,12 @@ signed int sub_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, unsigne
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param - data2[x];
 		}
@@ -1772,12 +1724,12 @@ signed int sub_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, unsign
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
 		}
@@ -1795,12 +1747,12 @@ signed int sub_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsign
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
 		}
@@ -1828,7 +1780,7 @@ signed int sub_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
@@ -1839,14 +1791,14 @@ signed int sub_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, 
 		}
 		if (param > 0) {
 			ovtmp = LLONG_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = LLONG_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data1[x] = data1[x] - param; 
 			}
@@ -1866,26 +1818,26 @@ signed int sub_signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				data3[x] = data1[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = LLONG_MIN + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = LLONG_MAX + param;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = data1[x] - param; 
 			}
@@ -1905,28 +1857,28 @@ signed int sub_signed_long_long_3(Py_ssize_t arraylen, signed long long param, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 				data2[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - LLONG_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - LLONG_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data2[x] = param - data2[x]; 
 			}
@@ -1946,28 +1898,28 @@ signed int sub_signed_long_long_4(Py_ssize_t arraylen, signed long long param, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
 		// If the parameter is zero, we can take a shortcut.
 		if (param == 0) {
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 				data3[x] = -data2[x]; 
 			}
 		}
 		if (param > 0) {
 			ovtmp = param - LLONG_MAX;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
 		}
 		if (param < 0) {
 			ovtmp = param - LLONG_MIN;
-			for(x = 0; x < arraylen; x++) {
+			for (x = 0; x < arraylen; x++) {
 				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
 				data3[x] = param - data2[x]; 
 			}
@@ -1988,12 +1940,12 @@ signed int sub_signed_long_long_5(Py_ssize_t arraylen, signed long long *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (LLONG_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (LLONG_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
@@ -2012,12 +1964,12 @@ signed int sub_signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((data2[x] > 0) && (data1[x] < (LLONG_MIN + data2[x]))) {return ARR_ERR_OVFL;}
 			if ((data2[x] < 0) && (data1[x] > (LLONG_MAX + data2[x]))) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
@@ -2045,12 +1997,12 @@ signed int sub_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - param;
 		}
@@ -2068,12 +2020,12 @@ signed int sub_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < param) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - param;
 		}
@@ -2091,12 +2043,12 @@ signed int sub_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data2[x] = param - data2[x];
 		}
@@ -2114,12 +2066,12 @@ signed int sub_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (param < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = param - data2[x];
 		}
@@ -2139,12 +2091,12 @@ signed int sub_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] - data2[x];
 		}
@@ -2162,12 +2114,12 @@ signed int sub_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] < data2[x]) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] - data2[x];
 		}
@@ -2202,12 +2154,12 @@ signed int sub_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float para
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2233,12 +2185,12 @@ signed int sub_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float para
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2264,12 +2216,12 @@ signed int sub_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2295,12 +2247,12 @@ signed int sub_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2328,12 +2280,12 @@ signed int sub_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2359,12 +2311,12 @@ signed int sub_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2399,12 +2351,12 @@ signed int sub_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double p
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - param;
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2430,12 +2382,12 @@ signed int sub_double_2(Py_ssize_t arraylen, int nosimd, double *data1, double p
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - param;
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2461,12 +2413,12 @@ signed int sub_double_3(Py_ssize_t arraylen, int nosimd, double param, double *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param - data2[x];
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2492,12 +2444,12 @@ signed int sub_double_4(Py_ssize_t arraylen, int nosimd, double param, double *d
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param - data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2525,12 +2477,12 @@ signed int sub_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] - data2[x];
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2556,12 +2508,12 @@ signed int sub_double_6(Py_ssize_t arraylen, int nosimd, double *data1, double *
 		}
 #endif
 
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] - data2[x];
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2756,27 +2708,27 @@ static PyObject *py_sub(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'I' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = sub_unsigned_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_1(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = sub_unsigned_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_2(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = sub_unsigned_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_3(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = sub_unsigned_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_4(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = sub_unsigned_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_5(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = sub_unsigned_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = sub_unsigned_int_6(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 			}

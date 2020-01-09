@@ -35,7 +35,7 @@ import codegen_common
 test_template_aall = ''' 
 
 ##############################################################################
-class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
+class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s_%(testdataset)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_aall
 	"""
@@ -56,17 +56,26 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		self.arraylength = 96 + arrayextension
 
 
+		# Test values are filled in via a template. The relationship
+		# between the numbers should be similar to the following example.
+		# tval1 = 99
+		# tval2 = 100
+		# tval3 = 101
+		# tval4 = 102
+
+
 	########################################################
 	def test_aall_basic_eq_a1(self):
 		"""Test aall for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x == testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('==', testdata, testval %(nosimd)s)
@@ -79,12 +88,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are different.
-		testval = %(typeconverter)s(99)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval1)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x == testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('==', testdata, testval %(nosimd)s)
@@ -97,13 +107,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is different.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = testval - 1
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		expected = all([(x == testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('==', testdata, testval %(nosimd)s)
@@ -117,12 +128,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x > testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>', testdata, testval %(nosimd)s)
@@ -135,12 +147,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x > testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>', testdata, testval %(nosimd)s)
@@ -153,13 +166,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is equal to the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
 		# Verify test compatibility.
 		expected = all([(x > testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>', testdata, testval %(nosimd)s)
@@ -173,12 +187,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>=', testdata, testval %(nosimd)s)
@@ -191,12 +206,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x >= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>=', testdata, testval %(nosimd)s)
@@ -209,13 +225,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		expected = all([(x >= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>=', testdata, testval %(nosimd)s)
@@ -228,12 +245,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>=', testdata, testval %(nosimd)s)
@@ -246,13 +264,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		expected = all([(x >= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('>=', testdata, testval %(nosimd)s)
@@ -266,12 +285,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x < testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<', testdata, testval %(nosimd)s)
@@ -284,12 +304,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x < testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<', testdata, testval %(nosimd)s)
@@ -302,13 +323,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is equal to the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
 		# Verify test compatibility.
 		expected = all([(x < testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<', testdata, testval %(nosimd)s)
@@ -322,12 +344,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<=', testdata, testval %(nosimd)s)
@@ -340,12 +363,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x <= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<=', testdata, testval %(nosimd)s)
@@ -358,13 +382,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval + 2
+		testdata[-2] = %(tval4)s
 
 		# Verify test compatibility.
 		expected = all([(x <= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<=', testdata, testval %(nosimd)s)
@@ -377,12 +402,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<=', testdata, testval %(nosimd)s)
@@ -395,13 +421,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval + 2
+		testdata[-2] = %(tval4)s
 
 		# Verify test compatibility.
 		expected = all([(x <= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('<=', testdata, testval %(nosimd)s)
@@ -415,12 +442,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are not the same.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x != testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('!=', testdata, testval %(nosimd)s)
@@ -433,12 +461,13 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(99)
+		testval = %(tval1)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = all([(x != testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('!=', testdata, testval %(nosimd)s)
@@ -451,13 +480,14 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aall for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is the same.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
 		# Verify test compatibility.
 		expected = all([(x != testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aall('!=', testdata, testval %(nosimd)s)
@@ -477,7 +507,7 @@ class aall_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 test_template_aany = ''' 
 
 ##############################################################################
-class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
+class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s_%(testdataset)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_aany
 	"""
@@ -498,17 +528,26 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		self.arraylength = 96 + arrayextension
 
 
+		# Test values are filled in via a template. The relationship
+		# between the numbers should be similar to the following example.
+		# tval1 = 99
+		# tval2 = 100
+		# tval3 = 101
+		# tval4 = 102
+
+
 	########################################################
 	def test_aany_basic_eq_a1(self):
 		"""Test aany for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x == testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('==', testdata, testval %(nosimd)s)
@@ -521,12 +560,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are different.
-		testval = %(typeconverter)s(99)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval1)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x == testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('==', testdata, testval %(nosimd)s)
@@ -539,13 +579,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is the same.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
 		# Verify test compatibility.
 		expected = any([(x == testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('==', testdata, testval %(nosimd)s)
@@ -559,12 +600,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x > testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>', testdata, testval %(nosimd)s)
@@ -577,12 +619,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x > testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>', testdata, testval %(nosimd)s)
@@ -595,13 +638,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = testval + 1
+		testdata[-2] = %(tval3)s
 
 		# Verify test compatibility.
 		expected = any([(x > testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>', testdata, testval %(nosimd)s)
@@ -615,12 +659,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>=', testdata, testval %(nosimd)s)
@@ -633,12 +678,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x >= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>=', testdata, testval %(nosimd)s)
@@ -651,13 +697,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval + 2
+		testdata[-2] = %(tval3)s
 
 		# Verify test compatibility.
 		expected = any([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>=', testdata, testval %(nosimd)s)
@@ -670,12 +717,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>=', testdata, testval %(nosimd)s)
@@ -688,13 +736,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is equal to the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
 		# Verify test compatibility.
 		expected = any([(x >= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('>=', testdata, testval %(nosimd)s)
@@ -708,12 +757,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x < testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<', testdata, testval %(nosimd)s)
@@ -726,12 +776,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x < testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<', testdata, testval %(nosimd)s)
@@ -744,13 +795,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(101)
+		testval = %(tval3)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 1
+		testdata[-2] = %(tval2)s
 
 		# Verify test compatibility.
 		expected = any([(x < testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<', testdata, testval %(nosimd)s)
@@ -764,12 +816,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<=', testdata, testval %(nosimd)s)
@@ -782,12 +835,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x <= testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<=', testdata, testval %(nosimd)s)
@@ -800,13 +854,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = testval + 1
+		testval = %(tval3)s
+		arrayval = %(tval4)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval2)s
 
 		# Verify test compatibility.
 		expected = any([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<=', testdata, testval %(nosimd)s)
@@ -819,12 +874,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<=', testdata, testval %(nosimd)s)
@@ -837,13 +893,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		expected = any([(x <= testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('<=', testdata, testval %(nosimd)s)
@@ -857,12 +914,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are not the same.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x != testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('!=', testdata, testval %(nosimd)s)
@@ -875,12 +933,13 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(99)
+		testval = %(tval1)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
 		expected = any([(x != testval) for x in testdata])
+		self.assertFalse(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('!=', testdata, testval %(nosimd)s)
@@ -893,13 +952,14 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 		"""Test aany for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is not the same.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = testval - 1
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		expected = any([(x != testval) for x in testdata])
+		self.assertTrue(expected)
 
 		# The actual test.
 		result = arrayfunc.aany('!=', testdata, testval %(nosimd)s)
@@ -920,7 +980,7 @@ class aany_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s
 test_template_findindex = ''' 
 
 ##############################################################################
-class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
+class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s_%(testdataset)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	test_template_findindex
 	"""
@@ -943,12 +1003,20 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		self.ARR_ERR_NOTFOUND = -1
 
 
+		# Test values are filled in via a template. The relationship
+		# between the numbers should be similar to the following example.
+		# tval1 = 99
+		# tval2 = 100
+		# tval3 = 101
+		# tval4 = 102
+
+
 	########################################################
 	def test_findindex_basic_eq_a1(self):
 		"""Test findindex for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -967,8 +1035,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are different.
-		testval = %(typeconverter)s(99)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval1)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -986,8 +1054,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for eq  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is the same.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
@@ -1007,8 +1075,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1026,7 +1094,7 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -1045,10 +1113,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for gt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = testval + 1
+		testdata[-2] = %(tval3)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y > testval]
@@ -1066,8 +1134,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = %(typeconverter)s(101)
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1085,8 +1153,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1104,10 +1172,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval + 2
+		testdata[-2] = %(tval3)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y >= testval]
@@ -1124,7 +1192,7 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -1143,8 +1211,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ge  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is equal to the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval - 1
+		testval = %(tval2)s
+		arrayval = %(tval1)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 		testdata[-2] = testval
 
@@ -1164,8 +1232,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1183,7 +1251,7 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -1202,10 +1270,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for lt  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(101)
+		testval = %(tval3)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 1
+		testdata[-2] = %(tval2)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y < testval]
@@ -1223,8 +1291,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = %(typeconverter)s(100)
+		testval = %(tval3)s
+		arrayval = %(tval2)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1242,8 +1310,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are greater than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1261,10 +1329,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(101)
-		arrayval = testval + 1
+		testval = %(tval3)s
+		arrayval = %(tval4)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval2)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y <= testval]
@@ -1281,7 +1349,7 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data values are equal to the test value.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -1300,10 +1368,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for le  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is less than the test value.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = arrayval - 2
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y <= testval]
@@ -1321,8 +1389,8 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are not the same.
-		testval = %(typeconverter)s(100)
-		arrayval = testval + 1
+		testval = %(tval2)s
+		arrayval = %(tval3)s
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
 		# Verify test compatibility.
@@ -1340,7 +1408,7 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# All data and test values are the same.
-		testval = %(typeconverter)s(99)
+		testval = %(tval1)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
 
@@ -1359,10 +1427,10 @@ class findindex_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typela
 		"""Test findindex for ne  - Array code %(typelabel)s. General test %(arrayevenodd)s length array %(simdpresent)s SIMD.
 		"""
 		# One test value near the end of the array is not the same.
-		testval = %(typeconverter)s(100)
+		testval = %(tval2)s
 		arrayval = testval
 		testdata = array.array('%(typecode)s', [arrayval] * self.arraylength)
-		testdata[-2] = testval - 1
+		testdata[-2] = %(tval1)s
 
 		# Verify test compatibility.
 		pyfind = [x for x,y in enumerate(testdata) if y != testval]
@@ -6046,6 +6114,28 @@ def gennonfinitetestdata():
 
 # ==============================================================================
 
+
+# Test data for aall. Values for 'l' and 'L' are based on 32 bit x86 and ARMv7 values.
+# The maximum and minimum values used for 'f' and 'd' arrays are 
+# limited here to within their precision so that small changes
+# can be made to the test data when comparing values. 
+# 'f' numbers have only 23 bits of precision and 'd' numbers have only 52 
+# bits of precision, so they are limited here to the next lowest integer value. 
+testdatasets_aall = {
+	'b' : ((99, 100, 101, 102), (-1, 100, 125, 127), (-101, -100, -99, -97)),
+	'B' : ((99, 100, 101, 102), (1, 100, 145, 254),  (97, 99, 100, 101)),
+	'h' : ((99, 100, 101, 102), (-1, 25000, 32250, 32767), (-25851, -25850, -25849, -25847)),
+	'H' : ((99, 100, 101, 102), (1, 25700, 37265, 65534),  (24929, 24931, 24932, 24933)),
+	'i' : ((99, 100, 101, 102), (-1, 842150449, 1052688062, 2147483646), (-1694498816, -1694498815, -1694498814, -1694498812)),
+	'I' : ((99, 100, 101, 102), (1, 1684300900, 2442236305, 4294967294), (1633771873, 1633771875, 1633771876, 1633771877)),
+	'l' : ((99, 100, 101, 102), (-1, 842150449, 1052688062, 2147483646), (-1694498816, -1694498815, -1694498814, -1694498812)),
+	'L' : ((99, 100, 101, 102), (1, 1684300900, 2442236305, 4294967294), (1633771873, 1633771875, 1633771876, 1633771877)),
+	'q' : ((99, 100, 101, 102), (-1, 7262497666814784100, 9078122083518480125, 9223372036854775806), (-7393337902558193306, -7393337902558193305, -7393337902558193304, -7393337902558193302)),
+	'Q' : ((99, 100, 101, 102), (1, 7234017283807667300, 10489325061521117585, 18446744073709551615), (3508498382646718640, 3508498382646718642, 3508498382646718643, 3508498382646718644)),
+	'f' : ((99.0, 100.0, 101.0, 102.0), (-1.0, 25000.0, 32250.0, 32767.0), (-25851.0, -25850.0, -25849.0, -25847.0)),
+	'd' : ((99.0, 100.0, 101.0, 102.0), (-1.0, 842150449.0, 1052688062.0, 2147483646.0), (-1694498816.0, -1694498815.0, -1694498814.0, -1694498812.0)),
+}
+
 # ==============================================================================
 
 # This is used to generate test template data for general tests.
@@ -6058,9 +6148,10 @@ def genbasictestdata():
 	arraycode = [('typecode', x) for x in codegen_common.arraycodes]
 	hassimd = (('simdpresent', 'with'), ('simdpresent', 'without'))
 	arraylen = (('arrayevenodd', 'even'), ('arrayevenodd', 'odd'))
+	testdata = (('testdataset', 0), ('testdataset', 1), ('testdataset', 2))
 
 	# The product function produces all possible combinations.
-	combos = list(itertools.product(arraycode, hassimd, arraylen))
+	combos = list(itertools.product(arraycode, hassimd, arraylen, testdata))
 
 
 	# Convert the data into a list of dictionaries.
@@ -6077,6 +6168,15 @@ def genbasictestdata():
 		x['nosimd'] = nosimd[x['simdpresent']]
 		x['typeconverter'] = typconverter[x['typecode']]
 
+		# TODO: Change these to use different sets of data.
+		# This requires looking into the data to decide which set of test
+		# data to insert.
+		# This looks up the test data by array type, then data set index, 
+		# then list element. 
+		x['tval1'] = testdatasets_aall[x['typecode']][x['testdataset']][0]
+		x['tval2'] = testdatasets_aall[x['typecode']][x['testdataset']][1]
+		x['tval3'] = testdatasets_aall[x['typecode']][x['testdataset']][2]
+		x['tval4'] = testdatasets_aall[x['typecode']][x['testdataset']][3]
 
 	return testdata
 

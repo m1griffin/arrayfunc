@@ -68,6 +68,7 @@ typedef short int v8hi __attribute__ ((vector_size (16)));
 typedef int v4si __attribute__ ((vector_size (16)));
 typedef float v4sf __attribute__ ((vector_size (16)));
 typedef double v2df __attribute__ ((vector_size (16)));
+typedef long long v2di __attribute__ ((vector_size (16)));
 
 
 #define CHARSIMDSIZE 16

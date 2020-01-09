@@ -36,7 +36,7 @@ import codegen_common
 test_template_uniop = '''
 
 ##############################################################################
-class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(typecode)s(unittest.TestCase):
 	"""Test for basic general tests.
 	test_template_uniop
 	"""
@@ -63,25 +63,47 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
 		if '%(arrayevenodd)s' == 'even':
-			testdatasize = 160
+			testdatasize = 320
 		if '%(arrayevenodd)s' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
+			testdatasize = 319
+
+		decentre = testdatasize // 2
+
+		if '%(typecode)s' not in ('f', 'd'):
+			# We don't test the minimum integer value as we are not testing
+			# the behaviour of integer overflows in this series of tests.
+			minval = arrayfunc.arraylimits.%(typecode)s_min + 1
+			maxval = arrayfunc.arraylimits.%(typecode)s_max
+		else:
+			# For floating point tests we limit the range to large integer
+			# size ranges to ensure better coverage of more typical use cases. 
+			minval = arrayfunc.arraylimits.q_min
+			maxval = arrayfunc.arraylimits.q_max
 
 
-		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre - 1] = -1
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
 
 		self.data = array.array('%(typecode)s', xdata)
 		self.dataout = array.array('%(typecode)s', [0]*len(self.data))
 
-		self.expected = [%(pyoperator)s(x) for x in self.data]
 
 		self.limited = len(self.data) // 2
 
 
 	########################################################
 	def test_%(funclabel)s_inplace_a1(self):
-		"""Test %(funclabel)s in place - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place - Array code %(typecode)s.
 		"""
 		expected = [%(pyoperator)s(x) for x in self.data]
 
@@ -94,7 +116,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_inplace_ov_a2(self):
-		"""Test %(funclabel)s in place with matherrors=True  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with matherrors=True  - Array code %(typecode)s.
 		"""
 		expected = [%(pyoperator)s(x) for x in self.data]
 		arrayfunc.%(funcname)s(self.data, matherrors=True %(nosimd)s)
@@ -106,7 +128,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_inplace_maxlen_a3(self):
-		"""Test %(funclabel)s in place with array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with array maxlen  - Array code %(typecode)s.
 		"""
 		pydataout = [%(pyoperator)s(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -120,7 +142,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_inplace_ov_maxlen_a4(self):
-		"""Test %(funclabel)s in place with matherrors=True and array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with matherrors=True and array maxlen  - Array code %(typecode)s.
 		"""
 		pydataout = [%(pyoperator)s(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.data)[self.limited:]
@@ -135,7 +157,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_outputarray_a5(self):
-		"""Test %(funclabel)s to output array - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array - Array code %(typecode)s.
 		"""
 		expected = [%(pyoperator)s(x) for x in self.data]
 		arrayfunc.%(funcname)s(self.data, self.dataout %(nosimd)s)
@@ -147,7 +169,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_outputarray_ov_a6(self):
-		"""Test %(funclabel)s to output array with matherrors=True  - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with matherrors=True  - Array code %(typecode)s.
 		"""
 		expected = [%(pyoperator)s(x) for x in self.data]
 		arrayfunc.%(funcname)s(self.data, self.dataout, matherrors=True %(nosimd)s)
@@ -159,7 +181,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_outputarray_maxlen_a7(self):
-		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typecode)s.
 		"""
 		pydataout = [%(pyoperator)s(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -173,7 +195,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 
 	########################################################
 	def test_%(funclabel)s_outputarray_ov_maxlen_a8(self):
-		"""Test %(funclabel)s to output array with matherrors=True and array maxlen - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with matherrors=True and array maxlen - Array code %(typecode)s.
 		"""
 		pydataout = [%(pyoperator)s(x) for x in self.data]
 		expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
@@ -200,7 +222,7 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(simdpresent)s_simd_%(ty
 param_invalid_template = '''
 
 ##############################################################################
-class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_param_errors_%(typecode)s(unittest.TestCase):
 	"""Test %(funclabel)s for invalid array and numeric parameters.
 	param_invalid_template
 	"""
@@ -226,7 +248,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_a1(self):
-		"""Test %(funclabel)s as *array-array* for invalid type of input array - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for invalid type of input array - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.testarray1, self.dataout)
@@ -238,7 +260,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_a2(self):
-		"""Test %(funclabel)s as *array-array* for invalid type of output array - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for invalid type of output array - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.testarray1, self.dataout)
@@ -250,7 +272,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_no_params_b1(self):
-		"""Test %(funclabel)s with no parameters - Array code %(typelabel)s.
+		"""Test %(funclabel)s with no parameters - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s()
@@ -267,7 +289,7 @@ class %(funclabel)s_param_errors_%(typelabel)s(unittest.TestCase):
 param_invalid_opt_template = '''
 
 ##############################################################################
-class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_opt_param_errors_%(typecode)s(unittest.TestCase):
 	"""Test %(funclabel)s for invalid errors flag and maxlen parameters.
 	param_invalid_opt_template
 	"""
@@ -289,7 +311,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_a1(self):
-		"""Test %(funclabel)s as *array-none* for matherrors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for matherrors='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, matherrors=True)
@@ -301,7 +323,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_a2(self):
-		"""Test %(funclabel)s as *array-none* for maxlen='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for maxlen='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, maxlen=self.testmaxlen)
@@ -313,7 +335,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_a3(self):
-		"""Test %(funclabel)s as *array-none* for nosimd='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for nosimd='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, nosimd=False)
@@ -326,7 +348,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_b1(self):
-		"""Test %(funclabel)s as *array-array* for matherrors='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for matherrors='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, self.dataout, matherrors=True)
@@ -338,7 +360,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_b2(self):
-		"""Test %(funclabel)s as *array-array* for maxlen='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for maxlen='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, self.dataout, maxlen=self.testmaxlen)
@@ -350,7 +372,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_array_b3(self):
-		"""Test %(funclabel)s as *array-array* for nosimd='a' - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for nosimd='a' - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.inparray1a, self.dataout, nosimd=False)
@@ -370,7 +392,7 @@ class %(funclabel)s_opt_param_errors_%(typelabel)s(unittest.TestCase):
 test_template_invalidarray = '''
 
 ##############################################################################
-class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_invalidarray_%(typecode)s(unittest.TestCase):
 	"""Test for invalid arrays.
 	test_template_invalidarray
 	"""
@@ -388,7 +410,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_inplace(self):
-		"""Test %(funclabel)s in place - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data)
@@ -396,7 +418,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_inplace_ov_a1(self):
-		"""Test %(funclabel)s in place with matherrors=True  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with matherrors=True  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, matherrors=True)
@@ -404,7 +426,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_inplace_maxlen_a2(self):
-		"""Test %(funclabel)s in place with array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with array maxlen  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, maxlen=self.limited)
@@ -412,7 +434,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_inplace_ov_maxlen_a3(self):
-		"""Test %(funclabel)s in place with matherrors=True and array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place with matherrors=True and array maxlen  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, matherrors=True, maxlen=self.limited)
@@ -420,7 +442,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_outputarray_a4(self):
-		"""Test %(funclabel)s to output array - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, self.dataout)
@@ -428,7 +450,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_outputarray_ov_a4(self):
-		"""Test %(funclabel)s to output array with matherrors=True  - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with matherrors=True  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, self.dataout, matherrors=True)
@@ -436,7 +458,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_outputarray_maxlen_a5(self):
-		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with array maxlen  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, self.dataout, maxlen=self.limited)
@@ -444,7 +466,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_outputarray_ov_maxlen_a6(self):
-		"""Test %(funclabel)s to output array with matherrors=True and array maxlen - Array code %(typelabel)s.
+		"""Test %(funclabel)s to output array with matherrors=True and array maxlen - Array code %(typecode)s.
 		"""
 		with self.assertRaises(TypeError):
 			arrayfunc.%(funcname)s(self.data, self.dataout, matherrors=True, maxlen=self.limited)
@@ -464,7 +486,7 @@ class %(funclabel)s_invalidarray_%(typelabel)s(unittest.TestCase):
 # matherrors checking is turned off, the results are checked.
 nan_data_errorchecked_noparam_template = '''
 ##############################################################################
-class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typecode)s(unittest.TestCase):
 	"""Test for basic general function operation.
 	nan_data_errorchecked_noparam_template
 	"""
@@ -499,7 +521,7 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.Test
 
 	########################################################
 	def test_%(funclabel)s_outputarray_a1(self):
-		"""Test %(funclabel)s for data of %(testlabel)s with matherrors checking on and single parameter functions  - Array code %(typelabel)s.
+		"""Test %(funclabel)s for data of %(testlabel)s with matherrors checking on and single parameter functions  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(ArithmeticError):
 			arrayfunc.%(funcname)s(self.data%(testarray)s, self.dataout)
@@ -507,7 +529,7 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.Test
 
 	########################################################
 	def test_%(funclabel)s_inplace_a2(self):
-		"""Test %(funclabel)s in place for data of %(testlabel)s with matherrors checking on and single parameter functions  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place for data of %(testlabel)s with matherrors checking on and single parameter functions  - Array code %(typecode)s.
 		"""
 		with self.assertRaises(ArithmeticError):
 			arrayfunc.%(funcname)s(self.data%(testarray)s)
@@ -515,7 +537,7 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.Test
 
 	########################################################
 	def test_%(funclabel)s_ov_outputarray_a3(self):
-		"""Test %(funclabel)s for data of %(testlabel)s with matherrors=True and single parameter functions  - Array code %(typelabel)s.
+		"""Test %(funclabel)s for data of %(testlabel)s with matherrors=True and single parameter functions  - Array code %(typecode)s.
 		"""
 		# Calculate the expected result.
 		expected = [%(pyoperator)s(x) for x in self.data%(testarray)s]
@@ -530,7 +552,7 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.Test
 
 	########################################################
 	def test_%(funclabel)s_ov_inplace_a4(self):
-		"""Test %(funclabel)s in place for data of %(testlabel)s with matherrors=True and single parameter functions  - Array code %(typelabel)s.
+		"""Test %(funclabel)s in place for data of %(testlabel)s with matherrors=True and single parameter functions  - Array code %(typecode)s.
 		"""
 		# Calculate the expected result.
 		expected = [%(pyoperator)s(x) for x in self.data%(testarray)s]
@@ -553,7 +575,7 @@ class %(funclabel)s_nandata_exceptions_%(testarray)s_%(typelabel)s(unittest.Test
 param_overflow_minval_template = '''
 
 ##############################################################################
-class overflow_signed_ovflmin_%(typelabel)s(unittest.TestCase):
+class overflow_signed_ovflmin_%(typecode)s(unittest.TestCase):
 	"""Test %(funclabel)s for value overflow for negating or taking absolute 
 	values of min values in signed arrays.
 	param_overflow_minval_template
@@ -577,7 +599,7 @@ class overflow_signed_ovflmin_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_a1(self):
-		"""Test %(funclabel)s as *array-none* for overflow of min value - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for overflow of min value - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.maxarray)
@@ -589,7 +611,7 @@ class overflow_signed_ovflmin_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_array_a2(self):
-		"""Test %(funclabel)s as *array-array* for overflow of min value - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for overflow of min value - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.maxarray, self.dataout)
@@ -601,7 +623,7 @@ class overflow_signed_ovflmin_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_none_b1(self):
-		"""Test %(funclabel)s as *array-none* for overflow of min value with matherrors=True - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-none* for overflow of min value with matherrors=True - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.maxarray, matherrors=True)
@@ -612,7 +634,7 @@ class overflow_signed_ovflmin_%(typelabel)s(unittest.TestCase):
 
 	########################################################
 	def test_%(funclabel)s_array_num_array_b2(self):
-		"""Test %(funclabel)s as *array-array* for overflow of min value with matherrors=True - Array code %(typelabel)s.
+		"""Test %(funclabel)s as *array-array* for overflow of min value with matherrors=True - Array code %(typecode)s.
 		"""
 		# This version is expected to pass.
 		arrayfunc.%(funcname)s(self.maxarray, self.dataout, matherrors=True)
@@ -662,6 +684,27 @@ supportedarrays = codegen_common.signedint + codegen_common.floatarrays
 unsupportedarrays = codegen_common.unsignedint
 
 
+# ==============================================================================
+
+
+def makedata():
+	'''Make the combinations of data options for tests.
+	'''
+	typecode = [('typecode', x) for x in supportedarrays]
+	arrayevenodd = (('arrayevenodd', 'even'), ('arrayevenodd', 'odd'))
+	simdpresent = (('simdpresent', 'nosimd'), ('simdpresent', 'withsimd'))
+
+	# This creates all the combinations of test data.
+	combos = [dict(x) for x in itertools.product(typecode, arrayevenodd, simdpresent)]
+
+	nosimd = {'nosimd' : {'nosimd' : ', nosimd=True'}, 'withsimd' : {'nosimd' : ''}}
+
+	# Update with the test data. These values don't represent independent combinations,
+	# but rather just additional data that goes along with other items already present.
+	for x in combos:
+		x.update(nosimd[x['simdpresent']])
+
+	return combos
 
 # ==============================================================================
 
@@ -678,33 +721,24 @@ for func in funclist:
 		f.write(codegen_common.HeaderTemplate % headerdate)
 
 
-		for functype in supportedarrays:
+		# Test for basic operation.
+		for funcdata in makedata():
+			funcdata['funclabel'] = func['funcname']
+			funcdata['funcname'] = funcname
+			funcdata['pyoperator'] = func['pyoperator']
+
+			f.write(test_template_uniop % funcdata)
+
+
+
+		# Check parameters.
+		for typecode in supportedarrays:
+
 			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
-				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : func['test_op_x']}
-
-			# Test for basic operation.
-			# With SIMD, even data arra size.
-			funcdata['simdpresent'] = 'with'
-			funcdata['nosimd'] = ''
-			funcdata['arrayevenodd'] = 'even'
-			f.write(test_template_uniop % funcdata)
-
-			# With SIMD, odd data array size.
-			funcdata['simdpresent'] = 'with'
-			funcdata['nosimd'] = ''
-			funcdata['arrayevenodd'] = 'odd'
-			f.write(test_template_uniop % funcdata)
-
-			# Without SIMD.
-			funcdata['simdpresent'] = 'without'
-			funcdata['nosimd'] = ', nosimd=True'
-			funcdata['arrayevenodd'] = 'even'
-			f.write(test_template_uniop % funcdata)
-
-
+				'typecode' : typecode, 'test_op_x' : func['test_op_x']}
 
 			# Convert the numeric literals to the appropriate type for the array.
-			if functype in codegen_common.floatarrays:
+			if typecode in codegen_common.floatarrays:
 				funcdata['zero_const'] = '0.0'
 				funcdata['badcode'] = 'i'
 				funcdata['badconv'] = 'int'
@@ -729,7 +763,7 @@ for func in funclist:
 		# Test to see that calls using unsupported arrays fail.
 		for functype in unsupportedarrays:
 			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-				'typelabel' : functype, 'typecode' : functype}
+				'typecode' : functype}
 			# Make sure we don't send negative numbers to unsigned arrays.
 			# For signed arrays, we don't care what the sign is because the
 			# test will simply raise an exception based on array type anyway.
@@ -743,7 +777,7 @@ for func in funclist:
 
 		for functype in codegen_common.signedint:
 			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-				'typelabel' : functype, 'typecode' : functype}
+				'typecode' : functype}
 			f.write(param_overflow_minval_template % funcdata)
 			
 
@@ -755,8 +789,8 @@ for func in funclist:
 
 			for functype in codegen_common.floatarrays:
 				funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 
-						'pyoperator' : func['pyoperator'], 'typelabel' : functype, 
-						'typecode' : functype, 'test_op_x' : func['test_op_x'],
+						'pyoperator' : func['pyoperator'], 	'typecode' : functype, 
+						'test_op_x' : func['test_op_x'],
 						'testarray' : testarray, 'testlabel' : testlabel}
 				f.write(testtemplate % funcdata)
 

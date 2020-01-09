@@ -6,8 +6,8 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 5.0.0 for 2019-10-23
-:Copyright: 2014 - 2019
+:Version: 5.1.0 for 2020-01-04
+:Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
 
@@ -86,7 +86,7 @@ afilter         Select values from an array based on a boolean criteria.
 compress        Select values from an array based on another array of boolean
                 values.
 dropwhile       Select values from an array starting from where a selected 
-                criteria fails and proceding to the end.
+                criteria fails and proceeding to the end.
 takewhile       Like dropwhile, but starts from the beginning and stops when the
                 criteria fails.
 ============== =================================================================
@@ -554,7 +554,7 @@ For integer arrays, the intermediate sum is accumulated in the largest
 corresponding integer size. Signed integers are accumulated in the equivalent 
 to an 'l' array type, and unsigned integers are accumulated in the equivalent 
 to an 'L' array type. This means that integer arrays using smaller integer word 
-sizes cannot overflow unless extremenly large arrays are used (and may be 
+sizes cannot overflow unless extremely large arrays are used (and may be 
 impossible due to limits on array indices in the array module). 
 
 asum(inparray)
@@ -723,7 +723,7 @@ __________________________
 Unless otherwise noted, all array and numeric parameters must be of the same
 type when calling a mathematical function. That is, you may not mix integer
 and floating point, or different integer sizes in the same calculation. Failing
-to do so will result in an exception being raised.
+to use consistent parameters will result in an exception being raised.
 
 
 
@@ -739,8 +739,8 @@ operated on, with the following ones left unchanged.::
  arrayfunc.add(x, 10, maxlen=3)
 
 
-Supressing or Ignoring Math Errors
-__________________________________
+Suppressing or Ignoring Math Errors
+___________________________________
 
 Functions can be made to ignore some mathematical errors (e.g. integer 
 overflow) by setting the 'matherrors' keyword parameter to True.::
@@ -749,7 +749,7 @@ overflow) by setting the 'matherrors' keyword parameter to True.::
  arrayfunc.add(x, 235, matherrors=True)
 
 
-However, not all math errors can be supressed, only those which would not 
+However, not all math errors can be suppressed, only those which would not 
 otherwise cause a fatal error (e.g. division by zero). 
 
 Ignoring errors may be desirable if the side effect (e.g. the result of an 
@@ -950,7 +950,7 @@ contained in memory for most computers.
 
 When creating very large arrays, it is recommended to consider using 
 itertools.repeat as an initializer or to use array.extend or array.append
-to add to an array rather than using a list as an intializer. Lists use much
+to add to an array rather than using a list as an initializer. Lists use much
 more memory than arrays (even for the same data type), and it is easy to
 run out of memory if you are not careful when creating very large arrays from
 lists.
@@ -994,8 +994,8 @@ Power (**)                X                                    X
 
 * Negation of the maximum negative signed in (the most negative integer for that
   array type) can be caused by negation, absolute value, division, and modulus 
-  operations. Since signed integers do not have a symetrical range (e.g. -128 to 
-  127 for 8 bit sizes) anything which attempts to convert (in this example) 
+  operations. Since signed integers do not have a symmetrical range (e.g. -128 
+  to 127 for 8 bit sizes) anything which attempts to convert (in this example) 
   -128 to +128 would cause an overflow back to -128.
 * The factorial of negative numbers is undefined. 
 * Powers are not calculated for integers raised to negative powers, as integer
@@ -1005,7 +1005,7 @@ Power (**)                X                                    X
 Disabling Integer Division by Zero Checks
 _________________________________________
 
-Divison by zero cannot be disabled for integer division or modulus operations.
+Division by zero cannot be disabled for integer division or modulus operations.
 Division by zero could cause seg faults (crashes), so this option is ignored for
 these functions.
 
@@ -1021,7 +1021,7 @@ addition, the Arrayfunc results may differ from those in native Python on some
 platforms when using NaN and infinity as inputs.
 
 
-However, since using NaN and infinity as numeric inputs is not a commmon
+However, since using NaN and infinity as numeric inputs is not a common
 operation, this is unlikely to be a serious problem when writing cross platform
 code in most cases. 
 
@@ -1038,7 +1038,7 @@ The following exceptions apply to most functions.
 ==================  ===========================================  ======================================================
 Exception type      Text                                           Description
 ==================  ===========================================  ======================================================
-ArithmeticError     arithmetic error in calculation.             An arithmetic error occured in a calculation.
+ArithmeticError     arithmetic error in calculation.             An arithmetic error occurred in a calculation.
 ZeroDivisionError   zero division error in calculation.          A calculation attempted to divide by zero.
 IndexError          array length error.                          One or more arrays has an invalid length (e.g a 
                                                                  length of zero).
@@ -1046,7 +1046,7 @@ IndexError          input array length error.                    The input array
 IndexError          output length error.                         The output array has an invalid length.
 IndexError          array length mismatch.                       Two or more arrays which are expected to be of equal 
                                                                  length are not.
-OverflowError       arithmetic overflow in calculation.          An arithmetic integer overflow ocurred in a 
+OverflowError       arithmetic overflow in calculation.          An arithmetic integer overflow occurred in a 
                                                                  calculation. 
 OverflowError       arithmetic overflow in parameter.            The size or range of a non-array parameter was not
                                                                  compatible with the array parameters.
@@ -1061,7 +1061,7 @@ TypeError           array.array expected.                        A non-array par
 ValueError          operator not valid for this function.        An operator parameter used was not valid for this
                                                                  function. 
 ValueError          operator not valid for this platform.        The operator used is not supported on this platform.
-TypeError           parameter error.                             An unspecified error occured when parsing the 
+TypeError           parameter error.                             An unspecified error occurred when parsing the 
                                                                  parameters.
 TypeError           parameter missing.                           An expected parameter was missing. 
 ValueError          parameter not valid for this operation.      A value is not valid for this operation. E.g.
@@ -1074,6 +1074,37 @@ ValueError          cannot convert float NaN to integer.         Cannot convert 
 TypeError           output array type invalid.                   The output array type is invalid.
 ==================  ===========================================  ======================================================
 
+
+---------------------------------------------------------------------
+
+
+Platform Oddities
+=================
+
+As most operators are implemented using native behaviour, details of some 
+operations may depend on the CPU architecture.
+
+Lshift and rshift will exhibit a behaviour that depends on the CPU type 
+whether it is 32 or 64 bit, and array size. 
+
+For 32 bit x86 systems, if the array word size is 32 bits or less, the shift 
+is masked to 5 bits. That is, shift amounts greater than 32 will "roll over",
+repeating smaller shifts.
+
+On 64 bit systems, this behaviour will vary depending on whether SIMD is used
+or not. This, arrays which are not even multiples of SIMD register sizes may
+exibit different behaviour at different array indexes (depending on whether 
+SIMD or non-SIMD instructions were used for those parts of the array).
+
+ARM does not display this roll-over behaviour, and so may give different
+results than x86. However, negative shift values may result in the shift
+operation being conducted in the opposite direction (e.g. right shift instead
+of left shift).
+
+The conclusion is that bit shift operations which use a shift amount which is
+not in the range of 0 to "maximum number" may produce undefined results.
+So valid bit shift amounts should be 0 to 7, 0 to 15, 0 to 31 and 0 to 63,
+depending on the array type.
 
 
 ---------------------------------------------------------------------
@@ -1215,10 +1246,10 @@ acceleration was enabled where this did not conflict with the preceding
 {pybench}
 
 
-Optmised Performance (with SIMD)
-________________________________
+Optimised Performance (with SIMD)
+_________________________________
 
-In this set of tests, all arithmatic error checking was disabled (not the 
+In this set of tests, all arithmetic error checking was disabled (not the 
 default state) and SIMD acceleration was enabled (the normal default).
 Note that there may be unexpected slight differences as compared to the 
 previous data table due to variations in test timing.
@@ -1241,6 +1272,7 @@ checking must be disabled to use them). This information may be useful in
 deciding which platform you wish to use to run your application. This
 data is primarily of interest in judging expected benchmark performance
 on different platforms. 
+
 {simdrelbench}
 
 

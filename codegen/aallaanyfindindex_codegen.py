@@ -106,7 +106,7 @@ signed int aall_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (!(data[index] %(compare_ops)s param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -117,8 +117,8 @@ signed int aall_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *
 """
 
 
-# The basic template for the SIMD version of aall.
-ops_aall_simd = """
+# The basic template for the SIMD version of aall. x86-64 version.
+ops_aall_simd_x86 = """
 /*--------------------------------------------------------------------------- */
 /* For array code: %(arraycode)s
    opcode = The operator or function code to select what to execute.
@@ -129,7 +129,68 @@ ops_aall_simd = """
    Returns 1 if the condition was true for all array elements, or ARR_ERR_NOTFOUND
 		 if it was false at least once.
 */
-%(simdplatform)s
+#if defined(AF_HASSIMD_X86)
+signed int aall_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdattr)s resultslice%(SIMD_x86_compslice)s;
+	%(arraytype)s compvals[%(simdwidth)s];
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = %(vldinstr)s compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s &data[index]);
+		%(SIMD_x86_ops)s
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if (!(data[index] %(compare_ops)s param1)) {
+			return ARR_ERR_NOTFOUND;
+		}
+	}
+
+	return 1;
+
+}
+
+#endif
+
+"""
+
+
+# The basic template for the SIMD version of aall. ARM version
+ops_aall_simd_arm = """
+/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true for all array elements, or ARR_ERR_NOTFOUND
+		 if it was false at least once.
+*/
+#if defined(AF_HASSIMD_ARM)
 signed int aall_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
 
 	// array index counter. 
@@ -147,18 +208,17 @@ signed int aall_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 	for (y = 0; y < %(simdwidth)s; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = %(vldinstr)s compvals);
+	datasliceright = %(vldinstr)s( compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceleft = %(vldinstr)s &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft %(compare_ops)s datasliceright;
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s( &data[index]);
+		// The actual SIMD operation. 
+		resultslice = %(SIMD_ARM_comp)s(datasliceleft, datasliceright);
 		// Compare the results of the SIMD operation.
 		if (%(vresult)s) {
 			return ARR_ERR_NOTFOUND;
@@ -166,7 +226,7 @@ signed int aall_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data[index] %(compare_ops)s param1)) {
 			return ARR_ERR_NOTFOUND;
 		}
@@ -180,6 +240,8 @@ signed int aall_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 
 """
 
+
+# ==============================================================================
 
 # The basic template for the non-SIMD version of aany.
 ops_aany = """
@@ -197,7 +259,7 @@ signed int aany_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *
 	// array index counter.
 	Py_ssize_t index;
 
-	for(index = 0; index < arraylen; index++) {
+	for (index = 0; index < arraylen; index++) {
 		if (data[index] %(compare_ops)s param1) {
 			return 1;
 		}
@@ -207,8 +269,8 @@ signed int aany_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *
 }
 """
 
-# The basic template for the SIMD version of aany.
-ops_aany_simd = """
+# The basic template for the SIMD version of aany. x86 version.
+ops_aany_simd_x86 = """
 /*--------------------------------------------------------------------------- */
 /* For array code: %(arraycode)s
    opcode = The operator or function code to select what to execute.
@@ -219,7 +281,69 @@ ops_aany_simd = """
    Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-%(simdplatform)s
+#if defined(AF_HASSIMD_X86)
+signed int aany_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdattr)s resultslice%(SIMD_x86_compslice)s;
+	%(arraytype)s compvals[%(simdwidth)s];
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = %(vldinstr)s compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s &data[index]);
+		%(SIMD_x86_ops)s
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if (data[index] %(compare_ops)s param1) {
+			return 1;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+"""
+
+
+
+# The basic template for the SIMD version of aany. ARM version.
+ops_aany_simd_arm = """
+/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns 1 if the condition was true at least once, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#if defined(AF_HASSIMD_ARM)
 signed int aany_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
 
 	// array index counter. 
@@ -237,18 +361,17 @@ signed int aany_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 	for (y = 0; y < %(simdwidth)s; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = %(vldinstr)s compvals);
+	datasliceright = %(vldinstr)s( compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceleft = %(vldinstr)s &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft %(compare_ops)s datasliceright;
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s( &data[index]);
+		// The actual SIMD operation. 
+		resultslice = %(SIMD_ARM_comp)s(datasliceleft, datasliceright);
 		// Compare the results of the SIMD operation.
 		if (%(vresult)s) {
 			return 1;
@@ -256,7 +379,7 @@ signed int aany_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] %(compare_ops)s param1) {
 			return 1;
 		}
@@ -270,6 +393,8 @@ signed int aany_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytyp
 
 """
 
+
+# ==============================================================================
 
 # The basic template for the non-SIMD version of findindex.
 ops_findindex = """
@@ -287,7 +412,7 @@ Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytyp
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] %(compare_ops)s param1) {
 				return index;
 			}
@@ -298,8 +423,9 @@ Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytyp
 """
 
 
-# The basic template for the SIMD version of findindex.
-ops_findindex_simd = """
+
+# The basic template for the SIMD version of findindex. x86 version.
+ops_findindex_simd_x86 = """
 /*--------------------------------------------------------------------------- */
 /* For array code: %(arraycode)s
    opcode = The operator or function code to select what to execute.
@@ -310,7 +436,75 @@ ops_findindex_simd = """
    Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
 		if it was not found.
 */
-%(simdplatform)s
+#if defined(AF_HASSIMD_X86)
+Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
+
+	// array index counter. 
+	Py_ssize_t index, fineindex; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+	unsigned int y;
+
+	%(simdattr)s datasliceleft, datasliceright;
+	%(simdattr)s resultslice%(SIMD_x86_compslice)s;
+	%(arraytype)s compvals[%(simdwidth)s];
+
+	// Initialise the comparison values.
+	for (y = 0; y < %(simdwidth)s; y++) {
+		compvals[y] = param1;
+	}
+	datasliceright = %(vldinstr)s compvals);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s &data[index]);
+		%(SIMD_x86_ops)s
+			// Home in on the exact location.
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
+				if (data[fineindex] %(compare_ops)s param1) {
+					return fineindex;
+				}
+			}
+		}
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if (data[index] %(compare_ops)s param1) {
+			return index;
+		}
+	}
+
+	return ARR_ERR_NOTFOUND;
+
+}
+
+#endif
+
+"""
+
+
+# The basic template for the SIMD version of findindex. ARM version.
+ops_findindex_simd_arm = """
+/*--------------------------------------------------------------------------- */
+/* For array code: %(arraycode)s
+   opcode = The operator or function code to select what to execute.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   param1 = The parameter to be applied to each array element.
+   nosimd = If true, disable SIMD.
+   Returns the array index of the first matching instance, or ARR_ERR_NOTFOUND,
+		if it was not found.
+*/
+#if defined(AF_HASSIMD_ARM)
 Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s param1) { 
 
 	// array index counter. 
@@ -328,21 +522,20 @@ Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arr
 	for (y = 0; y < %(simdwidth)s; y++) {
 		compvals[y] = param1;
 	}
-	datasliceright = %(vldinstr)s compvals);
+	datasliceright = %(vldinstr)s( compvals);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
 	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += %(simdwidth)s) {
-		datasliceleft = %(vldinstr)s &data[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft %(compare_ops)s datasliceright;
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		datasliceleft = %(vldinstr)s( &data[index]);
+		// The actual SIMD operation. 
+		resultslice = %(SIMD_ARM_comp)s(datasliceleft, datasliceright);
 		if (%(vresult)s) {
 			// Home in on the exact location.
-			for(fineindex = index; fineindex < alignedlength; fineindex++) {
+			for (fineindex = index; fineindex < alignedlength; fineindex++) {
 				if (data[fineindex] %(compare_ops)s param1) {
 					return fineindex;
 				}
@@ -351,7 +544,7 @@ Py_ssize_t findindex_%(opcode)s_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arr
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (data[index] %(compare_ops)s param1) {
 			return index;
 		}
@@ -676,6 +869,771 @@ SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 # ==============================================================================
 
 
+# ==============================================================================
+
+
+# SIMD code for x86. These handle the comparison operations. This must be
+# done in a round about way for x86 due to the way it works on that platform.
+# This set covers unsigned integer operations only.
+
+# For aall
+# param_arr_num
+SIMD_x86_uint_aall_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then the test
+		// has failed.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'gt' : '''// Make sure they're not equal.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}
+		// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then the test
+		// has failed.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'le' : '''// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then the test
+		// has failed.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'lt' : '''// Make sure they're not equal.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}
+		// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then the test
+		// has failed.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+}
+
+
+# SIMD code for x86. This set covers signed integer operations only.
+
+# param_arr_num
+SIMD_x86_int_aall_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then the test
+		// has failed.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'gt' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'le' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'lt' : '''// Make sure they're not equal.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}
+		// Make sure they're not greater than.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return ARR_ERR_NOTFOUND;
+		}''',
+}
+
+
+# ==============================================================================
+
+# This set covers unsigned integer operations only.
+# For aany.
+
+# param_arr_num
+SIMD_x86_uint_aany_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then a least.
+		// one value is less than.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'gt' : '''// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is greater than. 
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+'le' : '''// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than or equal to.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'lt' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+}
+
+
+# SIMD code for x86. This set covers signed integer operations only.
+
+# For aany.
+
+# param_arr_num
+SIMD_x86_int_aany_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is greater than or equal to.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'gt' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}''',
+'le' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+'lt' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return 1;
+		}''',
+}
+
+
+# ==============================================================================
+
+# This set covers unsigned integer operations only.
+# For findindex.
+
+# param_arr_num
+SIMD_x86_uint_findindex_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is greater than or equal to.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'gt' : '''// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is greater than. 
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+'le' : '''// Find the maximum values. 
+		compslice = %(vmaxinstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than or equal to.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'lt' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+}
+
+
+# SIMD code for x86. This set covers signed integer operations only.
+
+# For findindex.
+
+# param_arr_num
+SIMD_x86_int_findindex_templates = {
+'eq' : '''// Compare the slices.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'ge' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is greater than or equal to.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'gt' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {''',
+'le' : '''// Compare the slices.
+		resultslice = %(vgtinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+'lt' : '''// Find the minimum values. 
+		compslice = %(vmininstr)s(datasliceleft, datasliceright);
+		// If this is different from our compare parameter, then at
+		// least one value is less than.
+		resultslice = %(veqinstr)s(compslice, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+'ne' : '''// Compare for equality.
+		resultslice = %(veqinstr)s(datasliceleft, datasliceright);
+		// Compare the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {''',
+}
+
+# ==============================================================================
+
+# SIMD code for x86. This set covers single and double floating point 
+# operations only. On x86, floating point SIMD operations are much
+# more regular and complete than for integer operations.
+
+SIMD_x86_float_aall_template = '''// Compare the slices.
+		resultslice = %(vcmpinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0xffff) {
+			return ARR_ERR_NOTFOUND;
+		}'''
+
+
+SIMD_x86_float_aany_template = '''// Compare the slices.
+		resultslice = %(vcmpinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {
+			return 1;
+		}'''
+
+SIMD_x86_float_findindex_template = '''// Compare the slices.
+		resultslice = %(vcmpinstr)s(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
+		if (__builtin_ia32_pmovmskb128((v16qi) resultslice) != 0x0000) {'''
+
+# ==============================================================================
+
+# SIMD templates for x86. These make the compare decisions and are 
+# substituted into the main SIMD template.
+SIMD_x86_SIMD_int_templates = {
+	'b' : {'aall' : SIMD_x86_int_aall_templates, 
+			'aany' : SIMD_x86_int_aany_templates,
+			'findindex' : SIMD_x86_int_findindex_templates},
+	'B' : {'aall' : SIMD_x86_uint_aall_templates, 
+			'aany' : SIMD_x86_uint_aany_templates,
+			'findindex' : SIMD_x86_uint_findindex_templates},
+	'h' : {'aall' : SIMD_x86_int_aall_templates, 
+			'aany' : SIMD_x86_int_aany_templates,
+			'findindex' : SIMD_x86_int_findindex_templates},
+	'H' : {'aall' : SIMD_x86_uint_aall_templates, 
+			'aany' : SIMD_x86_uint_aany_templates,
+			'findindex' : SIMD_x86_uint_findindex_templates},
+	'i' : {'aall' : SIMD_x86_int_aall_templates, 
+			'aany' : SIMD_x86_int_aany_templates,
+			'findindex' : SIMD_x86_int_findindex_templates},
+	'I' : {'aall' : SIMD_x86_uint_aall_templates, 
+			'aany' : SIMD_x86_uint_aany_templates,
+			'findindex' : SIMD_x86_uint_findindex_templates},
+}
+
+# SIMD templates for x86. These are the floating point equivalents to the above.
+SIMD_x86_SIMD_float_templates = {
+	'aall' : SIMD_x86_float_aall_template, 
+	'aany' : SIMD_x86_float_aany_template,
+	'findindex' : SIMD_x86_float_findindex_template,
+}
+
+
+
+# x86 SIMD attributes.
+x86_simdattr = {
+	'b' : 'v16qi',
+	'B' : 'v16qi',
+	'h' : 'v8hi',
+	'H' : 'v8hi',
+	'i' : 'v4si',
+	'I' : 'v4si',
+	'f' : 'v4sf',
+	'd' : 'v2df',
+}
+
+
+# x86 SIMD load instructions.
+x86_vldinstr = {
+	'b' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'B' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
+	'h' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'H' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
+	'i' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'I' : '(v4si) __builtin_ia32_lddqu((char *) ', 
+	'f' : '(v4sf) __builtin_ia32_loadups( ', 
+	'd' : '(v2df) __builtin_ia32_loadupd( ', 
+}
+
+
+SIMD_x86_veqinstr = {
+	'b' : '__builtin_ia32_pcmpeqb128',
+	'B' : '__builtin_ia32_pcmpeqb128',
+	'h' : '__builtin_ia32_pcmpeqw128',
+	'H' : '__builtin_ia32_pcmpeqw128',
+	'i' : '__builtin_ia32_pcmpeqd128',
+	'I' : '__builtin_ia32_pcmpeqd128',
+}
+
+SIMD_x86_vmininstr = {
+	'b' : '__builtin_ia32_pminsb128',
+	'B' : '__builtin_ia32_pminub128',
+	'h' : '__builtin_ia32_pminsw128',
+	'H' : '__builtin_ia32_pminuw128',
+	'i' : '__builtin_ia32_pminsd128',
+	'I' : '__builtin_ia32_pminud128',
+}
+
+SIMD_x86_vmaxinstr = {
+	'b' : '__builtin_ia32_pmaxsb128',
+	'B' : '__builtin_ia32_pmaxub128',
+	'h' : '__builtin_ia32_pmaxsw128',
+	'H' : '__builtin_ia32_pmaxuw128',
+	'i' : '__builtin_ia32_pmaxsd128',
+	'I' : '__builtin_ia32_pmaxud128',
+}
+
+SIMD_x86_vgtinstr = {
+	'b' : '__builtin_ia32_pcmpgtb128',
+	'B' : '',
+	'h' : '__builtin_ia32_pcmpgtw128',
+	'H' : '',
+	'i' : '__builtin_ia32_pcmpgtd128',
+	'I' : '',
+}
+
+# Which compare operations need an additional vector for intermediate results.
+# This depends both upon array type and function.
+
+compslice = ', compslice'
+
+# For aall
+SIMD_x86_compslice_uint_aall = {
+'eq' : '',
+'ge' : compslice,
+'gt' : compslice,
+'le' : compslice,
+'lt' : compslice,
+'ne' : ''
+}
+
+SIMD_x86_compslice_int_aall = {
+'eq' : '',
+'ge' : compslice,
+'gt' : '',
+'le' : '',
+'lt' : '',
+'ne' : ''
+}
+
+# For aany.
+SIMD_x86_compslice_uint_aany = {
+'eq' : '',
+'ge' : compslice,
+'gt' : compslice,
+'le' : compslice,
+'lt' : compslice,
+'ne' : ''
+}
+
+SIMD_x86_compslice_int_aany = {
+'eq' : '',
+'ge' : compslice,
+'gt' : '',
+'le' : '',
+'lt' : compslice,
+'ne' : ''
+}
+
+# For Findindex.
+SIMD_x86_compslice_uint_findindex = {
+'eq' : '',
+'ge' : compslice,
+'gt' : compslice,
+'le' : compslice,
+'lt' : compslice,
+'ne' : ''
+}
+
+SIMD_x86_compslice_int_findindex = {
+'eq' : '',
+'ge' : compslice,
+'gt' : '',
+'le' : '',
+'lt' : compslice,
+'ne' : ''
+}
+
+
+
+SIMD_x86_compslice = {
+	'b' : {'aall' : SIMD_x86_compslice_int_aall, 
+			'aany' : SIMD_x86_compslice_int_aany,
+			'findindex' : SIMD_x86_compslice_int_findindex},
+	'B' : {'aall' : SIMD_x86_compslice_uint_aall, 
+			'aany' : SIMD_x86_compslice_uint_aany, 
+			'findindex' : SIMD_x86_compslice_uint_findindex},
+	'h' : {'aall' : SIMD_x86_compslice_int_aall, 
+			'aany' : SIMD_x86_compslice_int_aany, 
+			'findindex' : SIMD_x86_compslice_int_findindex},
+	'H' : {'aall' : SIMD_x86_compslice_uint_aall, 
+			'aany' : SIMD_x86_compslice_uint_aany, 
+			'findindex' : SIMD_x86_compslice_uint_findindex},
+	'i' : {'aall' : SIMD_x86_compslice_int_aall, 
+			'aany' : SIMD_x86_compslice_int_aany, 
+			'findindex' : SIMD_x86_compslice_int_findindex},
+	'I' : {'aall' : SIMD_x86_compslice_uint_aall, 
+			'aany' : SIMD_x86_compslice_uint_aany, 
+			'findindex' : SIMD_x86_compslice_uint_findindex},
+}
+
+
+
+# Floating point operations are more regular and complete than integer ones.
+SIMD_x86_float_ops = {
+	'f' : {
+		'eq' : '__builtin_ia32_cmpeqps',
+		'ge' : '__builtin_ia32_cmpgeps',
+		'gt' : '__builtin_ia32_cmpgtps',
+		'le' : '__builtin_ia32_cmpleps',
+		'lt' : '__builtin_ia32_cmpltps',
+		'ne' : '__builtin_ia32_cmpneqps'
+		},
+	'd' :  {
+		'eq' : '__builtin_ia32_cmpeqpd',
+		'ge' : '__builtin_ia32_cmpgepd',
+		'gt' : '__builtin_ia32_cmpgtpd',
+		'le' : '__builtin_ia32_cmplepd',
+		'lt' : '__builtin_ia32_cmpltpd',
+		'ne' : '__builtin_ia32_cmpneqpd'
+		}
+}
+
+# ==============================================================================
+
+# ==============================================================================
+
+# Total list of which array types are supported by x86 SIMD instructions.
+SIMD_x86_support = x86_simdattr.keys()
+
+# Total list of which integer array types are supported by x86 SIMD instructions.
+SIMD_x86_int_support = SIMD_x86_veqinstr.keys()
+
+# Total list of which floating point array types are supported by x86 SIMD instructions.
+SIMD_x86_float_support = SIMD_x86_float_ops.keys()
+
+
+
+# ==============================================================================
+
+
+# ==============================================================================
+
+# For ARM NEON.
+# Benchmarking has shown that some SIMD operations are slower than the
+# non-SIMD versions and so are not used here.
+
+arm_simdattr = {
+	'b' : 'int8x8_t',
+	'B' : 'uint8x8_t',
+	'h' : 'int16x4_t',
+	'H' : 'uint16x4_t',
+}
+
+
+arm_simdrsltattr = {
+	'b' : 'uint8x8_t',
+	'B' : 'uint8x8_t',
+	'h' : 'uint16x4_t',
+	'H' : 'uint16x4_t',
+}
+
+# Load values to SIMD registers.
+arm_vldinstr = {
+	'b' : 'vld1_s8',
+	'B' : 'vld1_u8',
+	'h' : 'vld1_s16',
+	'H' : 'vld1_u16',
+}
+
+
+# Compare result to see if OK. This depends both on size and also
+# 'ne' must be handled differently. 
+
+# aall
+arm_vresult_8_aall = 'vreinterpret_u64_u8(resultslice) != 0xffffffffffffffff'
+arm_vresult_16_aall = 'vreinterpret_u64_u16(resultslice) != 0xffffffffffffffff'
+arm_vresult_8_ne_aall = 'vreinterpret_u64_u8(resultslice) != 0x0000000000000000'
+arm_vresult_16_ne_aall = 'vreinterpret_u64_u16(resultslice) != 0x0000000000000000'
+
+arm_vreslt_8_total_aall = {
+		'eq' : arm_vresult_8_aall,
+		'ge' : arm_vresult_8_aall,
+		'gt' : arm_vresult_8_aall,
+		'le' : arm_vresult_8_aall,
+		'lt' : arm_vresult_8_aall,
+		'ne' : arm_vresult_8_ne_aall,
+		}
+
+arm_vreslt_16_total_aall = {
+		'eq' : arm_vresult_16_aall,
+		'ge' : arm_vresult_16_aall,
+		'gt' : arm_vresult_16_aall,
+		'le' : arm_vresult_16_aall,
+		'lt' : arm_vresult_16_aall,
+		'ne' : arm_vresult_16_ne_aall,
+		}
+
+# aany
+arm_vresult_8_aany = 'vreinterpret_u64_u8(resultslice) != 0x0000000000000000'
+arm_vresult_16_aany = 'vreinterpret_u64_u16(resultslice) != 0x0000000000000000'
+arm_vresult_8_ne_aany = 'vreinterpret_u64_u8(resultslice) != 0xffffffffffffffff'
+arm_vresult_16_ne_aany = 'vreinterpret_u64_u16(resultslice) != 0xffffffffffffffff'
+
+arm_vreslt_8_total_aany = {
+		'eq' : arm_vresult_8_aany,
+		'ge' : arm_vresult_8_aany,
+		'gt' : arm_vresult_8_aany,
+		'le' : arm_vresult_8_aany,
+		'lt' : arm_vresult_8_aany,
+		'ne' : arm_vresult_8_ne_aany,
+		}
+
+arm_vreslt_16_total_aany = {
+		'eq' : arm_vresult_16_aany,
+		'ge' : arm_vresult_16_aany,
+		'gt' : arm_vresult_16_aany,
+		'le' : arm_vresult_16_aany,
+		'lt' : arm_vresult_16_aany,
+		'ne' : arm_vresult_16_ne_aany,
+		}
+
+# findindex
+arm_vresult_8_findindex = 'vreinterpret_u64_u8(resultslice) != 0x0000000000000000'
+arm_vresult_16_findindex = 'vreinterpret_u64_u16(resultslice) != 0x0000000000000000'
+arm_vresult_8_ne_findindex = 'vreinterpret_u64_u8(resultslice) != 0xffffffffffffffff'
+arm_vresult_16_ne_findindex = 'vreinterpret_u64_u16(resultslice) != 0xffffffffffffffff'
+
+arm_vreslt_8_total_findindex = {
+		'eq' : arm_vresult_8_findindex,
+		'ge' : arm_vresult_8_findindex,
+		'gt' : arm_vresult_8_findindex,
+		'le' : arm_vresult_8_findindex,
+		'lt' : arm_vresult_8_findindex,
+		'ne' : arm_vresult_8_ne_findindex,
+		}
+
+arm_vreslt_16_total_findindex = {
+		'eq' : arm_vresult_16_findindex,
+		'ge' : arm_vresult_16_findindex,
+		'gt' : arm_vresult_16_findindex,
+		'le' : arm_vresult_16_findindex,
+		'lt' : arm_vresult_16_findindex,
+		'ne' : arm_vresult_16_ne_findindex,
+		}
+
+
+
+arm_vresult = {
+	'b' : {'aall' : arm_vreslt_8_total_aall, 
+			'aany' : arm_vreslt_8_total_aany,
+			'findindex' : arm_vreslt_8_total_findindex},
+	'B' : {'aall' : arm_vreslt_8_total_aall, 
+			'aany' : arm_vreslt_8_total_aany, 
+			'findindex' : arm_vreslt_8_total_findindex},
+	'h' : {'aall' : arm_vreslt_16_total_aall, 
+			'aany' : arm_vreslt_16_total_aany, 
+			'findindex' : arm_vreslt_16_total_findindex},
+	'H' : {'aall' : arm_vreslt_16_total_aall, 
+			'aany' : arm_vreslt_16_total_aany, 
+			'findindex' : arm_vreslt_16_total_findindex},
+}
+
+
+
+# The ARM SIMD ops for compare. The NE op must be combined with a 
+# different vresult as there is no actual not equal op.
+arm_simdops = {
+	'b' : {
+		'eq' : 'vceq_s8',
+		'ge' : 'vcge_s8',
+		'gt' : 'vcgt_s8',
+		'le' : 'vcle_s8',
+		'lt' : 'vclt_s8',
+		'ne' : 'vceq_s8'
+		},
+	'B' :  {
+		'eq' : 'vceq_u8',
+		'ge' : 'vcge_u8',
+		'gt' : 'vcgt_u8',
+		'le' : 'vcle_u8',
+		'lt' : 'vclt_u8',
+		'ne' : 'vceq_u8'
+		},
+	'h' : {
+		'eq' : 'vceq_s16',
+		'ge' : 'vcge_s16',
+		'gt' : 'vcgt_s16',
+		'le' : 'vcle_s16',
+		'lt' : 'vclt_s16',
+		'ne' : 'vceq_s16'
+		},
+	'H' :  {
+		'eq' : 'vceq_u16',
+		'ge' : 'vcge_u16',
+		'gt' : 'vcgt_u16',
+		'le' : 'vcle_u16',
+		'lt' : 'vclt_u16',
+		'ne' : 'vceq_u16'
+		},
+}
+
+
+# ==============================================================================
+
+
+# Total list of which array types are supported by ARM SIMD instructions.
+SIMD_arm_support = arm_simdattr.keys()
+
+
+# ==============================================================================
+
+# Width of array elements.
+simdwidth = {'b' : 'CHARSIMDSIZE',
+		'B' : 'CHARSIMDSIZE',
+		'h' : 'SHORTSIMDSIZE',
+		'H' : 'SHORTSIMDSIZE',
+		'i' : 'INTSIMDSIZE',
+		'I' : 'INTSIMDSIZE',
+		'f' : 'FLOATSIMDSIZE',
+		'd' : 'DOUBLESIMDSIZE',
+		}
+
+
+# ==============================================================================
+
+# Return the platform SIMD enable C macro. 
+# This is for the platform independent file, and not the plaform specific
+# SIMD files.
+def findsimdplatform(arraycode):
+
+	# The calls to SIMD support code are platform dependent.
+	if (arraycode in SIMD_x86_support) and (arraycode not in SIMD_arm_support):
+		return SIMD_platform_x86
+	elif (arraycode in SIMD_x86_support) and (arraycode in SIMD_arm_support):
+		return SIMD_platform_x86_ARM
+	else:
+		return 'Error: Template error, this should not be here.'
+
+# ==============================================================================
+
+# ==============================================================================
+
+
 maindescription = 'Returns True if all elements in an array meet the selected criteria.'
 
 # The original date of the platform independent C code.
@@ -694,12 +1652,18 @@ ops_calls = {'aall' : ops_aall,
 			'findindex' : ops_findindex
 }
 
-# The SIMD implementation of the operation. 
-ops_calls_simd = {'aall' : ops_aall_simd, 
-			'aany' : ops_aany_simd, 
-			'findindex' : ops_findindex_simd
+# The SIMD implementation of the operation for x86-64. 
+ops_calls_simd_x86 = {'aall' : ops_aall_simd_x86, 
+			'aany' : ops_aany_simd_x86, 
+			'findindex' : ops_findindex_simd_x86
 }
 
+
+# The SIMD implementation of the operation for arm. 
+ops_calls_simd_arm = {'aall' : ops_aall_simd_arm, 
+			'aany' : ops_aany_simd_arm, 
+			'findindex' : ops_findindex_simd_arm
+}
 
 
 # The return codes for each function.
@@ -739,110 +1703,6 @@ opcodedocs = {'aall' : 'all([(x > param) for x in array])',
 # ==============================================================================
 
 
-# ==============================================================================
-
-
-# Various SIMD instruction information which varies according to array type.
-# For x86-64.
-
-# vresult is different depending upon the function.
-vrmask_x86 = {'aall' : '0xffff',
-			'aany' : '0x0000',
-			'findindex' : '0x0000',
-}
-
-vresult_x86 = '__builtin_ia32_pmovmskb128((v16qi) resultslice) != %(vrmask)s'
-
-simdvalues_x86 = {
-'b' : {'simdattr' : 'v16qi', 'simdrsltattr' : 'v16qi',
-		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'B' : {'simdattr' : 'v16qi', 'simdrsltattr' : 'v16qi',
-		'vldinstr' : '(v16qi) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'h' : {'simdattr' : 'v8hi', 'simdrsltattr' : 'v8hi',
-		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'H' : {'simdattr' : 'v8hi', 'simdrsltattr' : 'v8hi',
-		'vldinstr' : '(v8hi) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'i' : {'simdattr' : 'v4si', 'simdrsltattr' : 'v4si',
-		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'I' : {'simdattr' : 'v4si', 'simdrsltattr' : 'v4si',
-		'vldinstr' : '(v4si) __builtin_ia32_lddqu((char *) ',
-		'vresult' : vresult_x86},
-'f' : {'simdattr' : 'v4sf', 'simdrsltattr' : 'v4sf',
-		'vldinstr' : '(v4sf) __builtin_ia32_loadups( ',
-		'vresult' : vresult_x86},
-'d' : {'simdattr' : 'v2df', 'simdrsltattr' : 'v2df',
-		'vldinstr' : '(v2df) __builtin_ia32_loadupd( ',
-		'vresult' : vresult_x86},
-}
-
-
-
-# For ARM NEON.
-# vresult is different depending upon the function and array code.
-vrmask_arm = {'aall' : '0xffffffffffffffff',
-			'aany' : '0x0000000000000000',
-			'findindex' : '0x0000000000000000',
-}
-
-vresult_arm_b = 'vreinterpret_u64_u8(resultslice) != %(vrmask)s'
-vresult_arm_h = 'vreinterpret_u64_u16(resultslice) != %(vrmask)s'
-
-# Which operations have SIMD for ARM. Not all SIMD operations are
-# enabled, as benchmarking showed that larger integer sizes and
-# single precision floats were slower as SIMD operations than
-# as regular operations.
-simdvalues_arm = {
-'b' : {'simdattr' : 'int8x8_t', 'simdrsltattr' : 'uint8x8_t',
-		'vldinstr' : 'vld1_s8(', 
-		'vresult' : vresult_arm_b},
-'B' : {'simdattr' : 'uint8x8_t', 'simdrsltattr' : 'uint8x8_t',
-		'vldinstr' : 'vld1_u8(', 
-		'vresult' : vresult_arm_b},
-'h' : {'simdattr' : 'int16x4_t', 'simdrsltattr' : 'uint16x4_t',
-		'vldinstr' : 'vld1_s16(', 
-		'vresult' : vresult_arm_h},
-'H' : {'simdattr' : 'uint16x4_t',  'simdrsltattr' : 'uint16x4_t',
-		'vldinstr' : 'vld1_u16(', 
-		'vresult' : vresult_arm_h},
-}
-
-
-
-
-# Width of array elements.
-simdwidth = {'b' : 'CHARSIMDSIZE',
-		'B' : 'CHARSIMDSIZE',
-		'h' : 'SHORTSIMDSIZE',
-		'H' : 'SHORTSIMDSIZE',
-		'i' : 'INTSIMDSIZE',
-		'I' : 'INTSIMDSIZE',
-		'f' : 'FLOATSIMDSIZE',
-		'd' : 'DOUBLESIMDSIZE',
-		}
-
-
-# ==============================================================================
-
-# Return the platform SIMD enable C macro. 
-# This is for the platform independent file, and not the plaform specific
-# SIMD files.
-def findsimdplatform(arraycode):
-
-	# The calls to SIMD support code are platform dependent.
-	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
-		return SIMD_platform_x86
-	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
-		return SIMD_platform_x86_ARM
-	else:
-		return 'Error: Template error, this should not be here.'
-
-# ==============================================================================
-
 
 # ==============================================================================
 # This outputs the non-SIMD version.
@@ -876,7 +1736,7 @@ for funcname in completefuncnames:
 							'compare_ops' : compareop})
 		
 			# Prepare the SIMD templates.
-			if (arraycode in simdvalues_x86) or (arraycode in simdvalues_arm):
+			if (arraycode in SIMD_x86_support) or (arraycode in SIMD_arm_support):
 
 				simd_call_base = {'simdwidth' : simdwidth[arraycode], 
 						'funclabel' : funcname, 
@@ -953,30 +1813,55 @@ for funcname in completefuncnames:
 
 
 	# Select the implementation template for the current function.
-	optemplate = ops_calls_simd[funcname]
+	optemplate = ops_calls_simd_x86[funcname]
 
-	# Output the generated code.
-	for arraycode in codegen_common.arraycodes:
+	# Output the generated code for supported x86 SIMD instructions.
+	for arraycode in SIMD_x86_support:
+
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		if arraycode in simdvalues_x86:
+		# Each compare operation.
+		for opcode, compareop in operations:
 
-			# Each compare operation.
-			for opcode, compareop in operations:
+			# Data for both integer and floating point.
+			simddata = {'arraycode' : arraycode, 
+						'arraytype' : arraytype, 
+						'funcmodifier' : arraytype.replace(' ', '_'), 
+						'opcode' : opcode,
+						'compare_ops' : compareop,
+						'simdwidth' : simdwidth[arraycode],
+						'simdattr' : x86_simdattr[arraycode],
+						'vldinstr' : x86_vldinstr[arraycode],
+						}
 
-				outputlist.append(optemplate % {'arraycode' : arraycode, 
-							'arraytype' : arraytype, 
-							'funcmodifier' : arraytype.replace(' ', '_'), 
-							'opcode' : opcode,
-							'compare_ops' : compareop,
-							'simdplatform' : SIMD_platform_x86,
-							'simdwidth' : simdwidth[arraycode],
-							'simdattr' : simdvalues_x86[arraycode]['simdattr'],
-							'simdrsltattr' : simdvalues_x86[arraycode]['simdrsltattr'],
-							'vldinstr' : simdvalues_x86[arraycode]['vldinstr'],
-							'vresult' : simdvalues_x86[arraycode]['vresult'] % {'vrmask' : vrmask_x86[funcname]},
-							})
+			# For integer arrays only.
+			if arraycode in SIMD_x86_int_support:
+
+				# This fetches the individual SIMD instructions.
+				template_instr = {'veqinstr' : SIMD_x86_veqinstr[arraycode],
+								'vmininstr' : SIMD_x86_vmininstr[arraycode],
+								'vmaxinstr' : SIMD_x86_vmaxinstr[arraycode],
+								'vgtinstr' : SIMD_x86_vgtinstr[arraycode],
+								}
+
+				simddata['SIMD_x86_ops'] = SIMD_x86_SIMD_int_templates[arraycode][funcname][opcode] % template_instr
+				simddata['SIMD_x86_compslice'] = SIMD_x86_compslice[arraycode][funcname][opcode]
+
+
+			# Handle floating point operations.
+			elif (arraycode in SIMD_x86_float_support):
+
+				template_instr = {'vcmpinstr' : SIMD_x86_float_ops[arraycode][opcode]}
+				template_float = SIMD_x86_SIMD_float_templates[funcname] % template_instr
+
+				simddata['SIMD_x86_ops'] = template_float
+				simddata['SIMD_x86_compslice'] = ''
+
+
+
+			# Add the completed template to the accumulated list.
+			outputlist.append(optemplate % simddata)
 
 
 
@@ -1019,30 +1904,34 @@ for funcname in completefuncnames:
 
 
 	# Select the implementation template for the current function.
-	optemplate = ops_calls_simd[funcname]
+	optemplate = ops_calls_simd_arm[funcname]
 
 	# Output the generated code.
-	for arraycode in codegen_common.arraycodes:
+	for arraycode in SIMD_arm_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		if arraycode in simdvalues_arm:
+		# Each compare operation.
+		for opcode, compareop in operations:
 
-			# Each compare operation.
-			for opcode, compareop in operations:
+			# The compare_ops symbols is the same for integer and floating point.
+			datavals = {'funclabel' : funcname,
+						'arraytype' : arraytype, 
+						'funcmodifier' : arraytype.replace(' ', '_'),
+						'simdwidth' : simdwidth[arraycode],
+						'arraycode' : arraycode,
+						'arraytype' : codegen_common.arraytypes[arraycode],
+						'opcode' : opcode,
+						'compare_ops' : compareop,
+						'simdattr' : arm_simdattr[arraycode],
+						'simdrsltattr' : arm_simdrsltattr[arraycode],
+						'vldinstr' : arm_vldinstr[arraycode],
+						'vresult' : arm_vresult[arraycode][funcname][opcode],
+						'SIMD_ARM_comp' : arm_simdops[arraycode][opcode],
+						}
 
-				outputlist.append(optemplate % {'arraycode' : arraycode, 
-							'arraytype' : arraytype, 
-							'funcmodifier' : arraytype.replace(' ', '_'), 
-							'opcode' : opcode,
-							'compare_ops' : compareop,
-							'simdplatform' : SIMD_platform_ARM,
-							'simdwidth' : simdwidth[arraycode],
-							'simdattr' : simdvalues_arm[arraycode]['simdattr'],
-							'simdrsltattr' : simdvalues_arm[arraycode]['simdrsltattr'],
-							'vldinstr' : simdvalues_arm[arraycode]['vldinstr'],
-							'vresult' : simdvalues_arm[arraycode]['vresult'] % {'vrmask' : vrmask_arm[funcname]},
-							})
+			# Start of function definition.
+			outputlist.append(optemplate % datavals)
 
 
 

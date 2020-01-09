@@ -106,12 +106,12 @@ long long asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if ((partialsum > 0) && (data[x] > (LLONG_MAX - partialsum))) {
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -151,12 +151,12 @@ unsigned long long asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *dat
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data[x] > (ULLONG_MAX - partialsum)) { 
 				*errflag = ARR_ERR_OVFL;
 				return partialsum; 
@@ -201,12 +201,12 @@ double asum_%(funcmodifier)s(Py_ssize_t arraylen, %(arraytype)s *data, signed in
 	*errflag = 0;
 	// Overflow checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 		}
 	} else {
 		// Overflow checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			partialsum = partialsum + data[x];
 			if (!isfinite(partialsum)) {
 				*errflag = ARR_ERR_OVFL;
@@ -253,9 +253,9 @@ double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
 	sumslice = (%(simdattr)s) %(simdload)s(data);
 
 	// Use SIMD.
-	for(x = %(simdwidth)s; x < alignedlength; x += %(simdwidth)s) {
+	for (x = %(simdwidth)s; x < alignedlength; x += %(simdwidth)s) {
 		dataslice = (%(simdattr)s) %(simdload)s(&data[x]);
-		sumslice = sumslice + dataslice;
+		sumslice = %(simdop)s(sumslice, dataslice);
 	}
 
 	// Add up the values within the slice.
@@ -265,7 +265,7 @@ double asum_%(funcmodifier)s_simd(Py_ssize_t arraylen, %(arraytype)s *data) {
 	}
 
 	// Add the values within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
 	}
 
@@ -501,10 +501,38 @@ ops_calls = {'b' : template_basic, 'B' : template_basic_u,
 	'f' : floattemplate, 'd' : floattemplate}
 
 
-simdvalues = {
-'f' : {'simdattr' : 'v4sf', 'simdstoreattr' : 'v4sf', 'simdwidth' : 'FLOATSIMDSIZE', 'simdload' : '__builtin_ia32_loadups', 'simdstore' : '__builtin_ia32_storeups'},
-'d' : {'simdattr' : 'v2df', 'simdstoreattr' : 'v2df', 'simdwidth' : 'DOUBLESIMDSIZE', 'simdload' : '__builtin_ia32_loadupd', 'simdstore' : '__builtin_ia32_storeupd'},
+simdattr_x86 = {
+	'f' : 'v4sf',
+	'd' : 'v2df',
 }
+
+
+simdstoreattr_x86 = {
+	'f' : 'v4sf',
+	'd' : 'v2df',
+}
+
+
+simdwidth_x86 = {
+	'f' : 'FLOATSIMDSIZE',
+	'd' : 'DOUBLESIMDSIZE',
+}
+
+simdload_x86 = {
+	'f' : '__builtin_ia32_loadups',
+	'd' : '__builtin_ia32_loadupd',
+}
+
+simdstore_x86 = {
+	'f' : '__builtin_ia32_storeups',
+	'd' : '__builtin_ia32_storeupd',
+}
+
+simdop_x86 = {
+	'f' : '__builtin_ia32_addps',
+	'd' : '__builtin_ia32_addpd',
+}
+
 
 # The cast to use for floating point array types.
 returnmodifier = {'b' : '', 'B' : '', 
@@ -537,7 +565,7 @@ with open(filename, 'w') as f:
 
 		# This template parameter is only required for SIMD operations.
 		if arraycode in codegen_common.floatarrays:
-			simdwidth = simdvalues[arraycode]['simdwidth']
+			simdwidth = simdwidth_x86[arraycode]
 		else:
 			simdwidth = ''
 
@@ -579,10 +607,11 @@ for arraycode in codegen_common.floatarrays:
 				'arraytype' : arraytype, 
 				'funcmodifier' : arraytype.replace(' ', '_'), 
 				'returnmodifier' : returnmodifier[arraycode],
-				'simdattr' : simdvalues[arraycode]['simdattr'],
-				'simdwidth' : simdvalues[arraycode]['simdwidth'],
-				'simdload' : simdvalues[arraycode]['simdload'],
-				'simdstore' : simdvalues[arraycode]['simdstore'],
+				'simdattr' : simdattr_x86[arraycode],
+				'simdwidth' : simdwidth_x86[arraycode],
+				'simdload' : simdload_x86[arraycode],
+				'simdstore' : simdstore_x86[arraycode],
+				'simdop' : simdop_x86[arraycode],
 				})
 
 

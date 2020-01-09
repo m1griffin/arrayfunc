@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     1-Apr-2019
-// Ver:      20-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ void add_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -77,17 +77,17 @@ void add_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -114,7 +114,7 @@ void add_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -122,17 +122,17 @@ void add_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -159,7 +159,7 @@ void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -167,17 +167,17 @@ void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -204,7 +204,7 @@ void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 	for (y = 0; y < CHARSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -212,17 +212,17 @@ void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -248,18 +248,18 @@ void add_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -285,281 +285,18 @@ void add_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v16qi) __builtin_ia32_paddb128(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-/*--------------------------------------------------------------------------- */
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-	unsigned char opvals[CHARSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned char *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-	unsigned char opvals[CHARSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v16qi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_num_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned char *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-	unsigned char opvals[CHARSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data2[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data2[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_4_simd(Py_ssize_t arraylen, unsigned char param, unsigned char *data2, unsigned char *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-	unsigned char opvals[CHARSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_char_6_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char *data2, unsigned char *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v16qi datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v16qi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x],  resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -595,7 +332,7 @@ void add_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -603,17 +340,17 @@ void add_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -640,7 +377,7 @@ void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -648,17 +385,17 @@ void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -685,7 +422,7 @@ void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -693,17 +430,17 @@ void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -730,7 +467,7 @@ void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 	for (y = 0; y < SHORTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -738,17 +475,17 @@ void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -774,18 +511,18 @@ void add_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -811,281 +548,18 @@ void add_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v8hi) __builtin_ia32_paddw128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-/*--------------------------------------------------------------------------- */
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-	unsigned short opvals[SHORTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-	unsigned short opvals[SHORTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v8hi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_num_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsigned short *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-	unsigned short opvals[SHORTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data2[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_4_simd(Py_ssize_t arraylen, unsigned short param, unsigned short *data2, unsigned short *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-	unsigned short opvals[SHORTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_short_6_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short *data2, unsigned short *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v8hi datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v8hi) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -1121,7 +595,7 @@ void add_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1129,17 +603,17 @@ void add_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -1166,7 +640,7 @@ void add_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) opvals);
+	datasliceright = (v4si) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1174,17 +648,17 @@ void add_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -1211,7 +685,7 @@ void add_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v4si) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1219,17 +693,17 @@ void add_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data2[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -1256,7 +730,7 @@ void add_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	for (y = 0; y < INTSIMDSIZE; y++) {
 		opvals[y] = param;
 	}
-	datasliceleft = (v4si) __builtin_ia32_lddqu((char *) opvals);
+	datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  opvals);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
@@ -1264,17 +738,17 @@ void add_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -1300,18 +774,18 @@ void add_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data1[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -1337,281 +811,18 @@ void add_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
+		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[x]);
+		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = (v4si) __builtin_ia32_paddd128(datasliceleft, datasliceright);
 		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
+		__builtin_ia32_storedqu((char *) &data3[x], (v16qi)  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-/*--------------------------------------------------------------------------- */
-
-/*--------------------------------------------------------------------------- */
-/* The following series of functions reflect the different parameter options possible.
-   arraylen = The length of the data arrays.
-   data1 = The first data array.
-   data2 = The second data array.
-   data3 = The third data array.
-   param = The parameter to be applied to each array element.
-*/
-// param_arr_num_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-	unsigned int opvals[INTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-	unsigned int opvals[INTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceright = (v4si) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = data1[x] + param;
-	}
-
-}
-#endif
-
-
-// param_num_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_3_simd(Py_ssize_t arraylen, unsigned int param, unsigned int *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-	unsigned int opvals[INTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v4si) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data2[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data2[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_4_simd(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-	unsigned int y;
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-	unsigned int opvals[INTSIMDSIZE];
-
-
-	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		opvals[y] = param;
-	}
-	datasliceleft = (v4si) __builtin_ia32_lddqu((char *) opvals);
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data3[x] = param + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data1[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
-		data1[x] = data1[x] + data2[x];
-	}
-
-}
-#endif
-
-
-// param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
-void add_unsigned_int_6_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3) {
-
-	// array index counter. 
-	Py_ssize_t x; 
-
-	// SIMD related variables.
-	Py_ssize_t alignedlength;
-
-	v4si datasliceleft, datasliceright, resultslice;
-
-
-	// Calculate array lengths for arrays whose lengths which are not even
-	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
-
-	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += INTSIMDSIZE) {
-		// Load the data into the vector register.
-		datasliceleft = (v4si) __builtin_ia32_lddqu((char *) &data1[x]);
-		datasliceright = (v4si) __builtin_ia32_lddqu((char *) &data2[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
-		// Store the result.
-		__builtin_ia32_storedqu((char *) &data3[x], (v16qi) resultslice);
-	}
-
-	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -1655,17 +866,17 @@ void add_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data1[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -1700,17 +911,17 @@ void add_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *dat
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -1745,17 +956,17 @@ void add_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data2[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -1790,17 +1001,17 @@ void add_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *dat
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -1826,18 +1037,18 @@ void add_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data1[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -1863,18 +1074,18 @@ void add_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *da
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v4sf) __builtin_ia32_loadups( &data1[x]);
 		datasliceright = (v4sf) __builtin_ia32_loadups( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addps(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeups( &data3[x], (v4sf) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -1918,17 +1129,17 @@ void add_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data1[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -1963,17 +1174,17 @@ void add_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double 
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -2008,17 +1219,17 @@ void add_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data2[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -2053,17 +1264,17 @@ void add_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double 
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -2089,18 +1300,18 @@ void add_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data1[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -2126,18 +1337,18 @@ void add_double_6_simd(Py_ssize_t arraylen, double *data1, double *data2, double
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = (v2df) __builtin_ia32_loadupd( &data1[x]);
 		datasliceright = (v2df) __builtin_ia32_loadupd( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = __builtin_ia32_addpd(datasliceleft, datasliceright);
 		// Store the result.
 		__builtin_ia32_storeupd( &data3[x], (v2df) resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 

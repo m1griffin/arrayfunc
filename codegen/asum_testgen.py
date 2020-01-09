@@ -36,7 +36,7 @@ import codegen_common
 op_template_general = '''
 
 ##############################################################################
-class asum_general_%(typecode)s(unittest.TestCase):
+class asum_general_%(arrayevenodd)s_%(typecode)s(unittest.TestCase):
 	"""Test asum for basic general function operation.
 	op_template_general
 	"""
@@ -45,8 +45,16 @@ class asum_general_%(typecode)s(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-
+		# The size of the test arrays. The default length is an even
+		# number so that if fits entirely within SIMD registers.
 		arraylength = 96
+
+		# We use a template to generate this code, so the following
+		# compare is inserted into the template to generate code which
+		# spills over past the SIMD handler.
+		if '%(arrayevenodd)s' == 'odd':
+			arraylength = arraylength + 1
+
 
 		# For floating point data, limit the test data to the same range
 		# as smaller integer. This is to avoid problems with loss of
@@ -647,7 +655,8 @@ with open(filename, 'w') as f:
 	# Check each array type.
 	for arraycode in codegen_common.arraycodes:
 
-		f.write(op_template_general % {'typecode' : arraycode})
+		f.write(op_template_general % {'typecode' : arraycode, 'arrayevenodd' : 'even'})
+		f.write(op_template_general % {'typecode' : arraycode, 'arrayevenodd' : 'odd'})
 
 	# Check parameters.
 	for arraycode in codegen_common.arraycodes:

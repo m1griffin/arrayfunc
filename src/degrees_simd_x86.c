@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     24-Mar-2019
-// Ver:      20-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -90,17 +90,17 @@ void degrees_float_1_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadups(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * RADTODEG_F_VEC;
+		datasliceleft = __builtin_ia32_mulps (datasliceleft, RADTODEG_F_VEC);
 		// Store the result.
 		__builtin_ia32_storeups(&data[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data[x] = RADTODEG_F * data[x];
 	}
 
@@ -126,17 +126,17 @@ void degrees_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadups(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * RADTODEG_F_VEC;
+		datasliceleft = __builtin_ia32_mulps (datasliceleft, RADTODEG_F_VEC);
 		// Store the result.
 		__builtin_ia32_storeups(&dataout[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		dataout[x] = RADTODEG_F * data[x];
 	}
 
@@ -168,17 +168,17 @@ void degrees_double_1_simd(Py_ssize_t arraylen, double *data) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadupd(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * RADTODEG_D_VEC;
+		datasliceleft = __builtin_ia32_mulpd (datasliceleft, RADTODEG_D_VEC);
 		// Store the result.
 		__builtin_ia32_storeupd(&data[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data[x] = RADTODEG_D * data[x];
 	}
 
@@ -204,17 +204,17 @@ void degrees_double_2_simd(Py_ssize_t arraylen, double *data, double *dataout) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadupd(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * RADTODEG_D_VEC;
+		datasliceleft = __builtin_ia32_mulpd (datasliceleft, RADTODEG_D_VEC);
 		// Store the result.
 		__builtin_ia32_storeupd(&dataout[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		dataout[x] = RADTODEG_D * data[x];
 	}
 

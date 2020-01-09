@@ -64,12 +64,12 @@ signed int truediv_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -90,12 +90,12 @@ signed int truediv_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -113,14 +113,14 @@ signed int truediv_signed_char_3(Py_ssize_t arraylen, signed char param, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SCHAR_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -140,14 +140,14 @@ signed int truediv_signed_char_4(Py_ssize_t arraylen, signed char param, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SCHAR_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -166,7 +166,7 @@ signed int truediv_signed_char_5(Py_ssize_t arraylen, signed char *data1, signed
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == SCHAR_MIN)) {return ARR_ERR_OVFL;}
@@ -184,7 +184,7 @@ signed int truediv_signed_char_6(Py_ssize_t arraylen, signed char *data1, signed
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == SCHAR_MIN)) {return ARR_ERR_OVFL;}
@@ -213,7 +213,7 @@ signed int truediv_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, un
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -231,7 +231,7 @@ signed int truediv_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, un
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -246,7 +246,7 @@ signed int truediv_unsigned_char_3(Py_ssize_t arraylen, unsigned char param, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -262,7 +262,7 @@ signed int truediv_unsigned_char_4(Py_ssize_t arraylen, unsigned char param, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -280,7 +280,7 @@ signed int truediv_unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -296,7 +296,7 @@ signed int truediv_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -326,12 +326,12 @@ signed int truediv_signed_short_1(Py_ssize_t arraylen, signed short *data1, sign
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -352,12 +352,12 @@ signed int truediv_signed_short_2(Py_ssize_t arraylen, signed short *data1, sign
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -375,14 +375,14 @@ signed int truediv_signed_short_3(Py_ssize_t arraylen, signed short param, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SHRT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -402,14 +402,14 @@ signed int truediv_signed_short_4(Py_ssize_t arraylen, signed short param, signe
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == SHRT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -428,7 +428,7 @@ signed int truediv_signed_short_5(Py_ssize_t arraylen, signed short *data1, sign
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == SHRT_MIN)) {return ARR_ERR_OVFL;}
@@ -446,7 +446,7 @@ signed int truediv_signed_short_6(Py_ssize_t arraylen, signed short *data1, sign
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == SHRT_MIN)) {return ARR_ERR_OVFL;}
@@ -475,7 +475,7 @@ signed int truediv_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, 
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -493,7 +493,7 @@ signed int truediv_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, 
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -508,7 +508,7 @@ signed int truediv_unsigned_short_3(Py_ssize_t arraylen, unsigned short param, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -524,7 +524,7 @@ signed int truediv_unsigned_short_4(Py_ssize_t arraylen, unsigned short param, u
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -542,7 +542,7 @@ signed int truediv_unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -558,7 +558,7 @@ signed int truediv_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -588,12 +588,12 @@ signed int truediv_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed i
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == INT_MIN) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -614,12 +614,12 @@ signed int truediv_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed i
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == INT_MIN) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -637,14 +637,14 @@ signed int truediv_signed_int_3(Py_ssize_t arraylen, signed int param, signed in
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == INT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -664,14 +664,14 @@ signed int truediv_signed_int_4(Py_ssize_t arraylen, signed int param, signed in
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == INT_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -690,7 +690,7 @@ signed int truediv_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed i
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == INT_MIN)) {return ARR_ERR_OVFL;}
@@ -708,7 +708,7 @@ signed int truediv_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed i
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == INT_MIN)) {return ARR_ERR_OVFL;}
@@ -737,7 +737,7 @@ signed int truediv_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsi
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -755,7 +755,7 @@ signed int truediv_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsi
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -770,7 +770,7 @@ signed int truediv_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsig
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -786,7 +786,7 @@ signed int truediv_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsig
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -804,7 +804,7 @@ signed int truediv_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsi
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -820,7 +820,7 @@ signed int truediv_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsi
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -850,12 +850,12 @@ signed int truediv_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -876,12 +876,12 @@ signed int truediv_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == LONG_MIN) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -899,14 +899,14 @@ signed int truediv_signed_long_3(Py_ssize_t arraylen, signed long param, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -926,14 +926,14 @@ signed int truediv_signed_long_4(Py_ssize_t arraylen, signed long param, signed 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -952,7 +952,7 @@ signed int truediv_signed_long_5(Py_ssize_t arraylen, signed long *data1, signed
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == LONG_MIN)) {return ARR_ERR_OVFL;}
@@ -970,7 +970,7 @@ signed int truediv_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == LONG_MIN)) {return ARR_ERR_OVFL;}
@@ -999,7 +999,7 @@ signed int truediv_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, un
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1017,7 +1017,7 @@ signed int truediv_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, un
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1032,7 +1032,7 @@ signed int truediv_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1048,7 +1048,7 @@ signed int truediv_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, uns
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1066,7 +1066,7 @@ signed int truediv_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1082,7 +1082,7 @@ signed int truediv_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, un
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1112,12 +1112,12 @@ signed int truediv_signed_long_long_1(Py_ssize_t arraylen, signed long long *dat
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param; 
 		}
 	}
@@ -1138,12 +1138,12 @@ signed int truediv_signed_long_long_2(Py_ssize_t arraylen, signed long long *dat
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == -1) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			if (data1[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
 			data3[x] = data1[x] / param; 
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param; 
 		}
 	}
@@ -1161,14 +1161,14 @@ signed int truediv_signed_long_long_3(Py_ssize_t arraylen, signed long long para
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LLONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data2[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data2[x] = param / data2[x];
@@ -1188,14 +1188,14 @@ signed int truediv_signed_long_long_4(Py_ssize_t arraylen, signed long long para
 
 	// Division of min-int by -1 produces a similar error as division by 0.
 	if (param == LLONG_MIN) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0)  {return ARR_ERR_ZERODIV;}
 			if (data2[x] == -1) {return ARR_ERR_OVFL;}
 			data3[x] = param / data2[x];
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			// Math error check.
 			if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 			data3[x] = param / data2[x];
@@ -1214,7 +1214,7 @@ signed int truediv_signed_long_long_5(Py_ssize_t arraylen, signed long long *dat
 
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == LLONG_MIN)) {return ARR_ERR_OVFL;}
@@ -1232,7 +1232,7 @@ signed int truediv_signed_long_long_6(Py_ssize_t arraylen, signed long long *dat
 	Py_ssize_t x;
 
 	// Division of min-int by -1 produces a similar error as division by 0.
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Math error check.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		if ((data2[x] == -1) && (data1[x] == LLONG_MIN)) {return ARR_ERR_OVFL;}
@@ -1261,7 +1261,7 @@ signed int truediv_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long 
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data1[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1279,7 +1279,7 @@ signed int truediv_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long 
 	// Cannot disable divide by zero checking because this causes a crash.
 	if (param == 0) {return ARR_ERR_ZERODIV;}		// Math error check.
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		data3[x] = data1[x] / param;
 	}
 	return ARR_NO_ERR;
@@ -1294,7 +1294,7 @@ signed int truediv_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data2[x] = param / data2[x];
@@ -1310,7 +1310,7 @@ signed int truediv_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = param / data2[x];
@@ -1328,7 +1328,7 @@ signed int truediv_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data1[x] = data1[x] / data2[x];
@@ -1344,7 +1344,7 @@ signed int truediv_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long 
 	Py_ssize_t x;
 
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		// Cannot disable divide by zero checking because this causes a crash.
 		if (data2[x] == 0) {return ARR_ERR_ZERODIV;}
 		data3[x] = data1[x] / data2[x];
@@ -1370,12 +1370,12 @@ signed int truediv_float_1(Py_ssize_t arraylen, float *data1, float param, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param;
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -1398,12 +1398,12 @@ signed int truediv_float_2(Py_ssize_t arraylen, float *data1, float param, float
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param;
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -1427,12 +1427,12 @@ signed int truediv_float_3(Py_ssize_t arraylen, float param, float *data2, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = param / data2[x];
 			if (!isfinite(data2[x])) {
@@ -1456,12 +1456,12 @@ signed int truediv_float_4(Py_ssize_t arraylen, float param, float *data2, float
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param / data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1486,12 +1486,12 @@ signed int truediv_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / data2[x];
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -1514,12 +1514,12 @@ signed int truediv_float_6(Py_ssize_t arraylen, float *data1, float *data2, floa
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1551,12 +1551,12 @@ signed int truediv_double_1(Py_ssize_t arraylen, double *data1, double param, un
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / param;
 			if (!isfinite(data1[x])) {
 				if (param == 0.0) {
@@ -1579,12 +1579,12 @@ signed int truediv_double_2(Py_ssize_t arraylen, double *data1, double param, do
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param;
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / param;
 			if (!isfinite(data3[x])) {
 				if (param == 0.0) {
@@ -1608,12 +1608,12 @@ signed int truediv_double_3(Py_ssize_t arraylen, double param, double *data2, un
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = param / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			data2[x] = param / data2[x];
 			if (!isfinite(data2[x])) {
@@ -1637,12 +1637,12 @@ signed int truediv_double_4(Py_ssize_t arraylen, double param, double *data2, do
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = param / data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {
@@ -1667,12 +1667,12 @@ signed int truediv_double_5(Py_ssize_t arraylen, double *data1, double *data2, u
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] / data2[x];
 			if (!isfinite(data1[x])) {
 				if (data2[x] == 0.0) {
@@ -1695,12 +1695,12 @@ signed int truediv_double_6(Py_ssize_t arraylen, double *data1, double *data2, d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / data2[x];
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] / data2[x];
 			if (!isfinite(data3[x])) {
 				if (data2[x] == 0.0) {

@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     05-May-2017
-// Ver:      19-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -71,9 +71,9 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
 	sumslice = (v4sf) __builtin_ia32_loadups(data);
 
 	// Use SIMD.
-	for(x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = FLOATSIMDSIZE; x < alignedlength; x += FLOATSIMDSIZE) {
 		dataslice = (v4sf) __builtin_ia32_loadups(&data[x]);
-		sumslice = sumslice + dataslice;
+		sumslice = __builtin_ia32_addps(sumslice, dataslice);
 	}
 
 	// Add up the values within the slice.
@@ -83,7 +83,7 @@ double asum_float_simd(Py_ssize_t arraylen, float *data) {
 	}
 
 	// Add the values within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
 	}
 
@@ -122,9 +122,9 @@ double asum_double_simd(Py_ssize_t arraylen, double *data) {
 	sumslice = (v2df) __builtin_ia32_loadupd(data);
 
 	// Use SIMD.
-	for(x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
+	for (x = DOUBLESIMDSIZE; x < alignedlength; x += DOUBLESIMDSIZE) {
 		dataslice = (v2df) __builtin_ia32_loadupd(&data[x]);
-		sumslice = sumslice + dataslice;
+		sumslice = __builtin_ia32_addpd(sumslice, dataslice);
 	}
 
 	// Add up the values within the slice.
@@ -134,7 +134,7 @@ double asum_double_simd(Py_ssize_t arraylen, double *data) {
 	}
 
 	// Add the values within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		partialsum = partialsum + data[x];
 	}
 

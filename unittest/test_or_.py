@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     05-Apr-2018.
-# Ver:      19-Oct-2019.
+# Ver:      08-Jan-2020.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -51,25 +51,10 @@ import arrayfunc
  
 
 ##############################################################################
-class or__general_even_arraysize_with_simd_b(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
+class or__general_even_arraysize_nosimd_simd_b(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
 	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
 
 
 
@@ -77,524 +62,45 @@ class or__general_even_arraysize_with_simd_b(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
 		if 'even' == 'even':
-			testdatasize = 160
+			testdatasize = 320
+
 		if 'even' == 'odd':
-			testdatasize = 159
+			testdatasize = 319
+
 		paramitersize = 5
 
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
 
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('b', xdata)
-		self.data2 = array.array('b', ydata)
-		self.dataout = array.array('b', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code b.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code b.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code b.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_b(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('b', xdata)
-		self.data2 = array.array('b', ydata)
-		self.dataout = array.array('b', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code b.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code b.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code b.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code b.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_b(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
 
 		self.data1 = array.array('b', xdata)
 		self.data2 = array.array('b', ydata)
@@ -798,6 +304,10341 @@ class or__general_even_arraysize_without_simd_b(unittest.TestCase):
 		"""
 		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
 		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.dataout = array.array('b', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code b.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_b(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.dataout = array.array('b', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code b.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_b(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.b_min
+		maxval = arrayfunc.arraylimits.b_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('b', xdata)
+		self.data2 = array.array('b', ydata)
+		self.dataout = array.array('b', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code b.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code b.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code b.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_B(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.dataout = array.array('B', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_B(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.dataout = array.array('B', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_B(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.dataout = array.array('B', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_B(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.B_min
+		maxval = arrayfunc.arraylimits.B_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('B', xdata)
+		self.data2 = array.array('B', ydata)
+		self.dataout = array.array('B', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code B.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.dataout = array.array('h', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.dataout = array.array('h', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_h(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.dataout = array.array('h', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_h(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.h_min
+		maxval = arrayfunc.arraylimits.h_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('h', xdata)
+		self.data2 = array.array('h', ydata)
+		self.dataout = array.array('h', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code h.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_H(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.dataout = array.array('H', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_H(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.dataout = array.array('H', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_H(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.dataout = array.array('H', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_H(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.H_min
+		maxval = arrayfunc.arraylimits.H_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('H', xdata)
+		self.data2 = array.array('H', ydata)
+		self.dataout = array.array('H', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code H.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.dataout = array.array('i', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.dataout = array.array('i', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_i(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.dataout = array.array('i', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_i(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.i_min
+		maxval = arrayfunc.arraylimits.i_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('i', xdata)
+		self.data2 = array.array('i', ydata)
+		self.dataout = array.array('i', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code i.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_I(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.dataout = array.array('I', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_I(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.dataout = array.array('I', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_I(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.dataout = array.array('I', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_I(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.I_min
+		maxval = arrayfunc.arraylimits.I_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('I', xdata)
+		self.data2 = array.array('I', ydata)
+		self.dataout = array.array('I', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code I.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.dataout = array.array('l', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.dataout = array.array('l', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_l(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.dataout = array.array('l', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_l(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.l_min
+		maxval = arrayfunc.arraylimits.l_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('l', xdata)
+		self.data2 = array.array('l', ydata)
+		self.dataout = array.array('l', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code l.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_L(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.dataout = array.array('L', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_L(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.dataout = array.array('L', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_L(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.dataout = array.array('L', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_L(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.L_min
+		maxval = arrayfunc.arraylimits.L_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('L', xdata)
+		self.data2 = array.array('L', ydata)
+		self.dataout = array.array('L', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code L.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.dataout = array.array('q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.dataout = array.array('q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.dataout = array.array('q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.q_min
+		maxval = arrayfunc.arraylimits.q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('q', xdata)
+		self.data2 = array.array('q', ydata)
+		self.dataout = array.array('q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_nosimd_simd_Q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.dataout = array.array('Q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_even_arraysize_withsimd_simd_Q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'even' == 'even':
+			testdatasize = 320
+
+		if 'even' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.dataout = array.array('Q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_nosimd_simd_Q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.dataout = array.array('Q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
+
+		for dataoutitem, expecteditem in zip(self.dataout, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+
+##############################################################################
+
+ 
+
+##############################################################################
+class or__general_odd_arraysize_withsimd_simd_Q(unittest.TestCase):
+	"""Test or_ for basic general function operation .
+	test_template_binop_andorxor
+	"""
+
+
+
+	########################################################
+	def setUp(self):
+		"""Initialise.
+		"""
+
+		if 'odd' == 'even':
+			testdatasize = 320
+
+		if 'odd' == 'odd':
+			testdatasize = 319
+
+		paramitersize = 5
+
+		decentre = testdatasize // 2
+
+		minval = arrayfunc.arraylimits.Q_min
+		maxval = arrayfunc.arraylimits.Q_max
+
+		# Calculate our interval, while making sure that it is not zero.
+		dstep = max((maxval - minval) // testdatasize, 1)
+
+		# Generate test data over the full data type range.
+		xdata = list(itertools.islice(itertools.cycle(range(minval, maxval, dstep)), testdatasize))
+
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		xdata[-1] = maxval
+		xdata[decentre] = 0
+		xdata[decentre + 1] = 1
+		if minval < 0:
+			xdata[decentre - 1] = -1
+
+
+		# A list of numbers, but in reverse order to that used for 'x'.
+		ydata = list(itertools.islice(itertools.cycle(range(maxval, minval, -dstep)), testdatasize))
+		# Make sure the last value is the largest number in the range and
+		# that we have 0, 1, and -1 in the signed data samples as well.
+		ydata[-5] = maxval
+		ydata[5] = 0
+		ydata[6] = 1
+		if minval < 0:
+			ydata[4] = -1
+
+
+		self.data1 = array.array('Q', xdata)
+		self.data2 = array.array('Q', ydata)
+		self.dataout = array.array('Q', [0]*len(self.data1))
+
+		self.limited = len(self.data1) // 2
+
+		# This is used for testing with single parameters. We use a limited
+		# data set to avoid excessive numbers of sub-tests.
+		self.data1param = self.data1[:paramitersize]
+		self.data2param = self.data2[:paramitersize]
+
+
+	########################################################
+	def test_or__basic_array_num_none_a1(self):
+		"""Test or_ as *array-num-none* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_none_a2(self):
+		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
+
+				arrayfunc.or_(datax, testval, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datax, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+
+	########################################################
+	def test_or__basic_array_num_array_b1(self):
+		"""Test or_ as *array-num-array* for basic function - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				expected = [x | testval for x in datax]
+
+				arrayfunc.or_(datax, testval, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_num_array_b2(self):
+		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data2param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datax = copy.copy(self.data1)
+
+				pydataout = [x | testval for x in datax]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c1(self):
+		"""Test or_ as *num-array-none* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_none_c2(self):
+		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
+
+				arrayfunc.or_(testval, datay, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(datay, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d1(self):
+		"""Test or_ as *num-array-array* for basic function - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				expected = [testval | x for x in datay]
+
+				arrayfunc.or_(testval, datay, self.dataout )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_num_array_array_d2(self):
+		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
+		"""
+		for testval in self.data1param:
+			with self.subTest(msg='Failed with parameter', testval = testval):
+
+				# Copy the array so we don't change the original data.
+				datay = copy.copy(self.data2)
+
+				pydataout = [testval | x for x in datay]
+				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
+
+				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
+
+				for dataoutitem, expecteditem in zip(self.dataout, expected):
+					# The behavour of assertEqual is modified by addTypeEqualityFunc.
+					self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e1(self):
+		"""Test or_ as *array-array-none* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+
+		arrayfunc.or_(self.data1, self.data2 )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_none_e2(self):
+		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
+		"""
+		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
+		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
+
+		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
+
+		for dataoutitem, expecteditem in zip(self.data1, expected):
+			# The behavour of assertEqual is modified by addTypeEqualityFunc.
+			self.assertEqual(dataoutitem, expecteditem)
+
+
+	########################################################
+	def test_or__basic_array_array_array_e3(self):
+		"""Test or_ as *array-array-array* for basic function - Array code Q.
+		"""
+		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
+		arrayfunc.or_(self.data1, self.data2, self.dataout )
 
 		for dataoutitem, expecteditem in zip(self.dataout, expected):
 			# The behavour of assertEqual is modified by addTypeEqualityFunc.
@@ -1109,7 +10950,7 @@ class or__opt_param_errors_b(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -1418,765 +11259,6 @@ class or__opt_nosimd_param_errors_b(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_B(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('B', xdata)
-		self.data2 = array.array('B', ydata)
-		self.dataout = array.array('B', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_B(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('B', xdata)
-		self.data2 = array.array('B', ydata)
-		self.dataout = array.array('B', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_B(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('B', xdata)
-		self.data2 = array.array('B', ydata)
-		self.dataout = array.array('B', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code B.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code B.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code B.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -2479,7 +11561,7 @@ class or__opt_param_errors_B(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -2788,765 +11870,6 @@ class or__opt_nosimd_param_errors_B(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_h(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('h', xdata)
-		self.data2 = array.array('h', ydata)
-		self.dataout = array.array('h', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_h(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('h', xdata)
-		self.data2 = array.array('h', ydata)
-		self.dataout = array.array('h', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_h(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('h', xdata)
-		self.data2 = array.array('h', ydata)
-		self.dataout = array.array('h', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code h.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code h.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code h.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -3849,7 +12172,7 @@ class or__opt_param_errors_h(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -4158,765 +12481,6 @@ class or__opt_nosimd_param_errors_h(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_H(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('H', xdata)
-		self.data2 = array.array('H', ydata)
-		self.dataout = array.array('H', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_H(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('H', xdata)
-		self.data2 = array.array('H', ydata)
-		self.dataout = array.array('H', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_H(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('H', xdata)
-		self.data2 = array.array('H', ydata)
-		self.dataout = array.array('H', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code H.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code H.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code H.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -5219,7 +12783,7 @@ class or__opt_param_errors_H(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -5528,765 +13092,6 @@ class or__opt_nosimd_param_errors_H(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_i(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('i', xdata)
-		self.data2 = array.array('i', ydata)
-		self.dataout = array.array('i', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_i(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('i', xdata)
-		self.data2 = array.array('i', ydata)
-		self.dataout = array.array('i', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_i(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('i', xdata)
-		self.data2 = array.array('i', ydata)
-		self.dataout = array.array('i', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code i.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code i.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code i.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -6589,7 +13394,7 @@ class or__opt_param_errors_i(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -6898,765 +13703,6 @@ class or__opt_nosimd_param_errors_i(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_I(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('I', xdata)
-		self.data2 = array.array('I', ydata)
-		self.dataout = array.array('I', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_I(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('I', xdata)
-		self.data2 = array.array('I', ydata)
-		self.dataout = array.array('I', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_I(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('I', xdata)
-		self.data2 = array.array('I', ydata)
-		self.dataout = array.array('I', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code I.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code I.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code I.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -7959,7 +14005,7 @@ class or__opt_param_errors_I(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -8268,765 +14314,6 @@ class or__opt_nosimd_param_errors_I(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_l(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('l', xdata)
-		self.data2 = array.array('l', ydata)
-		self.dataout = array.array('l', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_l(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('l', xdata)
-		self.data2 = array.array('l', ydata)
-		self.dataout = array.array('l', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_l(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('l', xdata)
-		self.data2 = array.array('l', ydata)
-		self.dataout = array.array('l', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code l.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code l.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code l.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -9329,7 +14616,7 @@ class or__opt_param_errors_l(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -9638,765 +14925,6 @@ class or__opt_nosimd_param_errors_l(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_L(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('L', xdata)
-		self.data2 = array.array('L', ydata)
-		self.dataout = array.array('L', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_L(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('L', xdata)
-		self.data2 = array.array('L', ydata)
-		self.dataout = array.array('L', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_L(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('L', xdata)
-		self.data2 = array.array('L', ydata)
-		self.dataout = array.array('L', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code L.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code L.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code L.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -10699,7 +15227,7 @@ class or__opt_param_errors_L(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -11008,765 +15536,6 @@ class or__opt_nosimd_param_errors_L(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('q', xdata)
-		self.data2 = array.array('q', ydata)
-		self.dataout = array.array('q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('q', xdata)
-		self.data2 = array.array('q', ydata)
-		self.dataout = array.array('q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('q', xdata)
-		self.data2 = array.array('q', ydata)
-		self.dataout = array.array('q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -12069,7 +15838,7 @@ class or__opt_param_errors_q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)
@@ -12378,765 +16147,6 @@ class or__opt_nosimd_param_errors_q(unittest.TestCase):
 
 ##############################################################################
 
- 
-
-##############################################################################
-class or__general_even_arraysize_with_simd_Q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('Q', xdata)
-		self.data2 = array.array('Q', ydata)
-		self.dataout = array.array('Q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_odd_arraysize_with_simd_Q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'odd' == 'even':
-			testdatasize = 160
-		if 'odd' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('Q', xdata)
-		self.data2 = array.array('Q', ydata)
-		self.dataout = array.array('Q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited )
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited )
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout )
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
- 
-
-##############################################################################
-class or__general_even_arraysize_without_simd_Q(unittest.TestCase):
-	"""Test or_ for basic general function operation using numeric 
-	data 0,1,2,3,4,5.
-	test_template_binop
-	"""
-
-
-	##############################################################################
-	def FloatassertEqual(self, dataoutitem, expecteditem, msg=None):
-		"""This function is patched into assertEqual to allow testing for 
-		the floating point special values NaN, Inf, and -Inf.
-		"""
-		# NaN cannot be compared using normal means.
-		if math.isnan(dataoutitem) and math.isnan(expecteditem):
-			pass
-		# Anything else can be compared normally.
-		else:
-			if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
-				raise self.failureException('%0.3f != %0.3f' % (expecteditem, dataoutitem))
-
-
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		# This is active for float numbers only. 
-		self.addTypeEqualityFunc(float, self.FloatassertEqual)
-
-		if 'even' == 'even':
-			testdatasize = 160
-		if 'even' == 'odd':
-			testdatasize = 159
-		paramitersize = 5
-
-
-		xdata = [x for x,y in zip(itertools.cycle([100,101,102,103,104,105,106,107,108,109]), range(testdatasize))]
-		ydata = [x for x,y in zip(itertools.cycle([0,1,2,3,4,5]), range(testdatasize))]
-
-		self.data1 = array.array('Q', xdata)
-		self.data2 = array.array('Q', ydata)
-		self.dataout = array.array('Q', [0]*len(self.data1))
-
-		self.limited = len(self.data1) // 2
-
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		self.data1param = self.data1[:paramitersize]
-		self.data2param = self.data2[:paramitersize]
-
-
-	########################################################
-	def test_or__basic_array_num_none_a1(self):
-		"""Test or_ as *array-num-none* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_none_a2(self):
-		"""Test or_ as *array-num-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(datax)[self.limited:]
-
-				arrayfunc.or_(datax, testval, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datax, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-
-	########################################################
-	def test_or__basic_array_num_array_b1(self):
-		"""Test or_ as *array-num-array* for basic function - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				expected = [x | testval for x in datax]
-
-				arrayfunc.or_(datax, testval, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_num_array_b2(self):
-		"""Test or_ as *array-num-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data2param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datax = copy.copy(self.data1)
-
-				pydataout = [x | testval for x in datax]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(datax, testval, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c1(self):
-		"""Test or_ as *num-array-none* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_none_c2(self):
-		"""Test or_ as *num-array-none* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(datay)[self.limited:]
-
-				arrayfunc.or_(testval, datay, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(datay, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d1(self):
-		"""Test or_ as *num-array-array* for basic function - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				expected = [testval | x for x in datay]
-
-				arrayfunc.or_(testval, datay, self.dataout , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_num_array_array_d2(self):
-		"""Test or_ as *num-array-array* for basic function with array limit - Array code Q.
-		"""
-		for testval in self.data1param:
-			with self.subTest(msg='Failed with parameter', testval = testval):
-
-				# Copy the array so we don't change the original data.
-				datay = copy.copy(self.data2)
-
-				pydataout = [testval | x for x in datay]
-				expected = pydataout[0:self.limited] + list(self.dataout)[self.limited:]
-
-				arrayfunc.or_(testval, datay, self.dataout, maxlen=self.limited , nosimd=True)
-
-				for dataoutitem, expecteditem in zip(self.dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e1(self):
-		"""Test or_ as *array-array-none* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-
-		arrayfunc.or_(self.data1, self.data2 , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_none_e2(self):
-		"""Test or_ as *array-array-none* for basic function with array limit - Array code Q.
-		"""
-		pydataout = [x | y for (x, y) in zip(self.data1, self.data2)]
-		expected = pydataout[0:self.limited] + list(self.data1)[self.limited:]
-
-		arrayfunc.or_(self.data1, self.data2, maxlen=self.limited , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-	########################################################
-	def test_or__basic_array_array_array_e3(self):
-		"""Test or_ as *array-array-array* for basic function - Array code Q.
-		"""
-		expected = [x | y for (x, y) in zip(self.data1, self.data2)]
-		arrayfunc.or_(self.data1, self.data2, self.dataout , nosimd=True)
-
-		for dataoutitem, expecteditem in zip(self.dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
-
-
-##############################################################################
-
 
 
 ##############################################################################
@@ -13439,7 +16449,7 @@ class or__opt_param_errors_Q(unittest.TestCase):
 	def setUp(self):
 		"""Initialise.
 		"""
-		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109]
+		self.inpdata1a = [100,101,102,103,104,105,106,107,108,109	]
 		self.inpdata2a = [x for (x,y) in zip(itertools.cycle([0,1,2,3,4,5]), self.inpdata1a)]
 
 		arraysize = len(self.inpdata1a)

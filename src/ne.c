@@ -72,7 +72,7 @@ char ne_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -94,7 +94,7 @@ char ne_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signed
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -116,7 +116,7 @@ char ne_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -145,7 +145,7 @@ char ne_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -167,7 +167,7 @@ char ne_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, un
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -189,7 +189,7 @@ char ne_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -218,7 +218,7 @@ char ne_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -240,7 +240,7 @@ char ne_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, sign
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -262,7 +262,7 @@ char ne_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -291,7 +291,7 @@ char ne_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -313,7 +313,7 @@ char ne_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param, 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -335,7 +335,7 @@ char ne_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -364,7 +364,7 @@ char ne_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -386,7 +386,7 @@ char ne_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed i
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -408,7 +408,7 @@ char ne_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -437,7 +437,7 @@ char ne_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -459,7 +459,7 @@ char ne_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsi
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -481,7 +481,7 @@ char ne_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -503,7 +503,7 @@ char ne_signed_long_1(Py_ssize_t arraylen, int nosimd, signed long *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -518,7 +518,7 @@ char ne_signed_long_3(Py_ssize_t arraylen, int nosimd, signed long param, signed
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -533,7 +533,7 @@ char ne_signed_long_5(Py_ssize_t arraylen, int nosimd, signed long *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -555,7 +555,7 @@ char ne_unsigned_long_1(Py_ssize_t arraylen, int nosimd, unsigned long *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -570,7 +570,7 @@ char ne_unsigned_long_3(Py_ssize_t arraylen, int nosimd, unsigned long param, un
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -585,7 +585,7 @@ char ne_unsigned_long_5(Py_ssize_t arraylen, int nosimd, unsigned long *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -607,7 +607,7 @@ char ne_signed_long_long_1(Py_ssize_t arraylen, int nosimd, signed long long *da
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -622,7 +622,7 @@ char ne_signed_long_long_3(Py_ssize_t arraylen, int nosimd, signed long long par
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -637,7 +637,7 @@ char ne_signed_long_long_5(Py_ssize_t arraylen, int nosimd, signed long long *da
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -659,7 +659,7 @@ char ne_unsigned_long_long_1(Py_ssize_t arraylen, int nosimd, unsigned long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -674,7 +674,7 @@ char ne_unsigned_long_long_3(Py_ssize_t arraylen, int nosimd, unsigned long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -689,7 +689,7 @@ char ne_unsigned_long_long_5(Py_ssize_t arraylen, int nosimd, unsigned long long
 	// array index counter.
 	Py_ssize_t x;
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -718,7 +718,7 @@ char ne_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float param) {
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -740,7 +740,7 @@ char ne_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2) {
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -762,7 +762,7 @@ char ne_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *data2) {
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 
@@ -791,7 +791,7 @@ char ne_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double param) {
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != param)) { return 0; }
 	}
 
@@ -813,7 +813,7 @@ char ne_double_3(Py_ssize_t arraylen, int nosimd, double param, double *data2) {
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(param != data2[x])) { return 0; }
 	}
 
@@ -835,7 +835,7 @@ char ne_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *data2) 
 	}
 #endif
 
-	for(x = 0; x < arraylen; x++) {
+	for (x = 0; x < arraylen; x++) {
 		if (!(data1[x] != data2[x])) { return 0; }
 	}
 

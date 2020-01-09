@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     02-Oct-2019
-// Ver:      20-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -92,17 +92,17 @@ void radians_float_1_simd(Py_ssize_t arraylen, float *data) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_f32(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * DEGTORAD_F_VEC;
+		datasliceleft = vmul_f32 (datasliceleft, DEGTORAD_F_VEC);
 		// Store the result.
 		vst1_f32(&data[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data[x] = DEGTORAD_F * data[x];
 	}
 
@@ -128,17 +128,17 @@ void radians_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_f32(&data[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = datasliceleft * DEGTORAD_F_VEC;
+		datasliceleft = vmul_f32 (datasliceleft, DEGTORAD_F_VEC);
 		// Store the result.
 		vst1_f32(&dataout[x], datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		dataout[x] = DEGTORAD_F * data[x];
 	}
 

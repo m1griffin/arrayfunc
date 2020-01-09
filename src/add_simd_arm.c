@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     8-Oct-2019
-// Ver:      20-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -80,17 +80,17 @@ void add_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s8( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -125,17 +125,17 @@ void add_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s8( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -170,17 +170,17 @@ void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_s8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -215,17 +215,17 @@ void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_s8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -251,18 +251,18 @@ void add_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s8( &data1[x]);
 		datasliceright = vld1_s8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -288,18 +288,18 @@ void add_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s8( &data1[x]);
 		datasliceright = vld1_s8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -343,17 +343,17 @@ void add_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u8( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -388,17 +388,17 @@ void add_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u8( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -433,17 +433,17 @@ void add_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_u8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -478,17 +478,17 @@ void add_unsigned_char_4_simd(Py_ssize_t arraylen, unsigned char param, unsigned
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_u8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -514,18 +514,18 @@ void add_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u8( &data1[x]);
 		datasliceright = vld1_u8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -551,18 +551,18 @@ void add_unsigned_char_6_simd(Py_ssize_t arraylen, unsigned char *data1, unsigne
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += CHARSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u8( &data1[x]);
 		datasliceright = vld1_u8( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u8(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_u8( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -606,17 +606,17 @@ void add_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s16( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -651,17 +651,17 @@ void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s16( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -696,17 +696,17 @@ void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_s16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -741,17 +741,17 @@ void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_s16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -777,18 +777,18 @@ void add_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s16( &data1[x]);
 		datasliceright = vld1_s16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -814,18 +814,18 @@ void add_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_s16( &data1[x]);
 		datasliceright = vld1_s16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_s16(datasliceleft, datasliceright);
 		// Store the result.
 		vst1_s16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 
@@ -869,17 +869,17 @@ void add_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u16( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + param;
 	}
 
@@ -914,17 +914,17 @@ void add_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u16( &data1[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + param;
 	}
 
@@ -959,17 +959,17 @@ void add_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsign
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_u16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data2[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data2[x] = param + data2[x];
 	}
 
@@ -1004,17 +1004,17 @@ void add_unsigned_short_4_simd(Py_ssize_t arraylen, unsigned short param, unsign
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceright = vld1_u16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = param + data2[x];
 	}
 
@@ -1040,18 +1040,18 @@ void add_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u16( &data1[x]);
 		datasliceright = vld1_u16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data1[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data1[x] = data1[x] + data2[x];
 	}
 
@@ -1077,18 +1077,18 @@ void add_unsigned_short_6_simd(Py_ssize_t arraylen, unsigned short *data1, unsig
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
+	for (x = 0; x < alignedlength; x += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1_u16( &data1[x]);
 		datasliceright = vld1_u16( &data2[x]);
 		// The actual SIMD operation. The compiler generates the correct instruction.
-		resultslice = datasliceleft + datasliceright;
+		resultslice = vadd_u16(datasliceleft, datasliceright);
 		// Store the result.
 		 vst1_u16( &data3[x],  resultslice);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(x = alignedlength; x < arraylen; x++) {
+	for (x = alignedlength; x < arraylen; x++) {
 		data3[x] = data1[x] + data2[x];
 	}
 

@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     16-Jan-2018
-// Ver:      19-Oct-2019.
+// Ver:      02-Jan-2020.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: b
 #if defined(AF_HASSIMD_X86)
 char eq_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char param) { 
 
@@ -75,19 +75,21 @@ char eq_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -123,19 +125,21 @@ char eq_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char *
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -164,20 +168,22 @@ char eq_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -189,6 +195,8 @@ char eq_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char 
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -197,7 +205,7 @@ char eq_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char 
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: B
 #if defined(AF_HASSIMD_X86)
 char eq_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param) { 
 
@@ -223,19 +231,21 @@ char eq_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -271,19 +281,21 @@ char eq_unsigned_char_3_simd(Py_ssize_t arraylen, unsigned char param, unsigned 
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -312,20 +324,22 @@ char eq_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned
 	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		datasliceleft = (v16qi) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v16qi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqb128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -337,6 +351,8 @@ char eq_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -345,7 +361,7 @@ char eq_unsigned_char_5_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: h
 #if defined(AF_HASSIMD_X86)
 char eq_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed short param) { 
 
@@ -371,19 +387,21 @@ char eq_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -419,19 +437,21 @@ char eq_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed shor
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -460,20 +480,22 @@ char eq_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sho
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -485,6 +507,8 @@ char eq_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sho
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -493,7 +517,7 @@ char eq_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sho
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: H
 #if defined(AF_HASSIMD_X86)
 char eq_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param) { 
 
@@ -519,19 +543,21 @@ char eq_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsign
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -567,19 +593,21 @@ char eq_unsigned_short_3_simd(Py_ssize_t arraylen, unsigned short param, unsigne
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -608,20 +636,22 @@ char eq_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsign
 	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		datasliceleft = (v8hi) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v8hi) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqw128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -633,6 +663,8 @@ char eq_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsign
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -641,7 +673,7 @@ char eq_unsigned_short_5_simd(Py_ssize_t arraylen, unsigned short *data1, unsign
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: i
 #if defined(AF_HASSIMD_X86)
 char eq_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int param) { 
 
@@ -667,19 +699,21 @@ char eq_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int par
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -715,19 +749,21 @@ char eq_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *dat
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -756,20 +792,22 @@ char eq_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *da
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -781,6 +819,8 @@ char eq_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *da
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -789,7 +829,7 @@ char eq_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *da
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: I
 #if defined(AF_HASSIMD_X86)
 char eq_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param) { 
 
@@ -815,19 +855,21 @@ char eq_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned i
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -863,19 +905,21 @@ char eq_unsigned_int_3_simd(Py_ssize_t arraylen, unsigned int param, unsigned in
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -904,20 +948,22 @@ char eq_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned i
 	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += INTSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		datasliceleft = (v4si) __builtin_ia32_lddqu((char *)  &data1[index]);
 		datasliceright = (v4si) __builtin_ia32_lddqu((char *)  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_pcmpeqd128(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -929,6 +975,8 @@ char eq_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned i
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -937,7 +985,7 @@ char eq_unsigned_int_5_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned i
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: f
 #if defined(AF_HASSIMD_X86)
 char eq_float_1_simd(Py_ssize_t arraylen, float *data1, float param) { 
 
@@ -963,19 +1011,21 @@ char eq_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
 		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqps(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -1011,19 +1061,21 @@ char eq_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
 		datasliceright = (v4sf) __builtin_ia32_loadups(  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqps(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -1052,20 +1104,22 @@ char eq_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
 		datasliceleft = (v4sf) __builtin_ia32_loadups(  &data1[index]);
 		datasliceright = (v4sf) __builtin_ia32_loadups(  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqps(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -1077,6 +1131,8 @@ char eq_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 
 #endif
 
+/*--------------------------------------------------------------------------- */
+
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -1085,7 +1141,7 @@ char eq_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
    data2 = The second data array.
    param = The parameter to be applied to each array element.
 */
-// param_arr_num
+// param_arr_num for array code: d
 #if defined(AF_HASSIMD_X86)
 char eq_double_1_simd(Py_ssize_t arraylen, double *data1, double param) { 
 
@@ -1111,19 +1167,21 @@ char eq_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
 		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data1[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqpd(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == param)) {
 			return 0;
 		}
@@ -1159,19 +1217,21 @@ char eq_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
 		datasliceright = (v2df) __builtin_ia32_loadupd(  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqpd(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(param == data2[index])) {
 			return 0;
 		}
@@ -1200,20 +1260,22 @@ char eq_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 	alignedlength = arraylen - (arraylen % DOUBLESIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for(index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
+	// On x86 we have to do this in a round-about fashion for some
+	// types of comparison operations due to how SIMD works on that
+	// platform.
+	for (index = 0; index < alignedlength; index += DOUBLESIMDSIZE) {
 		datasliceleft = (v2df) __builtin_ia32_loadupd(  &data1[index]);
 		datasliceright = (v2df) __builtin_ia32_loadupd(  &data2[index]);
-		// The actual SIMD operation. The compiler generates the correct SIMD
-		// operations, and stores them as a vector.
-		resultslice = datasliceleft == datasliceright;
-		// Compare the results of the SIMD operation.
+		// Compare the slices.
+		resultslice = __builtin_ia32_cmpeqpd(datasliceleft, datasliceright);
+		// Check the results of the SIMD operation.
 		if (!(__builtin_ia32_pmovmskb128((v16qi) resultslice) == 0xffff)) {
 			return 0;
 		}
 	}
 
 	// Get the max value within the left over elements at the end of the array.
-	for(index = alignedlength; index < arraylen; index++) {
+	for (index = alignedlength; index < arraylen; index++) {
 		if (!(data1[index] == data2[index])) {
 			return 0;
 		}
@@ -1224,4 +1286,6 @@ char eq_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 }
 
 #endif
+
+/*--------------------------------------------------------------------------- */
 

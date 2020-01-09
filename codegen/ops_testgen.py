@@ -36,8 +36,7 @@ test_op_templ = '''
 
 ##############################################################################
 class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.TestCase):
-	"""Test %(funclabel)s for basic general function operation using numeric 
-	data %(test_op_y)s.
+	"""Test %(funclabel)s for basic general function operation using numeric data.
 	test_op_templ
 	"""
 
@@ -57,6 +56,31 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 
 
 	########################################################
+	def expectop(self, x, y):
+		"""Perform the math operation. This needs to be specially handled
+		for truediv on large signed integer arrays. This is because of a 
+		combination of factors. Python will produce a floating point result, 
+		but we we want an integer result when using integer arrays. If we 
+		simply convert the result back to integer then we lose precision on
+		large integers, introducing errors. If we try to emulate it using
+		floor division, then when using mixed positive and negative inputs
+		the result is rounded away from zero, producing an incorrect result.
+		So, we need to take the absolute value, then do floor division, then
+		put the correct sign back into the result.
+		"""
+		# For true division on integer arrays.
+		if ('%(pyoperator)s' == '/') and '%(typecode)s' not in ('f', 'd'):
+			# For when signs are opposite in signed arrays.
+			if ((x < 0) ^ (y < 0)):
+				return -(abs(x) // abs(y))
+			else:
+				return x // y
+		else:
+			return x %(pyoperator)s y
+
+
+
+	########################################################
 	def setUp(self):
 		"""Initialise.
 		"""
@@ -67,29 +91,184 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 			testdatasize = 160
 		if '%(arrayevenodd)s' == 'odd':
 			testdatasize = 159
-		paramitersize = 10
 
-		xdata = [x for x,y in zip(itertools.cycle([%(test_op_x)s]), range(testdatasize))]
-		self.datax = array.array('%(typecode)s', xdata)
-		self.datay = [x for (x,y) in zip(itertools.cycle([%(test_op_y)s]), self.datax)]
+		# For floating point values limit the test values to within
+		# the range of precision so that we don't create artificial 
+		# test errors due to problems related to numerical resolution.
+		if '%(typecode)s' == 'f':
+			minval = arrayfunc.arraylimits.h_min
+			maxval = arrayfunc.arraylimits.h_max
+		elif '%(typecode)s' == 'd':
+			minval = arrayfunc.arraylimits.i_min
+			maxval = arrayfunc.arraylimits.i_max
+		else:
+			minval = arrayfunc.arraylimits.%(typelabel)s_min
+			maxval = arrayfunc.arraylimits.%(typelabel)s_max
+
+		# The tests are created using a common template. The data used
+		# in the tests varies depending on the operator.
+
+		# Addition.
+		if '%(pyoperator)s' == '+':
+			# Data for two arrays.
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
+					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			# Data for an array and a number.
+			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests - expect an empty set.
+			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
+
+		# Subtraction.
+		elif '%(pyoperator)s' == '-':
+			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
+					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
+					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
+					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
+
+		# Division.
+		elif '%(pyoperator)s' in ('/', '//'):
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
+					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
+					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
+					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+
+			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
+			arr_num1b = [1, -1, 2, -2, 10, -10]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
+
+
+		# Multiplication.
+		elif '%(pyoperator)s' == '*':
+			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
+					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
+					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
+					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
+
+			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
+			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
+
+		# Modulo.
+		elif '%(pyoperator)s' == '%%':
+			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
+						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
+						(59, 3), (59, 4), (59, 5), (59, 6)]
+
+			arr_num1a = [x for x,y in arr_arr]
+			arr_num1b = [y for x,y in arr_arr]
+
+			# Data tests. Note in the template the symbols are doubled.
+			# [(x,y) for x,y in arr_arr if ((x %% y) < minval) or ((x %% y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x %% y) < minval) or ((x %% y) > maxval)]
+
+
+		# Raise to power. This requires a different approach to prevent
+		# data from rapidly going out of range.
+		elif '%(pyoperator)s' == '**':
+
+			# Reduce the large value so that very large integers don't overflow
+			# when losing resolution when converting integers to floating point. 
+			powerval = (maxval / 4) * 3
+
+			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
+
+			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
+			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
+
+			# Data tests:
+			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
+			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
+
+
+		else:
+			print('Unknown operator.', '%(pyoperator)s')
+
+
+		# If we are dealing with an unsigned array, filter the test data to remove negative values.
+		if '%(typecode)s' in ('B', 'H', 'I', 'L', 'Q'):
+			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
+			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
+			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
+		# If floating point, convert the data to the correct type.
+		elif '%(typecode)s' in ('f', 'd'):
+			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
+			tdata_arr_num1a = [float(x) for x in arr_num1a]
+			tdata_arr_num1b = [float(x) for x in arr_num1b]
+		# No conversion is required for signed integers.
+		else:
+			tdata_arr_arr = arr_arr
+			tdata_arr_num1a = arr_num1a
+			tdata_arr_num1b = arr_num1b
+
+		self.datacheck1 = tdata_arr_arr
+		self.datacheck2 = tdata_arr_num1a
+		self.datacheck3 = tdata_arr_num1b
+
+		# Expand the data out to the desired length by repeating it.
+		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
+
+		# And separate the data pairs. These are used for tests with two arrays.
+		self.datax_aa = [x for x,y in ttdata]
+		self.datay_aa = [y for x,y in ttdata]
 
 
 		# This is used for testing with single parameters. We use a limited
 		# data set to avoid excessive numbers of sub-tests.
-		self.dataxparam = self.datax[:paramitersize]
-		self.datayparam = self.datay[:paramitersize]
+		# First when we have an array then a number.
+		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
+		self.datay_an = tdata_arr_num1b
+
+		# And for a number as the first parameter and an array as the second.
+		self.datax_na = tdata_arr_num1a
+		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+
+
+
+	########################################################
+	def test_%(funclabel)s_check_test_data(self):
+		"""Test %(funclabel)s to ensure we have valid data present - Array code %(typelabel)s.
+		"""
+		# Make sure we don't have any empty or trivial length data sets.
+		# This test exists purely to ensure that the generated and filtered
+		# data in setUp is actually present and we don't have any empty
+		# data sets after we have pruned them. This condition should not
+		# arise unless the test has been edited carelessly.
+
+		self.assertTrue(len(self.datacheck1) > 2)
+		self.assertTrue(len(self.datacheck2) > 2)
+		self.assertTrue(len(self.datacheck3) > 2)
+
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_none_a1(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 
-				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.%(funcname)s(data1, testval)
 
@@ -102,12 +281,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_none_a2(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 
-				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.%(funcname)s(data1, testval, matherrors=True)
 
@@ -120,14 +299,14 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_none_a3(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testval, maxlen=limited)
@@ -141,14 +320,14 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_none_a4(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testval, matherrors=True, maxlen=limited)
@@ -163,13 +342,13 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_array_b1(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.%(funcname)s(data1, testval, dataout)
 
@@ -182,13 +361,13 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_array_b2(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				expected = [self.expectop(x, testval) for x in data1]
 
 				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True)
 
@@ -201,15 +380,15 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_array_b3(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testval, dataout, maxlen=limited)
@@ -223,15 +402,15 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_array_b4(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datayparam:
+		for testval in self.datay_an:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datax)
+				data1 = array.array('%(typecode)s', self.datax_an)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [x %(pyoperator)s testval for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(x, testval) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True, maxlen=limited)
@@ -246,12 +425,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_none_c1(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 
-				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.%(funcname)s(testval, data1)
 
@@ -264,12 +443,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_none_c2(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 
-				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.%(funcname)s(testval, data1, matherrors=True)
 
@@ -282,14 +461,14 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_none_c3(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(testval, data1, maxlen=limited)
@@ -303,14 +482,14 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_none_c4(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
 				arrayfunc.%(funcname)s(testval, data1, matherrors=True, maxlen=limited)
@@ -325,13 +504,13 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_array_d1(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.%(funcname)s(testval, data1, dataout)
 
@@ -344,13 +523,13 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_array_d2(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				expected = [self.expectop(testval, x) for x in data1]
 
 				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True)
 
@@ -363,15 +542,15 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_array_d3(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(testval, data1, dataout, maxlen=limited)
@@ -385,15 +564,15 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_array_d4(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.dataxparam:
+		for testval in self.datax_na:
 			with self.subTest(msg='Failed with parameter', testval = testval):
 
-				data1 = array.array('%(typecode)s', self.datay)
+				data1 = array.array('%(typecode)s', self.datay_na)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = %(typeconv1)s [testval %(pyoperator)s x for x in data1] %(typeconv2)s
+				pydataout = [self.expectop(testval, x) for x in data1]
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
 				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True, maxlen=limited)
@@ -408,10 +587,11 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_none_e1(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 
-		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.%(funcname)s(data1, data2)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -423,10 +603,11 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_none_e2(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 
-		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.%(funcname)s(data1, data2, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(data1, expected):
@@ -438,12 +619,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_none_e3(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, maxlen=limited)
@@ -457,12 +638,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_none_e4(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 
 		limited = len(data1) // 2
 
-		pydataout = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, matherrors=True, maxlen=limited)
@@ -476,11 +657,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_array_f1(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
-		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.%(funcname)s(data1, data2, dataout)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -493,11 +675,12 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_array_f2(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
-		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+
 		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True)
 
 		for dataoutitem, expecteditem in zip(dataout, expected):
@@ -509,13 +692,13 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_array_f3(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax)
-		data2 = array.array('%(typecode)s', self.datay)
+		data1 = array.array('%(typecode)s', self.datax_aa)
+		data2 = array.array('%(typecode)s', self.datay_aa)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
+		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True, maxlen=limited)

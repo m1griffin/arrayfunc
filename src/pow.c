@@ -108,12 +108,12 @@ signed int pow_signed_char_1(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_char(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_char(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -133,12 +133,12 @@ signed int pow_signed_char_2(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -158,12 +158,12 @@ signed int pow_signed_char_3(Py_ssize_t arraylen, signed char param, signed char
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_char(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_char(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -183,12 +183,12 @@ signed int pow_signed_char_4(Py_ssize_t arraylen, signed char param, signed char
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -208,12 +208,12 @@ signed int pow_signed_char_5(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_char(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_char(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -233,12 +233,12 @@ signed int pow_signed_char_6(Py_ssize_t arraylen, signed char *data1, signed cha
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_char(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -291,12 +291,12 @@ signed int pow_unsigned_char_1(Py_ssize_t arraylen, unsigned char *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -316,12 +316,12 @@ signed int pow_unsigned_char_2(Py_ssize_t arraylen, unsigned char *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -341,12 +341,12 @@ signed int pow_unsigned_char_3(Py_ssize_t arraylen, unsigned char param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_char(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_char(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -366,12 +366,12 @@ signed int pow_unsigned_char_4(Py_ssize_t arraylen, unsigned char param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -391,12 +391,12 @@ signed int pow_unsigned_char_5(Py_ssize_t arraylen, unsigned char *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_char(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_char(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -416,12 +416,12 @@ signed int pow_unsigned_char_6(Py_ssize_t arraylen, unsigned char *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_char(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -495,12 +495,12 @@ signed int pow_signed_short_1(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_short(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_short(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -520,12 +520,12 @@ signed int pow_signed_short_2(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -545,12 +545,12 @@ signed int pow_signed_short_3(Py_ssize_t arraylen, signed short param, signed sh
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_short(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_short(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -570,12 +570,12 @@ signed int pow_signed_short_4(Py_ssize_t arraylen, signed short param, signed sh
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -595,12 +595,12 @@ signed int pow_signed_short_5(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_short(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_short(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -620,12 +620,12 @@ signed int pow_signed_short_6(Py_ssize_t arraylen, signed short *data1, signed s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_short(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -678,12 +678,12 @@ signed int pow_unsigned_short_1(Py_ssize_t arraylen, unsigned short *data1, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -703,12 +703,12 @@ signed int pow_unsigned_short_2(Py_ssize_t arraylen, unsigned short *data1, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -728,12 +728,12 @@ signed int pow_unsigned_short_3(Py_ssize_t arraylen, unsigned short param, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_short(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_short(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -753,12 +753,12 @@ signed int pow_unsigned_short_4(Py_ssize_t arraylen, unsigned short param, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -778,12 +778,12 @@ signed int pow_unsigned_short_5(Py_ssize_t arraylen, unsigned short *data1, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_short(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_short(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -803,12 +803,12 @@ signed int pow_unsigned_short_6(Py_ssize_t arraylen, unsigned short *data1, unsi
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_short(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -882,12 +882,12 @@ signed int pow_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_int(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_int(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -907,12 +907,12 @@ signed int pow_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -932,12 +932,12 @@ signed int pow_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_int(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_int(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -957,12 +957,12 @@ signed int pow_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -982,12 +982,12 @@ signed int pow_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_int(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_int(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1007,12 +1007,12 @@ signed int pow_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_int(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1065,12 +1065,12 @@ signed int pow_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1090,12 +1090,12 @@ signed int pow_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1115,12 +1115,12 @@ signed int pow_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_int(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_int(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1140,12 +1140,12 @@ signed int pow_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1165,12 +1165,12 @@ signed int pow_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_int(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_int(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1190,12 +1190,12 @@ signed int pow_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_int(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1269,12 +1269,12 @@ signed int pow_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1294,12 +1294,12 @@ signed int pow_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1319,12 +1319,12 @@ signed int pow_signed_long_3(Py_ssize_t arraylen, signed long param, signed long
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1344,12 +1344,12 @@ signed int pow_signed_long_4(Py_ssize_t arraylen, signed long param, signed long
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1369,12 +1369,12 @@ signed int pow_signed_long_5(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1394,12 +1394,12 @@ signed int pow_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1452,12 +1452,12 @@ signed int pow_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1477,12 +1477,12 @@ signed int pow_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1502,12 +1502,12 @@ signed int pow_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1527,12 +1527,12 @@ signed int pow_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1552,12 +1552,12 @@ signed int pow_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1577,12 +1577,12 @@ signed int pow_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1656,12 +1656,12 @@ signed int pow_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1681,12 +1681,12 @@ signed int pow_signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1706,12 +1706,12 @@ signed int pow_signed_long_long_3(Py_ssize_t arraylen, signed long long param, s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_long_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_signed_long_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1731,12 +1731,12 @@ signed int pow_signed_long_long_4(Py_ssize_t arraylen, signed long long param, s
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1756,12 +1756,12 @@ signed int pow_signed_long_long_5(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_signed_long_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1781,12 +1781,12 @@ signed int pow_signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_signed_long_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1839,12 +1839,12 @@ signed int pow_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1864,12 +1864,12 @@ signed int pow_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(data1[x], param, &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1889,12 +1889,12 @@ signed int pow_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long para
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_long_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = arith_pow_unsigned_long_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1914,12 +1914,12 @@ signed int pow_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long para
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(param, data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(param, data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1939,12 +1939,12 @@ signed int pow_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = arith_pow_unsigned_long_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1964,12 +1964,12 @@ signed int pow_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(data1[x], data2[x], &errflag);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = arith_pow_unsigned_long_long(data1[x], data2[x], &errflag);
 			if (errflag != 0) return ARR_ERR_OVFL;
 		}
@@ -1996,11 +1996,11 @@ signed int pow_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = powf(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = powf(data1[x], param);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2019,11 +2019,11 @@ signed int pow_float_2(Py_ssize_t arraylen, float *data1, float param, float *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(data1[x], param);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2042,11 +2042,11 @@ signed int pow_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = powf(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = powf(param, data2[x]);
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2065,11 +2065,11 @@ signed int pow_float_4(Py_ssize_t arraylen, float param, float *data2, float *da
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(param, data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2088,12 +2088,12 @@ signed int pow_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = powf(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = powf(data1[x], data2[x]);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2112,12 +2112,12 @@ signed int pow_float_6(Py_ssize_t arraylen, float *data1, float *data2, float *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = powf(data1[x], data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2144,11 +2144,11 @@ signed int pow_double_1(Py_ssize_t arraylen, double *data1, double param, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = pow(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = pow(data1[x], param);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2167,11 +2167,11 @@ signed int pow_double_2(Py_ssize_t arraylen, double *data1, double param, double
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(data1[x], param);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(data1[x], param);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2190,11 +2190,11 @@ signed int pow_double_3(Py_ssize_t arraylen, double param, double *data2, unsign
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = pow(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data2[x] = pow(param, data2[x]);
 			if (!isfinite(data2[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2213,11 +2213,11 @@ signed int pow_double_4(Py_ssize_t arraylen, double param, double *data2, double
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(param, data2[x]);
 		}
 	} else {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(param, data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2236,12 +2236,12 @@ signed int pow_double_5(Py_ssize_t arraylen, double *data1, double *data2, unsig
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = pow(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data1[x] = pow(data1[x], data2[x]);
 			if (!isfinite(data1[x])) {return ARR_ERR_ARITHMETIC;}
 		}
@@ -2260,12 +2260,12 @@ signed int pow_double_6(Py_ssize_t arraylen, double *data1, double *data2, doubl
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(data1[x], data2[x]);
 		}
 	} else {
 	// Math error checking enabled.
-		for(x = 0; x < arraylen; x++) {
+		for (x = 0; x < arraylen; x++) {
 			data3[x] = pow(data1[x], data2[x]);
 			if (!isfinite(data3[x])) {return ARR_ERR_ARITHMETIC;}
 		}

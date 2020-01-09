@@ -67,7 +67,7 @@ Py_ssize_t findindex_eq_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -90,7 +90,7 @@ Py_ssize_t findindex_gt_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -113,7 +113,7 @@ Py_ssize_t findindex_ge_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -136,7 +136,7 @@ Py_ssize_t findindex_lt_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -159,7 +159,7 @@ Py_ssize_t findindex_le_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -182,7 +182,7 @@ Py_ssize_t findindex_ne_signed_char(Py_ssize_t arraylen, signed char *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -291,7 +291,7 @@ Py_ssize_t findindex_eq_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -314,7 +314,7 @@ Py_ssize_t findindex_gt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -337,7 +337,7 @@ Py_ssize_t findindex_ge_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -360,7 +360,7 @@ Py_ssize_t findindex_lt_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -383,7 +383,7 @@ Py_ssize_t findindex_le_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -406,7 +406,7 @@ Py_ssize_t findindex_ne_unsigned_char(Py_ssize_t arraylen, unsigned char *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -515,7 +515,7 @@ Py_ssize_t findindex_eq_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -538,7 +538,7 @@ Py_ssize_t findindex_gt_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -561,7 +561,7 @@ Py_ssize_t findindex_ge_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -584,7 +584,7 @@ Py_ssize_t findindex_lt_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -607,7 +607,7 @@ Py_ssize_t findindex_le_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -630,7 +630,7 @@ Py_ssize_t findindex_ne_signed_short(Py_ssize_t arraylen, signed short *data, si
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -739,7 +739,7 @@ Py_ssize_t findindex_eq_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -762,7 +762,7 @@ Py_ssize_t findindex_gt_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -785,7 +785,7 @@ Py_ssize_t findindex_ge_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -808,7 +808,7 @@ Py_ssize_t findindex_lt_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -831,7 +831,7 @@ Py_ssize_t findindex_le_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -854,7 +854,7 @@ Py_ssize_t findindex_ne_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -963,7 +963,7 @@ Py_ssize_t findindex_eq_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -986,7 +986,7 @@ Py_ssize_t findindex_gt_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -1009,7 +1009,7 @@ Py_ssize_t findindex_ge_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -1032,7 +1032,7 @@ Py_ssize_t findindex_lt_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -1055,7 +1055,7 @@ Py_ssize_t findindex_le_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -1078,7 +1078,7 @@ Py_ssize_t findindex_ne_signed_int(Py_ssize_t arraylen, signed int *data, signed
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -1187,7 +1187,7 @@ Py_ssize_t findindex_eq_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -1210,7 +1210,7 @@ Py_ssize_t findindex_gt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -1233,7 +1233,7 @@ Py_ssize_t findindex_ge_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -1256,7 +1256,7 @@ Py_ssize_t findindex_lt_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -1279,7 +1279,7 @@ Py_ssize_t findindex_le_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -1302,7 +1302,7 @@ Py_ssize_t findindex_ne_unsigned_int(Py_ssize_t arraylen, unsigned int *data, un
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -1411,7 +1411,7 @@ Py_ssize_t findindex_eq_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -1434,7 +1434,7 @@ Py_ssize_t findindex_gt_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -1457,7 +1457,7 @@ Py_ssize_t findindex_ge_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -1480,7 +1480,7 @@ Py_ssize_t findindex_lt_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -1503,7 +1503,7 @@ Py_ssize_t findindex_le_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -1526,7 +1526,7 @@ Py_ssize_t findindex_ne_signed_long(Py_ssize_t arraylen, signed long *data, sign
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -1605,7 +1605,7 @@ Py_ssize_t findindex_eq_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -1628,7 +1628,7 @@ Py_ssize_t findindex_gt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -1651,7 +1651,7 @@ Py_ssize_t findindex_ge_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -1674,7 +1674,7 @@ Py_ssize_t findindex_lt_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -1697,7 +1697,7 @@ Py_ssize_t findindex_le_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -1720,7 +1720,7 @@ Py_ssize_t findindex_ne_unsigned_long(Py_ssize_t arraylen, unsigned long *data, 
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -1799,7 +1799,7 @@ Py_ssize_t findindex_eq_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -1822,7 +1822,7 @@ Py_ssize_t findindex_gt_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -1845,7 +1845,7 @@ Py_ssize_t findindex_ge_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -1868,7 +1868,7 @@ Py_ssize_t findindex_lt_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -1891,7 +1891,7 @@ Py_ssize_t findindex_le_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -1914,7 +1914,7 @@ Py_ssize_t findindex_ne_signed_long_long(Py_ssize_t arraylen, signed long long *
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -1993,7 +1993,7 @@ Py_ssize_t findindex_eq_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -2016,7 +2016,7 @@ Py_ssize_t findindex_gt_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -2039,7 +2039,7 @@ Py_ssize_t findindex_ge_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -2062,7 +2062,7 @@ Py_ssize_t findindex_lt_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -2085,7 +2085,7 @@ Py_ssize_t findindex_le_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -2108,7 +2108,7 @@ Py_ssize_t findindex_ne_unsigned_long_long(Py_ssize_t arraylen, unsigned long lo
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -2187,7 +2187,7 @@ Py_ssize_t findindex_eq_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -2210,7 +2210,7 @@ Py_ssize_t findindex_gt_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -2233,7 +2233,7 @@ Py_ssize_t findindex_ge_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -2256,7 +2256,7 @@ Py_ssize_t findindex_lt_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -2279,7 +2279,7 @@ Py_ssize_t findindex_le_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -2302,7 +2302,7 @@ Py_ssize_t findindex_ne_float(Py_ssize_t arraylen, float *data, float param1) {
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
@@ -2411,7 +2411,7 @@ Py_ssize_t findindex_eq_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] == param1) {
 				return index;
 			}
@@ -2434,7 +2434,7 @@ Py_ssize_t findindex_gt_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] > param1) {
 				return index;
 			}
@@ -2457,7 +2457,7 @@ Py_ssize_t findindex_ge_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] >= param1) {
 				return index;
 			}
@@ -2480,7 +2480,7 @@ Py_ssize_t findindex_lt_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] < param1) {
 				return index;
 			}
@@ -2503,7 +2503,7 @@ Py_ssize_t findindex_le_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] <= param1) {
 				return index;
 			}
@@ -2526,7 +2526,7 @@ Py_ssize_t findindex_ne_double(Py_ssize_t arraylen, double *data, double param1)
 	// array index counter.
 	Py_ssize_t index;
 
-		for(index = 0; index < arraylen; index++) {
+		for (index = 0; index < arraylen; index++) {
 			if (data[index] != param1) {
 				return index;
 			}
