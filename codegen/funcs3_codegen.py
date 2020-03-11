@@ -411,7 +411,13 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          [(x * param2 + param3) for x in array1] \\n\\
+or                      [(x * y + param3) for x,y in zip(array1, array2)] \\n\\
+or                      [(x * param2 + z) for x,z in zip(array1, array3)] \\n\\
+or                      [(x * y + z) for x,y,z in zip(array1, array2, array3)] \\n\\
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\

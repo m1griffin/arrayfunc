@@ -540,9 +540,13 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          all([x %(compare_ops)s param for x in array1]) \\n\\
+or                      all([param %(compare_ops)s x for x in array1]) \\n\\
+or                      all([x %(compare_ops)s y for x,y in zip(array1, array2)]) \\n\\
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
-Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\
 \\n\\
 Call formats: \\n\\
@@ -1362,6 +1366,7 @@ for func in funclist:
 
 		f.write(comp_params % {'funclabel' : func['funcname'], 
 				'opcodedocs' : func['opcodedocs'], 
+				'compare_ops' : compare_ops[funcname], 
 				'supportedarrays' : supportedarrays,
 				'matherrors' : ', '.join(func['matherrors'].split(',')),
 				'opscall' : ''.join(opscalltext),

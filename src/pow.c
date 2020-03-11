@@ -2720,7 +2720,12 @@ _____________________________ \n\
 Calculate pow over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          x**y or math.pow(x, y) \n\
+Equivalent to:          [x ** param for x in array1] \n\
+or                      [param ** y for y in array2] \n\
+or                      [x ** y for x, y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
 Exceptions raised:      OverflowError, ArithmeticError \n\
 ======================  ============================================== \n\

@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 5.1.0 for 2020-01-02
+:Version: 5.1.1 for 2020-03-06
 :Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -298,14 +298,15 @@ OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Ubuntu 19.10       64 bit    GCC                         3.7
-Debian 10          32 bit    GCC                         3.6
-Debian 10          64 bit    GCC                         3.6
+Ubuntu 20.04 beta  64 bit    GCC                         3.8
+Debian 10          32 bit    GCC                         3.7
+Debian 10          64 bit    GCC                         3.7
 OpenSuse 15        64 bit    GCC                         3.6
 Centos 8           64 bit    GCC                         3.6
-FreeBSD 12         64 bit    LLVM                        3.6
+FreeBSD 12         64 bit    LLVM                        3.7
 OpenBSD 6.5        64 bit    LLVM                        3.6
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
-Raspbian (RPi 3)   32 bit    GCC                         3.5
+MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
+Raspbian (RPi 3)   32 bit    GCC                         3.7
 ================= ========  ========================== =========================
 
 The Raspbian (RPi 3) tests were conducted on a Raspberry Pi ARM CPU. All others
@@ -336,7 +337,8 @@ example::
 
 Release History
 ===============
-
+* 5.1.1 - Updated and improved help documentation. Also updated test
+          platforms and retested.
 * 5.1.0 - This is a bug fix release only, centred around SIMD issues on
           x86-64 with GCC. In a previous release some of the x86-64 SIMD 
           code had been changed to take advantage of a sort of assisted

@@ -219,9 +219,9 @@ def ReadCSVData(filename):
 
 HeaderTemplate = '''#!/usr/bin/env python3
 ##############################################################################
-# Project:  arrayfunc
+# Project:  %(modulename)s
 # Module:   %(testfilename)s.py
-# Purpose:  arrayfunc unit test.
+# Purpose:  %(modulename)s unit test.
 # Language: Python 3.4
 # Date:     %(startdate)s.
 # Ver:      %(verdate)s.
@@ -249,7 +249,7 @@ HeaderTemplate = '''#!/usr/bin/env python3
 ##############################################################################
 import sys
 
-import array
+%(arrayimport)s
 import itertools
 import math
 import operator
@@ -258,7 +258,7 @@ import copy
 
 import unittest
 
-import arrayfunc
+import %(modulename)s
 
 ##############################################################################
 
@@ -305,9 +305,9 @@ if __name__ == '__main__':
 		# not complain about unknown options.
 		sys.argv.remove('-l')
 
-		with open('arrayfunc_unittest.txt', 'a') as f:
+		with open('%(testprefix)s_unittest.txt', 'a') as f:
 			f.write('\\n\\n')
-			f.write('%s\\n\\n')
+			f.write('%(funcname)s\\n\\n')
 			trun = unittest.TextTestRunner(f)
 			unittest.main(testRunner=trun)
 	else:

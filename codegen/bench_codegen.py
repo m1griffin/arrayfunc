@@ -707,12 +707,16 @@ def FormatTableSep(columnwidth):
 
 # Write out the platform data to keep track of what platform the test was run on.
 def WritePlatformSignature(f):
+	f.write('ArrayFunc Benchmarks.\\n')
 	# test was run on.
 	# 'Linux'
 	f.write('Operating System: ' + platform.system() + '\\n')
 
 	# 'Linux-4.4.0-79-generic-x86_64-with-Ubuntu-16.04-xenial'
 	f.write('Platform: ' + platform.platform() + '\\n')
+
+	# 'x86_64'
+	f.write('Machine: ' + platform.machine() + '\\n')
 
 	# ('64bit', 'ELF')
 	f.write('Word size: ' + platform.architecture()[0] + '\\n')
@@ -723,6 +727,7 @@ def WritePlatformSignature(f):
 	# '4.4.0-79-generic'
 	f.write('Python release: ' + platform.release() + '\\n')
 	f.write('\\n\\n\\n')
+
 
 
 ##############################################################################
@@ -771,7 +776,7 @@ for benchcode, funcname in BenchClasses:
 
 # Print the results
 
-with open('benchmarkdata.txt', 'w') as f:
+with open('af_benchmarkdata.txt', 'w') as f:
 
 	f.write(time.ctime() + '\\n')
 
@@ -1264,7 +1269,7 @@ headerdate['SIMD_data_arm'] = SIMD_data_arm
 headerdate['Opt_data'] = Opt_data
 
 
-with open('benchmarks.py', 'w') as f:
+with open('arraybench.py', 'w') as f:
 
 	# This creates the file header at the top of the file.
 	f.write(headertemplate % headerdate)

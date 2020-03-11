@@ -2765,7 +2765,6 @@ Calculate findindex over the values in an array.  \n\
 ======================  ============================================== \n\
 Equivalent to:          [x for x,y in enumerate(array) if y > param][0] \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\
@@ -2784,7 +2783,7 @@ Call formats: \n\
   parameter is ignored. \n\
 * nosimd - If True, SIMD acceleration is disabled if present. \n\
   The default is False (SIMD acceleration is enabled if present). \n\
-* * result - The resulting index. This will be negative if no match was found. \n\
+* result - The resulting index. This will be negative if no match was found. \n\
 ");
 
 

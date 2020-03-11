@@ -669,6 +669,10 @@ funclist = [x for x in oplist if x['test_op_templ'] == 'test_template_ldexp']
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
 
 
 for func in funclist:
@@ -677,6 +681,10 @@ for func in funclist:
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '09-Dec-2017', funcname)
+
+	# Add additional header data.
+	headerdate['modulename'] = modulename
+	headerdate['arrayimport'] = arrayimport
 
 	# One function (one output file). 
 	with open(filename, 'w') as f:
@@ -724,7 +732,7 @@ for func in funclist:
 			f.write(testtemplate % funcdata)
 
 
-		f.write(codegen_common.testendtemplate % funcname)
+		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 # ==============================================================================
 

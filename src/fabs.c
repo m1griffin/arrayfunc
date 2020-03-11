@@ -201,7 +201,7 @@ _____________________________ \n\
 Calculate fabs over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.fabs(x) \n\
+Equivalent to:          [math.fabs(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

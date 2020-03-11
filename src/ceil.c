@@ -231,7 +231,7 @@ _____________________________ \n\
 Calculate ceil over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.ceil(x) \n\
+Equivalent to:          [math.ceil(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

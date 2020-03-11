@@ -623,11 +623,20 @@ class findindices_nonfinite_%(typecode)s(unittest.TestCase):
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
+
 funcname = 'findindices'
 
 filenamebase = 'test_' + funcname
 filename = filenamebase + '.py'
 headerdate = codegen_common.FormatHeaderData(filenamebase, '21-Jun-2014', funcname)
+
+# Add additional header data.
+headerdate['modulename'] = modulename
+headerdate['arrayimport'] = arrayimport
 
 
 with open(filename, 'w') as f:
@@ -678,8 +687,7 @@ with open(filename, 'w') as f:
 
 	#####
 	# The code which initiates the unit test.
-
-	f.write(codegen_common.testendtemplate % funcname)
+	f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 
 # ==============================================================================

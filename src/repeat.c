@@ -348,14 +348,17 @@ static PyObject *py_repeat(PyObject *self, PyObject *args, PyObject *keywds) {
 
 /* The module doc string */
 PyDoc_STRVAR(repeat__doc__,
-"Fill an array with a specified value. \n\
+"repeat \n\
 _____________________________ \n\
 \n\
 Fill an array with a specified value. \n\
 \n\
 ======================  ============================================== \n\
+Equivalent to:          itertools.repeat(value)\n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

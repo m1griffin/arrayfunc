@@ -450,7 +450,12 @@ _____________________________ \n\
 Calculate hypot over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.hypot(x, y) \n\
+Equivalent to:          [hypot(x, param) for x in array1] \n\
+or                      [hypot(param, x) for x in array1] \n\
+or                      [hypot(x, y) for x, y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

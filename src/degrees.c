@@ -250,7 +250,7 @@ _____________________________ \n\
 Calculate degrees over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.degrees(x) \n\
+Equivalent to:          [math.degrees(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

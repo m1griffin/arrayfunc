@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2017     Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2017 - 2020   Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -25,12 +25,18 @@
 
 import time
 import platform
+import sys
 
 ##############################################################################
 
-with open('arrayfunc_unittest.txt', 'w') as f:
+with open('af_unittest.txt', 'w') as f:
 	f.write(time.ctime() + '\n\n')
+	# Copy the command line parameters. This is intended to be used to record
+	# the type of test the unit test was conducted under.
+	f.write(' '.join(sys.argv[1:]) + '\n')
 	f.write('%s %s\n' % (platform.python_implementation(), platform.python_version()))
 	f.write(platform.python_compiler() + '\n')
-	f.write(platform.platform() + '\n\n')
+	f.write(platform.system() + '\n')
+	f.write(platform.platform() + '\n')
+	f.write(platform.machine() + '\n\n')
 

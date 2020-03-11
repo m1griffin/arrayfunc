@@ -988,7 +988,12 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          [x %(opcodedocs)s param for x in array1] \\n\\
+or                      [param %(opcodedocs)s x for x in array1] \\n\\
+or                      [x %(opcodedocs)s y for x,y in zip(array1, array2)] \\n\\
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\

@@ -85,7 +85,7 @@ def sanitizer(x):
 	else:
 		return x
 
-def FindFuncDocs(filelist, funcnames, funcdata):
+def FindFuncDocs(filelist, funcnames):
 	'''Get the function documentation directly from the C source code. 
 	The list of functions is based on the function configuraiton spreadsheet.
 	Parameters:
@@ -198,6 +198,21 @@ def MakeFuncDocs(funccategories, funcsdocs, funcdata):
 
 # ==============================================================================
 
+# Format the function documentation.
+# This is for functions that do not need to be sorted into categories.
+def FormatFuncsDocs(funcsdocs):
+	'''Format the function documentation.
+	'''
+	funcnames = list(funcsdocs.keys())
+	funcnames.sort()
+
+	docs = ['\n'.join(funcsdocs[x]) for x in funcnames]
+
+	return ''.join(docs)
+
+
+# ==============================================================================
+
 def MakeSummaryTable(funccategories, funcsdocs, funcdata):
 	'''Extract the function documentation and order them in the correct
 	categories in the form of a one line summary based on the equivalent
@@ -256,11 +271,19 @@ funcdata = GetFuncConfigData()
 # Split out just the function names.
 funcnames = [x['funcname'] for x in funcdata]
 # Extract the function documentation from the C source files.
-funcsdocs = FindFuncDocs(filelist, funcnames, funcdata)
+funcsdocs = FindFuncDocs(filelist, funcnames)
 
 # Get the x86 and ARM SIMD files.
 simddata_x86 = GetSIMDTable('../src/*_simd_x86.h')
 simddata_arm = GetSIMDTable('../src/*_simd_arm.h')
+
+
+# Get the documentation from the functions that are not in the spreadsheet.
+extrafuncs = ['count', 'cycle', 'repeat', 'afilter', 'compress', 'dropwhile', 
+			'takewhile', 'aany', 'aall', 'amax', 'amin', 'findindex', 'findindices', 
+			'asum', 'convert']
+extrafuncsdocs = FindFuncDocs(filelist, extrafuncs)
+FormatFuncsDocs(extrafuncsdocs)
 
 # Format the main function documentation.
 opdocs = MakeFuncDocs(funccategories, funcsdocs, funcdata)
@@ -268,6 +291,8 @@ opdocs = MakeFuncDocs(funccategories, funcsdocs, funcdata)
 # Format the function summary table.
 summtable = MakeSummaryTable(funccategories, funcsdocs, funcdata)
 
+# Format the function docs that are not defined in the spreadsheet.
+extradocs = FormatFuncsDocs(extrafuncsdocs)
 
 # ==============================================================================
 
@@ -283,7 +308,7 @@ def GetBenchmarkData():
 	simdrel = 'Relative Performance with and without SIMD Optimisations'
 	pyabsolute = 'Python native time in micro-seconds'
 
-	with open('../benchmarks/benchmarkdata.txt') as f:
+	with open('../benchmarks/af_benchmarkdata.txt') as f:
 		benchdata = f.readlines()
 
 	# Get the Python native time.
@@ -313,7 +338,7 @@ arraysizebench = GetArraySizeBenchData()
 # ==============================================================================
 
 # Insert the data into the documentation template.
-def WriteDocs(summtable, opdocs, simddata_x86, simddata_arm, 
+def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_arm, 
 		pybench, simdbench, simdrelbench, arraysizebench):
 	'''Write out the documentation based on the template.
 	'''
@@ -323,13 +348,13 @@ def WriteDocs(summtable, opdocs, simddata_x86, simddata_arm,
 
 	# Write out the completed documentation file complete with data.
 	with open('ArrayFunc.rst', 'w') as f:
-		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, 
+		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, extradocs = extradocs,
 			simddata_x86 = simddata_x86, simddata_arm = simddata_arm,
 			pybench = pybench, simdbench = simdbench, simdrelbench = simdrelbench,
 			arraysizebench = arraysizebench))
 
 # Write out the documentation file.
-WriteDocs(summtable, opdocs, simddata_x86, simddata_arm, 
+WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_arm, 
 		pybench, simdbench, simdrelbench, arraysizebench)
 
 # ==============================================================================

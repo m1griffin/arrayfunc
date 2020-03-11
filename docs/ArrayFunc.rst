@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 5.1.0 for 2020-01-04
+:Version: 5.1.1 for 2020-03-06
 :Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
@@ -141,15 +141,15 @@ Mathematical operator functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-      abs\_ abs(x)
-        add x + y
-   floordiv x // y
-        mod x % y
-        mul x * y
-        neg -x
-        pow x**y or math.pow(x, y)
-        sub x - y
-    truediv x / y
+      abs\_ [abs(x) for x in array1]
+        add [x + param for x in array1]
+   floordiv [x // param for x in array1]
+        mod [x % param for x in array1]
+        mul [x * param for x in array1]
+        neg [-x for x in array1]
+        pow [x ** param for x in array1]
+        sub [x - param for x in array1]
+    truediv [x / param for x in array1]
 =========== ==================================================
 
 
@@ -160,12 +160,12 @@ Comparison operator functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-         eq x == y
-         ge x >= y
-         gt x > y
-         le x <= y
-         lt x < y
-         ne x != y
+         eq all([x == param for x in array1])
+         ge all([x >= param for x in array1])
+         gt all([x > param for x in array1])
+         le all([x <= param for x in array1])
+         lt all([x < param for x in array1])
+         ne all([x != param for x in array1])
 =========== ==================================================
 
 
@@ -176,12 +176,12 @@ Bitwise operator functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-      and\_ x & y
-     invert ~x
-     lshift x << y
-       or\_ x | y
-     rshift x >> y
-        xor x ^ y
+      and\_ [x x & y param for x in array1]
+     invert [~x for x in array1]
+     lshift [x x << y param for x in array1]
+       or\_ [x x | y param for x in array1]
+     rshift [x x >> y param for x in array1]
+        xor [x x ^ y param for x in array1]
 =========== ==================================================
 
 
@@ -192,13 +192,13 @@ Power and logarithmic functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-        exp math.exp(x)
-      expm1 math.expm1(x)
-        log math.log(x)
-      log10 math.log10(x)
-      log1p math.log1p(x)
-       log2 math.log2(x)
-       sqrt math.sqrt(x)
+        exp [math.exp(x) for x in array1]
+      expm1 [math.expm1(x) for x in array1]
+        log [math.log(x) for x in array1]
+      log10 [math.log10(x) for x in array1]
+      log1p [math.log1p(x) for x in array1]
+       log2 [math.log2(x) for x in array1]
+       sqrt [math.sqrt(x) for x in array1]
 =========== ==================================================
 
 
@@ -209,12 +209,12 @@ Hyperbolic functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-      acosh math.acosh(x)
-      asinh math.asinh(x)
-      atanh math.atanh(x)
-       cosh math.cosh(x)
-       sinh math.sinh(x)
-       tanh math.tanh(x)
+      acosh [math.acosh(x) for x in array1]
+      asinh [math.asinh(x) for x in array1]
+      atanh [math.atanh(x) for x in array1]
+       cosh [math.cosh(x) for x in array1]
+       sinh [math.sinh(x) for x in array1]
+       tanh [math.tanh(x) for x in array1]
 =========== ==================================================
 
 
@@ -225,14 +225,14 @@ Trigonometric functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-       acos math.acos(x)
-       asin math.asin(x)
-       atan math.atan(x)
-      atan2 math.atan2(x, y)
-        cos math.cos(x)
-      hypot math.hypot(x, y)
-        sin math.sin(x)
-        tan math.tan(x)
+       acos [math.acos(x) for x in array1]
+       asin [math.asin(x) for x in array1]
+       atan [math.atan(x) for x in array1]
+      atan2 [atan2(x, param) for x in array1]
+        cos [math.cos(x) for x in array1]
+      hypot [hypot(x, param) for x in array1]
+        sin [math.sin(x) for x in array1]
+        tan [math.tan(x) for x in array1]
 =========== ==================================================
 
 
@@ -243,8 +243,8 @@ Angular conversion
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-    degrees math.degrees(x)
-    radians math.radians(x)
+    degrees [math.degrees(x) for x in array1]
+    radians [math.radians(x) for x in array1]
 =========== ==================================================
 
 
@@ -255,17 +255,17 @@ Number-theoretic and representation functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-       ceil math.ceil(x)
-   copysign math.copysign(x, y)
-       fabs math.fabs(x)
-  factorial math.factorial(x)
-      floor math.floor(x)
-       fmod math.fmod(x, y)
-   isfinite math.isfinite(x)
-      isinf math.isinf(x)
-      isnan math.isnan(x)
+       ceil [math.ceil(x) for x in array1]
+   copysign [copysign(x, param) for x in array1]
+       fabs [math.fabs(x) for x in array1]
+  factorial [math.factorial(x) for x in array1]
+      floor [math.floor(x) for x in array1]
+       fmod [fmod(x, param) for x in array1]
+   isfinite all([isfinite(x) for x in array1])
+      isinf any([isinf(x) for x in array1])
+      isnan any([isnan(x) for x in array1])
       ldexp math.ldexp(x, y)
-      trunc math.trunc(x)
+      trunc [math.trunc(x) for x in array1]
 =========== ==================================================
 
 
@@ -276,10 +276,10 @@ Special functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-        erf math.erf(x)
-       erfc math.erfc(x)
-      gamma math.gamma(x)
-     lgamma math.lgamma(x)
+        erf [math.erf(x) for x in array1]
+       erfc [math.erfc(x) for x in array1]
+      gamma [math.gamma(x) for x in array1]
+     lgamma [math.lgamma(x) for x in array1]
 =========== ==================================================
 
 
@@ -290,7 +290,7 @@ Additional functions
 =========== ==================================================
   Function       Equivalent to
 =========== ==================================================
-        fma fma(x, y, z) or x * y + z
+        fma [(x * param2 + param3) for x in array1]
 =========== ==================================================
 
 
@@ -331,450 +331,421 @@ include any leading or trailing spaces or other characters.
 Description
 -----------
 
-count
-_____
-
-Fill an array with evenly spaced values using a start and step values. The 
-function continues until the end of the array. The function does not check for
-integer overflow.
-
-count(dataarray, start, step) 
-
-* dataarray - The output array.
-* start - The numeric value to start from.
-* step - The value to increment by when creating each element. This parameter
-  is optional. If it is omitted, a value of 1 is assumed. A negative step value
-  will cause the function to count down. 
-
-example::
-
-	dataarray = array.array('i', [0]*10)
-	arrayfunc.count(dataarray, 0, 5) 
-	==> array('i', [0, 5, 10, 15, 20, 25, 30, 35, 40, 45])
-	arrayfunc.count(dataarray, 99) 
-	==> array('i', [99, 100, 101, 102, 103, 104, 105, 106, 107, 108])
-	arrayfunc.count(dataarray, 29, -8)
-	==> array('i', [29, 21, 13, 5, -3, -11, -19, -27, -35, -43])
-	dataarray = array.array('b', [0]*10)
-	arrayfunc.count(dataarray, 52, 10)
-	==> array('b', [52, 62, 72, 82, 92, 102, 112, 122, -124, -114])
 
 
-cycle
-_____
 
-Fill an array with evenly spaced values using a start, stop, and step values, 
-and repeat until the array is filled.
+aall
+_____________________________
 
-cycle(dataarray, start, stop, step)
+Calculate aall over the values in an array.
 
-* dataarray - The output array.
-* start - The numeric value to start from.
-* stop - The value at which to stop incrementing. If stop is less than start,
-  cycle will count down. 
-* step - The value to increment by when creating each element. This parameter
-  is optional. If it is omitted, a value of 1 is assumed. The sign is ignored
-  and the absolute value used when incrementing. 
+======================  ==============================================
+Equivalent to:          all([(x > param) for x in array])
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
 
-example::
+Call formats::
 
-	dataarray = array.array('i', [0]*100)
-	arrayfunc.cycle(dataarray, 0, 25, 5) 
-	==> array('i', [0, 5, 10, 15, 20, 25, 0, 5, ... , 10, 15])
-	arrayfunc.cycle(dataarray, 5, 30) 
-	==> array('i', [5, 6, 7, 8, 9, 10, ... 28, 29, 30, 5, ... , 24, 25, 26])
-	dataarray = array.array('i', [0]*10)
-	arrayfunc.cycle(dataarray, 10, 5, 1)
-	==> array('i', [10, 9, 8, 7, 6, 5, 10, 9, 8, 7])
-	arrayfunc.cycle(dataarray, -2, 3, 1)
-	==> array('i', [-2, -1, 0, 1, 2, 3, -2, -1, 0, 1])
-	
+  result = aall(opstr, array, param)
+  result = aall(opstr, array, param, maxlen=y)
+  result = aall(opstr, array, param, nosimd=False)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* result - A boolean value corresponding to the result of all the
+  comparison operations. If any comparison operations result in true,
+  the return value will be true. If all of them result in false, the
+  return value will be false.
 
 
-repeat
-______
+aany
+_____________________________
 
-Fill an array with a specified value.
+Calculate aany over the values in an array.
 
-repeat(dataarray, value)
+======================  ==============================================
+Equivalent to:          any([(x > param) for x in array])
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
 
-* dataarray - The output array.
-* value - The value to use to fill the array.
+Call formats::
 
-example::
+  result = aany(opstr, array, param)
+  result = aany(opstr, array, param, maxlen=y)
+  result = aany(opstr, array, param, nosimd=False)
 
-	dataarray = array.array('i', [0]*100)
-	arrayfunc.repeat(dataarray, 99) 
-	==> array('i', [99, 99, 99, 99, ... , 99, 99])
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* result - A boolean value corresponding to the result of all the
+  comparison operations. If all comparison operations result in true,
+  the return value will be true. If any of them result in false, the
+  return value will be false.
 
 
 afilter
-_______
+_____________________________
 
 Select values from an array based on a boolean criteria.
 
-x = afilter(op, inparray, outparray, rparam)
 
-x = afilter(op, inparray, outparray, rparam, maxlen=500)
+======================  ==============================================
+Equivalent to:          filter(lambda x: x < param, array)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
 
+Call formats::
 
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be filtered.
+  result = afilter(opstr, array, outparray, param)
+  result = afilter(opstr, array, outparray, param, maxlen=y)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
 * outparray - The output array.
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* x - An integer count of the number of items filtered into outparray.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* result - An integer count of the number of items filtered into outparray.
 
-example::
 
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('i', [0]*6)
-	x = arrayfunc.afilter('>', inparray, outparray, 10)
-	==> array('i', [33, 54, 0, 0, 0, 0])
-	==> x equals 2
-	x = arrayfunc.afilter('>', inparray, outparray, 10, maxlen=4)
-	==> array('i', [33, 0, 0, 0, 0, 0])
-	==> x equals 1
+amax
+_____________________________
+
+Calculate amax over the values in an array.
+
+======================  ==============================================
+Equivalent to:          max(x)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = amax(array)
+  result = amax(array, maxlen=y)
+  result = amax(array, nosimd=False)
+
+* array - The input data array to be examined.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* result = The  maximum of all the values in the array.
+
+
+amin
+_____________________________
+
+Calculate amin over the values in an array.
+
+======================  ==============================================
+Equivalent to:          min(x)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = amin(array)
+  result = amin(array, maxlen=y)
+  result = amin(array, nosimd=False)
+
+* array - The input data array to be examined.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* result = The  minimum of all the values in the array.
+
+
+asum
+_____________________________
+
+Calculate the arithmetic sum of an array.
+
+======================  ==============================================
+Equivalent to:          sum()
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = asum(array)
+  result = asum(array, maxlen=y)
+  result = asum(array, nosimd=False)
+  result = asum(array, matherrors=False)
+
+* array - The input data array to be examined.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* matherrors - If True, checks for numerical errors including integer
+  overflow are ignored.
+* result - The sum of the array.
 
 
 compress
-________
+_____________________________
 
-Select values from an array based on another array of integers values. The 
-selector array is interpreted as a set of boolean values, where any value other 
-than *0* causes the value in the input array to be selected and copied to the
-output array, while a value of *0* causes the value to be ignored.
+Select values from an array based on another array of integers values.
+The selector array is interpreted as a set of boolean values, where any
+value other than *0* causes the value in the input array to be selected
+and copied to theoutput array, while a value of *0* causes the value to
+be ignored.
 
-The input, selector, and output arrays need not be of the same length. The copy
-operation will be terminated when the end of the input or output array is 
-reached. The selector array will be cycled through repeatedly as many times as 
-necessary until the end of the input or output array is reached.
+======================  ==============================================
+Equivalent to:          itertools.compress(inparray, selectorarray)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
 
-x = compress(inparray, outparray, selectorarray)
+Call formats::
 
-x = compress(inparray, outparray, selectorarray, maxlen=500)
-
+  x = compress(inparray, outparray, selectorarray)
+  x = compress(inparray, outparray, selectorarray, maxlen=y)
 
 * inparray - The input data array to be filtered.
 * outparray - The output array.
 * selectorarray - The selector array.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
 * x - An integer count of the number of items filtered into outparray.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('i', [0]*6)
-	selectorarray = array.array('i', [0, 1, 0, 1])
-	x = arrayfunc.compress(inparray, outparray, selectorarray)
-	==> array('i', [2, 33, -6, 0, 0, 0])
-	==> x equals 3
-	x = arrayfunc.compress(inparray, outparray, selectorarray, maxlen=4)
-	==> array('i', [2, 33, 0, 0, 0, 0])
-	==> x equals 2
-
-
-
-dropwhile
-_________
-
-Select values from an array starting from where a selected criteria fails and 
-proceeding to the end.
-
-x = dropwhile(op, inparray, outparray, rparam)
-
-x = dropwhile(op, inparray, outparray, rparam, maxlen=500)
-
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be filtered.
-* outparray - The output array.
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* x - An integer count of the number of items filtered into outparray.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('i', [0]*6)
-	x = arrayfunc.dropwhile('<', inparray, outparray, 10)
-	==> array('i', [33, 54, 0, 0, 0, 0])
-	==> x equals 3
-	x = arrayfunc.dropwhile('<', inparray, outparray, 10, maxlen=5)
-	==> array('i', [33, 54, 0, 0, 0, 0])
-	==> x equals 2
-
-
-
-takewhile
-_________
-
-Like dropwhile, but starts from the beginning and stops when the criteria fails.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('i', [0]*6)
-	x = arrayfunc.takewhile('<', inparray, outparray, 10)
-	==> array('i', [1, 2, 5, 0, 0, 0])
-	==> x equals 3
-	x = arrayfunc.takewhile('<', inparray, outparray, 10, maxlen=2)
-	==> array('i', [1, 2, 0, 0, 0, 0])
-	==> x equals 2
-
-
-aany
-____
-
-Returns True if any element in an array meets the selected criteria.
-
-x = aany(op, inparray, rparam)
-
-x = aany(op, inparray, rparam, maxlen=500, nosimd=True)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled.
-* x - The boolean result.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	x = arrayfunc.aany('==', inparray, 5)
-	==> x equals True
-	x = arrayfunc.aany('==', inparray, 54, maxlen=5)
-	==> x equals True
-	x = arrayfunc.aany('==', inparray, -6, maxlen=5)
-	==> x equals False
-
-
-aall
-____
-
-Returns True if all elements in an array meet the selected criteria.
-
-x = aall(op, inparray, rparam)
-
-x = aall(op, inparray, rparam, maxlen=500, nosimd=True)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled.
-* x - The boolean result.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	x = arrayfunc.aall('<', inparray, 66)
-	==> x equals True
-	x = arrayfunc.aall('<', inparray, 66, maxlen=5)
-	==> x equals True
-	inparray = array.array('i', [1, 2, 5, 33, 54, 66])
-	x = arrayfunc.aall('<', inparray, 66)
-	==> x equals False
-	x = arrayfunc.aall('<', inparray, 66, maxlen=5)
-	==> x equals True
-
-
-amax
-____
-
-Returns the maximum value in the array.
-
-x = amax(inparray)
-
-x = amax(inparray, maxlen=500)
-
-x = amax(inparray, maxlen=500, nosimd=True)
-
-* inparray - The input data array to be examined.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled.
-* x - The maximum value.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	x = arrayfunc.amax(inparray)
-	==> x equals 54
-	x = arrayfunc.amax(inparray, maxlen=3)
-	==> x equals 5
-
-
-amin
-____
-
-Returns the minimum value in the array.
-
-x = amin(inparray)
-
-x = amin(inparray, maxlen=500)
-
-x = amin(inparray, maxlen=500, nosimd=True)
-
-* inparray - The input data array to be examined.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled.
-* x - The minimum value.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	x = arrayfunc.amin(inparray)
-	==> x equals -6
-	x = arrayfunc.amin(inparray, maxlen=3)
-	==> x equals 1
-
-
-findindex
-_________
-
-Returns the index of the first value in an array to meet the specified criteria.
-
-x = findindex(op, inparray, rparam)
-
-x = findindex(op, inparray, rparam, maxlen=500, nosimd=True)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled.
-* x - The resulting index. This will be negative if no match was found.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	x = arrayfunc.findindex('==', inparray, 54)
-	==> x equals 4
-	x = arrayfunc.findindex('==', inparray, 54, maxlen=4)
-	==> x equals -1  (not found)
-
-
-findindices
-___________
-
-Searches an array for the array indices which meet the specified criteria and 
-writes the results to a second array. Also returns the number of matches found.
-
-x = findindices(op, inparray, outparray, rparam)
-
-x = findindices(op, inparray, outparray, rparam, maxlen=500)
-
-* op - The arithmetic comparison operation.
-* inparray - The input data array to be examined.
-* outparray - The output array. This must be an integer array of array type 'q'
-  (signed long long). 
-* rparam - The 'y' parameter to be applied to 'op'. 
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* x - An integer indicating the number of matches found.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('q', [0]*6)
-	x = arrayfunc.findindices('<', inparray, outparray, 5)
-	==> ('i', [0, 1, 5, 0, 0, 0])
-	==> x equals 3
-	x = arrayfunc.findindices('<', inparray, outparray, 5, maxlen=4)
-	==> array('q', [0, 1, 0, 0, 0, 0])
-	==> x equals 2
-
-
-
-asum
-____
-
-Calculate the arithmetic sum of an array. 
-
-For integer arrays, the intermediate sum is accumulated in the largest 
-corresponding integer size. Signed integers are accumulated in the equivalent 
-to an 'l' array type, and unsigned integers are accumulated in the equivalent 
-to an 'L' array type. This means that integer arrays using smaller integer word 
-sizes cannot overflow unless extremely large arrays are used (and may be 
-impossible due to limits on array indices in the array module). 
-
-asum(inparray)
-
-asum(inparray, matherrors=True, maxlen=5, nosimd=True)
-
-* inparray - The array to be summed.
-* matherrors - If this keyword parameter is True, numeric overflow checking 
-  will be disabled. This is an optional parameter.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
-* nosimd - If true, use of SIMD is disabled. SIMD will only be enabled if 
-  overflow checking is also disabled.
-
-example::
-
-	inparray = array.array('i', [1, 2, 5, 33, 54, 6])
-	arrayfunc.asum(inparray)
-	==> 101
-	inparray = array.array('i', [1, 2, 5, -88, -5, 2])
-	arrayfunc.asum(inparray, matherrors=True)
-	==> -83
-	inparray = array.array('i', [1, 2, 5, -88, -5, 2])
-	arrayfunc.asum(inparray, maxlen=5)
-	==> -85
 
 
 convert
-_______
+_____________________________
 
-Convert arrays between data types. The data will be converted into the form 
-required by the output array. If any values in the input array are outside the
-range of the output array type, an exception will be raised. When floating point
-values are converted to integers, the value will be truncated. 
+Convert arrays between data types. The data will be converted into the
+form required by the output array. If any values in the input array are
+outside the range of the output array type, an exception will be
+raised. When floating point values are converted to integers, the value
+will be truncated.
 
-convert(inparray, outparray)
+======================  ==============================================
+Equivalent to:          [x for x in inputarray]
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
 
-convert(inparray, outparray, maxlen=500)
+Call formats::
 
-* inparray - The input data array to be examined.
+  convert(inparray, outparray)
+  convert(inparray, outparray, maxlen=y)
+
+* inparray - The input data array to be filtered.
 * outparray - The output array.
-* maxlen - Limit the length of the array used. This must be a valid positive 
-  integer. If a zero or negative length, or a value which is greater than the
-  actual length of the array is specified, this parameter is ignored.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
 
-example::
 
-	inparray = array.array('i', [1, 2, 5, 33, 54, -6])
-	outparray = array.array('d', [0.0]*6)
-	arrayfunc.convert(inparray, outparray)
-	==> ('d', [1.0, 2.0, 5.0, 33.0, 54.0, -6.0])
-	inparray = array.array('d', [5.7654]*10)
-	outparray = array.array('h', [0]*10)
-	arrayfunc.convert(inparray, outparray)
-	==> array('h', [5, 5, 5, 5, 5, 5, 5, 5, 5, 5])
-	inparray = array.array('d', [5.7654]*10)
-	outparray = array.array('h', [0]*10)
-	arrayfunc.convert(inparray, outparray, maxlen=5)
-	==> array('h', [5, 5, 5, 5, 5, 0, 0, 0, 0, 0])
+count
+_____________________________
 
+Fill an array with evenly spaced values using a start and step values.
+
+======================  ==============================================
+Equivalent to:          itertools.count(start, len(array))
+or                      itertools.count(start, len(array), step)
+======================  ==============================================
+
+======================  ==============================================
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  count(array, start, step).
+
+* array - The output array.
+* start - The numeric value to start from.
+* step - The value to increment by when creating each element. This
+  parameter is optional. If it is omitted, a value of 1 is assumed. A
+
+
+cycle
+_____________________________
+
+Fill an array with a series of values, repeating as necessary.
+
+======================  ==============================================
+Equivalent to:          itertools.cycle(itertools.count(start, len(array)))
+or                      itertools.cycle(itertools.count(start, len(array), step))
+======================  ==============================================
+
+======================  ==============================================
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  cycle(array, start, stop, step)
+
+* array - The output array.
+* start - The numeric value to start from.
+* stop - The value at which to stop incrementing. If stop is less than
+  start, cycle will count down.
+* step - The value to increment by when creating each element. This
+  parameter is optional. If it is omitted, a value of 1 is assumed. The
+
+
+dropwhile
+_____________________________
+
+Select values from an array starting from where a selected criteria
+fails and proceeding to the end.
+
+======================  ==============================================
+Equivalent to:          itertools.dropwhile(lambda x: x < param, array)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = dropwhile(opstr, array, outparray, param)
+  result = dropwhile(opstr, array, outparray, param, maxlen=y)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* outparray - The output array.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* result - An integer count of the number of items filtered into outparray.
+
+
+findindex
+_____________________________
+
+Calculate findindex over the values in an array.
+
+======================  ==============================================
+Equivalent to:          [x for x,y in enumerate(array) if y > param][0]
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = findindex(opstr, array, param)
+  result = findindex(opstr, array, param, maxlen=y)
+  result = findindex(opstr, array, param, nosimd=False)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* nosimd - If True, SIMD acceleration is disabled if present.
+  The default is False (SIMD acceleration is enabled if present).
+* result - The resulting index. This will be negative if no match was found.
+
+
+findindices
+_____________________________
+
+Searches an array for the array indices which meet the specified
+criteria and writes the results to a second array. Also returns the
+number of matches found.
+
+======================  ==============================================
+Equivalent to:          [x for x,y in enumerate(inparray) if y == param]
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = findindices(opstr, array, arrayout, param)
+  result = findindices(opstr, array, arrayout, param, maxlen=y)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* arrayout - The output array. This must be an integer array of array
+  type 'q' (signed long long).
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* result - An integer indicating the number of matches found.
+
+
+repeat
+_____________________________
+
+Fill an array with a specified value.
+
+======================  ==============================================
+Equivalent to:          itertools.repeat(value)
+======================  ==============================================
+
+======================  ==============================================
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  repeat(array, value)
+
+* array - The output array.
+
+
+takewhile
+_____________________________
+
+Select values from an array starting from the beginning and stopping
+when the criteria fails.
+
+======================  ==============================================
+Equivalent to:          itertools.takewhile(lambda x: x < param, array)
+Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
+======================  ==============================================
+
+Call formats::
+
+  result = takewhile(opstr, array, outparray, param)
+  result = takewhile(opstr, array, outparray, param, maxlen=y)
+
+* opstr - The arithmetic comparison operation as a string.
+          These are: '==', '>', '>=', '<', '<=', '!='.
+* array - The input data array to be examined.
+* outparray - The output array.
+* param - A non-array numeric parameter.
+* maxlen - Limit the length of the array used. This must be a valid
+  positive integer. If a zero or negative length, or a value which is
+  greater than the actual length of the array is specified, this
+  parameter is ignored.
+* result - An integer count of the number of items filtered into outparray.
 
 
 arraylimits attributes
@@ -993,7 +964,10 @@ _____________________________
 Calculate abs\_ over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          abs(x)
+Equivalent to:          [abs(x) for x in array1]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, h, i, l, q, f, d
 Exceptions raised:      OverflowError
 ======================  ==============================================
@@ -1026,7 +1000,12 @@ _____________________________
 Calculate add over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x + y
+Equivalent to:          [x + param for x in array1]
+or                      [param + y for y in array2]
+or                      [x + y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError
 ======================  ==============================================
@@ -1065,7 +1044,12 @@ _____________________________
 Calculate floordiv over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x // y
+Equivalent to:          [x // param for x in array1]
+or                      [param // y for y in array2]
+or                      [x // y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
 ======================  ==============================================
@@ -1103,7 +1087,12 @@ _____________________________
 Calculate mod over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x % y
+Equivalent to:          [x % param for x in array1]
+or                      [param % y for y in array2]
+or                      [x % y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
 ======================  ==============================================
@@ -1141,7 +1130,12 @@ _____________________________
 Calculate mul over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x * y
+Equivalent to:          [x * param for x in array1]
+or                      [param * y for y in array2]
+or                      [x * y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError
 ======================  ==============================================
@@ -1180,7 +1174,10 @@ _____________________________
 Calculate neg over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          -x
+Equivalent to:          [-x for x in array1]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, h, i, l, q, f, d
 Exceptions raised:      OverflowError, ArithmeticError
 ======================  ==============================================
@@ -1213,7 +1210,12 @@ _____________________________
 Calculate pow over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x**y or math.pow(x, y)
+Equivalent to:          [x ** param for x in array1]
+or                      [param ** y for y in array2]
+or                      [x ** y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError
 ======================  ==============================================
@@ -1251,7 +1253,12 @@ _____________________________
 Calculate sub over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x - y
+Equivalent to:          [x - param for x in array1]
+or                      [param - y for y in array2]
+or                      [x - y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError
 ======================  ==============================================
@@ -1290,7 +1297,12 @@ _____________________________
 Calculate truediv over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x / y
+Equivalent to:          [x / param for x in array1]
+or                      [param / y for y in array2]
+or                      [x / y for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
 Exceptions raised:      OverflowError, ArithmeticError, ZeroDivisionError
 ======================  ==============================================
@@ -1333,9 +1345,13 @@ _____________________________
 Calculate eq over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x == y
+Equivalent to:          all([x == param for x in array1])
+or                      all([param == x for x in array1])
+or                      all([x == y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1370,9 +1386,13 @@ _____________________________
 Calculate ge over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x >= y
+Equivalent to:          all([x >= param for x in array1])
+or                      all([param >= x for x in array1])
+or                      all([x >= y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1407,9 +1427,13 @@ _____________________________
 Calculate gt over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x > y
+Equivalent to:          all([x > param for x in array1])
+or                      all([param > x for x in array1])
+or                      all([x > y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1444,9 +1468,13 @@ _____________________________
 Calculate le over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x <= y
+Equivalent to:          all([x <= param for x in array1])
+or                      all([param <= x for x in array1])
+or                      all([x <= y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1481,9 +1509,13 @@ _____________________________
 Calculate lt over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x < y
+Equivalent to:          all([x < param for x in array1])
+or                      all([param < x for x in array1])
+or                      all([x < y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1518,9 +1550,13 @@ _____________________________
 Calculate ne over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x != y
+Equivalent to:          all([x != param for x in array1])
+or                      all([param != x for x in array1])
+or                      all([x != y for x,y in zip(array1, array2)])
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d
-Exceptions raised:
 ======================  ==============================================
 
 Call formats::
@@ -1560,7 +1596,12 @@ _____________________________
 Calculate and\_ over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x & y
+Equivalent to:          [x x & y param for x in array1]
+or                      [param x & y x for x in array1]
+or                      [x x & y y for x,y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1597,7 +1638,10 @@ _____________________________
 Calculate invert over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          ~x
+Equivalent to:          [~x for x in array1]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1627,7 +1671,12 @@ _____________________________
 Calculate lshift over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x << y
+Equivalent to:          [x x << y param for x in array1]
+or                      [param x << y x for x in array1]
+or                      [x x << y y for x,y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1664,7 +1713,12 @@ _____________________________
 Calculate or\_ over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x | y
+Equivalent to:          [x x | y param for x in array1]
+or                      [param x | y x for x in array1]
+or                      [x x | y y for x,y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1701,7 +1755,12 @@ _____________________________
 Calculate rshift over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x >> y
+Equivalent to:          [x x >> y param for x in array1]
+or                      [param x >> y x for x in array1]
+or                      [x x >> y y for x,y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1738,7 +1797,12 @@ _____________________________
 Calculate xor over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          x ^ y
+Equivalent to:          [x x ^ y param for x in array1]
+or                      [param x ^ y x for x in array1]
+or                      [x x ^ y y for x,y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:
 ======================  ==============================================
@@ -1780,7 +1844,7 @@ _____________________________
 Calculate exp over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.exp(x)
+Equivalent to:          [math.exp(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1811,7 +1875,7 @@ _____________________________
 Calculate expm1 over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.expm1(x)
+Equivalent to:          [math.expm1(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1842,7 +1906,7 @@ _____________________________
 Calculate log over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.log(x)
+Equivalent to:          [math.log(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1873,7 +1937,7 @@ _____________________________
 Calculate log10 over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.log10(x)
+Equivalent to:          [math.log10(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1904,7 +1968,7 @@ _____________________________
 Calculate log1p over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.log1p(x)
+Equivalent to:          [math.log1p(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1935,7 +1999,7 @@ _____________________________
 Calculate log2 over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.log2(x)
+Equivalent to:          [math.log2(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -1966,7 +2030,7 @@ _____________________________
 Calculate sqrt over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.sqrt(x)
+Equivalent to:          [math.sqrt(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2004,7 +2068,7 @@ _____________________________
 Calculate acosh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.acosh(x)
+Equivalent to:          [math.acosh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2035,7 +2099,7 @@ _____________________________
 Calculate asinh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.asinh(x)
+Equivalent to:          [math.asinh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2066,7 +2130,7 @@ _____________________________
 Calculate atanh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.atanh(x)
+Equivalent to:          [math.atanh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2097,7 +2161,7 @@ _____________________________
 Calculate cosh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.cosh(x)
+Equivalent to:          [math.cosh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2128,7 +2192,7 @@ _____________________________
 Calculate sinh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.sinh(x)
+Equivalent to:          [math.sinh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2159,7 +2223,7 @@ _____________________________
 Calculate tanh over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.tanh(x)
+Equivalent to:          [math.tanh(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2195,7 +2259,7 @@ _____________________________
 Calculate acos over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.acos(x)
+Equivalent to:          [math.acos(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2226,7 +2290,7 @@ _____________________________
 Calculate asin over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.asin(x)
+Equivalent to:          [math.asin(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2257,7 +2321,7 @@ _____________________________
 Calculate atan over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.atan(x)
+Equivalent to:          [math.atan(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2288,7 +2352,12 @@ _____________________________
 Calculate atan2 over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.atan2(x, y)
+Equivalent to:          [atan2(x, param) for x in array1]
+or                      [atan2(param, x) for x in array1]
+or                      [atan2(x, y) for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2325,7 +2394,7 @@ _____________________________
 Calculate cos over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.cos(x)
+Equivalent to:          [math.cos(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2356,7 +2425,12 @@ _____________________________
 Calculate hypot over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.hypot(x, y)
+Equivalent to:          [hypot(x, param) for x in array1]
+or                      [hypot(param, x) for x in array1]
+or                      [hypot(x, y) for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2393,7 +2467,7 @@ _____________________________
 Calculate sin over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.sin(x)
+Equivalent to:          [math.sin(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2424,7 +2498,7 @@ _____________________________
 Calculate tan over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.tan(x)
+Equivalent to:          [math.tan(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2460,7 +2534,7 @@ _____________________________
 Calculate degrees over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.degrees(x)
+Equivalent to:          [math.degrees(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2493,7 +2567,7 @@ _____________________________
 Calculate radians over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.radians(x)
+Equivalent to:          [math.radians(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2531,7 +2605,7 @@ _____________________________
 Calculate ceil over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.ceil(x)
+Equivalent to:          [math.ceil(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2564,7 +2638,12 @@ _____________________________
 Calculate copysign over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.copysign(x, y)
+Equivalent to:          [copysign(x, param) for x in array1]
+or                      [copysign(param, x) for x in array1]
+or                      [copysign(x, y) for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2601,7 +2680,7 @@ _____________________________
 Calculate fabs over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.fabs(x)
+Equivalent to:          [math.fabs(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2632,7 +2711,7 @@ _____________________________
 Calculate factorial over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.factorial(x)
+Equivalent to:          [math.factorial(x) for x in array1]
 Array types supported:  b, B, h, H, i, I, l, L, q, Q
 Exceptions raised:      OverflowError
 ======================  ==============================================
@@ -2662,7 +2741,7 @@ _____________________________
 Calculate floor over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.floor(x)
+Equivalent to:          [math.floor(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2695,7 +2774,12 @@ _____________________________
 Calculate fmod over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.fmod(x, y)
+Equivalent to:          [fmod(x, param) for x in array1]
+or                      [fmod(param, x) for x in array1]
+or                      [fmod(x, y) for x, y in zip(array1, array2)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2732,7 +2816,10 @@ _____________________________
 Calculate isfinite over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.isfinite(x)
+Equivalent to:          all([isfinite(x) for x in array1])
+======================  ==============================================
+
+======================  ============================================== \
 Array types supported:  f, d
 Exceptions raised:
 ======================  ==============================================
@@ -2761,7 +2848,10 @@ _____________________________
 Calculate isinf over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.isinf(x)
+Equivalent to:          any([isinf(x) for x in array1])
+======================  ==============================================
+
+======================  ============================================== \
 Array types supported:  f, d
 Exceptions raised:
 ======================  ==============================================
@@ -2790,7 +2880,10 @@ _____________________________
 Calculate isnan over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.isnan(x)
+Equivalent to:          any([isnan(x) for x in array1])
+======================  ==============================================
+
+======================  ============================================== \
 Array types supported:  f, d
 Exceptions raised:
 ======================  ==============================================
@@ -2851,7 +2944,7 @@ _____________________________
 Calculate trunc over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.trunc(x)
+Equivalent to:          [math.trunc(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2889,7 +2982,7 @@ _____________________________
 Calculate erf over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.erf(x)
+Equivalent to:          [math.erf(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2920,7 +3013,7 @@ _____________________________
 Calculate erfc over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.erfc(x)
+Equivalent to:          [math.erfc(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2951,7 +3044,7 @@ _____________________________
 Calculate gamma over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.gamma(x)
+Equivalent to:          [math.gamma(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -2982,7 +3075,7 @@ _____________________________
 Calculate lgamma over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          math.lgamma(x)
+Equivalent to:          [math.lgamma(x) for x in array1]
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -3018,7 +3111,13 @@ _____________________________
 Calculate fma over the values in an array.
 
 ======================  ==============================================
-Equivalent to:          fma(x, y, z) or x * y + z
+Equivalent to:          [(x * param2 + param3) for x in array1]
+or                      [(x * y + param3) for x,y in zip(array1, array2)]
+or                      [(x * param2 + z) for x,z in zip(array1, array3)]
+or                      [(x * y + z) for x,y,z in zip(array1, array2, array3)]
+======================  ==============================================
+
+======================  ==============================================
 Array types supported:  f, d
 Exceptions raised:      ArithmeticError
 ======================  ==============================================
@@ -3540,80 +3639,80 @@ Relative Performance - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  110    65    56    34    26    20   6.8   9.9    10   9.5    52    26
-        aany   46    40    25    23    13    13   4.5   4.8   3.0   4.4    23    13
-     afilter  114   114   114   113   114    92   114   115   113   115   116   115
-        amax   76    74    39    37   111    81    13    13    15    15   121    37
-        amin   71    69    36    35    77   115    12    13    12    13   112    53
-        asum  4.1   6.4   4.1   6.8   3.9   7.7   4.2   6.8   4.2   6.6   6.6   6.4
-    compress   34    33    35    23    32    17    38    25    38    23    31    31
-       count  192   207   143   210   146   112    99   111   110   100    74    78
-       cycle   81    80    81    81    88    54    74    52    74    55    58    59
-   dropwhile  245   153   231   223   134   205   198   193   197   191   200   175
-   findindex  207   214    86    85    56    57    16    23    17    23    66    36
- findindices   21    26    21    26    21    28    21    28    21    27    28    28
-      repeat  123   112   117   122   109    40   100    33   100    35   107    98
-   takewhile  236   233   241   270   228   168   170   121   175   131   243   158
-         add  137   133   137   130   136   116    86    87    99    70   101    79
-     truediv   72    61    62    64    70    58    66    57    74    54   179   150
-    floordiv   30    27    32    29    31    25    32    25    31    25   170   146
-         mod   20    24    17    24    26    21    26    22    27    22    76    66
-         mul   82    99    82   131    76    58    69    38    69    38   108    95
-         neg  131         125         119          84          99         132    82
-         pow   55    58    52    48    35    66    20    59    20    57   6.1    15
-         sub  129   131   125   136   127   102   104    78    86    79   101    90
-       and\_ 1418  1412   937   929   396   324   109    92   105    91            
-        or\_ 1934  1904   828   806   404   364   138    90   148   112            
-         xor 1906  1879   815   807   423   361   133    88   141   113            
-      invert 2438  2677  1270  1541   661   691   166   201   189   215            
-          eq  941   968   496   494   244   242    61    58    96    89   250   136
-          gt 1013   624   529   329   256   167    70    62    94   100   179   137
-          ge  870   863   469   452   284   237    64    69    97   106   358   139
-          lt  813   660   411   343   220   178    94   105   100   101   254   144
-          le 1264  1044   590   629   297   310   119    99   103   105   303   156
-          ne 1083   993   482   513   336   293    99   110    95   106   295   131
-      lshift  188   209   910   809   422   448   105    95   119   101            
-      rshift  162   152   160   824   204   352   124    86   121    90            
-       abs\_  115         123         123          91          93         220   111
-        acos                                                               13    12
-       acosh                                                              9.9   5.6
-        asin                                                               13    12
-       asinh                                                              6.3   6.5
-        atan                                                               14    12
-       atan2                                                              7.7   6.8
-       atanh                                                              6.7   7.3
-        ceil                                                              259   188
-    copysign                                                              188   153
-         cos                                                               14   7.7
-        cosh                                                               12   7.1
-     degrees                                                              154   109
-         erf                                                               15    13
-        erfc                                                              9.4   7.3
-         exp                                                               19   9.3
-       expm1                                                              6.6   6.7
-        fabs                                                              180   127
-   factorial  210   253   196   228   201   218   117   113   129   119            
-       floor                                                              262   175
-         fma                                                              119    93
-        fmod                                                               11    11
+        aall  113    67    53    34    27    20   6.6   9.3   6.4   9.7    50    24
+        aany   43    41    25    24    13    13   2.9   4.7   3.4   4.6    22    12
+     afilter  118   119   123   125   124    98   119   119   122   121   122   118
+        amax   76    74    39    38   104    79    15    14    15    15   106    38
+        amin   72    71    36    35    70   112    14    15    13    13   113    59
+        asum  3.9   5.9   4.0   6.4   3.9   7.5   3.8   6.7   3.9   6.6   6.9   6.4
+    compress   34    33    37    23    34    19    38    26    39    24    32    30
+       count  191   204   150   187   149   111   102   104   104   107    75    77
+       cycle   79    78    82    80    77    54    73    49    69    56    58    59
+   dropwhile  249   208   185   223   127   190   189   190   178   185   194   171
+   findindex  207   210    86    83    55    57    17    25    17    22    66    38
+ findindices   23    29    23    29    25    31    23    30    24    31    32    32
+      repeat  128   118   124   123   122    41   115    36   107    38   103    95
+   takewhile  238   246   197   260   254   174   152   126   172   126   254   172
+         add  131   132   137   121   131   118   103    75    91    86   100    82
+     truediv   73    62    67    71    71    57    66    57    74    54   185   166
+    floordiv   30    27    31    31    31    25    30    24    31    25   162   143
+         mod   21    23    17    26    27    22    26    21    26    22    75    63
+         mul   83   101    81   127    78    58    66    37    66    36   103    80
+         neg  128         122         117          78          86         114    79
+         pow   49    50    44    44    31    53    17    51    17    49   5.8    14
+         sub  140   132   118   134   128   103    99    79   109    78    97    85
+       and\_ 1449  1400   897   886   410   336   101    99   114    84            
+        or\_ 1955  1835   816   807   408   353   100   113   132    88            
+         xor 1924  1847   806   790   401   354   112   122   145    95            
+      invert 2272  2487  1214  1449   620   700   156   208   186   184            
+          eq  862   960   446   458   218   247    57    59    90    89   247   134
+          gt  918   614   491   319   243   169    58    63    89    95   163   129
+          ge  817   824   432   441   244   233    66    63    92    97   265   130
+          lt  734   628   367   323   186   165    97    92    92   100   251   124
+          le 1025   937   502   474   286   258    96    90    91    93   253   135
+          ne 1054   884   491   469   280   304    89   100    88    97   270   132
+      lshift  189   232   919   796   411   439    91   110   120    91            
+      rshift  160   157   161   810   230   357   115    94   101    80            
+       abs\_  120         113         112          90          98         208    99
+        acos                                                               14    11
+       acosh                                                              9.5   6.3
+        asin                                                               13    11
+       asinh                                                              6.6   6.8
+        atan                                                               12    11
+       atan2                                                              7.7   6.9
+       atanh                                                              7.3   7.8
+        ceil                                                              267   189
+    copysign                                                              198   143
+         cos                                                               15   8.2
+        cosh                                                               12   7.7
+     degrees                                                              160   113
+         erf                                                               16    13
+        erfc                                                              9.7   7.4
+         exp                                                               20   8.9
+       expm1                                                              6.9   7.0
+        fabs                                                              198   115
+   factorial  199   250   202   239   185   208   131   112   117   114            
+       floor                                                              266   178
+         fma                                                              115    88
+        fmod                                                               11    12
        gamma                                                              1.4   1.2
-       hypot                                                               20    12
-    isfinite                                                              123    97
-       isinf                                                              134   111
-       isnan                                                              148   137
-       ldexp                                                               31    28
-      lgamma                                                              9.3   6.3
-         log                                                               23   7.7
-       log10                                                               13   6.6
-       log1p                                                              7.6   8.4
-        log2                                                               21    11
-     radians                                                              156   112
-         sin                                                               15   8.2
-        sinh                                                              5.6   5.5
-        sqrt                                                               22    19
-         tan                                                              5.9   5.3
-        tanh                                                              5.7   6.1
-       trunc                                                              257   192
+       hypot                                                               21    14
+    isfinite                                                              125   111
+       isinf                                                              123   110
+       isnan                                                              140   117
+       ldexp                                                               29    30
+      lgamma                                                              9.2   5.5
+         log                                                               24   8.2
+       log10                                                               13   6.7
+       log1p                                                              8.1   9.3
+        log2                                                               22    10
+     radians                                                              156   121
+         sin                                                               15   7.9
+        sinh                                                              5.9   6.0
+        sqrt                                                               22    17
+         tan                                                              6.0   5.1
+        tanh                                                              6.0   5.9
+       trunc                                                              261   201
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3621,8 +3720,8 @@ Relative Performance - Python Time / Arrayfunc Time.
 =========== ========
 Stat         Value
 =========== ========
-Average:    178
-Maximum:    2677
+Average:    172
+Maximum:    2487
 Minimum:    1.2
 Array size: 100000
 =========== ========
@@ -3650,34 +3749,34 @@ Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  107    65    54    34    26    20   6.4   9.8   7.4   9.5    52    26
-        aany   46    41    25    24    13    13   4.3   4.5   3.2   4.1    23    13
-        amax   76    74    39    37   101    81    13    13    15    14   118    35
-        amin   70    69    36    35    80   115    13    13    13    13   107    52
-        asum  6.8   7.6   6.7    10   5.7    10   6.6    11   6.8    11    26    13
-   findindex  206   216    85    85    56    57    16    22    17    23    66    38
-         add 1212   130   755   138   367   153    84   100    95    76   443   115
-         neg 1163         623         324          84         116         197   108
-         sub 1151   193   729   132   346   105   100    75    84    80   336   179
-       and\_ 1437  1418   931   929   402   335   108    92   106    89            
-        or\_ 1957  1906   825   805   404   356   138    91   148   111            
-         xor 1907  1874   818   784   421   361   134    88   138   113            
-      invert 2435  2692  1273  1529   629   690   165   200   192   213            
-          eq  946   944   505   492   244   242    61    59    96    94   244   142
-          gt  959   618   541   329   256   167    66    62    90    96   180   139
-          ge  901   874   470   451   284   236    62    63   103   106   357   135
-          lt  815   657   407   344   221   178    96   103   104   101   262   135
-          le 1261  1079   590   624   298   316   120   102   100   103   309   153
-          ne 1089  1006   474   526   336   296   104   109    92   106   296   128
-      lshift  188   216   917   812   421   446   106    94   119   101            
-      rshift  162   147   160   814   213   353   123    84   124    90            
-       abs\_ 1656         882         604          99         103         257   132
-        ceil                                                              733   271
-     degrees                                                              531   160
-       floor                                                              982   224
-     radians                                                              540   191
-        sqrt                                                              202    86
-       trunc                                                              968   270
+        aall  111    67    53    34    26    20   7.0   9.5   6.5   9.7    49    25
+        aany   45    40    25    25    13    13   3.1   4.4   4.4   4.5    23    13
+        amax   76    74    38    37   115    78    14    14    14    15   108    36
+        amin   72    71    36    35    72   110    13    15    13    13   115    59
+        asum  6.5   9.3   6.0   9.4   6.4    12   6.3    11   6.4    11    27    13
+   findindex  207   213    86    83    56    57    17    25    17    22    65    38
+         add 1171   124   761   133   352   153   100    83    87    98   441   139
+         neg 1122         637         310          78          99         180    97
+         sub 1170   194   733   129   347   106    95    76   106    76   335   145
+       and\_ 1437  1417   891   887   410   335   100    99   116    84            
+        or\_ 1956  1853   815   780   396   351    98   115   133    87            
+         xor 1908  1872   809   793   397   355   113   122   145    96            
+      invert 2273  2519  1225  1442   631   701   155   210   190   183            
+          eq  875   951   455   461   218   239    59    60    87    92   248   133
+          gt  962   611   516   321   243   169    59    62    85    99   162   129
+          ge  824   815   437   438   245   234    63    61    87    97   258   133
+          lt  731   628   371   323   185   165    95    95    94   100   249   139
+          le 1015   944   512   467   293   269    97    88    94    97   253   130
+          ne 1052   897   487   470   285   302    92    95    87    99   270   134
+      lshift  194   236   928   794   413   444    91   108   120    91            
+      rshift  162   157   161   812   229   357   113    94   102    80            
+       abs\_ 1705         843         545         101         108         245   122
+        ceil                                                              755   259
+     degrees                                                              547   154
+       floor                                                              993   233
+     radians                                                              545   192
+        sqrt                                                              192    80
+       trunc                                                              979   302
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3685,9 +3784,9 @@ Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.
 =========== ========
 Stat         Value
 =========== ========
-Average:    319
-Maximum:    2692
-Minimum:    3.2
+Average:    308
+Maximum:    2519
+Minimum:    3.1
 Array size: 100000
 =========== ========
 
@@ -3712,34 +3811,34 @@ Relative Performance with and without SIMD Optimisations - Optimised / SIMD Time
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall   15    10   5.1   3.3   3.4   2.0                           2.9   1.7
-        aany  9.4    13   8.4   5.3   2.5   2.3                           2.9   1.2
-        amax  3.6   4.0   1.7   2.0   4.3   4.3                           3.7   1.1
-        amin  3.1   3.9   1.9   2.1   3.8   5.5                           5.5   2.7
-        asum                                                              3.9   2.0
-   findindex   10    10   3.9   4.4   3.2   3.0                           5.1   2.1
-         add  6.0         5.9         2.8                                 3.4   1.5
-         neg  9.0         3.6         1.9                                          
-         sub  5.9         6.0         2.7                                 2.6   2.0
-       and\_  9.3   9.3   6.3   4.1   2.7   2.7                                    
-        or\_  8.1   8.8   3.6   5.2   1.9   1.9                                    
-         xor  8.2   8.7   3.6   5.1   1.9   1.9                                    
-      invert  9.8   6.4   5.2   3.5   2.6   1.9                                    
-          eq   15    17   7.9   8.2   3.3   4.1                           2.9   1.9
-          gt   12    10   6.5   4.1   3.9   1.7                           2.0   1.2
-          ge   11    14   5.6   5.7   4.2   2.4                           3.4   1.2
-          lt  8.0   7.7   6.1   3.8   3.0   2.8                           2.9   1.6
-          le   13    12   8.1   7.8   4.7   4.2                           2.8   1.5
-          ne   14    11   6.0   6.8   3.0   2.9                           3.3   1.8
-      lshift              5.9   5.4   2.7   2.6                                    
+        aall   17   9.9   7.1   3.3   2.5   1.7                           2.8   1.6
+        aany  9.3    14   8.3   5.4   2.6   2.2                           2.9   1.2
+        amax  3.6   3.9   1.6   1.9   4.8   4.1                           3.4   1.2
+        amin  3.2   3.8   1.9   2.1   3.8   5.4                           5.6   3.0
+        asum                                                              3.8   2.0
+   findindex  9.9    10   3.9   4.2   3.2   3.1                           4.9   2.1
+         add  5.9         6.0         2.7                                 3.4   1.7
+         neg  9.0         3.6         1.8                                          
+         sub  6.0         5.9         2.7                                 2.6   1.7
+       and\_  9.4   9.4   6.0   4.0   2.7   2.7                                    
+        or\_  8.1   8.1   3.6   5.1   1.8   1.9                                    
+         xor  8.3   9.0   3.6   5.2   1.8   2.0                                    
+      invert  9.6   6.4   5.2   3.5   2.7   1.9                                    
+          eq   16    17   8.8   8.2   3.8   4.1                           3.1   1.8
+          gt   12    10   6.6   4.2   3.8   1.7                           1.9   1.3
+          ge   11    14   5.6   5.8   4.2   2.4                           3.3   1.3
+          lt  8.4   7.7   6.3   5.2   3.3   2.7                           2.8   1.6
+          le   15    12   7.7   6.0   4.9   4.3                           2.8   1.6
+          ne   13   9.9   6.4   6.2   3.0   3.0                           3.3   1.9
+      lshift              5.8   5.1   2.7   2.6                                    
       rshift                    3.9         2.7                                    
-       abs\_   12         6.4         3.8                                          
+       abs\_   12         6.6         3.9                                          
         ceil                                                              1.8   1.4
      degrees                                                              2.2   1.5
-       floor                                                              3.4   1.1
-     radians                                                              2.3   1.5
-        sqrt                                                              7.5   3.9
-       trunc                                                              3.4   1.1
+       floor                                                              3.3   1.0
+     radians                                                              2.3   1.7
+        sqrt                                                              7.4   3.9
+       trunc                                                              3.4   1.2
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3814,7 +3913,6 @@ Platform support
 ================
 
 
-
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
@@ -3823,15 +3921,17 @@ OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Ubuntu 19.10       64 bit    GCC                         3.7
-Debian 10          32 bit    GCC                         3.6
-Debian 10          64 bit    GCC                         3.6
+Ubuntu 20.04 beta  64 bit    GCC                         3.8
+Debian 10          32 bit    GCC                         3.7
+Debian 10          64 bit    GCC                         3.7
 OpenSuse 15        64 bit    GCC                         3.6
 Centos 8           64 bit    GCC                         3.6
-FreeBSD 12         64 bit    LLVM                        3.6
+FreeBSD 12         64 bit    LLVM                        3.7
 OpenBSD 6.5        64 bit    LLVM                        3.6
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.7
-Raspbian (RPi 3)   32 bit    GCC                         3.5
+MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
+Raspbian (RPi 3)   32 bit    GCC                         3.7
 ================= ========  ========================== =========================
 
 The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARMV7 CPU. All 
 others were conducted using VMs running on x86 hardware. 
+

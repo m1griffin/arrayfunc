@@ -616,6 +616,10 @@ pyfunccall = {'afilter' : 'filter',
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
 
 # The functions which are implemented by this program.
 completefuncnames = ('afilter', 'dropwhile', 'takewhile')
@@ -630,6 +634,10 @@ for funcname in completefuncnames:
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '18-Jun-2014', funcname)
+
+	# Add additional header data.
+	headerdate['modulename'] = modulename
+	headerdate['arrayimport'] = arrayimport
 
 
 	with open(filename, 'w') as f:
@@ -684,8 +692,7 @@ for funcname in completefuncnames:
 
 		#####
 		# The code which initiates the unit test.
-
-		f.write(codegen_common.testendtemplate % funcname)
+		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 
 # ==============================================================================

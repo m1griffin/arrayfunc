@@ -450,7 +450,12 @@ _____________________________ \n\
 Calculate fmod over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.fmod(x, y) \n\
+Equivalent to:          [fmod(x, param) for x in array1] \n\
+or                      [fmod(param, x) for x in array1] \n\
+or                      [fmod(x, y) for x, y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

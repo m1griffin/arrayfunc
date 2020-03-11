@@ -832,7 +832,7 @@ _____________________________ \n\
 Calculate factorial over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.factorial(x) \n\
+Equivalent to:          [math.factorial(x) for x in array1] \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q \n\
 Exceptions raised:      OverflowError \n\
 ======================  ============================================== \n\

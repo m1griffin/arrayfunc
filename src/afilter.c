@@ -2774,7 +2774,6 @@ Select values from an array based on a boolean criteria. \n\
 ======================  ============================================== \n\
 Equivalent to:          filter(lambda x: x < param, array) \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

@@ -235,7 +235,7 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          [%(opcodedocs)s for x in array1] \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\

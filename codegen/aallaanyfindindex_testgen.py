@@ -6217,6 +6217,11 @@ completefuncnames = ('aall', 'aany', 'findindex')
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
+
 # Output the functions which implement the individual non-SIMD 
 # implementation functions.
 for funcname in completefuncnames:
@@ -6225,6 +6230,9 @@ for funcname in completefuncnames:
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '20-May-2014', funcname)
 
+	# Add additional header data.
+	headerdate['modulename'] = modulename
+	headerdate['arrayimport'] = arrayimport
 
 	# Select the implementation template for the current function.
 	testtemplate = basictemplates[funcname]
@@ -6306,8 +6314,7 @@ for funcname in completefuncnames:
 
 		#####
 		# The code which initiates the unit test.
-
-		f.write(codegen_common.testendtemplate % funcname)
+		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 
 # ==============================================================================

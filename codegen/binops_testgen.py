@@ -1311,12 +1311,23 @@ funclist = [x for x in oplist if x['test_op_templ'] in ('test_template_binop', '
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
+
+
 for func in funclist:
 
 	funcname = func['funcname']
 	filenamebase = 'test_' + funcname
 	filename = filenamebase + '.py'
 	headerdate = codegen_common.FormatHeaderData(filenamebase, '05-Apr-2018', funcname)
+
+	# Add additional header data.
+	headerdate['modulename'] = modulename
+	headerdate['arrayimport'] = arrayimport
+
 
 	basictemplate = test_template_binop[funcname]
 
@@ -1359,7 +1370,7 @@ for func in funclist:
 			f.write(param_invalid_opt_nosimd_template % funcdata)
 
 
-		f.write(codegen_common.testendtemplate % funcname)
+		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 # ==============================================================================
 

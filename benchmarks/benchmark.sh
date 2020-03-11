@@ -13,7 +13,7 @@ echo "Testing benchmarks." $(date)
 starttime=$(date '+%s')
 
 # The benchmarks.
-./benchmarks.py $argsvals
+./arraybench.py $argsvals
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')

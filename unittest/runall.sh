@@ -4,7 +4,9 @@
 
 # This program resets the test log file and inserts a time stamp and
 # information about the test platform in the top of the file.
-./unit-test-timestamp.py
+# The $@ parameter passes all parameters given to the shell script
+# through into the Python program.
+./unit-test-timestamp.py $@
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')

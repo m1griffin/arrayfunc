@@ -568,14 +568,18 @@ static PyObject *py_count(PyObject *self, PyObject *args, PyObject *keywds) {
 
 /* The module doc string */
 PyDoc_STRVAR(count__doc__,
-"Fill an array with evenly spaced values using a start and step values. \n\
+"count \n\
 _____________________________ \n\
 \n\
 Fill an array with evenly spaced values using a start and step values. \n\
 \n\
 ======================  ============================================== \n\
+Equivalent to:          itertools.count(start, len(array))\n\
+or                      itertools.count(start, len(array), step)\n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

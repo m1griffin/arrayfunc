@@ -201,7 +201,7 @@ _____________________________ \n\
 Calculate log over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.log(x) \n\
+Equivalent to:          [math.log(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

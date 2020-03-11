@@ -762,7 +762,6 @@ Calculate %(funclabel)s over the values in an array.  \\n\\
 ======================  ============================================== \\n\\
 Equivalent to:          %(opcodedocs)s \\n\\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \\n\\
-Exceptions raised:      None \\n\\
 ======================  ============================================== \\n\\
 \\n\\
 Call formats: \\n\\
@@ -1677,17 +1676,17 @@ operations = (('eq', '=='), ('gt', '>'), ('ge', '>='), ('lt', '<'), ('le', '<=')
 
 
 # Used for the help text in the function.
-aany_docs = '''* result - A boolean value corresponding to the result of all the \\n\\
+aany_docs = '''result - A boolean value corresponding to the result of all the \\n\\
   comparison operations. If any comparison operations result in true, \\n\\
   the return value will be true. If all of them result in false, the \\n\\
   return value will be false.'''
 
-aall_docs = '''* result - A boolean value corresponding to the result of all the \\n\\
+aall_docs = '''result - A boolean value corresponding to the result of all the \\n\\
   comparison operations. If all comparison operations result in true, \\n\\
   the return value will be true. If any of them result in false, the \\n\\
   return value will be false.'''
 
-findindex_docs = '* result - The resulting index. This will be negative if no match was found.'
+findindex_docs = 'result - The resulting index. This will be negative if no match was found.'
 
 resultdoc = {'aall' : aany_docs, 
 			'aany' : aall_docs, 

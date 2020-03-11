@@ -300,14 +300,17 @@ call_params2 = """
 
 /* The module doc string */
 PyDoc_STRVAR(%(funclabel)s__doc__,
-"%(funcdesc)s \\n\\
+"%(funclabel)s \\n\\
 _____________________________ \\n\\
 \\n\\
 %(funcdesc)s \\n\\
 \\n\\
 ======================  ============================================== \\n\\
+%(funcequiv)s
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\n\\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \\n\\
-Exceptions raised:      None \\n\\
 ======================  ============================================== \\n\\
 \\n\\
 Call formats: \\n\\
@@ -417,6 +420,14 @@ funcdesc = {'count' : 'Fill an array with evenly spaced values using a start and
 			'repeat' : 'Fill an array with a specified value.'
 }
 
+# Python equivalent.
+funcequiv = {'count' : '''Equivalent to:          itertools.count(start, len(array))\\n\\
+or                      itertools.count(start, len(array), step)\\n\\''', 
+			'cycle' : '''Equivalent to:          itertools.cycle(itertools.count(start, len(array)))\\n\\
+or                      itertools.cycle(itertools.count(start, len(array), step))\\n\\''', 
+			'repeat' : '''Equivalent to:          itertools.repeat(value)\\n\\'''
+}
+
 
 # The call format.
 funcparamdesc = {'count' : 'count(array, start, step).', 
@@ -515,6 +526,7 @@ for funcname in completefuncnames:
 		f.write(call_params2 % {'funclabel' : funcname,
 							'funcdesc' : funcdesc[funcname],
 							'funcparamdesc' : funcparamdesc[funcname],
+							'funcequiv' : funcequiv[funcname],
 							'paramdesc' : paramdesc[funcname]})
 
 

@@ -3733,7 +3733,12 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array.  \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          [x %(pyoperator)s param for x in array1] \\n\\
+or                      [param %(pyoperator)s y for y in array2] \\n\\
+or                      [x %(pyoperator)s y for x, y in zip(array1, array2)] \\n\\
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\n\\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\
@@ -4330,6 +4335,7 @@ for func in funclist:
 		f.write(mathops_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'supportedarrays' : supportedarrays,
+				'pyoperator' : pyoperator,
 				'matherrors' : ', '.join(func['matherrors'].split(',')),
 				'opscall' : ''.join(opscalltext),
 				'getsimdparam' : getsimdparam,

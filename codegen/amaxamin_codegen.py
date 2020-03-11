@@ -355,7 +355,6 @@ Calculate %(funclabel)s over the values in an array.  \\n\\
 ======================  ============================================== \\n\\
 Equivalent to:          %(optype)s(x) \\n\\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \\n\\
-Exceptions raised:      None \\n\\
 ======================  ============================================== \\n\\
 \\n\\
 Call formats: \\n\\

@@ -1358,7 +1358,12 @@ _____________________________ \n\
 Calculate rshift over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          x >> y \n\
+Equivalent to:          [x x >> y param for x in array1] \n\
+or                      [param x >> y x for x in array1] \n\
+or                      [x x >> y y for x,y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q \n\
 Exceptions raised:       \n\
 ======================  ============================================== \n\

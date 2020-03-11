@@ -201,7 +201,7 @@ _____________________________ \n\
 Calculate acos over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.acos(x) \n\
+Equivalent to:          [math.acos(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

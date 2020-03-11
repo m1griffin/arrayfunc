@@ -450,7 +450,12 @@ _____________________________ \n\
 Calculate copysign over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.copysign(x, y) \n\
+Equivalent to:          [copysign(x, param) for x in array1] \n\
+or                      [copysign(param, x) for x in array1] \n\
+or                      [copysign(x, y) for x, y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

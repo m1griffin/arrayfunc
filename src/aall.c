@@ -2763,7 +2763,6 @@ Calculate aall over the values in an array.  \n\
 ======================  ============================================== \n\
 Equivalent to:          all([(x > param) for x in array]) \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\
@@ -2782,7 +2781,7 @@ Call formats: \n\
   parameter is ignored. \n\
 * nosimd - If True, SIMD acceleration is disabled if present. \n\
   The default is False (SIMD acceleration is enabled if present). \n\
-* * result - A boolean value corresponding to the result of all the \n\
+* result - A boolean value corresponding to the result of all the \n\
   comparison operations. If any comparison operations result in true, \n\
   the return value will be true. If all of them result in false, the \n\
   return value will be false. \n\

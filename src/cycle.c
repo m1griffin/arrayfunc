@@ -732,14 +732,18 @@ static PyObject *py_cycle(PyObject *self, PyObject *args, PyObject *keywds) {
 
 /* The module doc string */
 PyDoc_STRVAR(cycle__doc__,
-"Fill an array with a series of values, repeating as necessary. \n\
+"cycle \n\
 _____________________________ \n\
 \n\
 Fill an array with a series of values, repeating as necessary. \n\
 \n\
 ======================  ============================================== \n\
+Equivalent to:          itertools.cycle(itertools.count(start, len(array)))\n\
+or                      itertools.cycle(itertools.count(start, len(array), step))\n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

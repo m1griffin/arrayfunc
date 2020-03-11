@@ -1133,9 +1133,13 @@ _____________________________ \n\
 Calculate ge over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          x >= y \n\
+Equivalent to:          all([x >= param for x in array1]) \n\
+or                      all([param >= x for x in array1]) \n\
+or                      all([x >= y for x,y in zip(array1, array2)]) \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:       \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\

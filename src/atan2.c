@@ -450,7 +450,12 @@ _____________________________ \n\
 Calculate atan2 over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.atan2(x, y) \n\
+Equivalent to:          [atan2(x, param) for x in array1] \n\
+or                      [atan2(param, x) for x in array1] \n\
+or                      [atan2(x, y) for x, y in zip(array1, array2)] \n\
+======================  ============================================== \n\
+\n\
+======================  ============================================== \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

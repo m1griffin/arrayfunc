@@ -417,16 +417,27 @@ def gennonfinitetestdata(funcname):
 
 # ==============================================================================
 
+# This defines the module name.
+modulename = 'arrayfunc'
+# Import the array module for testing.
+arrayimport = 'import array'
+
+
 for funcname in completefuncnames:
 
 
 	# Data for the copyright header files.
 	headerdate = codegen_common.FormatHeaderData('test_%s' % funcname, '11-Jun-2014', funcname)
 
+	# Add additional header data.
+	headerdate['modulename'] = modulename
+	headerdate['arrayimport'] = arrayimport
+
 
 	with open('test_%s.py' % funcname, 'w') as f:
 		# The copyright header.
 		f.write(codegen_common.HeaderTemplate % headerdate)
+
 
 		# Output the generated code for basic operator tests.
 		for datarec in gentestdata(funcname):
@@ -440,7 +451,7 @@ for funcname in completefuncnames:
 
 
 		# End of the tests.
-		f.write(codegen_common.testendtemplate % funcname)
+		f.write(codegen_common.testendtemplate % {'funcname' : funcname, 'testprefix' : 'af'})
 
 
 # ==============================================================================

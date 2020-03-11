@@ -7,7 +7,8 @@ REM ==============================================================
 
 REM This program resets the test log file and inserts a time stamp and
 REM information about the test platform in the top of the file.
-unit-test-timestamp.py
+REM Pass all parameters through to the Python program (as many as possible). 
+unit-test-timestamp.py %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 
 SET failcount=0

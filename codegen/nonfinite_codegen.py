@@ -178,7 +178,10 @@ _____________________________ \\n\\
 Calculate %(funclabel)s over the values in an array. \\n\\
 \\n\\
 ======================  ============================================== \\n\\
-Equivalent to:          %(opcodedocs)s \\n\\
+Equivalent to:          %(helpequivalent)s \\n\\
+======================  ============================================== \\n\\
+\\n\\
+======================  ============================================== \\
 Array types supported:  %(supportedarrays)s \\n\\
 Exceptions raised:      %(matherrors)s \\n\\
 ======================  ============================================== \\n\\
@@ -274,6 +277,12 @@ helpresult = {'isinf' : anyhelp,
 			'isfinite' : allhelp
 }
 
+# Select the help 'equivalent to' for the type of function.
+helpequivalent = {'isinf' : 'any([isinf(x) for x in array1])',
+			'isnan' : 'any([isnan(x) for x in array1])',
+			'isfinite' : 'all([isfinite(x) for x in array1])',
+}
+
 # ==============================================================================
 
 # Read in the op codes.
@@ -306,7 +315,8 @@ for func in funclist:
 			'matherrors' : ', '.join(func['matherrors'].split(',')),
 			'foundsearch' : foundsearch[funcname],
 			'notfoundsearch' : notfoundsearch[funcname],
-			'helpresult' : helpresult[funcname]
+			'helpequivalent' : helpequivalent[funcname],
+			'helpresult' : helpresult[funcname],
 			}	
 
 	with open(filename, 'w') as f:

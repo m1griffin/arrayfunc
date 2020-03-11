@@ -201,7 +201,7 @@ _____________________________ \n\
 Calculate cosh over the values in an array.  \n\
 \n\
 ======================  ============================================== \n\
-Equivalent to:          math.cosh(x) \n\
+Equivalent to:          [math.cosh(x) for x in array1] \n\
 Array types supported:  f, d \n\
 Exceptions raised:      ArithmeticError \n\
 ======================  ============================================== \n\

@@ -5,7 +5,7 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     05-Apr-2018.
-# Ver:      08-Jan-2020.
+# Ver:      06-Mar-2020.
 #
 ###############################################################################
 #
@@ -18729,7 +18729,7 @@ if __name__ == '__main__':
 		# not complain about unknown options.
 		sys.argv.remove('-l')
 
-		with open('arrayfunc_unittest.txt', 'a') as f:
+		with open('af_unittest.txt', 'a') as f:
 			f.write('\n\n')
 			f.write('lshift\n\n')
 			trun = unittest.TextTestRunner(f)

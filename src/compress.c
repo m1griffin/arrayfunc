@@ -729,7 +729,6 @@ be ignored.\n\
 ======================  ============================================== \n\
 Equivalent to:          itertools.compress(inparray, selectorarray) \n\
 Array types supported:  b, B, h, H, i, I, l, L, q, Q, f, d \n\
-Exceptions raised:      None \n\
 ======================  ============================================== \n\
 \n\
 Call formats: \n\
