@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ ops_head = """//----------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -75,13 +75,21 @@ ops_head = """//----------------------------------------------------------------
 
 #include "simddefs.h"
 
+
 #ifdef AF_HASSIMD_X86
 #include "%(funclabel)s_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "%(funclabel)s_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "%(funclabel)s_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "%(funclabel)s_simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -406,10 +414,6 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # ==============================================================================
 
-# These get substituted into function call templates.
-SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
-SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)'
-SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 
 # ==============================================================================
 
@@ -488,30 +492,6 @@ simdops_x86 = {
 		},
 }
 
-# For ARM NEON.
-simdops_arm = {
-	# The SIMD op for min.
-	'amin' : {
-		'b' : 'vmin_s8',
-		'B' : 'vmin_u8',
-		'h' : 'vmin_s16',
-		'H' : 'vmin_u16',
-		'i' : 'vmin_s32',
-		'I' : 'vmin_u32',
-		'f' : 'vmin_f32',
-		},
-		# The SIMD op for max.
-	'amax' : {
-		'b' : 'vmax_s8',
-		'B' : 'vmax_u8',
-		'h' : 'vmax_s16',
-		'H' : 'vmax_u16',
-		'i' : 'vmax_s32',
-		'I' : 'vmax_u32',
-		'f' : 'vmax_f32',
-		},
-}
-
 
 # Various SIMD instruction information which varies according to array type.
 # For x86-64.
@@ -551,8 +531,39 @@ simdvalues_x86 = {
 }
 
 
+# Total list of which array types are supported by x86 SIMD instructions.
+SIMD_x86_support = simdvalues_x86.keys()
+
+
+# ==============================================================================
+
+# For ARM NEON ARMv7 32 bit.
+simdops_armv7 = {
+	# The SIMD op for min.
+	'amin' : {
+		'b' : 'vmin_s8',
+		'B' : 'vmin_u8',
+		'h' : 'vmin_s16',
+		'H' : 'vmin_u16',
+		'i' : 'vmin_s32',
+		'I' : 'vmin_u32',
+		'f' : 'vmin_f32',
+		},
+		# The SIMD op for max.
+	'amax' : {
+		'b' : 'vmax_s8',
+		'B' : 'vmax_u8',
+		'h' : 'vmax_s16',
+		'H' : 'vmax_u16',
+		'i' : 'vmax_s32',
+		'I' : 'vmax_u32',
+		'f' : 'vmax_f32',
+		},
+}
+
+
 # For ARM NEON.
-simdvalues_arm = {
+simdvalues_armv7 = {
 'b' : {'simdattr' : 'int8x8_t', 
 		'vldinstr' : 'vld1_s8(', 
 		'vstinstr1' : 'vst1_s8(',
@@ -584,6 +595,75 @@ simdvalues_arm = {
 }
 
 
+# Total list of which array types are supported by ARM SIMD instructions.
+SIMD_armv7_support = simdvalues_armv7.keys()
+
+# ==============================================================================
+
+# For ARM NEON armv8 64 bit.
+simdops_armv8 = {
+	# The SIMD op for min.
+	'amin' : {
+		'b' : 'vminq_s8',
+		'B' : 'vminq_u8',
+		'h' : 'vminq_s16',
+		'H' : 'vminq_u16',
+		'i' : 'vminq_s32',
+		'I' : 'vminq_u32',
+		'f' : 'vminq_f32',
+		},
+		# The SIMD op for max.
+	'amax' : {
+		'b' : 'vmaxq_s8',
+		'B' : 'vmaxq_u8',
+		'h' : 'vmaxq_s16',
+		'H' : 'vmaxq_u16',
+		'i' : 'vmaxq_s32',
+		'I' : 'vmaxq_u32',
+		'f' : 'vmaxq_f32',
+		},
+}
+
+
+simdvalues_armv8 = {
+'b' : {'simdattr' : 'int8x16_t', 
+		'vldinstr' : 'vld1q_s8(', 
+		'vstinstr1' : 'vst1q_s8(',
+		'vstinstr2' : ''},
+'B' : {'simdattr' : 'uint8x16_t', 
+		'vldinstr' : 'vld1q_u8(', 
+		'vstinstr1' : 'vst1q_u8(',
+		'vstinstr2' : ''},
+'h' : {'simdattr' : 'int16x8_t', 
+		'vldinstr' : 'vld1q_s16(', 
+		'vstinstr1' : 'vst1q_s16(',
+		'vstinstr2' : ''},
+'H' : {'simdattr' : 'uint16x8_t', 
+		'vldinstr' : 'vld1q_u16(', 
+		'vstinstr1' : ' vst1q_u16(',
+		'vstinstr2' : ''},
+'i' : {'simdattr' : 'int32x4_t ', 
+		'vldinstr' : 'vld1q_s32(', 
+		'vstinstr1' : 'vst1q_s32(',
+		'vstinstr2' : ''},
+'I' : {'simdattr' : 'uint32x4_t', 
+		'vldinstr' : 'vld1q_u32(', 
+		'vstinstr1' : 'vst1q_u32(',
+		'vstinstr2' : ''},
+'f' : {'simdattr' : 'float32x4_t', 
+		'vldinstr' : 'vld1q_f32(', 
+		'vstinstr1' : 'vst1q_f32(',
+		'vstinstr2' : ''},
+}
+
+
+# Total list of which array types are supported by ARM SIMD instructions.
+SIMD_armv8_support = simdvalues_armv8.keys()
+
+# ==============================================================================
+
+# ==============================================================================
+
 
 # Width of array elements.
 simdwidth = {'b' : 'CHARSIMDSIZE',
@@ -599,16 +679,33 @@ simdwidth = {'b' : 'CHARSIMDSIZE',
 
 # ==============================================================================
 
+
+# These get substituted into function call templates.
+SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
+SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)'
+SIMD_platform_x86_ARMv8 = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)'
+SIMD_platform_ARMv7 = '#if defined(AF_HASSIMD_ARMv7_32BIT)'
+SIMD_platform_ARM64v8 = '#if defined(AF_HASSIMD_ARM_AARCH64)'
+
+
+# ==============================================================================
+
 # Return the platform SIMD enable C macro. 
 # This is for the platform independent file, and not the plaform specific
 # SIMD files.
 def findsimdplatform(arraycode):
 
-	# The calls to SIMD support code are platform dependent.
-	if (arraycode in simdvalues_x86) and (arraycode not in simdvalues_arm):
-		return SIMD_platform_x86
-	elif (arraycode in simdvalues_x86) and (arraycode in simdvalues_arm):
+	hasx86 = arraycode in SIMD_x86_support
+	hasarmv7 = arraycode in SIMD_armv7_support
+	hasarmv8 = arraycode in SIMD_armv8_support
+
+	# Only the platforms combinations which are used currently are defined here.
+	if hasx86 and hasarmv7 and hasarmv8:
 		return SIMD_platform_x86_ARM
+	elif hasx86 and (not hasarmv7) and (not hasarmv8):
+		return SIMD_platform_x86
+	elif hasx86 and (not hasarmv7) and hasarmv8:
+		return SIMD_platform_x86_ARMv8
 	else:
 		return 'Error: Template error, this should not be here.'
 
@@ -647,7 +744,7 @@ for funcname in completefuncnames:
 			f.write(opstemplate % opdata)
 
 			# Select using either the SIMD or non-SIMD version.
-			if (arraycode in simdvalues_x86) or (arraycode in simdvalues_arm):
+			if arraycode in (set(SIMD_x86_support) | set(SIMD_armv7_support) | set(SIMD_armv8_support)):
 				opdata['simdwidth'] = simdwidth[arraycode]
 				opdata['simdplatform'] = findsimdplatform(arraycode)
 				f.write(template_opselect % opdata)
@@ -682,26 +779,25 @@ for funcname in completefuncnames:
 	maindescription = 'Calculate the %s of values in an array.' % funcname
 
 	# Output the generated code.
-	for arraycode in codegen_common.arraycodes:
+	for arraycode in SIMD_x86_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		if arraycode in simdvalues_x86:
 
-			outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
-						'optype' : optype[funcname],
-						'arraytype' : arraytype, 
-						'funcmodifier' : arraytype.replace(' ', '_'), 
-						'resultcasts' : resultcasts[arraycode],
-						'compare_ops' : compare_ops[funcname],
-						'simdwidth' : simdwidth[arraycode],
-						'simdplatform' : SIMD_platform_x86,
-						'simdattr' : simdvalues_x86[arraycode]['simdattr'],
-						'vldinstr' : simdvalues_x86[arraycode]['vldinstr'],
-						'vstinstr1' : simdvalues_x86[arraycode]['vstinstr1'],
-						'vstinstr2' : simdvalues_x86[arraycode]['vstinstr2'],
-						'simdop' : simdops_x86[funcname][arraycode],
-						})
+		outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
+					'optype' : optype[funcname],
+					'arraytype' : arraytype, 
+					'funcmodifier' : arraytype.replace(' ', '_'), 
+					'resultcasts' : resultcasts[arraycode],
+					'compare_ops' : compare_ops[funcname],
+					'simdwidth' : simdwidth[arraycode],
+					'simdplatform' : SIMD_platform_x86,
+					'simdattr' : simdvalues_x86[arraycode]['simdattr'],
+					'vldinstr' : simdvalues_x86[arraycode]['vldinstr'],
+					'vstinstr1' : simdvalues_x86[arraycode]['vstinstr1'],
+					'vstinstr2' : simdvalues_x86[arraycode]['vstinstr2'],
+					'simdop' : simdops_x86[funcname][arraycode],
+					})
 
 
 
@@ -728,11 +824,11 @@ for funcname in completefuncnames:
 
 # ==============================================================================
 
-# This outputs the SIMD version for ARM NEON.
+# This outputs the SIMD version for ARM NEON ARMv7 32 bit.
 
 # The original date of the SIMD C code.
 simdcodedate = '08-Oct-2019'
-simdfilename = '_simd_arm'
+simdfilename = '_simd_armv7'
 
 # This outputs the SIMD version.
 
@@ -745,26 +841,24 @@ for funcname in completefuncnames:
 	maindescription = 'Calculate the %s of values in an array.' % funcname
 
 	# Output the generated code.
-	for arraycode in codegen_common.arraycodes:
+	for arraycode in SIMD_armv7_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
 
-		if arraycode in simdvalues_arm:
-
-			outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
-						'optype' : optype[funcname],
-						'arraytype' : arraytype, 
-						'funcmodifier' : arraytype.replace(' ', '_'), 
-						'resultcasts' : resultcasts[arraycode],
-						'compare_ops' : compare_ops[funcname],
-						'simdwidth' : simdwidth[arraycode],
-						'simdplatform' : SIMD_platform_ARM,
-						'simdattr' : simdvalues_arm[arraycode]['simdattr'],
-						'vldinstr' : simdvalues_arm[arraycode]['vldinstr'],
-						'vstinstr1' : simdvalues_arm[arraycode]['vstinstr1'],
-						'vstinstr2' : simdvalues_arm[arraycode]['vstinstr2'],
-						'simdop' : simdops_arm[funcname][arraycode],
-						})
+		outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
+					'optype' : optype[funcname],
+					'arraytype' : arraytype, 
+					'funcmodifier' : arraytype.replace(' ', '_'), 
+					'resultcasts' : resultcasts[arraycode],
+					'compare_ops' : compare_ops[funcname],
+					'simdwidth' : simdwidth[arraycode],
+					'simdplatform' : SIMD_platform_ARMv7,
+					'simdattr' : simdvalues_armv7[arraycode]['simdattr'],
+					'vldinstr' : simdvalues_armv7[arraycode]['vldinstr'],
+					'vstinstr1' : simdvalues_armv7[arraycode]['vstinstr1'],
+					'vstinstr2' : simdvalues_armv7[arraycode]['vstinstr2'],
+					'simdop' : simdops_armv7[funcname][arraycode],
+					})
 
 
 
@@ -773,7 +867,68 @@ for funcname in completefuncnames:
 		maindescription, 
 		codegen_common.SIMDDescription, 
 		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_arm'])
+		'', ['simddefs', 'simdmacromsg_armv7'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+# ==============================================================================
+
+
+
+# ==============================================================================
+
+# This outputs the SIMD version for ARM NEON ARMv8 64 bit.
+
+# The original date of the SIMD C code.
+simdcodedate = '23-Mar-2020'
+simdfilename = '_simd_armv8'
+
+# This outputs the SIMD version.
+
+for funcname in completefuncnames:
+
+	outputlist = []
+
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+	# Output the generated code.
+	for arraycode in SIMD_armv8_support:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+
+		outputlist.append(template_simdsupport % {'arraycode' : arraycode, 
+					'optype' : optype[funcname],
+					'arraytype' : arraytype, 
+					'funcmodifier' : arraytype.replace(' ', '_'), 
+					'resultcasts' : resultcasts[arraycode],
+					'compare_ops' : compare_ops[funcname],
+					'simdwidth' : simdwidth[arraycode],
+					'simdplatform' : SIMD_platform_ARM64v8,
+					'simdattr' : simdvalues_armv8[arraycode]['simdattr'],
+					'vldinstr' : simdvalues_armv8[arraycode]['vldinstr'],
+					'vstinstr1' : simdvalues_armv8[arraycode]['vstinstr1'],
+					'vstinstr2' : simdvalues_armv8[arraycode]['vstinstr2'],
+					'simdop' : simdops_armv8[funcname][arraycode],
+					})
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs', 'simdmacromsg_armv8'])
 
 
 	# Output the .h header file.

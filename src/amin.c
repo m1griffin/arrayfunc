@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -41,13 +41,21 @@
 
 #include "simddefs.h"
 
+
 #ifdef AF_HASSIMD_X86
 #include "amin_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "amin_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "amin_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "amin_simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -84,13 +92,13 @@ signed long long amin_signed_char(Py_ssize_t arraylen, signed char *data) {
 */
 signed long long amin_signed_char_select(Py_ssize_t arraylen, int nosimd, signed char *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return amin_signed_char_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_char(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -130,13 +138,13 @@ unsigned long long amin_unsigned_char(Py_ssize_t arraylen, unsigned char *data) 
 */
 unsigned long long amin_unsigned_char_select(Py_ssize_t arraylen, int nosimd, unsigned char *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return amin_unsigned_char_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_char(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -176,13 +184,13 @@ signed long long amin_signed_short(Py_ssize_t arraylen, signed short *data) {
 */
 signed long long amin_signed_short_select(Py_ssize_t arraylen, int nosimd, signed short *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return amin_signed_short_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_short(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -222,13 +230,13 @@ unsigned long long amin_unsigned_short(Py_ssize_t arraylen, unsigned short *data
 */
 unsigned long long amin_unsigned_short_select(Py_ssize_t arraylen, int nosimd, unsigned short *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return amin_unsigned_short_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_short(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -268,13 +276,13 @@ signed long long amin_signed_int(Py_ssize_t arraylen, signed int *data) {
 */
 signed long long amin_signed_int_select(Py_ssize_t arraylen, int nosimd, signed int *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return amin_signed_int_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_signed_int(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -314,13 +322,13 @@ unsigned long long amin_unsigned_int(Py_ssize_t arraylen, unsigned int *data) {
 */
 unsigned long long amin_unsigned_int_select(Py_ssize_t arraylen, int nosimd, unsigned int *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return amin_unsigned_int_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_unsigned_int(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 
@@ -456,13 +464,13 @@ double amin_float(Py_ssize_t arraylen, float *data) {
 */
 double amin_float_select(Py_ssize_t arraylen, int nosimd, float *data) { 
 
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return amin_float_simd(arraylen, data);
 	} else {
 	#endif
 		return amin_float(arraylen, data);
-	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+	#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
 	#endif
 

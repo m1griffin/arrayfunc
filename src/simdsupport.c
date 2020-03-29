@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@
 #include "simddefs.h"
 
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include <sys/auxv.h>
 #include <asm/hwcap.h>
 #endif
@@ -76,8 +76,8 @@ signed int hassimdlevel(void) {
 	}
 #endif
 
-// For ARMv7 NEON.
-#ifdef AF_HASSIMD_ARM
+// For ARMv7 32 bit with NEON.
+#if defined(AF_HASSIMD_ARMv7_32BIT)
 	if (getauxval(AT_HWCAP) & HWCAP_NEON) {
 		return 1;
 	} else {
@@ -86,7 +86,14 @@ signed int hassimdlevel(void) {
 #endif
 
 
+// Apparently ARM aarch64 64 bit always has NEON.
+#if defined(AF_HASSIMD_ARM_AARCH64)
+	return 1;
+#else
+
 	return 0;
+#endif
+
 
 }
 

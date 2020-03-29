@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -113,11 +113,16 @@ allinvertlimits = {
 
 SIMDFuncs_x86 = %(SIMD_data_x86)s
 
-SIMDFuncs_arm = %(SIMD_data_arm)s
+SIMDFuncs_armv7 = %(SIMD_data_armv7)s
+
+SIMDFuncs_armv8 = %(SIMD_data_armv8)s
+
 
 # Detect the hardware platform, and assign the correct platform data table to it.
 if '-armv' in platform.platform():
-	SIMDFuncs = SIMDFuncs_arm
+	SIMDFuncs = SIMDFuncs_armv7
+elif '-aarch64' in platform.platform():
+	SIMDFuncs = SIMDFuncs_armv8
 else:
 	SIMDFuncs = SIMDFuncs_x86
 
@@ -1236,12 +1241,16 @@ opdata = codegen_common.ReadCSVData('funcs.csv')
 # For x86-64
 cheaderdata_x86 = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_x86.h')
 
-# For ARM.
-cheaderdata_arm = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_arm.h')
+# For ARMv7.
+cheaderdata_armv7 = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_armv7.h')
+
+# For ARMv8.
+cheaderdata_armv8 = codegen_common.GetHeaderFileDataSIMD('../src/*_simd_armv8.h')
 
 # Reformat the SIMD data into a string containing the dictionary.
 SIMD_data_x86 = writeBenchMarkData(cheaderdata_x86)
-SIMD_data_arm = writeBenchMarkData(cheaderdata_arm)
+SIMD_data_armv7 = writeBenchMarkData(cheaderdata_armv7)
+SIMD_data_armv8 = writeBenchMarkData(cheaderdata_armv8)
 
 
 # Get the names of functions which use 'matherrors'.
@@ -1265,7 +1274,8 @@ benchclasses = []
 headerdate = codegen_common.FormatHeaderData('benchmarks', '20-Dec-2018', '')
 
 headerdate['SIMD_data_x86'] = SIMD_data_x86
-headerdate['SIMD_data_arm'] = SIMD_data_arm
+headerdate['SIMD_data_armv7'] = SIMD_data_armv7
+headerdate['SIMD_data_armv8'] = SIMD_data_armv8
 headerdate['Opt_data'] = Opt_data
 
 

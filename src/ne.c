@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -45,9 +45,16 @@
 #include "ne_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "ne_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "ne_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "ne_simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -65,7 +72,7 @@ char ne_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_signed_char_1_simd(arraylen, data1, param);
@@ -87,7 +94,7 @@ char ne_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param, signed
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_signed_char_3_simd(arraylen, param, data2);
@@ -109,7 +116,7 @@ char ne_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1, signe
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_signed_char_5_simd(arraylen, data1, data2);
@@ -138,7 +145,7 @@ char ne_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_unsigned_char_1_simd(arraylen, data1, param);
@@ -160,7 +167,7 @@ char ne_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char param, un
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_unsigned_char_3_simd(arraylen, param, data2);
@@ -182,7 +189,7 @@ char ne_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, u
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		return ne_unsigned_char_5_simd(arraylen, data1, data2);
@@ -211,7 +218,7 @@ char ne_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_signed_short_1_simd(arraylen, data1, param);
@@ -233,7 +240,7 @@ char ne_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short param, sign
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_signed_short_3_simd(arraylen, param, data2);
@@ -255,7 +262,7 @@ char ne_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_signed_short_5_simd(arraylen, data1, data2);
@@ -284,7 +291,7 @@ char ne_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_unsigned_short_1_simd(arraylen, data1, param);
@@ -306,7 +313,7 @@ char ne_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short param, 
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_unsigned_short_3_simd(arraylen, param, data2);
@@ -328,7 +335,7 @@ char ne_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		return ne_unsigned_short_5_simd(arraylen, data1, data2);
@@ -357,7 +364,7 @@ char ne_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_signed_int_1_simd(arraylen, data1, param);
@@ -379,7 +386,7 @@ char ne_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed i
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_signed_int_3_simd(arraylen, param, data2);
@@ -401,7 +408,7 @@ char ne_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed 
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_signed_int_5_simd(arraylen, data1, data2);
@@ -430,7 +437,7 @@ char ne_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_unsigned_int_1_simd(arraylen, data1, param);
@@ -452,7 +459,7 @@ char ne_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsi
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_unsigned_int_3_simd(arraylen, param, data2);
@@ -474,7 +481,7 @@ char ne_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, uns
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		return ne_unsigned_int_5_simd(arraylen, data1, data2);
@@ -711,7 +718,7 @@ char ne_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float param) {
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return ne_float_1_simd(arraylen, data1, param);
@@ -733,7 +740,7 @@ char ne_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2) {
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return ne_float_3_simd(arraylen, param, data2);
@@ -755,7 +762,7 @@ char ne_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *data2) {
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 		return ne_float_5_simd(arraylen, data1, data2);

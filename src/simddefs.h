@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -27,36 +27,31 @@
 
 // This signals that SIMD is supported.
 
-// If this is not 64 bit x86, we don't use SIMD features. The SIMD features
-// use compiler intrinsics which are CPU architecture specific.
-// If this is not GCC, we don't use the SIMD features as they are not 
-// compatible with the GCC syntax. On Windows, the wide variation in SIMD 
-// features makes distribution of pre-compiled 32 bit binaries difficult. 
 
-#ifdef __x86_64__
-#ifdef __GNUC__
-#ifndef __clang__
+// If this is not GCC, we don't use the SIMD features as they are not 
+// compatible with the GCC syntax. We have to check that it is not Clang,
+// as LLVM Clang will claim to be GCC.
+// LLVM Clang has limited SIMD support. For Windows, this library is normally
+// distributed as a precompiled binary and the very wide range of x86 versions
+// makes relying on SIMD problematic.
+#if defined(__GNUC__) && !defined(__clang__)
+
+// If this is x86 but not 64 bit, we don't use SIMD features. 
+#if defined(__x86_64__)
 #define AF_HASSIMD_X86
 #endif
-#endif
-#endif
 
-
-// This is the equivalent for ARM. We support ARMv7 only and only with GCC.
-#ifdef __GNUC__
-#ifndef __clang__
-#ifdef __arm__
-#ifdef __ARM_ARCH_7A__
-
-#define AF_HASSIMD_ARM
-
-#endif
-#endif
-#endif
+// For Rasberry Pi 3 and 32 bit OS.
+#if defined(__arm__) && defined(__ARM_ARCH_7A__)
+#define AF_HASSIMD_ARMv7_32BIT
 #endif
 
+// For 64 bit ARM on Rasberry Pi 3 with a 64 bit OS.
+#if defined(__aarch64__)
+#define AF_HASSIMD_ARM_AARCH64
+#endif
 
-
+#endif
 
 /*--------------------------------------------------------------------------- */
 
@@ -81,13 +76,26 @@ typedef long long v2di __attribute__ ((vector_size (16)));
 
 /*--------------------------------------------------------------------------- */
 
-// This is for ARM NEON only, with 64 bit SIMD registers.
-#ifdef AF_HASSIMD_ARM
+// This is for ARM NEON 32 bit only, with 64 bit SIMD registers.
+#ifdef AF_HASSIMD_ARMv7_32BIT
 
 #define CHARSIMDSIZE 8
 #define SHORTSIMDSIZE 4
 #define INTSIMDSIZE 2
 #define FLOATSIMDSIZE 2
+
+#endif
+
+/*--------------------------------------------------------------------------- */
+
+
+// This is for ARM NEON 64 bit only, with 128 bit SIMD registers.
+#ifdef AF_HASSIMD_ARM_AARCH64
+
+#define CHARSIMDSIZE 16
+#define SHORTSIMDSIZE 8
+#define INTSIMDSIZE 4
+#define FLOATSIMDSIZE 4
 
 #endif
 

@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     24-Mar-2019
-// Ver:      02-Jan-2020.
+// Ver:      27-Mar-2020.
 //
 //------------------------------------------------------------------------------
 //
@@ -93,7 +93,7 @@ void radians_float_1_simd(Py_ssize_t arraylen, float *data) {
 	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadups(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_mulps (datasliceleft, DEGTORAD_F_VEC);
 		// Store the result.
 		__builtin_ia32_storeups(&data[x], datasliceleft);
@@ -105,11 +105,10 @@ void radians_float_1_simd(Py_ssize_t arraylen, float *data) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr
-#if defined(AF_HASSIMD_X86)
 void radians_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 
 	// array index counter. 
@@ -129,7 +128,7 @@ void radians_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 	for (x = 0; x < alignedlength; x += FLOATSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadups(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_mulps (datasliceleft, DEGTORAD_F_VEC);
 		// Store the result.
 		__builtin_ia32_storeups(&dataout[x], datasliceleft);
@@ -171,7 +170,7 @@ void radians_double_1_simd(Py_ssize_t arraylen, double *data) {
 	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadupd(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_mulpd (datasliceleft, DEGTORAD_D_VEC);
 		// Store the result.
 		__builtin_ia32_storeupd(&data[x], datasliceleft);
@@ -183,11 +182,10 @@ void radians_double_1_simd(Py_ssize_t arraylen, double *data) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr
-#if defined(AF_HASSIMD_X86)
 void radians_double_2_simd(Py_ssize_t arraylen, double *data, double *dataout) {
 
 	// array index counter. 
@@ -207,7 +205,7 @@ void radians_double_2_simd(Py_ssize_t arraylen, double *data, double *dataout) {
 	for (x = 0; x < alignedlength; x += DOUBLESIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = __builtin_ia32_loadupd(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = __builtin_ia32_mulpd (datasliceleft, DEGTORAD_D_VEC);
 		// Store the result.
 		__builtin_ia32_storeupd(&dataout[x], datasliceleft);

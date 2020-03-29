@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2019    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -46,10 +46,18 @@
 #include "aall_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "aall_simd_arm.h"
 #endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "aall_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "aall_simd_armv8.h"
+#endif
+
 
 /*--------------------------------------------------------------------------- */
 
@@ -206,7 +214,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_eq_signed_char_simd(arraylen, data, param1);
@@ -217,7 +225,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_gt_signed_char_simd(arraylen, data, param1);
@@ -228,7 +236,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_ge_signed_char_simd(arraylen, data, param1);
@@ -239,7 +247,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_lt_signed_char_simd(arraylen, data, param1);
@@ -250,7 +258,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_le_signed_char_simd(arraylen, data, param1);
@@ -261,7 +269,7 @@ signed int aall_select_signed_char(signed int opcode, Py_ssize_t arraylen, unsig
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_ne_signed_char_simd(arraylen, data, param1);
@@ -430,7 +438,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_eq_unsigned_char_simd(arraylen, data, param1);
@@ -441,7 +449,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_gt_unsigned_char_simd(arraylen, data, param1);
@@ -452,7 +460,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_ge_unsigned_char_simd(arraylen, data, param1);
@@ -463,7 +471,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_lt_unsigned_char_simd(arraylen, data, param1);
@@ -474,7 +482,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_le_unsigned_char_simd(arraylen, data, param1);
@@ -485,7 +493,7 @@ signed int aall_select_unsigned_char(signed int opcode, Py_ssize_t arraylen, uns
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 				return aall_ne_unsigned_char_simd(arraylen, data, param1);
@@ -654,7 +662,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_eq_signed_short_simd(arraylen, data, param1);
@@ -665,7 +673,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_gt_signed_short_simd(arraylen, data, param1);
@@ -676,7 +684,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_ge_signed_short_simd(arraylen, data, param1);
@@ -687,7 +695,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_lt_signed_short_simd(arraylen, data, param1);
@@ -698,7 +706,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_le_signed_short_simd(arraylen, data, param1);
@@ -709,7 +717,7 @@ signed int aall_select_signed_short(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_ne_signed_short_simd(arraylen, data, param1);
@@ -878,7 +886,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_eq_unsigned_short_simd(arraylen, data, param1);
@@ -889,7 +897,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_gt_unsigned_short_simd(arraylen, data, param1);
@@ -900,7 +908,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_ge_unsigned_short_simd(arraylen, data, param1);
@@ -911,7 +919,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_lt_unsigned_short_simd(arraylen, data, param1);
@@ -922,7 +930,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_le_unsigned_short_simd(arraylen, data, param1);
@@ -933,7 +941,7 @@ signed int aall_select_unsigned_short(signed int opcode, Py_ssize_t arraylen, un
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 				return aall_ne_unsigned_short_simd(arraylen, data, param1);
@@ -1102,7 +1110,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_eq_signed_int_simd(arraylen, data, param1);
@@ -1113,7 +1121,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_gt_signed_int_simd(arraylen, data, param1);
@@ -1124,7 +1132,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_ge_signed_int_simd(arraylen, data, param1);
@@ -1135,7 +1143,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_lt_signed_int_simd(arraylen, data, param1);
@@ -1146,7 +1154,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_le_signed_int_simd(arraylen, data, param1);
@@ -1157,7 +1165,7 @@ signed int aall_select_signed_int(signed int opcode, Py_ssize_t arraylen, unsign
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_ne_signed_int_simd(arraylen, data, param1);
@@ -1326,7 +1334,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_eq_unsigned_int_simd(arraylen, data, param1);
@@ -1337,7 +1345,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_gt_unsigned_int_simd(arraylen, data, param1);
@@ -1348,7 +1356,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_ge_unsigned_int_simd(arraylen, data, param1);
@@ -1359,7 +1367,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_lt_unsigned_int_simd(arraylen, data, param1);
@@ -1370,7 +1378,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_le_unsigned_int_simd(arraylen, data, param1);
@@ -1381,7 +1389,7 @@ signed int aall_select_unsigned_int(signed int opcode, Py_ssize_t arraylen, unsi
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 				return aall_ne_unsigned_int_simd(arraylen, data, param1);
@@ -2326,7 +2334,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 	switch(opcode) {
 		// AF_EQ
 		case OP_AF_EQ: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_eq_float_simd(arraylen, data, param1);
@@ -2337,7 +2345,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		// AF_GT
 		case OP_AF_GT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_gt_float_simd(arraylen, data, param1);
@@ -2348,7 +2356,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		// AF_GE
 		case OP_AF_GE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_ge_float_simd(arraylen, data, param1);
@@ -2359,7 +2367,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		// AF_LT
 		case OP_AF_LT: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_lt_float_simd(arraylen, data, param1);
@@ -2370,7 +2378,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		// AF_LE
 		case OP_AF_LE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_le_float_simd(arraylen, data, param1);
@@ -2381,7 +2389,7 @@ signed int aall_select_float(signed int opcode, Py_ssize_t arraylen, unsigned in
 		}
 		// AF_NE
 		case OP_AF_NE: {
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 			// SIMD version.
 			if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 				return aall_ne_float_simd(arraylen, data, param1);

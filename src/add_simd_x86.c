@@ -5,7 +5,7 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     1-Apr-2019
-// Ver:      02-Jan-2020.
+// Ver:      27-Mar-2020.
 //
 //------------------------------------------------------------------------------
 //
@@ -92,11 +92,10 @@ void add_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	}
 
 }
-#endif
+
 
 
 // param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3) {
 
 	// array index counter. 
@@ -137,11 +136,10 @@ void add_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char *data2) {
 
 	// array index counter. 
@@ -182,11 +180,10 @@ void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3) {
 
 	// array index counter. 
@@ -227,11 +224,10 @@ void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char 
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2) {
 
 	// array index counter. 
@@ -264,11 +260,10 @@ void add_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2, signed char *data3) {
 
 	// array index counter. 
@@ -355,11 +350,10 @@ void add_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	}
 
 }
-#endif
+
 
 
 // param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3) {
 
 	// array index counter. 
@@ -400,11 +394,10 @@ void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed short *data2) {
 
 	// array index counter. 
@@ -445,11 +438,10 @@ void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed sho
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3) {
 
 	// array index counter. 
@@ -490,11 +482,10 @@ void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed sho
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2) {
 
 	// array index counter. 
@@ -527,11 +518,10 @@ void add_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed sh
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2, signed short *data3) {
 
 	// array index counter. 
@@ -618,11 +608,10 @@ void add_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	}
 
 }
-#endif
+
 
 
 // param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3) {
 
 	// array index counter. 
@@ -663,11 +652,10 @@ void add_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int pa
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *data2) {
 
 	// array index counter. 
@@ -708,11 +696,10 @@ void add_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3) {
 
 	// array index counter. 
@@ -753,11 +740,10 @@ void add_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *da
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2) {
 
 	// array index counter. 
@@ -790,11 +776,10 @@ void add_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *d
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3) {
 
 	// array index counter. 
@@ -881,11 +866,10 @@ void add_float_1_simd(Py_ssize_t arraylen, float *data1, float param) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
 void add_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *data3) {
 
 	// array index counter. 
@@ -926,11 +910,10 @@ void add_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *dat
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 
 	// array index counter. 
@@ -971,11 +954,10 @@ void add_float_3_simd(Py_ssize_t arraylen, float param, float *data2) {
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *data3) {
 
 	// array index counter. 
@@ -1016,11 +998,10 @@ void add_float_4_simd(Py_ssize_t arraylen, float param, float *data2, float *dat
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 
 	// array index counter. 
@@ -1053,11 +1034,10 @@ void add_float_5_simd(Py_ssize_t arraylen, float *data1, float *data2) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_float_6_simd(Py_ssize_t arraylen, float *data1, float *data2, float *data3) {
 
 	// array index counter. 
@@ -1144,11 +1124,10 @@ void add_double_1_simd(Py_ssize_t arraylen, double *data1, double param) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_num_arr
-#if defined(AF_HASSIMD_X86)
 void add_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double *data3) {
 
 	// array index counter. 
@@ -1189,11 +1168,10 @@ void add_double_2_simd(Py_ssize_t arraylen, double *data1, double param, double 
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 
 	// array index counter. 
@@ -1234,11 +1212,10 @@ void add_double_3_simd(Py_ssize_t arraylen, double param, double *data2) {
 	}
 
 }
-#endif
+
 
 
 // param_num_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double *data3) {
 
 	// array index counter. 
@@ -1279,11 +1256,10 @@ void add_double_4_simd(Py_ssize_t arraylen, double param, double *data2, double 
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_none
-#if defined(AF_HASSIMD_X86)
 void add_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 
 	// array index counter. 
@@ -1316,11 +1292,10 @@ void add_double_5_simd(Py_ssize_t arraylen, double *data1, double *data2) {
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr_arr
-#if defined(AF_HASSIMD_X86)
 void add_double_6_simd(Py_ssize_t arraylen, double *data1, double *data2, double *data3) {
 
 	// array index counter. 

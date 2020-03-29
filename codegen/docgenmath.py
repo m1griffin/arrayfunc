@@ -275,7 +275,8 @@ funcsdocs = FindFuncDocs(filelist, funcnames)
 
 # Get the x86 and ARM SIMD files.
 simddata_x86 = GetSIMDTable('../src/*_simd_x86.h')
-simddata_arm = GetSIMDTable('../src/*_simd_arm.h')
+simddata_armv7 = GetSIMDTable('../src/*_simd_armv7.h')
+simddata_armv8 = GetSIMDTable('../src/*_simd_armv8.h')
 
 
 # Get the documentation from the functions that are not in the spreadsheet.
@@ -338,7 +339,7 @@ arraysizebench = GetArraySizeBenchData()
 # ==============================================================================
 
 # Insert the data into the documentation template.
-def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_arm, 
+def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
 		pybench, simdbench, simdrelbench, arraysizebench):
 	'''Write out the documentation based on the template.
 	'''
@@ -349,12 +350,12 @@ def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_arm,
 	# Write out the completed documentation file complete with data.
 	with open('ArrayFunc.rst', 'w') as f:
 		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, extradocs = extradocs,
-			simddata_x86 = simddata_x86, simddata_arm = simddata_arm,
+			simddata_x86 = simddata_x86, simddata_armv7 = simddata_armv7, simddata_armv8 = simddata_armv8,
 			pybench = pybench, simdbench = simdbench, simdrelbench = simdrelbench,
 			arraysizebench = arraysizebench))
 
 # Write out the documentation file.
-WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_arm, 
+WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
 		pybench, simdbench, simdrelbench, arraysizebench)
 
 # ==============================================================================

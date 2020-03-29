@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -43,9 +43,16 @@
 #include "invert_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "invert_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "invert_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "invert_simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -63,7 +70,7 @@ void invert_signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, sign
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -101,7 +108,7 @@ void invert_unsigned_char(Py_ssize_t arraylen, int nosimd, unsigned char *data, 
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -139,7 +146,7 @@ void invert_signed_short(Py_ssize_t arraylen, int nosimd, signed short *data, si
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -177,7 +184,7 @@ void invert_unsigned_short(Py_ssize_t arraylen, int nosimd, unsigned short *data
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -215,7 +222,7 @@ void invert_signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, signed
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -253,7 +260,7 @@ void invert_unsigned_int(Py_ssize_t arraylen, int nosimd, unsigned int *data, un
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		if (hasoutputarray) {

@@ -8,7 +8,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ mathfunc1_template = """//------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -323,7 +323,7 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(simdload)s(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = %(simdop)s;
 		// Store the result.
 		%(simdstore)s(&data[x], datasliceleft);
@@ -335,11 +335,10 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	}
 
 }
-#endif
+
 
 
 // param_arr_arr
-%(simdplatform)s
 void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout) {
 
 	// array index counter. 
@@ -359,7 +358,7 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 	for (x = 0; x < alignedlength; x += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(simdload)s(&data[x]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = %(simdop)s;
 		// Store the result.
 		%(simdstore)s(&dataout[x], datasliceleft);
@@ -394,10 +393,6 @@ SIMD_call = '''\n%(simdplatform)s
 	}
 #endif\n'''
 
-# These get substituted into the above call template.
-SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
-SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)'
-SIMD_platform_ARM = '#if defined(AF_HASSIMD_ARM)'
 
 
 # The following are used to fill in template data which handles whether
@@ -445,12 +440,23 @@ const v4sf DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F, DEGTORAD_F, DEGTORAD_F};
 /*--------------------------------------------------------------------------- */
 """
 
-degtorad_vec_arm = """
+degtorad_vec_armv7 = """
 /*--------------------------------------------------------------------------- */
 
-#ifdef AF_HASSIMD_ARM
-// Used to calculate degrees to radians for ARM NEON.
+#ifdef AF_HASSIMD_ARMv7_32BIT
+// Used to calculate degrees to radians for ARM NEON for 32 bit ARMv7.
 const float32x2_t DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F};
+#endif
+
+/*--------------------------------------------------------------------------- */
+"""
+
+degtorad_vec_armv8 = """
+/*--------------------------------------------------------------------------- */
+
+#ifdef AF_HASSIMD_ARM_AARCH64
+// Used to calculate degrees to radians for ARM NEON for 64 bit ARMv8.
+const float32x4_t DEGTORAD_F_VEC = {DEGTORAD_F, DEGTORAD_F, DEGTORAD_F, DEGTORAD_F};
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -469,28 +475,35 @@ const v4sf RADTODEG_F_VEC = {RADTODEG_F, RADTODEG_F, RADTODEG_F, RADTODEG_F};
 /*--------------------------------------------------------------------------- */
 """
 
-radtodeg_vec_arm = """
+radtodeg_vec_armv7 = """
 /*--------------------------------------------------------------------------- */
 
-#ifdef AF_HASSIMD_ARM
-// Used to calculate radians to degrees in vector format ARM NEON.
+#ifdef AF_HASSIMD_ARMv7_32BIT
+// Used to calculate radians to degrees in vector format ARM NEON for 32 bit ARMv7.
 const float32x2_t RADTODEG_F_VEC = {RADTODEG_F, RADTODEG_F};
 #endif
 
 /*--------------------------------------------------------------------------- */
 """
 
+radtodeg_vec_armv8 = """
+/*--------------------------------------------------------------------------- */
 
+#ifdef AF_HASSIMD_ARM_AARCH64
+// Used to calculate radians to degrees in vector format ARM NEON for 64 bit ARMv8.
+const float32x4_t RADTODEG_F_VEC = {RADTODEG_F, RADTODEG_F, RADTODEG_F, RADTODEG_F};
+#endif
 
-
-
+/*--------------------------------------------------------------------------- */
+"""
 
 
 degrad = {'degrees' : radtodeg, 'radians' : degtorad}
 
 degrad_vec_x86 = {'degrees' : radtodeg_vec_x86, 'radians' : degtorad_vec_x86}
 
-degrad_vec_arm = {'degrees' : radtodeg_vec_arm, 'radians' : degtorad_vec_arm}
+degrad_vec_armv7 = {'degrees' : radtodeg_vec_armv7, 'radians' : degtorad_vec_armv7}
+degrad_vec_armv8 = {'degrees' : radtodeg_vec_armv8, 'radians' : degtorad_vec_armv8}
 
 
 # For MSVS compatibility for Windows.
@@ -518,9 +531,16 @@ includeoptions_simd_x86_arm = '''#include "arrayparams_onesimd.h"
 #include "%(funclabel)s_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "%(funclabel)s_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "%(funclabel)s_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "%(funclabel)s_simd_armv8.h"
 #endif'''
 
 # Funcitons with x86 only SIMD.
@@ -573,28 +593,57 @@ simdop_x86 = {
 
 # Which functions support x86 SIMD.
 x86_simdfuncnames = set(itertools.chain.from_iterable([x.keys() for x in simdop_x86.values()]))
+SIMD_x86_support = simdop_x86.keys()
 
 # ==============================================================================
 
 # This is the ARM version. This is for single precision float only.
-simdvalues_arm = {'simdattr' : 'float32x2_t', 'simdload' : 'vld1_f32', 'simdstore' : 'vst1_f32'}
-
-simdsupport_arm = ('f', )
+simdvalues_armv7 = {'simdattr' : 'float32x2_t', 'simdload' : 'vld1_f32', 'simdstore' : 'vst1_f32'}
 
 
 # The SIMD operations used for each function for ARM NEON.
 # This currently covers ARMv7 only.
-simdop_arm = {'degrees' : 'vmul_f32 (datasliceleft, RADTODEG_F_VEC)',
+simdop_armv7 = {'degrees' : 'vmul_f32 (datasliceleft, RADTODEG_F_VEC)',
 		'radians' : 'vmul_f32 (datasliceleft, DEGTORAD_F_VEC)',
 		}
 
 # Which functions support ARM SIMD.
-arm_simdfuncnames = list(simdop_arm.keys())
+armv7_simdfuncnames = list(simdop_armv7.keys())
+
+SIMD_armv7_support = ('f', )
+
+# ==============================================================================
+
+# This is the ARM version. This is for single precision float only.
+simdvalues_armv8 = {'simdattr' : 'float32x4_t', 'simdload' : 'vld1q_f32', 'simdstore' : 'vst1q_f32'}
+
+
+# The SIMD operations used for each function for ARM NEON.
+# This currently covers ARMv7 only.
+simdop_armv8 = {'degrees' : 'vmulq_f32 (datasliceleft, RADTODEG_F_VEC)',
+		'radians' : 'vmulq_f32 (datasliceleft, DEGTORAD_F_VEC)',
+		}
+
+# Which functions support ARM SIMD.
+armv8_simdfuncnames = list(simdop_armv8.keys())
+
+SIMD_armv8_support = ('f', )
 
 # ==============================================================================
 
 # SIMD width depends on array type.
 simdwidth = {'f' : 'FLOATSIMDSIZE', 'd' : 'DOUBLESIMDSIZE'}
+
+
+# ==============================================================================
+
+# These get substituted into function call templates.
+SIMD_platform_x86 = '#if defined(AF_HASSIMD_X86)'
+SIMD_platform_x86_ARM = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)'
+SIMD_platform_x86_ARMv8 = '#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)'
+SIMD_platform_ARMv7 = '#if defined(AF_HASSIMD_ARMv7_32BIT)'
+SIMD_platform_ARM64v8 = '#if defined(AF_HASSIMD_ARM_AARCH64)'
+
 
 # ==============================================================================
 
@@ -603,13 +652,36 @@ simdwidth = {'f' : 'FLOATSIMDSIZE', 'd' : 'DOUBLESIMDSIZE'}
 # SIMD files.
 def findsimdplatform(arraycode, funcname):
 
-	# The calls to SIMD support code are platform dependent.
-	if (arraycode in simdvalues_x86) and (funcname not in arm_simdfuncnames):
-		return SIMD_platform_x86
-	elif (arraycode in simdvalues_x86) and (funcname in arm_simdfuncnames):
+	hasx86 = (arraycode in SIMD_x86_support) and (funcname in x86_simdfuncnames)
+	hasarmv7 = arraycode in SIMD_armv7_support and (funcname in armv7_simdfuncnames)
+	hasarmv8 = arraycode in SIMD_armv8_support and (funcname in armv8_simdfuncnames)
+
+	# Only the platforms combinations which are used currently are defined here.
+	if hasx86 and hasarmv7 and hasarmv8:
 		return SIMD_platform_x86_ARM
+	elif hasx86 and (not hasarmv7) and (not hasarmv8):
+		return SIMD_platform_x86
+	elif hasx86 and (not hasarmv7) and hasarmv8:
+		return SIMD_platform_x86_ARMv8
 	else:
 		return 'Error: Template error, this should not be here.'
+
+
+# ==============================================================================
+
+# Return the include options, which depend on the function name.
+def findincludeoptions(funcname):
+
+	hasx86 = funcname in x86_simdfuncnames
+	hasarmv7 = funcname in armv7_simdfuncnames
+	hasarmv8 = funcname in armv8_simdfuncnames
+
+	if hasx86 and (hasarmv7 or hasarmv8):
+		return includeoptions_simd_x86_arm % {'funclabel' : funcname}
+	elif hasx86 and not(hasarmv7 or hasarmv8):
+		return includeoptions_simd_x86 % {'funclabel' : funcname}
+	else:
+		return 'Error - funcs1_codegen simd support selection error.'
 
 
 # ==============================================================================
@@ -649,12 +721,7 @@ for func in funclist:
 		# ARM NEON does not support all the same functions as x86 SIMD.
 		# We assume that if the function supports ARM NEON, then it
 		# also supports x86 SIMD.
-		if (funcname in x86_simdfuncnames) and (funcname in arm_simdfuncnames):
-			includeoptions = includeoptions_simd_x86_arm % {'funclabel' : funcname}
-		elif funcname in x86_simdfuncnames:
-			includeoptions = includeoptions_simd_x86 % {'funclabel' : funcname}
-		else:
-			print('Error - funcs1_codegen simd support selection error.')
+		includeoptions = findincludeoptions(funcname)
 
 		# For single precision floating point.
 		arraytype = codegen_common.arraytypes['f']
@@ -800,11 +867,11 @@ for func in simdlist:
 
 # The original date of the SIMD C code.
 simdcodedate = '02-Oct-2019'
-simdfilename = '_simd_arm'
+simdfilename = '_simd_armv7'
 
-# This outputs the SIMD version for ARM NEON.
+# This outputs the SIMD version for ARM NEON ARMv7 32 bit.
 
-armsimdlist = [x for x in simdlist if x['funcname'] in arm_simdfuncnames]
+armsimdlist = [x for x in simdlist if x['funcname'] in armv7_simdfuncnames]
 
 
 for func in armsimdlist:
@@ -821,7 +888,7 @@ for func in armsimdlist:
 	# degrees and radians.
 	outputlist.append(degradmsvc.get(funcname, ''))
 	outputlist.append(degrad.get(funcname, ''))
-	outputlist.append(degrad_vec_arm.get(funcname, ''))
+	outputlist.append(degrad_vec_armv7.get(funcname, ''))
 
 
 	# Get the correct C template for the calculation, filled out for the appropriate type. 
@@ -842,15 +909,15 @@ for func in armsimdlist:
 				'funcmodifier' : arraytype.replace(' ', '_'),
 				'arraycode' : arraycode,
 				'arraytype' : codegen_common.arraytypes[arraycode],
-				'simdop' : simdop_arm[funcname],
+				'simdop' : simdop_armv7[funcname],
 				'simdcleanup' : c_operator,
-				'simdplatform' : SIMD_platform_ARM,
+				'simdplatform' : SIMD_platform_ARMv7,
 				'simdwidth' : simdwidth['f'],
 				}
 				
 
 	# Start of function definition.
-	datavals.update(simdvalues_arm)
+	datavals.update(simdvalues_armv7)
 	outputlist.append(ops_simdsupport % datavals)
 
 
@@ -860,7 +927,86 @@ for func in armsimdlist:
 		maindescription, 
 		codegen_common.SIMDDescription, 
 		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_arm'])
+		'', ['simddefs', 'simdmacromsg_armv7'])
+
+
+	# Output the .h header file.
+	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
+
+	# Write out the file.
+	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate)
+
+
+# ==============================================================================
+
+
+
+# The original date of the SIMD C code.
+simdcodedate = '26-Mar-2020'
+simdfilename = '_simd_armv8'
+
+# This outputs the SIMD version for ARM NEON ARMv8 64 bit.
+
+armsimdlist = [x for x in simdlist if x['funcname'] in armv8_simdfuncnames]
+
+
+for func in armsimdlist:
+	
+	outputlist = []
+
+	funcname = func['funcname']
+	c_code_template = func['c_code_template']
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
+
+	# Add the additional math and constant information required for
+	# degrees and radians.
+	outputlist.append(degradmsvc.get(funcname, ''))
+	outputlist.append(degrad.get(funcname, ''))
+	outputlist.append(degrad_vec_armv8.get(funcname, ''))
+
+
+	# Get the correct C template for the calculation, filled out for the appropriate type. 
+	floatfunc = cfunctmpl.get(c_code_template) % {'c_operator' : func['c_operator_f']}
+
+
+	# Output the generated code.
+	arraycode = 'f'
+
+	arraytype = codegen_common.arraytypes[arraycode]
+
+	c_operator = floatfunc % {'c_operator' : func['c_operator_f']}
+
+
+	# The compare_ops symbols is the same for integer and floating point.
+	datavals = {'funclabel' : funcname,
+				'arraytype' : arraytype, 
+				'funcmodifier' : arraytype.replace(' ', '_'),
+				'arraycode' : arraycode,
+				'arraytype' : codegen_common.arraytypes[arraycode],
+				'simdop' : simdop_armv8[funcname],
+				'simdcleanup' : c_operator,
+				'simdplatform' : SIMD_platform_ARM64v8,
+				'simdwidth' : simdwidth['f'],
+				}
+				
+
+	# Start of function definition.
+	datavals.update(simdvalues_armv8)
+	outputlist.append(ops_simdsupport % datavals)
+
+
+
+	# This outputs the SIMD version.
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+		maindescription, 
+		codegen_common.SIMDDescription, 
+		simdcodedate,
+		'', ['simddefs', 'simdmacromsg_armv8'])
 
 
 	# Output the .h header file.

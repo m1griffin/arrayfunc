@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -41,9 +41,16 @@
 
 #include "simddefs.h"
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "mul_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "mul_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "mul_simd_armv8.h"
 #endif
 
 
@@ -68,7 +75,7 @@ signed int mul_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_1_simd(arraylen, data1, param);
@@ -125,7 +132,7 @@ signed int mul_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_2_simd(arraylen, data1, param, data3);
@@ -182,7 +189,7 @@ signed int mul_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_3_simd(arraylen, param, data2);
@@ -239,7 +246,7 @@ signed int mul_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_4_simd(arraylen, param, data2, data3);
@@ -297,7 +304,7 @@ signed int mul_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_5_simd(arraylen, data1, data2);
@@ -330,7 +337,7 @@ signed int mul_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_signed_char_6_simd(arraylen, data1, data2, data3);
@@ -373,7 +380,7 @@ signed int mul_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_1_simd(arraylen, data1, param);
@@ -412,7 +419,7 @@ signed int mul_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_2_simd(arraylen, data1, param, data3);
@@ -451,7 +458,7 @@ signed int mul_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_3_simd(arraylen, param, data2);
@@ -490,7 +497,7 @@ signed int mul_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_4_simd(arraylen, param, data2, data3);
@@ -530,7 +537,7 @@ signed int mul_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_5_simd(arraylen, data1, data2);
@@ -561,7 +568,7 @@ signed int mul_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			mul_unsigned_char_6_simd(arraylen, data1, data2, data3);
@@ -602,7 +609,7 @@ signed int mul_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_1_simd(arraylen, data1, param);
@@ -659,7 +666,7 @@ signed int mul_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_2_simd(arraylen, data1, param, data3);
@@ -716,7 +723,7 @@ signed int mul_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_3_simd(arraylen, param, data2);
@@ -773,7 +780,7 @@ signed int mul_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_4_simd(arraylen, param, data2, data3);
@@ -831,7 +838,7 @@ signed int mul_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_5_simd(arraylen, data1, data2);
@@ -864,7 +871,7 @@ signed int mul_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_signed_short_6_simd(arraylen, data1, data2, data3);
@@ -907,7 +914,7 @@ signed int mul_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_1_simd(arraylen, data1, param);
@@ -946,7 +953,7 @@ signed int mul_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_2_simd(arraylen, data1, param, data3);
@@ -985,7 +992,7 @@ signed int mul_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_3_simd(arraylen, param, data2);
@@ -1024,7 +1031,7 @@ signed int mul_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_4_simd(arraylen, param, data2, data3);
@@ -1064,7 +1071,7 @@ signed int mul_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_5_simd(arraylen, data1, data2);
@@ -1095,7 +1102,7 @@ signed int mul_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			mul_unsigned_short_6_simd(arraylen, data1, data2, data3);
@@ -1127,7 +1134,7 @@ signed int mul_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int mul_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int param, unsigned int ignoreerrors) {
+signed int mul_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1135,6 +1142,14 @@ signed int mul_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
@@ -1176,7 +1191,7 @@ signed int mul_signed_int_1(Py_ssize_t arraylen, signed int *data1, signed int p
 }
 
 // param_arr_num_arr
-signed int mul_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3, unsigned int ignoreerrors) {
+signed int mul_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int param, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1184,6 +1199,14 @@ signed int mul_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
@@ -1225,7 +1248,7 @@ signed int mul_signed_int_2(Py_ssize_t arraylen, signed int *data1, signed int p
 }
 
 // param_num_arr_none
-signed int mul_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *data2, unsigned int ignoreerrors) {
+signed int mul_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1233,6 +1256,14 @@ signed int mul_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
@@ -1274,7 +1305,7 @@ signed int mul_signed_int_3(Py_ssize_t arraylen, signed int param, signed int *d
 }
 
 // param_num_arr_arr
-signed int mul_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
+signed int mul_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1282,6 +1313,14 @@ signed int mul_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *d
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
@@ -1325,13 +1364,21 @@ signed int mul_signed_int_4(Py_ssize_t arraylen, signed int param, signed int *d
 
 
 // param_arr_arr_none
-signed int mul_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *data2, unsigned int ignoreerrors) {
+signed int mul_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
@@ -1350,13 +1397,21 @@ signed int mul_signed_int_5(Py_ssize_t arraylen, signed int *data1, signed int *
 }
 
 // param_arr_arr_arr
-signed int mul_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
+signed int mul_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, signed int *data2, signed int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_signed_int_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
@@ -1384,7 +1439,7 @@ signed int mul_signed_int_6(Py_ssize_t arraylen, signed int *data1, signed int *
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int mul_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1392,6 +1447,14 @@ signed int mul_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param; 
@@ -1415,7 +1478,7 @@ signed int mul_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_num_arr
-signed int mul_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1423,6 +1486,14 @@ signed int mul_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param; 
@@ -1446,7 +1517,7 @@ signed int mul_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_num_arr_none
-signed int mul_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1454,6 +1525,14 @@ signed int mul_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data2[x] = data2[x] * param; 
@@ -1477,7 +1556,7 @@ signed int mul_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 }
 
 // param_num_arr_arr
-signed int mul_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1485,6 +1564,14 @@ signed int mul_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data2[x] * param; 
@@ -1510,13 +1597,21 @@ signed int mul_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 
 // param_arr_arr_none
-signed int mul_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
@@ -1533,13 +1628,21 @@ signed int mul_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_arr_arr
-signed int mul_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int mul_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			mul_unsigned_int_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
@@ -2441,13 +2544,21 @@ signed int mul_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int mul_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned int ignoreerrors) {
+signed int mul_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * param;
@@ -2464,13 +2575,21 @@ signed int mul_float_1(Py_ssize_t arraylen, float *data1, float param, unsigned 
 }
 
 // param_arr_num_arr
-signed int mul_float_2(Py_ssize_t arraylen, float *data1, float param, float *data3, unsigned int ignoreerrors) {
+signed int mul_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float param, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * param;
@@ -2487,13 +2606,21 @@ signed int mul_float_2(Py_ssize_t arraylen, float *data1, float param, float *da
 }
 
 // param_num_arr_none
-signed int mul_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned int ignoreerrors) {
+signed int mul_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data2[x] = param * data2[x];
@@ -2510,13 +2637,21 @@ signed int mul_float_3(Py_ssize_t arraylen, float param, float *data2, unsigned 
 }
 
 // param_num_arr_arr
-signed int mul_float_4(Py_ssize_t arraylen, float param, float *data2, float *data3, unsigned int ignoreerrors) {
+signed int mul_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data2, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = param * data2[x];
@@ -2535,13 +2670,21 @@ signed int mul_float_4(Py_ssize_t arraylen, float param, float *data2, float *da
 
 
 // param_arr_arr_none
-signed int mul_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned int ignoreerrors) {
+signed int mul_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] * data2[x];
@@ -2558,13 +2701,21 @@ signed int mul_float_5(Py_ssize_t arraylen, float *data1, float *data2, unsigned
 }
 
 // param_arr_arr_arr
-signed int mul_float_6(Py_ssize_t arraylen, float *data1, float *data2, float *data3, unsigned int ignoreerrors) {
+signed int mul_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *data2, float *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+			mul_float_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] * data2[x];
@@ -2884,27 +3035,27 @@ static PyObject *py_mul(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'i' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = mul_signed_int_1(arraydata.arraylength, arraydata.array1.i, arraydata.param.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = mul_signed_int_2(arraydata.arraylength, arraydata.array1.i, arraydata.param.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.param.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = mul_signed_int_3(arraydata.arraylength, arraydata.param.i, arraydata.array2.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = mul_signed_int_4(arraydata.arraylength, arraydata.param.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = mul_signed_int_5(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = mul_signed_int_6(arraydata.arraylength, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
+					resultcode = mul_signed_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.i, arraydata.array2.i, arraydata.array3.i, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -2915,27 +3066,27 @@ static PyObject *py_mul(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'I' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = mul_unsigned_int_1(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = mul_unsigned_int_2(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = mul_unsigned_int_3(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = mul_unsigned_int_4(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = mul_unsigned_int_5(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = mul_unsigned_int_6(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = mul_unsigned_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 			}
@@ -3070,27 +3221,27 @@ static PyObject *py_mul(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'f' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = mul_float_1(arraydata.arraylength, arraydata.array1.f, arraydata.param.f, arraydata.ignoreerrors);
+					resultcode = mul_float_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.param.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = mul_float_2(arraydata.arraylength, arraydata.array1.f, arraydata.param.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = mul_float_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.param.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = mul_float_3(arraydata.arraylength, arraydata.param.f, arraydata.array2.f, arraydata.ignoreerrors);
+					resultcode = mul_float_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.f, arraydata.array2.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = mul_float_4(arraydata.arraylength, arraydata.param.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = mul_float_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = mul_float_5(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors);
+					resultcode = mul_float_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = mul_float_6(arraydata.arraylength, arraydata.array1.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
+					resultcode = mul_float_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.f, arraydata.array2.f, arraydata.array3.f, arraydata.ignoreerrors);
 					break;
 				}
 			}

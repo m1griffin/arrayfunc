@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -43,9 +43,16 @@
 #include "abs__simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "abs__simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "abs__simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "abs__simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -64,7 +71,7 @@ signed int abs__signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, 
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -120,7 +127,7 @@ signed int abs__signed_short(Py_ssize_t arraylen, int nosimd, signed short *data
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -176,7 +183,7 @@ signed int abs__signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, si
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (ignoreerrors && !nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		if (hasoutputarray) {
@@ -319,6 +326,18 @@ signed int abs__float(Py_ssize_t arraylen, int nosimd, float *data, float *datao
 	// array index counter.
 	Py_ssize_t x;
 
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+	// SIMD version.
+	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (hasoutputarray) {
+			abs__float_2_simd(arraylen, data, dataout);
+		} else {
+			abs__float_1_simd(arraylen, data);
+		}
+		return ARR_NO_ERR;
+	}
+#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {

@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -45,9 +45,16 @@
 #include "add_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "add_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "add_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "add_simd_armv8.h"
 #endif
 
 
@@ -72,7 +79,7 @@ signed int add_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_1_simd(arraylen, data1, param);
@@ -118,7 +125,7 @@ signed int add_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_2_simd(arraylen, data1, param, data3);
@@ -165,7 +172,7 @@ signed int add_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_3_simd(arraylen, param, data2);
@@ -211,7 +218,7 @@ signed int add_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param,
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_4_simd(arraylen, param, data2, data3);
@@ -259,7 +266,7 @@ signed int add_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_5_simd(arraylen, data1, data2);
@@ -291,7 +298,7 @@ signed int add_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_signed_char_6_simd(arraylen, data1, data2, data3);
@@ -333,7 +340,7 @@ signed int add_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_1_simd(arraylen, data1, param);
@@ -366,7 +373,7 @@ signed int add_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_2_simd(arraylen, data1, param, data3);
@@ -399,7 +406,7 @@ signed int add_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_3_simd(arraylen, param, data2);
@@ -432,7 +439,7 @@ signed int add_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char pa
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_4_simd(arraylen, param, data2, data3);
@@ -467,7 +474,7 @@ signed int add_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_5_simd(arraylen, data1, data2);
@@ -500,7 +507,7 @@ signed int add_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *d
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 			add_unsigned_char_6_simd(arraylen, data1, data2, data3);
@@ -542,7 +549,7 @@ signed int add_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_1_simd(arraylen, data1, param);
@@ -588,7 +595,7 @@ signed int add_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_2_simd(arraylen, data1, param, data3);
@@ -635,7 +642,7 @@ signed int add_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_3_simd(arraylen, param, data2);
@@ -681,7 +688,7 @@ signed int add_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_4_simd(arraylen, param, data2, data3);
@@ -729,7 +736,7 @@ signed int add_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_5_simd(arraylen, data1, data2);
@@ -761,7 +768,7 @@ signed int add_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_signed_short_6_simd(arraylen, data1, data2, data3);
@@ -803,7 +810,7 @@ signed int add_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_1_simd(arraylen, data1, param);
@@ -836,7 +843,7 @@ signed int add_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_2_simd(arraylen, data1, param, data3);
@@ -869,7 +876,7 @@ signed int add_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_3_simd(arraylen, param, data2);
@@ -902,7 +909,7 @@ signed int add_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_4_simd(arraylen, param, data2, data3);
@@ -937,7 +944,7 @@ signed int add_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_5_simd(arraylen, data1, data2);
@@ -970,7 +977,7 @@ signed int add_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 			add_unsigned_short_6_simd(arraylen, data1, data2, data3);
@@ -1012,7 +1019,7 @@ signed int add_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_1_simd(arraylen, data1, param);
@@ -1058,7 +1065,7 @@ signed int add_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_2_simd(arraylen, data1, param, data3);
@@ -1105,7 +1112,7 @@ signed int add_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_3_simd(arraylen, param, data2);
@@ -1151,7 +1158,7 @@ signed int add_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, s
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_4_simd(arraylen, param, data2, data3);
@@ -1199,7 +1206,7 @@ signed int add_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_5_simd(arraylen, data1, data2);
@@ -1231,7 +1238,7 @@ signed int add_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 			add_signed_int_6_simd(arraylen, data1, data2, data3);
@@ -1264,7 +1271,7 @@ signed int add_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, 
    ignoreerrors = If true, disable arithmetic math error checking (default is false).
 */
 // param_arr_num_none
-signed int add_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
+signed int add_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1272,6 +1279,14 @@ signed int add_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_1_simd(arraylen, data1, param);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] + param;
@@ -1289,7 +1304,7 @@ signed int add_unsigned_int_1(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_num_arr
-signed int add_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
+signed int add_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int param, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1297,6 +1312,14 @@ signed int add_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_2_simd(arraylen, data1, param, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] + param;
@@ -1314,7 +1337,7 @@ signed int add_unsigned_int_2(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_num_arr_none
-signed int add_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
+signed int add_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1322,6 +1345,14 @@ signed int add_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_3_simd(arraylen, param, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data2[x] = param + data2[x];
@@ -1339,7 +1370,7 @@ signed int add_unsigned_int_3(Py_ssize_t arraylen, unsigned int param, unsigned 
 }
 
 // param_num_arr_arr
-signed int add_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int add_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int param, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1347,6 +1378,14 @@ signed int add_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_4_simd(arraylen, param, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = param + data2[x];
@@ -1366,7 +1405,7 @@ signed int add_unsigned_int_4(Py_ssize_t arraylen, unsigned int param, unsigned 
 
 
 // param_arr_arr_none
-signed int add_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
+signed int add_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1374,6 +1413,14 @@ signed int add_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_5_simd(arraylen, data1, data2);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data1[x] = data1[x] + data2[x];
@@ -1391,7 +1438,7 @@ signed int add_unsigned_int_5(Py_ssize_t arraylen, unsigned int *data1, unsigned
 }
 
 // param_arr_arr_arr
-signed int add_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
+signed int add_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int *data3, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
@@ -1399,6 +1446,14 @@ signed int add_unsigned_int_6(Py_ssize_t arraylen, unsigned int *data1, unsigned
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+		// SIMD version.
+		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+			add_unsigned_int_6_simd(arraylen, data1, data2, data3);
+			return ARR_NO_ERR;
+		}
+#endif
 
 		for (x = 0; x < arraylen; x++) {
 			data3[x] = data1[x] + data2[x];
@@ -2181,7 +2236,7 @@ signed int add_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_1_simd(arraylen, data1, param);
@@ -2212,7 +2267,7 @@ signed int add_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float para
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_2_simd(arraylen, data1, param, data3);
@@ -2243,7 +2298,7 @@ signed int add_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_3_simd(arraylen, param, data2);
@@ -2274,7 +2329,7 @@ signed int add_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_4_simd(arraylen, param, data2, data3);
@@ -2307,7 +2362,7 @@ signed int add_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_5_simd(arraylen, data1, data2);
@@ -2338,7 +2393,7 @@ signed int add_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 	// Math error checking disabled.
 	if (ignoreerrors) {
 
-#if defined(AF_HASSIMD_X86)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
 		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
 			add_float_6_simd(arraylen, data1, data2, data3);
@@ -2743,27 +2798,27 @@ static PyObject *py_add(PyObject *self, PyObject *args, PyObject *keywds) {
 		case 'I' : {
 			switch (arraydata.paramcat) {
 				case param_arr_num_none : {
-					resultcode = add_unsigned_int_1(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_1(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_num_arr : {
-					resultcode = add_unsigned_int_2(arraydata.arraylength, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_2(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.param.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_none : {
-					resultcode = add_unsigned_int_3(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_3(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_num_arr_arr : {
-					resultcode = add_unsigned_int_4(arraydata.arraylength, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_4(arraydata.arraylength, arraydata.nosimd, arraydata.param.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_none : {
-					resultcode = add_unsigned_int_5(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_5(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.ignoreerrors);
 					break;
 				}
 				case param_arr_arr_arr : {
-					resultcode = add_unsigned_int_6(arraydata.arraylength, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
+					resultcode = add_unsigned_int_6(arraydata.arraylength, arraydata.nosimd, arraydata.array1.I, arraydata.array2.I, arraydata.array3.I, arraydata.ignoreerrors);
 					break;
 				}
 			}

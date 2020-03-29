@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 5.1.1 for 2020-03-06
+:Version: 6.0.0 for 2020-03-27
 :Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
@@ -307,10 +307,14 @@ FreeBSD 12         64 bit    LLVM                        3.7
 OpenBSD 6.5        64 bit    LLVM                        3.6
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
 Raspbian (RPi 3)   32 bit    GCC                         3.7
+Ubuntu 19.10 ARM   64 bit    GCC                         3.7
 ================= ========  ========================== =========================
 
-The Raspbian (RPi 3) tests were conducted on a Raspberry Pi ARM CPU. All others
-were conducted using VMs running on x86 hardware. 
+* The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
+  in 32 bit mode. 
+* The Ubuntu ARM tests were conducted on a Raspberry Pi 3 ARM CPU running in
+  64 bit mode.
+* All others were conducted using VMs running on x86 hardware. 
 
 ---------------------------------------------------------------------
 
@@ -337,6 +341,10 @@ example::
 
 Release History
 ===============
+* 6.0.0 - Added SIMD support for ARMv8 AARCH64. This is 64 bit ARM on a
+          Raspberry Pi3 when running 64 bit Ubuntu. Raspbian is 32 bit only
+          and has 64 bit SIMD vectors. 64 bit ARM has 128 bit SIMD vectors
+          and so offers improved performance.
 * 5.1.1 - Updated and improved help documentation. Also updated test
           platforms and retested.
 * 5.1.0 - This is a bug fix release only, centred around SIMD issues on

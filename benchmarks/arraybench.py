@@ -5,7 +5,7 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      06-Mar-2020.
+# Ver:      28-Mar-2020.
 #
 ###############################################################################
 #
@@ -105,7 +105,7 @@ SIMDFuncs_x86 = {'aall': 'bBhHiIfd',
  'trunc': 'fd',
  'xor': 'bBhHiI'}
 
-SIMDFuncs_arm = {'aall': 'bBhH',
+SIMDFuncs_armv7 = {'aall': 'bBhH',
  'aany': 'bBhH',
  'abs_': 'bhi',
  'add': 'bBhH',
@@ -130,9 +130,37 @@ SIMDFuncs_arm = {'aall': 'bBhH',
  'sub': 'bBhH',
  'xor': 'bBhHiI'}
 
+SIMDFuncs_armv8 = {'aall': 'bBhHiIf',
+ 'aany': 'bBhHiIf',
+ 'abs_': 'bhif',
+ 'add': 'bBhHiIf',
+ 'amax': 'bBhHiIf',
+ 'amin': 'bBhHiIf',
+ 'and_': 'bBhHiI',
+ 'degrees': 'f',
+ 'eq': 'bBhHiIf',
+ 'findindex': 'bBhHiIf',
+ 'ge': 'bBhHiIf',
+ 'gt': 'bBhHiIf',
+ 'invert': 'bBhHiI',
+ 'le': 'bBhHiIf',
+ 'lshift': 'bBhHiI',
+ 'lt': 'bBhHiIf',
+ 'mul': 'bBhHiIf',
+ 'ne': 'bBhHiIf',
+ 'neg': 'bhif',
+ 'or_': 'bBhHiI',
+ 'radians': 'f',
+ 'rshift': 'bBhHiI',
+ 'sub': 'bBhHiIf',
+ 'xor': 'bBhHiI'}
+
+
 # Detect the hardware platform, and assign the correct platform data table to it.
 if '-armv' in platform.platform():
-	SIMDFuncs = SIMDFuncs_arm
+	SIMDFuncs = SIMDFuncs_armv7
+elif '-aarch64' in platform.platform():
+	SIMDFuncs = SIMDFuncs_armv8
 else:
 	SIMDFuncs = SIMDFuncs_x86
 

@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 5.1.1 for 2020-03-06
+:Version: 6.0.0 for 2020-03-27
 :Copyright: 2014 - 2020
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
@@ -26,32 +26,6 @@ ones from other sources.
 
 The purpose of these functions is to perform mathematical calculations on arrays
 significantly faster than using native Python.
-
----------------------------------------------------------------------
-
-Important Note for Upgrading to Version 4
-=========================================
-
-Version 4 drops support for the amap, amapi, starmap, starmapi, and acalc 
-functions. These have all been replaced by individual functions which perform
-the same calculations but in a more direct way. 
-
-The reason for this change is that it was not possible to support these 
-functions while also providing a simple and consistent call interface. Now each
-function has a call interface tailored specifically for how that function works. 
-This also provides for a more natural mix of array and numeric parameters.
-
-This change will now allow more mathematical functions to be added in future
-without trying to force-fit them into a single call interface.
-
-
-Version 4 also changes the parameter used to select the type of comparison 
-operation for dropwhile, takewhile, aany, aall, findindex, and findindices.
-This change has been necessitated by the removal of amap and related functions.
-These functions however should still work in a compatible manner.
-
-
-Finally, support for the "bytes" type has been dropped.
 
 
 ---------------------------------------------------------------------
@@ -685,10 +659,14 @@ be forced to fall back to conventional execution mode.
 Platform Support
 ----------------
 
-SIMD instructions are presently supported only on 64 bit x86 (i.e. AMD64) and 
-ARMv7 using the GCC compiler. Other compilers or platforms will still run the 
-same functions and should produce the same results, but they will not benefit 
-from SIMD acceleration. 
+SIMD instructions are presently supported only on the following:
+
+* 64 bit x86 (i.e. AMD64) using GCC.
+* 32 bit ARMv7 using GCC (tested on Raspberry Pi 3).
+* 64 bit ARMv8 AARCH64 using GCC (tested on Raspberry Pi 3).
+
+Other compilers or platforms will still run the same functions and should 
+produce the same results, but they will not benefit from SIMD acceleration. 
 
 However, non-SIMD functions will still be much faster standard Python code. See
 the performance benchmarks to see what the relative speed differences are. With
@@ -697,16 +675,28 @@ marginal speed ups anyway.
 
 
 
-Raspberry Pi 3 versus 4
------------------------
+Raspberry Pi 32 versus 64 bit
+-----------------------------
 
-The Raspberry Pi uses an ARM CPU. The Raspberry Pi 3 has an ARMv7 CPU, which
-supports NEON SIMD with 64 bit vectors. The Raspberry Pi 4 has an ARMv8 CPU,
-which supports NEON SIMD with 128 bit vectors.
+The Raspberry Pi uses an ARM CPU. This can operate in 32 or 64 bit mode. When
+in 32 bit mode, the Raspberry Pi 3 operates in ARMv7 mode. This has 64 bit ARM
+NEON SIMD vectors.
 
-This means that the SIMD instructions for the RPi 3 are different from those
-of the RPi 4 (64 bit versus 128 bit). Due to hardware availability for testing,
-SIMD support for ARMv8 is not currently available in this library. 
+When in 64 bit mode, it acts as an ARMv8, with AARCH64 128 bit ARM NEON SIMD
+vectors.
+
+The Raspbian Linux OS is 32 bit mode only. Other distros such as Ubuntu offer
+64 bit versions. 
+
+The "setup.py" file uses platform detection code to determine which ARM CPU
+and mode it is running on. Due to the availability of hardware for testing,
+this code is tailored to the Raspberry Pi 3 and the operating systems listed.
+This code then selects the appropriate compiler arguments to pass to the
+setup routines to tell the compiler what mode to compile for.
+
+If other ARM platforms are used which have different platform signatures or
+which require different compiler arguments, the "setup.py" file may need to be
+modified in order to use SIMD acceleration.
 
 However, the straight 'C' code should still compile and run, and still provide 
 performance many times faster than when using native Python.
@@ -730,7 +720,16 @@ _____
 The following table shows which array data types are supported by ARMv7 
 SIMD instructions.
 
-{simddata_arm}
+{simddata_armv7}
+
+
+ARMv8 AARCH64
+_____________
+
+The following table shows which array data types are supported by ARMv8 
+SIMD instructions.
+
+{simddata_armv8}
 
 
 SIMD Support Attributes
@@ -887,8 +886,12 @@ FreeBSD 12         64 bit    LLVM                        3.7
 OpenBSD 6.5        64 bit    LLVM                        3.6
 MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
 Raspbian (RPi 3)   32 bit    GCC                         3.7
+Ubuntu 19.10 ARM   64 bit    GCC                         3.7
 ================= ========  ========================== =========================
 
-The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARMV7 CPU. All 
-others were conducted using VMs running on x86 hardware. 
+* The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
+  in 32 bit mode. 
+* The Ubuntu ARM tests were conducted on a Raspberry Pi 3 ARM CPU running in
+  64 bit mode.
+* All others were conducted using VMs running on x86 hardware. 
 

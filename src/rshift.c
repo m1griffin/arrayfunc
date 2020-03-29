@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -48,9 +48,16 @@
 #include "rshift_simd_x86.h"
 #endif
 
-#ifdef AF_HASSIMD_ARM
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 #include "arm_neon.h"
-#include "rshift_simd_arm.h"
+#endif
+
+#if defined(AF_HASSIMD_ARMv7_32BIT)
+#include "rshift_simd_armv7.h"
+#endif
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
+#include "rshift_simd_armv8.h"
 #endif
 
 /*--------------------------------------------------------------------------- */
@@ -71,7 +78,7 @@ void rshift_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		rshift_signed_char_1_simd(arraylen, data1, param);
@@ -92,7 +99,7 @@ void rshift_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		rshift_signed_char_2_simd(arraylen, data1, param, data3);
@@ -171,7 +178,7 @@ void rshift_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		rshift_unsigned_char_1_simd(arraylen, data1, param);
@@ -192,7 +199,7 @@ void rshift_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
 		rshift_unsigned_char_2_simd(arraylen, data1, param, data3);
@@ -271,7 +278,7 @@ void rshift_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		rshift_signed_short_1_simd(arraylen, data1, param);
@@ -292,7 +299,7 @@ void rshift_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		rshift_signed_short_2_simd(arraylen, data1, param, data3);
@@ -371,7 +378,7 @@ void rshift_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		rshift_unsigned_short_1_simd(arraylen, data1, param);
@@ -392,7 +399,7 @@ void rshift_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *da
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
 		rshift_unsigned_short_2_simd(arraylen, data1, param, data3);
@@ -471,7 +478,7 @@ void rshift_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		rshift_signed_int_1_simd(arraylen, data1, param);
@@ -492,7 +499,7 @@ void rshift_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		rshift_signed_int_2_simd(arraylen, data1, param, data3);
@@ -571,7 +578,7 @@ void rshift_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		rshift_unsigned_int_1_simd(arraylen, data1, param);
@@ -592,7 +599,7 @@ void rshift_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
 	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
 		rshift_unsigned_int_2_simd(arraylen, data1, param, data3);
