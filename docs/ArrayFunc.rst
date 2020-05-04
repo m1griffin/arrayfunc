@@ -3948,7 +3948,7 @@ OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Ubuntu 19.10       64 bit    GCC                         3.7
-Ubuntu 20.04 beta  64 bit    GCC                         3.8
+Ubuntu 20.04       64 bit    GCC                         3.8
 Debian 10          32 bit    GCC                         3.7
 Debian 10          64 bit    GCC                         3.7
 OpenSuse 15        64 bit    GCC                         3.6

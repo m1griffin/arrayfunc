@@ -298,7 +298,7 @@ OS                   Bits      Compiler                  Python Version Tested
 ================= ========  ========================== =========================
 Ubuntu 18.04 LTS   64 bit    GCC                         3.6
 Ubuntu 19.10       64 bit    GCC                         3.7
-Ubuntu 20.04 beta  64 bit    GCC                         3.8
+Ubuntu 20.04       64 bit    GCC                         3.8
 Debian 10          32 bit    GCC                         3.7
 Debian 10          64 bit    GCC                         3.7
 OpenSuse 15        64 bit    GCC                         3.6
@@ -341,6 +341,8 @@ example::
 
 Release History
 ===============
+* 6.0.0 - Documentation updated to reflect testing with the release version
+          of Ubuntu 20.04. No code changes and no change in version number.
 * 6.0.0 - Added SIMD support for ARMv8 AARCH64. This is 64 bit ARM on a
           Raspberry Pi3 when running 64 bit Ubuntu. Raspbian is 32 bit only
           and has 64 bit SIMD vectors. 64 bit ARM has 128 bit SIMD vectors
