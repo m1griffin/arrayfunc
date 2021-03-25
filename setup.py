@@ -115,6 +115,42 @@ extensions = [
 
 ]
 
+# Used for Raspberry Pi CPU version detection. 
+def GetRaspCPUType():
+	'''Use only for Raspberry Pi CPU detection. 
+	This makes the following assumptions.
+	 - it is running on an ARM CPU.
+	 - it is running on 64 bit Linux.
+	 - it can read '/proc/cpuinfo' to get the CPU part data.
+
+	If found, it will return the CPU part string. If not, then it will
+	return an empty string.
+	e.g. 'CPU part: 0xd08'
+	'''
+
+	# These reads the CPU Info directly from the Linux kernel.
+	# This seems to be the only way to access detailed information
+	# about the CPU type. 
+	with open('/proc/cpuinfo') as cpuf:
+		cpuinfo = cpuf.read()
+
+	# Now check that this is a Raspberry Pi. We don't know what to look
+	# for with other ARM boards, so we don't try to handle them.
+	if "Raspberry Pi" in cpuinfo:
+		# Find the infor for the CPU part type. This is repeated once for
+		# each core, so we also remove duplicates.
+		cpupartsall = list(set([x for x in cpuinfo.split('\n') if "CPU part" in x]))
+
+		# If we found any, then get the info from the first core. If they
+		# are all the same there will only be one record anyway. We should
+		# end up with something that looks like 'CPU part: 0xd08'.
+		if len(cpupartsall) > 0:
+			cpupart = cpupartsall[0]
+			return cpupart
+
+	return ''
+
+
 
 # Detect the compiler used for Python. We will assume that this same compiler is
 # being used to compile our own modules (since the two are supposed to match).
@@ -141,9 +177,19 @@ elif ('GCC' in PyCompilerType) and ('armv7l' in platform.machine()):
 	Compile_Args = ['-mcpu=cortex-a7', '-mfpu=neon-vfpv4']
 # For ARM AARCH 64 bit. 
 elif ('GCC' in PyCompilerType) and ('aarch64' in platform.machine()):
-	Compile_Args = ['-mcpu=cortex-a53']
+	# Get the CPU part string from the kernel.
+	cpupart = GetRaspCPUType()
+	# For Raspberry Pi 3 in 64 bit mode.
+	if '0xD03' in cpupart.upper():
+		Compile_Args = ['-mcpu=cortex-a53']
+	# For Raspberry Pi 4 in 64 bit mode.
+	elif '0xD08' in cpupart.upper():
+		Compile_Args = ['cortex-a72']
+	else:
+		Compile_Args = []
 else:
 	Compile_Args = []
+
 
 
 with open('README.rst') as longdescdata:
@@ -151,7 +197,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '6.0.0',
+	version = '6.1.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',
@@ -168,6 +214,6 @@ setup(name = 'arrayfunc',
 	keywords = 'mathematical array functions',
 	ext_package='arrayfunc',
 	ext_modules = [Extension(x, y, extra_compile_args=Compile_Args) for x,y in extensions],
-	packages=['arrayfunc']
+	packages=['arrayfunc'],
 	)
 

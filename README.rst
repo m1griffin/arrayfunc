@@ -5,8 +5,8 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 6.0.0 for 2020-03-27
-:Copyright: 2014 - 2020
+:Version: 6.1.0 for 2021-03-19
+:Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.5 or later
 
@@ -293,26 +293,25 @@ Platform support
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
-================= ========  ========================== =========================
-OS                   Bits      Compiler                  Python Version Tested
-================= ========  ========================== =========================
-Ubuntu 18.04 LTS   64 bit    GCC                         3.6
-Ubuntu 19.10       64 bit    GCC                         3.7
-Ubuntu 20.04       64 bit    GCC                         3.8
-Debian 10          32 bit    GCC                         3.7
-Debian 10          64 bit    GCC                         3.7
-OpenSuse 15        64 bit    GCC                         3.6
-Centos 8           64 bit    GCC                         3.6
-FreeBSD 12         64 bit    LLVM                        3.7
-OpenBSD 6.5        64 bit    LLVM                        3.6
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
-Raspbian (RPi 3)   32 bit    GCC                         3.7
-Ubuntu 19.10 ARM   64 bit    GCC                         3.7
-================= ========  ========================== =========================
+===================== ========  =============== =========================
+OS                      Bits      Compiler        Python Version Tested
+===================== ========  =============== =========================
+Ubuntu 20.04 LTS       64 bit    GCC               3.8
+Ubuntu 20.10           64 bit    GCC               3.8
+Debian 10              32 bit    GCC               3.7
+Debian 10              64 bit    GCC               3.7
+OpenSuse 15.2          64 bit    GCC               3.6
+Centos 8               64 bit    GCC               3.6
+FreeBSD 12             64 bit    LLVM              3.7
+OpenBSD 6.8            64 bit    LLVM              3.8
+MS Windows 10          64 bit    MS VS C 2015      3.9
+Raspbian (RPi 3)       32 bit    GCC               3.7
+Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
+===================== ========  =============== =========================
 
 * The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 
-* The Ubuntu ARM tests were conducted on a Raspberry Pi 3 ARM CPU running in
+* The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
 * All others were conducted using VMs running on x86 hardware. 
 
@@ -334,13 +333,32 @@ example::
 	pip3 install arrayfunc
 	# Install from a local copy of the source package (Linux).
 	pip3 install --no-index --find-links=. arrayfunc
-	# Windows seems to use "pip" instead of "pip3" for some reason.
+	# Install a local package as a user package.
+	pip3 install --user --no-index --find-links=. arrayfunc
+	# Windows, FreeBSD, and OpenBSD seems to use "pip" instead 
+	# of "pip3" for some reason.
 	pip install arrayfunc
+
+
+Newer versions of OpenBSD and FreeBSD will not install this package correctly 
+when running setup.py directly. Use pip to install, even for local package
+installs. Testing of this package has been changed to use only pip (or pip3)
+in order to provide a common testing method for all platforms. Testing using
+setup.py directly is no longer done.
+
 
 ---------------------------------------------------------------------
 
 Release History
 ===============
+* 6.1.0 - Changed convguardbands to narrow -ve guard bands by 1 to handle 
+          LLVM warning. Changed setup.py to detect Raspberry Pi 4 and set the 
+          compiler args accordingly. Added support for Pi 4. Dropped testing 
+          of 64 bit mode on Pi 3. 
+* 6.0.1 - Documentation updated to reflect testing with the release version
+          of Ubuntu 20.04 ARM (Rasberry Pi), Ubuntu 2010 (x86-64), OpenBSD 6.8,
+          and Python 3.9 on Windows. No code changes and no change in version 
+          number.
 * 6.0.0 - Documentation updated to reflect testing with the release version
           of Ubuntu 20.04. No code changes and no change in version number.
 * 6.0.0 - Added SIMD support for ARMv8 AARCH64. This is 64 bit ARM on a

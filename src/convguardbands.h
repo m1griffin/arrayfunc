@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2018    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -60,12 +60,12 @@ single precision (float) = 23 bits of precision.
 
 // Double precision (double) to long integers. A double has 52 bits of precision.
 #define LONG_MAX_GUARD_D (LONG_MAX - 0xfff)
-#define LONG_MIN_GUARD_D (LONG_MIN + 0xfff)
+#define LONG_MIN_GUARD_D (LONG_MIN + 0x1000)
 #define ULONG_MAX_GUARD_D (ULONG_MAX - 0xfff)
 
 // Single precision (float) to long integers. A single has 23 bits of precision.
 #define LONG_MAX_GUARD_F (LONG_MAX - 0x1ffffffffff)
-#define LONG_MIN_GUARD_F (LONG_MIN + 0x1ffffffffff)
+#define LONG_MIN_GUARD_F (LONG_MIN + 0x20000000000)
 #define ULONG_MAX_GUARD_F (ULONG_MAX - 0x1ffffffffff)
 
 // Array types 'l' and 'L' are 4 byte integers.
@@ -78,7 +78,7 @@ single precision (float) = 23 bits of precision.
 
 // Single precision (float) to long integers. A single has 23 bits of precision.
 #define LONG_MAX_GUARD_F (LONG_MAX - 0x1ff)
-#define LONG_MIN_GUARD_F (LONG_MIN + 0x1ff)
+#define LONG_MIN_GUARD_F (LONG_MIN + 0x200)
 #define ULONG_MAX_GUARD_F (ULONG_MAX - 0x1ff)
 
 #endif
@@ -87,19 +87,19 @@ single precision (float) = 23 bits of precision.
 // Other array types are always the same size on supported platforms.
 // Single precision (float) to integers. A single has 23 bits of precision.
 #define INT_MAX_GUARD_F (INT_MAX - 0x1ff)
-#define INT_MIN_GUARD_F (INT_MIN + 0x1ff)
+#define INT_MIN_GUARD_F (INT_MIN + 0x200)
 #define UINT_MAX_GUARD_F (UINT_MAX - 0x1ff)
 
 
 // Single precision (float) to long long integers. A single has 23 bits of precision.
 #define LLONG_MAX_GUARD_F (LLONG_MAX - 0x1ffffffffff)
-#define LLONG_MIN_GUARD_F (LLONG_MIN + 0x1ffffffffff)
+#define LLONG_MIN_GUARD_F (LLONG_MIN + 0x20000000000)
 #define ULLONG_MAX_GUARD_F (ULLONG_MAX - 0x1ffffffffff)
 
 
 // Double precision (double) to long long integers. A double has 52 bits of precision.
 #define LLONG_MAX_GUARD_D (LLONG_MAX - 0xfff)
-#define LLONG_MIN_GUARD_D (LLONG_MIN + 0xfff)
+#define LLONG_MIN_GUARD_D (LLONG_MIN + 0x1000)
 #define ULLONG_MAX_GUARD_D (ULLONG_MAX - 0xfff)
 
 

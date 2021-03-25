@@ -1,12 +1,18 @@
 #!/bin/sh
 
-# Run all the tests associated with arrayfunc.
+# Run all the unit tests associated with Arrayfunc.
+
+# Get the command line arguments.
+testname=$1
+packsource=$2
+fileprefix=$3
+# Test library version.
+af_version=$( pip3 show arrayfunc | grep Version | cut -d: -f2)
 
 # This program resets the test log file and inserts a time stamp and
 # information about the test platform in the top of the file.
-# The $@ parameter passes all parameters given to the shell script
-# through into the Python program.
-./unit-test-timestamp.py $@
+./unit-test-timestamp.py $testname $packsource $fileprefix $af_version
+
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')

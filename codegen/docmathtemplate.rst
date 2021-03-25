@@ -6,8 +6,8 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 6.0.0 for 2020-03-27
-:Copyright: 2014 - 2020
+:Version: 6.1.0 for 2021-03-19
+:Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
 
@@ -663,7 +663,7 @@ SIMD instructions are presently supported only on the following:
 
 * 64 bit x86 (i.e. AMD64) using GCC.
 * 32 bit ARMv7 using GCC (tested on Raspberry Pi 3).
-* 64 bit ARMv8 AARCH64 using GCC (tested on Raspberry Pi 3).
+* 64 bit ARMv8 AARCH64 using GCC (tested on Raspberry Pi 4).
 
 Other compilers or platforms will still run the same functions and should 
 produce the same results, but they will not benefit from SIMD acceleration. 
@@ -690,9 +690,10 @@ The Raspbian Linux OS is 32 bit mode only. Other distros such as Ubuntu offer
 
 The "setup.py" file uses platform detection code to determine which ARM CPU
 and mode it is running on. Due to the availability of hardware for testing,
-this code is tailored to the Raspberry Pi 3 and the operating systems listed.
-This code then selects the appropriate compiler arguments to pass to the
-setup routines to tell the compiler what mode to compile for.
+this code is tailored to the Raspberry Pi 3 and Raspberry Pi 4 and the 
+operating systems listed. This code then selects the appropriate compiler 
+arguments to pass to the setup routines to tell the compiler what mode to 
+compile for.
 
 If other ARM platforms are used which have different platform signatures or
 which require different compiler arguments, the "setup.py" file may need to be
@@ -872,26 +873,25 @@ Platform support
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
-================= ========  ========================== =========================
-OS                   Bits      Compiler                  Python Version Tested
-================= ========  ========================== =========================
-Ubuntu 18.04 LTS   64 bit    GCC                         3.6
-Ubuntu 19.10       64 bit    GCC                         3.7
-Ubuntu 20.04       64 bit    GCC                         3.8
-Debian 10          32 bit    GCC                         3.7
-Debian 10          64 bit    GCC                         3.7
-OpenSuse 15        64 bit    GCC                         3.6
-Centos 8           64 bit    GCC                         3.6
-FreeBSD 12         64 bit    LLVM                        3.7
-OpenBSD 6.5        64 bit    LLVM                        3.6
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
-Raspbian (RPi 3)   32 bit    GCC                         3.7
-Ubuntu 19.10 ARM   64 bit    GCC                         3.7
-================= ========  ========================== =========================
+===================== ========  =============== =========================
+OS                      Bits      Compiler        Python Version Tested
+===================== ========  =============== =========================
+Ubuntu 20.04 LTS       64 bit    GCC               3.8
+Ubuntu 20.10           64 bit    GCC               3.8
+Debian 10              32 bit    GCC               3.7
+Debian 10              64 bit    GCC               3.7
+OpenSuse 15.2          64 bit    GCC               3.6
+Centos 8               64 bit    GCC               3.6
+FreeBSD 12             64 bit    LLVM              3.7
+OpenBSD 6.8            64 bit    LLVM              3.8
+MS Windows 10          64 bit    MS VS C 2015      3.9
+Raspbian (RPi 3)       32 bit    GCC               3.7
+Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
+===================== ========  =============== =========================
 
 * The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 
-* The Ubuntu ARM tests were conducted on a Raspberry Pi 3 ARM CPU running in
+* The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
 * All others were conducted using VMs running on x86 hardware. 
 

@@ -6,8 +6,8 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 6.0.0 for 2020-03-27
-:Copyright: 2014 - 2020
+:Version: 6.1.0 for 2021-03-19
+:Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.5 or later
 
@@ -3437,7 +3437,7 @@ SIMD instructions are presently supported only on the following:
 
 * 64 bit x86 (i.e. AMD64) using GCC.
 * 32 bit ARMv7 using GCC (tested on Raspberry Pi 3).
-* 64 bit ARMv8 AARCH64 using GCC (tested on Raspberry Pi 3).
+* 64 bit ARMv8 AARCH64 using GCC (tested on Raspberry Pi 4).
 
 Other compilers or platforms will still run the same functions and should 
 produce the same results, but they will not benefit from SIMD acceleration. 
@@ -3464,9 +3464,10 @@ The Raspbian Linux OS is 32 bit mode only. Other distros such as Ubuntu offer
 
 The "setup.py" file uses platform detection code to determine which ARM CPU
 and mode it is running on. Due to the availability of hardware for testing,
-this code is tailored to the Raspberry Pi 3 and the operating systems listed.
-This code then selects the appropriate compiler arguments to pass to the
-setup routines to tell the compiler what mode to compile for.
+this code is tailored to the Raspberry Pi 3 and Raspberry Pi 4 and the 
+operating systems listed. This code then selects the appropriate compiler 
+arguments to pass to the setup routines to tell the compiler what mode to 
+compile for.
 
 If other ARM platforms are used which have different platform signatures or
 which require different compiler arguments, the "setup.py" file may need to be
@@ -3666,80 +3667,80 @@ Relative Performance - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  113    64    52    35    26    20   6.6   9.9   6.4   9.5    50    26
-        aany   47    40    25    25    13    15   5.0   4.6   4.6   4.6    23    13
-     afilter  116   118   116   117   117    94   118   119   116   119   118   118
-        amax   76    75    39    38   119    75    15    11    14    14   153    35
-        amin   71    69    36    38    72   109    13    14    12    14   116    59
-        asum  4.9   9.2   3.9   7.6   7.7   7.2   4.7   8.9   3.9   8.1   6.9   6.5
-    compress   34    35    37    22    30    19    38    26    38    23    31    29
-       count  186   206   137   180   146   116   111   111   104    99    73    74
-       cycle   82    72    79    78    73    52    73    50    75    51    57    59
-   dropwhile  228   229   116   115   116   184   160   177   172   157   182   157
-   findindex  206   219    86    87    56    57    17    24    17    24    68    36
- findindices   21    26    21    26    21    27    22    28    21    27    28    28
-      repeat  124    89   126   116   112    31   102    38   101    38    90    91
-   takewhile  221   234   191   276   241   163   194   139   199   146   221   187
-         add  130   137   147   135   131   103    92    79    97    68   103    76
-     truediv   69    60    62    64    70    60    65    57    73    57   185   152
-    floordiv   31    27    32    29    33    26    31    26    32    26   156   132
-         mod   21    25    17    25    26    22    27    22    27    22    72    61
-         mul   83    96    81   121    77    60    71    38    70    38   103    82
-         neg  111         123         130          79          82         123    76
-         pow   50    49    47    45    32    54    17    50    18    49   6.3    14
-         sub  136   138   124   100   126   109    91    74    93    69    98    78
-       and\_ 1388  1417   887   885   410   340   107    76   101    91            
-        or\_ 1915  1782   806   866   398   334   106    89   118   100            
-         xor 1884  1878   820   781   409   354   113    93   121    96            
-      invert 2173  2339  1300  1430   603   681   147   178   192   172            
-          eq  886  1093   435   450   208   246    58    59    90   101   230   128
-          gt  921   616   482   324   266   175    58    71    90   100   162   120
-          ge  819   795   442   479   257   243    60    63    89   106   252   123
-          lt  898   613   378   318   194   170    96    99    97    95   259   143
-          le  996   887   476   454   276   263   100    99    93    90   247   134
-          ne 1004   900   488   497   287   306    93    93    86    99   244   147
-      lshift  190   236   916   804   411   448    91   113   121    82            
-      rshift  162   159   156   787   184   384   101    89   112    83            
-       abs\_  121         116         114          81          92         227   106
-        acos                                                               13    11
-       acosh                                                              8.6   6.2
-        asin                                                               14    13
-       asinh                                                              7.3   6.8
-        atan                                                               14    12
-       atan2                                                              7.5   6.8
-       atanh                                                              7.3   8.3
-        ceil                                                              278   186
-    copysign                                                              228   147
-         cos                                                               15   8.2
-        cosh                                                               12   7.7
-     degrees                                                              164   120
-         erf                                                               17    14
-        erfc                                                               10   7.5
-         exp                                                               19   9.3
-       expm1                                                              6.7   7.1
-        fabs                                                              203   148
-   factorial  203   251   204   245   196   211   139   127   125   129            
-       floor                                                              261   197
-         fma                                                              114    97
-        fmod                                                               12    12
-       gamma                                                              1.6   1.3
-       hypot                                                               21    13
-    isfinite                                                              125   120
-       isinf                                                              143   131
-       isnan                                                              144   136
-       ldexp                                                               28    29
-      lgamma                                                             10.0   6.2
-         log                                                               26   9.3
-       log10                                                               15   7.7
-       log1p                                                              8.4   8.9
-        log2                                                               22    12
-     radians                                                              164   127
-         sin                                                               14   8.4
-        sinh                                                              5.7   5.7
-        sqrt                                                               23    20
-         tan                                                              5.9   5.6
-        tanh                                                              6.3   6.1
-       trunc                                                              254   172
+        aall  116    98    67    51    35    22   8.4   7.9   8.0   7.8    57    29
+        aany   53    56    28    30    16    15   3.8   3.6   3.5   3.5    23    12
+     afilter  115   112   115   114   118   114   113   113   116   113   122   121
+        amax   87    85   166   172   134   138    18    17    17    17    87    42
+        amin   67    67   135   133   100    97    14    13    13    13    71    35
+        asum  6.0   7.4   7.5   9.8   8.2   8.1   8.4   6.5   5.4   7.0   8.0   7.7
+    compress   29    37    28    37    30    20    38    21    38    25    31    35
+       count  217   217   215   205   151   129   178   116   172   124    86    80
+       cycle   80    84    79    82    82    57    93    59    87    57    31    28
+   dropwhile  149   146   155   147   145   145   143   142   141   144   149   128
+   findindex  208   219   109   107    42    38    15    14    14    13    61    34
+ findindices   26    30    32    30    24    39    25    30    31    29    31    45
+      repeat  122   118   123   120   118    40   147    36   141    39   107   106
+   takewhile  204   192   192   200   202   139   175   112   161   113   250   147
+         add  109   143   109    86   107   105    98    68   113    79   102    82
+     truediv   60    47    55    49    49    44    57    43    55    43   152   110
+    floordiv   34    30    34    31    34    27    37    27    36    27   178   154
+         mod   29    27    20    27    31    22    33    23    32    22    75    67
+         mul   89   111    89    89    85    90    87    71    84    67   115    81
+         neg  134         103         132         105         102         144    94
+         pow   48    52    43    45    34    73    20    57    20    59   6.7   6.1
+         sub  139   107   114   127   107    67    98    59    96    74   101    75
+       and\_ 1505  1567   823   849   566   460   126   100   111    95            
+        or\_ 1562  1559   841   845   547   419   123    94   118    90            
+         xor 1648  1638   885   918   599   478   133   101   129    94            
+      invert 2582  2556  1340  1456   717   655   190   220   165   235            
+          eq 1015  1009   472   537   268   177    65    61    68    62   268   134
+          gt 1015   828   530   394   188   181    63    65    71    70   265   148
+          ge  964   959   519   543   281   180    64    62    71    62   271   143
+          lt  692   757   354   399   186   161    64    62    73    62   238   128
+          le  997   957   518   522   183   179    67    63    72    64   266   131
+          ne  988   979   458   517   263   177    65    62    72    62   275   132
+      lshift  195   252   834   872   423   367   131   124   116   113            
+      rshift  193   238   182   794   159   335   120   113   105   101            
+       abs\_  113         109         115         103         100         184   114
+        acos                                                               14    14
+       acosh                                                              8.7   8.9
+        asin                                                               15    14
+       asinh                                                              6.8   7.0
+        atan                                                               14    11
+       atan2                                                              7.4   6.3
+       atanh                                                              7.6   7.7
+        ceil                                                              299   198
+    copysign                                                              182   139
+         cos                                                               23    11
+        cosh                                                               14    13
+     degrees                                                              119   138
+         erf                                                               11    11
+        erfc                                                              6.5   6.6
+         exp                                                               19    15
+       expm1                                                              7.0   7.5
+        fabs                                                              170   145
+   factorial  141   198   142   147   141   144   135   112   114   101            
+       floor                                                              289   186
+         fma                                                               78    73
+        fmod                                                              8.6   9.8
+       gamma                                                              1.7   1.9
+       hypot                                                               15    12
+    isfinite                                                              103   120
+       isinf                                                              111   128
+       isnan                                                              138   122
+       ldexp                                                               22    23
+      lgamma                                                              8.8   7.8
+         log                                                               25    21
+       log10                                                               14    13
+       log1p                                                              8.9   8.8
+        log2                                                               20    13
+     radians                                                              116   124
+         sin                                                               21    11
+        sinh                                                              5.4   5.6
+        sqrt                                                               73    48
+         tan                                                              8.2   6.0
+        tanh                                                              6.1   6.1
+       trunc                                                              281   195
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3747,9 +3748,9 @@ Relative Performance - Python Time / Arrayfunc Time.
 =========== ========
 Stat         Value
 =========== ========
-Average:    171
-Maximum:    2339
-Minimum:    1.3
+Average:    174
+Maximum:    2582
+Minimum:    1.7
 Array size: 100000
 =========== ========
 
@@ -3776,34 +3777,34 @@ Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall  114    64    53    35    25    20   6.7    10   5.8   9.5    48    25
-        aany   46    40    25    25    12    15   4.5   4.5   4.6   4.8    23    13
-        amax   76    75    39    38   117    76    15    16    15    14   154    35
-        amin   71    69    36    38    73   104    13    12    13    14   114    59
-        asum  8.0    13   6.5    10    11    12   7.7    15   6.4    13    27    13
-   findindex  206   218    86    88    55    57    16    24    17    24    68    36
-         add 1468   132   751   134   340   151    90    88    91    74   345   101
-         neg 1115         631         339          80          95         182    93
-         sub 1452   203   659   131   303   108    89    72    88    68   433   103
-       and\_ 1394  1420   887   888   401   339   107    76   102    89            
-        or\_ 1908  1784   806   862   402   337   106    89   117   100            
-         xor 1845  1815   819   808   409   358   111    92   123    96            
-      invert 2174  2373  1268  1428   603   680   147   176   192   172            
-          eq  881  1084   433   440   211   254    59    58    90   104   228   130
-          gt  878   617   488   326   264   177    61    71    82   102   154   119
-          ge  821   799   452   479   265   242    60    62    83   107   247   123
-          lt  906   612   379   318   194   170    89   102    92    94   235   143
-          le  966   875   484   459   272   263    99    98    93    92   250   133
-          ne 1021   916   495   461   286   306    96    90    84   101   265   152
-      lshift  190   236   917   805   411   448    91   113   121    82            
-      rshift  163   159   157   783   189   387   102    90   112    83            
-       abs\_ 1758         844         556          95         103         259   128
-        ceil                                                              765   233
-     degrees                                                              564   194
-       floor                                                              983   276
-     radians                                                              567   201
-        sqrt                                                              211    91
-       trunc                                                              953   224
+        aall  116    98    69    52    35    22   8.4   7.9   8.0   7.8    57    29
+        aany   53    56    28    30    16    15   3.8   3.6   3.5   3.5    24    12
+        amax   86    85   172   172   131   138    18    17    17    17    87    43
+        amin   68    67   134   137   103    99    14    13    13    13    71    35
+        asum  9.9   9.3    13    14    12    13    13   8.5   8.4    12    31    15
+   findindex  208   220   108   106    42    38    15    14    14    13    61    34
+         add 1283   209   703   206   362   148   119    72   113    92   458   110
+         neg 1602         672         370         107         103         145   103
+         sub 1270   198   739   208   468   145   117    73    96    84   338   121
+       and\_ 1514  1565   816   854   567   464   126   102   110    96            
+        or\_ 1562  1547   843   843   558   413   123    95   117    89            
+         xor 1626  1617   865   918   602   477   134   101   128    94            
+      invert 2583  2558  1338  1455   718   655   190   217   167   234            
+          eq 1011   986   471   536   268   177    65    61    68    62   268   131
+          gt 1012   830   529   395   188   181    63    65    71    69   265   148
+          ge  976   961   513   541   282   179    64    62    71    62   271   144
+          lt  694   760   363   388   187   162    64    62    73    62   238   128
+          le 1012   960   516   533   188   179    67    62    72    64   257   131
+          ne  991   980   466   517   269   176    65    62    72    62   275   132
+      lshift  192   252   858   848   424   368   131   124   116   112            
+      rshift  196   237   186   802   155   333   123   113   105   101            
+       abs\_ 1719        1052         491         121         118         287   113
+        ceil                                                             1079   318
+     degrees                                                              640   203
+       floor                                                             1017   294
+     radians                                                              616   178
+        sqrt                                                              243    96
+       trunc                                                             1019   304
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3811,9 +3812,9 @@ Relative Performance with SIMD Optimisations - Python Time / Arrayfunc Time.
 =========== ========
 Stat         Value
 =========== ========
-Average:    308
-Maximum:    2373
-Minimum:    4.5
+Average:    325
+Maximum:    2583
+Minimum:    3.5
 Array size: 100000
 =========== ========
 
@@ -3838,34 +3839,34 @@ Relative Performance with and without SIMD Optimisations - Optimised / SIMD Time
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
   function    b     B     h     H     i     I     l     L     q     Q     f     d  
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        aall   17    10   6.2   3.3   2.3   2.3                           2.6   1.6
-        aany  9.3    14   8.1   5.2   2.7   3.9                           2.9   1.3
-        amax  3.6   3.8   1.6   1.9   4.9   3.9                           3.8   1.3
-        amin  3.1   3.7   1.8   2.1   4.2   5.1                           5.5   2.9
+        aall   14    12   8.1   6.1   4.2   2.8                           3.2   2.2
+        aany   14    15   7.4   8.1   4.2   4.3                           3.2   2.2
+        amax  3.1   3.7   6.4   7.4   5.0   5.7                           2.5   1.9
+        amin  3.1   3.7   6.3   7.4   4.9   5.8                           2.5   2.0
         asum                                                              3.9   2.0
-   findindex  9.8    10   3.9   3.9   3.2   3.3                           5.1   2.0
-         add  7.5         5.3         2.6                                 2.6   1.3
-         neg  9.1         3.5         1.9                                          
-         sub  7.5         5.3         2.4                                 3.4   1.3
-       and\_  9.1   9.3   6.4   4.0   2.5   2.7                                    
-        or\_  8.2   7.8   3.6   5.3   1.9   1.8                                    
-         xor  9.9   7.9   3.8   5.2   1.9   1.8                                    
-      invert  9.6   6.4   5.1   3.5   2.7   1.9                                    
-          eq   16    18   7.1   7.9   3.6   4.4                           2.9   1.8
-          gt   11    10   6.1   4.1   4.1   1.7                           1.9   1.1
-          ge   10    13   5.6   5.7   4.4   2.4                           3.2   1.2
-          lt  8.1   7.7   4.0   3.4   2.0   2.7                           2.7   1.7
-          le   11    11   5.1   5.0   2.8   4.1                           2.7   1.6
-          ne   13    11   6.4   5.9   3.1   3.0                           3.2   1.9
-      lshift              5.9   5.2   2.7   2.6                                    
+   findindex   14    15   7.3   7.3   2.9   2.9                           3.1   2.1
+         add  6.6         3.4         2.0                                 2.3   1.3
+         neg  8.1         5.0         2.2                                          
+         sub  9.0         3.4         2.6                                 1.8   1.4
+       and\_  9.5   6.3   5.1   5.3   3.4   3.4                                    
+        or\_  9.5   6.7   5.1   5.1   3.6   3.3                                    
+         xor  9.3   6.5   5.1   5.3   3.6   3.4                                    
+      invert  9.3   9.3   5.2   5.1   2.8   2.7                                    
+          eq   16    19   7.4   8.2   4.2   2.9                           4.2   2.0
+          gt   16    15   8.1   6.0   2.9   2.8                           4.2   1.9
+          ge   15    19   8.0   8.4   4.3   2.9                           4.2   1.9
+          lt   11    15   5.6   6.0   3.0   2.6                           3.8   2.0
+          le   15    19   8.1   8.0   2.9   2.9                           4.1   2.1
+          ne   15    19   7.3   8.1   4.2   2.9                           4.3   2.1
+      lshift              5.1   3.7   2.6   2.7                                    
       rshift                    3.8         2.7                                    
-       abs\_   12         6.5         3.8                                          
-        ceil                                                              1.8   1.3
-     degrees                                                              2.4   1.6
-       floor                                                              3.4   1.1
-     radians                                                              2.2   1.6
-        sqrt                                                              7.5   4.0
-       trunc                                                              3.4   1.1
+       abs\_   11         6.2         3.0                                          
+        ceil                                                              3.4   1.2
+     degrees                                                              3.2   1.2
+       floor                                                              3.3   1.2
+     radians                                                              3.4   1.0
+        sqrt                                                              3.4   1.9
+       trunc                                                              3.4   1.3
 ============ ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3893,13 +3894,13 @@ Add constant to array - times faster than Python, default settings.
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 Array size    b     B     h     H     i     I     l     L     q     Q     f     d  
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        10   2.2   1.6   1.6   1.5   1.5   1.2   1.4   1.1   1.5   1.1   1.6   1.3
-       100    12    11    11    11    11   8.3    10   9.4    10   9.8    11   9.3
-      1000    70    69    66    62    59    49    53    42    52    42    52    47
-     10000   123   121   127   115   120    91   108    94   110    88    97    87
-    100000   137   127   143   128   131   102    82    83    91    82   102    75
-   1000000   133   135   126   120    90    79    51    44    49    43    85    52
-  10000000   134   134   124   123    98    72    50    38    47    38    75    49
+        10   1.7   1.5   1.5   1.4   1.4   1.1   1.5   1.0   1.4   1.0   1.2   1.2
+       100    11    11    10   9.6   9.9   7.8    11   7.3    11   7.2   8.7   8.7
+      1000    62    66    57    49    53    45    59    39    57    41    47    44
+     10000   102   124   100    82    98    94   109    77   115    82    93    96
+    100000   108   142   108    87   111   110    98    71    98    83   104    86
+   1000000   109   144   103    83    75    79    56    40    41    40    82    51
+  10000000   112   139   103    89    91    56    59    42    56    32    74    50
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3908,13 +3909,13 @@ Xor an array by a constant - times faster than Python, default settings.
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 Array size    b     B     h     H     i     I     l     L     q     Q     f     d  
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
-        10   2.2   1.8   2.0   1.8   1.8   1.4   1.8   1.5   1.7   1.3            
-       100    15    14    15    14    15    11    14    11    12   9.7            
-      1000   156   154   133   130    87    77    67    59    70    54            
-     10000   852   807   529   506   307   262   145   120   151   118            
-    100000  1877  1841   831   798   415   350   116   100   134    97            
-   1000000   818   763   244   241   121   102    56    49    59    48            
-  10000000   504   517   246   238   116    98    57    47    56    47            
+        10   1.8   1.6   1.6   1.5   1.5   1.2   1.6   1.1   1.5   1.3            
+       100    14    14    13    12    12   9.3    12   8.1    12   8.1            
+      1000   133   124   120   110    87    64    68    50    64    48            
+     10000   767   763   524   515   380   319   144   104   143   107            
+    100000  1533  1567   857   864   574   454   139   111   145   117            
+   1000000   806   944   260   256   135   122    71    60    71    54            
+  10000000   529   525   266   261   131    84    69    30    39    30            
 =========== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== ===== =====
 
 
@@ -3943,26 +3944,25 @@ Platform support
 Arrayfunc is written in 'C' and uses the standard C libraries to implement the 
 underlying math functions. Arrayfunc has been tested on the following platforms.
 
-================= ========  ========================== =========================
-OS                   Bits      Compiler                  Python Version Tested
-================= ========  ========================== =========================
-Ubuntu 18.04 LTS   64 bit    GCC                         3.6
-Ubuntu 19.10       64 bit    GCC                         3.7
-Ubuntu 20.04       64 bit    GCC                         3.8
-Debian 10          32 bit    GCC                         3.7
-Debian 10          64 bit    GCC                         3.7
-OpenSuse 15        64 bit    GCC                         3.6
-Centos 8           64 bit    GCC                         3.6
-FreeBSD 12         64 bit    LLVM                        3.7
-OpenBSD 6.5        64 bit    LLVM                        3.6
-MS Windows 10      64 bit    MS Visual Studio C 2015     3.8
-Raspbian (RPi 3)   32 bit    GCC                         3.7
-Ubuntu 19.10 ARM   64 bit    GCC                         3.7
-================= ========  ========================== =========================
+===================== ========  =============== =========================
+OS                      Bits      Compiler        Python Version Tested
+===================== ========  =============== =========================
+Ubuntu 20.04 LTS       64 bit    GCC               3.8
+Ubuntu 20.10           64 bit    GCC               3.8
+Debian 10              32 bit    GCC               3.7
+Debian 10              64 bit    GCC               3.7
+OpenSuse 15.2          64 bit    GCC               3.6
+Centos 8               64 bit    GCC               3.6
+FreeBSD 12             64 bit    LLVM              3.7
+OpenBSD 6.8            64 bit    LLVM              3.8
+MS Windows 10          64 bit    MS VS C 2015      3.9
+Raspbian (RPi 3)       32 bit    GCC               3.7
+Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
+===================== ========  =============== =========================
 
 * The Raspbian (RPi 3) tests were conducted on a Raspberry Pi 3 ARM CPU running
   in 32 bit mode. 
-* The Ubuntu ARM tests were conducted on a Raspberry Pi 3 ARM CPU running in
+* The Ubuntu ARM tests were conducted on a Raspberry Pi 4 ARM CPU running in
   64 bit mode.
 * All others were conducted using VMs running on x86 hardware. 
 
