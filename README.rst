@@ -5,10 +5,10 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 6.1.0 for 2021-03-19
+:Version: 6.1.1 for 2021-05-02
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache 2.0 License.
-:Language: Python 3.5 or later
+:Language: Python 3.6 or later
 
 ---------------------------------------------------------------------
 
@@ -297,13 +297,13 @@ underlying math functions. Arrayfunc has been tested on the following platforms.
 OS                      Bits      Compiler        Python Version Tested
 ===================== ========  =============== =========================
 Ubuntu 20.04 LTS       64 bit    GCC               3.8
-Ubuntu 20.10           64 bit    GCC               3.8
+Ubuntu 21.04           64 bit    GCC               3.9
 Debian 10              32 bit    GCC               3.7
 Debian 10              64 bit    GCC               3.7
 OpenSuse 15.2          64 bit    GCC               3.6
 Centos 8               64 bit    GCC               3.6
-FreeBSD 12             64 bit    LLVM              3.7
-OpenBSD 6.8            64 bit    LLVM              3.8
+FreeBSD 13             64 bit    LLVM              3.7
+OpenBSD 6.9            64 bit    LLVM              3.8
 MS Windows 10          64 bit    MS VS C 2015      3.9
 Raspbian (RPi 3)       32 bit    GCC               3.7
 Ubuntu 20.04 (RPi 4)   64 bit    GCC               3.8
@@ -351,6 +351,8 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 6.1.1 - Documentation updated and version number bumped to reflect testing 
+          with Ubuntu 21.04, FreeBSD 13.0, and OpenBSD 6.9. No code changes.
 * 6.1.0 - Changed convguardbands to narrow -ve guard bands by 1 to handle 
           LLVM warning. Changed setup.py to detect Raspberry Pi 4 and set the 
           compiler args accordingly. Added support for Pi 4. Dropped testing 

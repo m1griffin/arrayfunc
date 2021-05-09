@@ -6,8 +6,23 @@
 testname=$1
 packsource=$2
 fileprefix=$3
+
+echo
+echo "Running unit tests."
+
 # Test library version.
-af_version=$( pip3 show arrayfunc | grep Version | cut -d: -f2)
+# Find out if running on BSD. FreeBSD and OpenBSD use "pip" instead of "pip3".
+# Linux uses "pip3". uname for FreeBSD and OpenBSD is their names as written here.
+# Since we have to run on BSD, we can't use Bash built-ins for string comparions
+# and so have to do it the hard way.
+platform=$( uname )
+echo "OS platform $platform detected."
+if echo "$platform" | grep -q "BSD"; then
+	af_version=$( pip show arrayfunc | grep Version | cut -d: -f2)
+else
+	af_version=$( pip3 show arrayfunc | grep Version | cut -d: -f2)
+fi
+
 
 # This program resets the test log file and inserts a time stamp and
 # information about the test platform in the top of the file.
