@@ -6,7 +6,7 @@ ArrayFunc
     Michael Griffin
     
 
-:Version: 6.1.1 for 2021-05-02
+:Version: 6.2.0 for 2021-06-05
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache License V2.0.
 :Language: Python 3.6 or later
@@ -880,8 +880,8 @@ Ubuntu 20.04 LTS       64 bit    GCC               3.8
 Ubuntu 21.04           64 bit    GCC               3.9
 Debian 10              32 bit    GCC               3.7
 Debian 10              64 bit    GCC               3.7
-OpenSuse 15.2          64 bit    GCC               3.6
-Centos 8               64 bit    GCC               3.6
+OpenSuse 15.3          64 bit    GCC               3.6
+Centos 8.4             64 bit    GCC               3.6
 FreeBSD 13             64 bit    LLVM              3.7
 OpenBSD 6.9            64 bit    LLVM              3.8
 MS Windows 10          64 bit    MS VS C 2015      3.9

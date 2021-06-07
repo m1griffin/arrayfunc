@@ -4,16 +4,14 @@
 
 # ==============================================================================
 
-# Get the command line arguments.
-argsvals=$( echo $@ )
-
 echo "Testing benchmarks." $(date)
 
 # Time at which the test sequence started.
 starttime=$(date '+%s')
 
-# The benchmarks.
-./arraybench.py $argsvals
+# This is used to run the benchmarks. Benchmark parameters can be
+# altered via command line parameters.
+./benchall_af.py
 
 # Time at which the test sequence completed.
 endtime=$(date '+%s')
@@ -23,4 +21,3 @@ echo "Benchmarks completed in " $elapsedtime " seconds."
 echo
 
 # ==============================================================================
-

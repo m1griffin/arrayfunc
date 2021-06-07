@@ -197,7 +197,7 @@ with open('README.rst') as longdescdata:
 
 
 setup(name = 'arrayfunc', 
-	version = '6.1.1',
+	version = '6.2.0',
 	description = 'Fast array processing functions',
 	long_description = long_description,
 	url = 'https://github.com/m1griffin/arrayfunc',

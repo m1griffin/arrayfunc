@@ -4,7 +4,7 @@ echo off
 
 echo "Testing benchmarks."
 
-arraybench.py
+benchall_af.py
 
 REM ============================================================================
 
