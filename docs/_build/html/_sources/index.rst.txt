@@ -10,15 +10,6 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
    ArrayFunc
 
-
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
