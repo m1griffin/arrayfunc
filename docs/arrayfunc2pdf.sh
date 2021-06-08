@@ -1,4 +1,4 @@
 #!/bin/sh
 
-rst2pdf ArrayFunc.rst
+rst2pdf index.rst -o ArrayFunc.pdf
 
