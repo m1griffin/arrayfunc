@@ -6,32 +6,23 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>ArrayFunc &#8212; ArrayFunc 1.1.0 documentation</title>
-    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <title>ArrayFunc &#8212; ArrayFunc  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/language_data.js"></script>
-    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Welcome to ArrayFunc’s documentation!" href="index.html" /> 
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to ArrayFunc’s documentation!"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">ArrayFunc 1.1.0 documentation</a> &#187;</li> 
-      </ul>
-    </div>  
+  
 
     <div class="document">
       <div class="documentwrapper">
@@ -9875,218 +9866,24 @@ in 32 bit mode.</li>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
-<li><a class="reference internal" href="#">ArrayFunc</a><ul>
-<li><a class="reference internal" href="#introduction">Introduction</a></li>
-<li><a class="reference internal" href="#function-summary">Function Summary</a><ul>
-<li><a class="reference internal" href="#filling-arrays">Filling Arrays</a></li>
-<li><a class="reference internal" href="#filtering-arrays">Filtering Arrays</a></li>
-<li><a class="reference internal" href="#examining-and-searching-arrays">Examining and Searching Arrays</a></li>
-<li><a class="reference internal" href="#summarising-arrays">Summarising Arrays</a></li>
-<li><a class="reference internal" href="#data-conversion">Data Conversion</a></li>
-<li><a class="reference internal" href="#mathematical-operator-functions">Mathematical operator functions</a></li>
-<li><a class="reference internal" href="#comparison-operator-functions">Comparison operator functions</a></li>
-<li><a class="reference internal" href="#bitwise-operator-functions">Bitwise operator functions</a></li>
-<li><a class="reference internal" href="#power-and-logarithmic-functions">Power and logarithmic functions</a></li>
-<li><a class="reference internal" href="#hyperbolic-functions">Hyperbolic functions</a></li>
-<li><a class="reference internal" href="#trigonometric-functions">Trigonometric functions</a></li>
-<li><a class="reference internal" href="#angular-conversion">Angular conversion</a></li>
-<li><a class="reference internal" href="#number-theoretic-and-representation-functions">Number-theoretic and representation functions</a></li>
-<li><a class="reference internal" href="#special-functions">Special functions</a></li>
-<li><a class="reference internal" href="#additional-functions">Additional functions</a></li>
-<li><a class="reference internal" href="#array-limit-attributes">Array Limit Attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#searching-and-summarising-arrays">Searching and Summarising Arrays.</a><ul>
-<li><a class="reference internal" href="#comparison-operators">Comparison Operators</a></li>
-<li><a class="reference internal" href="#description">Description</a><ul>
-<li><a class="reference internal" href="#aall">aall</a></li>
-<li><a class="reference internal" href="#aany">aany</a></li>
-<li><a class="reference internal" href="#afilter">afilter</a></li>
-<li><a class="reference internal" href="#amax">amax</a></li>
-<li><a class="reference internal" href="#amin">amin</a></li>
-<li><a class="reference internal" href="#asum">asum</a></li>
-<li><a class="reference internal" href="#compress">compress</a></li>
-<li><a class="reference internal" href="#convert">convert</a></li>
-<li><a class="reference internal" href="#count">count</a></li>
-<li><a class="reference internal" href="#cycle">cycle</a></li>
-<li><a class="reference internal" href="#dropwhile">dropwhile</a></li>
-<li><a class="reference internal" href="#findindex">findindex</a></li>
-<li><a class="reference internal" href="#findindices">findindices</a></li>
-<li><a class="reference internal" href="#repeat">repeat</a></li>
-<li><a class="reference internal" href="#takewhile">takewhile</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#arraylimits-attributes">arraylimits attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#mathematical-functions">Mathematical Functions</a><ul>
-<li><a class="reference internal" href="#id1">Description</a><ul>
-<li><a class="reference internal" href="#parameter-forms">Parameter Forms</a></li>
-<li><a class="reference internal" href="#parameter-type-consistency">Parameter Type Consistency</a></li>
-<li><a class="reference internal" href="#using-less-than-the-entire-array">Using Less than the Entire Array</a></li>
-<li><a class="reference internal" href="#suppressing-or-ignoring-math-errors">Suppressing or Ignoring Math Errors</a></li>
-<li><a class="reference internal" href="#differences-with-native-python">Differences with Native Python</a></li>
-<li><a class="reference internal" href="#other-notes">Other Notes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id2">Mathematical operator functions</a><ul>
-<li><a class="reference internal" href="#abs">abs_</a></li>
-<li><a class="reference internal" href="#add">add</a></li>
-<li><a class="reference internal" href="#floordiv">floordiv</a></li>
-<li><a class="reference internal" href="#mod">mod</a></li>
-<li><a class="reference internal" href="#mul">mul</a></li>
-<li><a class="reference internal" href="#neg">neg</a></li>
-<li><a class="reference internal" href="#pow">pow</a></li>
-<li><a class="reference internal" href="#sub">sub</a></li>
-<li><a class="reference internal" href="#truediv">truediv</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id3">Comparison operator functions</a><ul>
-<li><a class="reference internal" href="#eq">eq</a></li>
-<li><a class="reference internal" href="#ge">ge</a></li>
-<li><a class="reference internal" href="#gt">gt</a></li>
-<li><a class="reference internal" href="#le">le</a></li>
-<li><a class="reference internal" href="#lt">lt</a></li>
-<li><a class="reference internal" href="#ne">ne</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id4">Bitwise operator functions</a><ul>
-<li><a class="reference internal" href="#and">and_</a></li>
-<li><a class="reference internal" href="#invert">invert</a></li>
-<li><a class="reference internal" href="#lshift">lshift</a></li>
-<li><a class="reference internal" href="#or">or_</a></li>
-<li><a class="reference internal" href="#rshift">rshift</a></li>
-<li><a class="reference internal" href="#xor">xor</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id5">Power and logarithmic functions</a><ul>
-<li><a class="reference internal" href="#exp">exp</a></li>
-<li><a class="reference internal" href="#expm1">expm1</a></li>
-<li><a class="reference internal" href="#log">log</a></li>
-<li><a class="reference internal" href="#log10">log10</a></li>
-<li><a class="reference internal" href="#log1p">log1p</a></li>
-<li><a class="reference internal" href="#log2">log2</a></li>
-<li><a class="reference internal" href="#sqrt">sqrt</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id6">Hyperbolic functions</a><ul>
-<li><a class="reference internal" href="#acosh">acosh</a></li>
-<li><a class="reference internal" href="#asinh">asinh</a></li>
-<li><a class="reference internal" href="#atanh">atanh</a></li>
-<li><a class="reference internal" href="#cosh">cosh</a></li>
-<li><a class="reference internal" href="#sinh">sinh</a></li>
-<li><a class="reference internal" href="#tanh">tanh</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id7">Trigonometric functions</a><ul>
-<li><a class="reference internal" href="#acos">acos</a></li>
-<li><a class="reference internal" href="#asin">asin</a></li>
-<li><a class="reference internal" href="#atan">atan</a></li>
-<li><a class="reference internal" href="#atan2">atan2</a></li>
-<li><a class="reference internal" href="#cos">cos</a></li>
-<li><a class="reference internal" href="#hypot">hypot</a></li>
-<li><a class="reference internal" href="#sin">sin</a></li>
-<li><a class="reference internal" href="#tan">tan</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id8">Angular conversion</a><ul>
-<li><a class="reference internal" href="#degrees">degrees</a></li>
-<li><a class="reference internal" href="#radians">radians</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id9">Number-theoretic and representation functions</a><ul>
-<li><a class="reference internal" href="#ceil">ceil</a></li>
-<li><a class="reference internal" href="#copysign">copysign</a></li>
-<li><a class="reference internal" href="#fabs">fabs</a></li>
-<li><a class="reference internal" href="#factorial">factorial</a></li>
-<li><a class="reference internal" href="#floor">floor</a></li>
-<li><a class="reference internal" href="#fmod">fmod</a></li>
-<li><a class="reference internal" href="#isfinite">isfinite</a></li>
-<li><a class="reference internal" href="#isinf">isinf</a></li>
-<li><a class="reference internal" href="#isnan">isnan</a></li>
-<li><a class="reference internal" href="#ldexp">ldexp</a></li>
-<li><a class="reference internal" href="#trunc">trunc</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id10">Special functions</a><ul>
-<li><a class="reference internal" href="#erf">erf</a></li>
-<li><a class="reference internal" href="#erfc">erfc</a></li>
-<li><a class="reference internal" href="#gamma">gamma</a></li>
-<li><a class="reference internal" href="#lgamma">lgamma</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id11">Additional functions</a><ul>
-<li><a class="reference internal" href="#fma">fma</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#option-flags-and-parameters">Option Flags and Parameters</a><ul>
-<li><a class="reference internal" href="#arithmetic-overflow-control">Arithmetic Overflow Control</a></li>
-<li><a class="reference internal" href="#using-only-part-of-an-array">Using Only Part of an Array</a></li>
-<li><a class="reference internal" href="#simd-control">SIMD Control</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#data-types">Data Types</a><ul>
-<li><a class="reference internal" href="#array-types">Array Types</a></li>
-<li><a class="reference internal" href="#numeric-parameter-types">Numeric Parameter Types</a></li>
-<li><a class="reference internal" href="#maximum-array-size">Maximum Array Size</a></li>
-<li><a class="reference internal" href="#platform-compiler-support">Platform Compiler Support</a></li>
-<li><a class="reference internal" href="#integer-error-checking">Integer Error Checking</a><ul>
-<li><a class="reference internal" href="#error-categories">Error Categories</a></li>
-<li><a class="reference internal" href="#disabling-integer-division-by-zero-checks">Disabling Integer Division by Zero Checks</a></li>
-<li><a class="reference internal" href="#floating-point-nan-and-infinity">Floating Point NaN and Infinity</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#exceptions">Exceptions</a><ul>
-<li><a class="reference internal" href="#exceptions-general">Exceptions - General</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#platform-oddities">Platform Oddities</a></li>
-<li><a class="reference internal" href="#simd-support">SIMD Support</a><ul>
-<li><a class="reference internal" href="#general">General</a></li>
-<li><a class="reference internal" href="#platform-support">Platform Support</a></li>
-<li><a class="reference internal" href="#raspberry-pi-32-versus-64-bit">Raspberry Pi 32 versus 64 bit</a></li>
-<li><a class="reference internal" href="#data-type-support">Data Type Support</a><ul>
-<li><a class="reference internal" href="#x86-64">x86-64</a></li>
-<li><a class="reference internal" href="#armv7">ARMv7</a></li>
-<li><a class="reference internal" href="#armv8-aarch64">ARMv8 AARCH64</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#simd-support-attributes">SIMD Support Attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#performance">Performance</a><ul>
-<li><a class="reference internal" href="#variables-affecting-performance">Variables affecting Performance</a></li>
-<li><a class="reference internal" href="#typical-performance-readings">Typical Performance Readings</a><ul>
-<li><a class="reference internal" href="#default-performance">Default Performance</a></li>
-<li><a class="reference internal" href="#optimised-performance-with-simd">Optimised Performance (with SIMD)</a></li>
-<li><a class="reference internal" href="#simd-optimisation-effects">SIMD Optimisation Effects</a></li>
-<li><a class="reference internal" href="#array-size-versus-performance">Array Size Versus Performance</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#platform-effects">Platform Effects</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#id12">Platform support</a></li>
-</ul>
-</li>
-</ul>
+<h1 class="logo"><a href="index.html">ArrayFunc</a></h1>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="index.html"
-                        title="previous chapter">Welcome to ArrayFunc’s documentation!</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/ArrayFunc.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -10103,21 +9900,20 @@ in 32 bit mode.</li>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="index.html" title="Welcome to ArrayFunc’s documentation!"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">ArrayFunc 1.1.0 documentation</a> &#187;</li> 
-      </ul>
+    <div class="footer">
+      &copy;2021, mgriffin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.8</a>
+      
+      |
+      <a href="_sources/ArrayFunc.rst.txt"
+          rel="nofollow">Page source</a>
     </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2016, M Griffin.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
-    </div>
+
+    
+
+    
   </body>
 </html>
