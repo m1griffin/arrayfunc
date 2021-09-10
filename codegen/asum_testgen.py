@@ -571,7 +571,7 @@ OvflTestSkip = """# There seems to be a problem with 32 bit Debian with array ty
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')"""
 
 # ==============================================================================

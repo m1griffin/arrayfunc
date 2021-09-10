@@ -305,8 +305,9 @@ def GetBenchmarkData():
 	# These are the benchmark table headings. These are used to find
 	# the start and stop of each benchmark table.
 	pytitle = 'Relative Performance - Python Time'
-	simdtitle = 'Relative Performance with SIMD Optimisations'
-	simdrel = 'Relative Performance with and without SIMD Optimisations'
+	simdtitle = 'Effect of leaving error checking on and disabling SIMD'
+	
+	simdrel = 'Effect of turning error checking off and leaving SIMD on'
 	pyabsolute = 'Python native time in micro-seconds'
 
 	with open('../benchmarks/af_benchmarkdata.txt') as f:
@@ -314,12 +315,11 @@ def GetBenchmarkData():
 
 	# Get the Python native time.
 	pybench = ''.join(itertools.takewhile(lambda x: simdtitle not in x, itertools.dropwhile(lambda x: pytitle not in x, benchdata)))
-	simdbench = ''.join(itertools.takewhile(lambda x: simdrel not in x, itertools.dropwhile(lambda x: simdtitle not in x, benchdata)))
-	simdrelbench = ''.join(itertools.takewhile(lambda x: pyabsolute not in x, itertools.dropwhile(lambda x: simdrel not in x, benchdata)))
+	simdbench = ''.join(itertools.takewhile(lambda x: pyabsolute not in x, itertools.dropwhile(lambda x: simdrel not in x, benchdata)))
 
-	return pybench, simdbench, simdrelbench
+	return pybench, simdbench
 
-pybench, simdbench, simdrelbench = GetBenchmarkData()
+pybench, simdbench = GetBenchmarkData()
 
 
 # ==============================================================================
@@ -340,7 +340,7 @@ arraysizebench = GetArraySizeBenchData()
 
 # Insert the data into the documentation template.
 def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
-		pybench, simdbench, simdrelbench, arraysizebench):
+		pybench, simdbench, arraysizebench):
 	'''Write out the documentation based on the template.
 	'''
 	# Read in the entire template file.
@@ -351,11 +351,10 @@ def WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simdda
 	with open('ArrayFunc.rst', 'w') as f:
 		f.write(doctmpl.format(summarytable = summtable, opdocs = opdocs, extradocs = extradocs,
 			simddata_x86 = simddata_x86, simddata_armv7 = simddata_armv7, simddata_armv8 = simddata_armv8,
-			pybench = pybench, simdbench = simdbench, simdrelbench = simdrelbench,
-			arraysizebench = arraysizebench))
+			pybench = pybench, simdbench = simdbench, arraysizebench = arraysizebench))
 
 # Write out the documentation file.
 WriteDocs(summtable, opdocs, extradocs, simddata_x86, simddata_armv7, simddata_armv8, 
-		pybench, simdbench, simdrelbench, arraysizebench)
+		pybench, simdbench, arraysizebench)
 
 # ==============================================================================

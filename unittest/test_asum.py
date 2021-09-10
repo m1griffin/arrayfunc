@@ -5,11 +5,11 @@
 # Purpose:  arrayfunc unit test.
 # Language: Python 3.4
 # Date:     11-Jun-2014.
-# Ver:      06-Mar-2020.
+# Ver:      09-Sep-2021.
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -9600,7 +9600,7 @@ class asum_overflow_MaxVal_0_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
@@ -9614,7 +9614,7 @@ class asum_overflow_MaxVal_0_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
@@ -9693,7 +9693,7 @@ class asum_overflow_MaxVal_1_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
@@ -9707,7 +9707,7 @@ class asum_overflow_MaxVal_1_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
@@ -9786,7 +9786,7 @@ class asum_overflow_MaxVal_2_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
@@ -9800,7 +9800,7 @@ class asum_overflow_MaxVal_2_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
@@ -9879,7 +9879,7 @@ class asum_overflow_MaxVal_3_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
@@ -9893,7 +9893,7 @@ class asum_overflow_MaxVal_3_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
@@ -9972,7 +9972,7 @@ class asum_overflow_MaxVal_4_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
@@ -9986,7 +9986,7 @@ class asum_overflow_MaxVal_4_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.
@@ -11320,7 +11320,7 @@ class asum_overflow_MinVal_0_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 0.
@@ -11334,7 +11334,7 @@ class asum_overflow_MinVal_0_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 0.
@@ -11413,7 +11413,7 @@ class asum_overflow_MinVal_1_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 1.
@@ -11427,7 +11427,7 @@ class asum_overflow_MinVal_1_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 1.
@@ -11506,7 +11506,7 @@ class asum_overflow_MinVal_2_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 2.
@@ -11520,7 +11520,7 @@ class asum_overflow_MinVal_2_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 2.
@@ -11599,7 +11599,7 @@ class asum_overflow_MinVal_3_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 3.
@@ -11613,7 +11613,7 @@ class asum_overflow_MinVal_3_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 3.
@@ -11692,7 +11692,7 @@ class asum_overflow_MinVal_4_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_B1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD enabled (if present), array data shifted 4.
@@ -11706,7 +11706,7 @@ class asum_overflow_MinVal_4_f(unittest.TestCase):
 	# Intermediate values can exceed the maximum array type value without
 	# the value overflowing to infinity. This does not happen on x86_64, or
 	# 32 bit ARM.
-	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.platform().lower()), 
+	@unittest.skipIf(('i686' in platform.machine()) and ('debian' in platform.version().lower()), 
 			'Skip test if 32 bit x86 Debian float due to apparent bug on overflow.')
 	def test_asum_overflow_C1(self):
 		"""Test asum  - Array code f. Test for overflow with error checking disabled and SIMD disabled (if present), array data shifted 4.

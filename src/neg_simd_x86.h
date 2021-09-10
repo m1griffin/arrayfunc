@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     22-Mar-2019
-// Ver:      27-Mar-2020.
+// Ver:      06-Sep-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -28,9 +28,15 @@
 
 void neg_signed_char_1_simd(Py_ssize_t arraylen, signed char *data);
 void neg_signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char *dataout);
+char neg_signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data);
+char neg_signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed char *dataout);
 void neg_signed_short_1_simd(Py_ssize_t arraylen, signed short *data);
 void neg_signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed short *dataout);
+char neg_signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data);
+char neg_signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed short *dataout);
 void neg_signed_int_1_simd(Py_ssize_t arraylen, signed int *data);
 void neg_signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *dataout);
+char neg_signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data);
+char neg_signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *dataout);
 
 

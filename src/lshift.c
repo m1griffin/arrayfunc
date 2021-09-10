@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@
 
 #include "arrayparams_two.h"
 
-/*--------------------------------------------------------------------------- */
-
 
 #include "simddefs.h"
 
@@ -62,6 +60,8 @@
 
 /*--------------------------------------------------------------------------- */
 
+// Function specific macros and other definitions.
+#include "lshift_defs.h"
 
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
@@ -78,9 +78,9 @@ void lshift_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 		lshift_signed_char_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -99,9 +99,9 @@ void lshift_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1, s
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 		lshift_signed_char_2_simd(arraylen, data1, param, data3);
 		return;
 	}
@@ -178,9 +178,9 @@ void lshift_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 		lshift_unsigned_char_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -199,9 +199,9 @@ void lshift_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *data
 	// array index counter.
 	Py_ssize_t x;
 
-#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 		lshift_unsigned_char_2_simd(arraylen, data1, param, data3);
 		return;
 	}
@@ -280,7 +280,7 @@ void lshift_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *data1,
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 		lshift_signed_short_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -301,7 +301,7 @@ void lshift_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *data1,
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 		lshift_signed_short_2_simd(arraylen, data1, param, data3);
 		return;
 	}
@@ -380,7 +380,7 @@ void lshift_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short *da
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 		lshift_unsigned_short_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -401,7 +401,7 @@ void lshift_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short *da
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 		lshift_unsigned_short_2_simd(arraylen, data1, param, data3);
 		return;
 	}
@@ -480,7 +480,7 @@ void lshift_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 		lshift_signed_int_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -501,7 +501,7 @@ void lshift_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, sig
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 		lshift_signed_int_2_simd(arraylen, data1, param, data3);
 		return;
 	}
@@ -580,7 +580,7 @@ void lshift_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 		lshift_unsigned_int_1_simd(arraylen, data1, param);
 		return;
 	}
@@ -601,7 +601,7 @@ void lshift_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *data1,
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	// SIMD version.
-	if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 		lshift_unsigned_int_2_simd(arraylen, data1, param, data3);
 		return;
 	}

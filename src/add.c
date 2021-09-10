@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -60,6 +60,9 @@
 
 /*--------------------------------------------------------------------------- */
 
+// Function specific macros and other definitions.
+#include "add_defs.h"
+
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -74,43 +77,61 @@ signed int add_signed_char_1(Py_ssize_t arraylen, int nosimd, signed char *data1
 
 	// array index counter.
 	Py_ssize_t x;
-	signed char ovtmp;
+	signed char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_char_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_char_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = SCHAR_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = SCHAR_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -120,44 +141,62 @@ signed int add_signed_char_2(Py_ssize_t arraylen, int nosimd, signed char *data1
 
 	// array index counter.
 	Py_ssize_t x;
-	signed char ovtmp;
+	signed char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_char_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_char_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data1[x]; 
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = SCHAR_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = SCHAR_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -167,43 +206,61 @@ signed int add_signed_char_3(Py_ssize_t arraylen, int nosimd, signed char param,
 
 	// array index counter.
 	Py_ssize_t x;
-	signed char ovtmp;
+	signed char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_char_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_char_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = SCHAR_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = SCHAR_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -213,44 +270,62 @@ signed int add_signed_char_4(Py_ssize_t arraylen, int nosimd, signed char param,
 
 	// array index counter.
 	Py_ssize_t x;
-	signed char ovtmp;
+	signed char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_char_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_char_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data2[x]; 
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data2[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_char(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = SCHAR_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = SCHAR_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -268,7 +343,7 @@ signed int add_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 			add_signed_char_5_simd(arraylen, data1, data2);
 			return ARR_NO_ERR;
 		}
@@ -280,11 +355,11 @@ signed int add_signed_char_5(Py_ssize_t arraylen, int nosimd, signed char *data1
 	} else {
 	// Math error checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (SCHAR_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (SCHAR_MIN - data2[x]))) {return ARR_ERR_OVFL;}
+			if (loop_willoverflow_signed_char(data1[x], data2[x])) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] + data2[x];
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -295,28 +370,28 @@ signed int add_signed_char_6(Py_ssize_t arraylen, int nosimd, signed char *data1
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
 			add_signed_char_6_simd(arraylen, data1, data2, data3);
 			return ARR_NO_ERR;
 		}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+			if (loop_willoverflow_signed_char(data1[x], data2[x])) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (SCHAR_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (SCHAR_MIN - data2[x]))) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
 	return ARR_NO_ERR;
 
 }
@@ -335,30 +410,48 @@ signed int add_unsigned_char_1(Py_ssize_t arraylen, int nosimd, unsigned char *d
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_char(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = UCHAR_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -368,30 +461,48 @@ signed int add_unsigned_char_2(Py_ssize_t arraylen, int nosimd, unsigned char *d
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_char(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = UCHAR_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -401,30 +512,48 @@ signed int add_unsigned_char_3(Py_ssize_t arraylen, int nosimd, unsigned char pa
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_char(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data2[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UCHAR_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data2[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -434,65 +563,99 @@ signed int add_unsigned_char_4(Py_ssize_t arraylen, int nosimd, unsigned char pa
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_char(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UCHAR_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
-
-
 
 // param_arr_arr_none
 signed int add_unsigned_char_5(Py_ssize_t arraylen, int nosimd, unsigned char *data1, unsigned char *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_5_simd_ovfl(arraylen, data1, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_char(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UCHAR_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -502,30 +665,48 @@ signed int add_unsigned_char_6(Py_ssize_t arraylen, int nosimd, unsigned char *d
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned char ovtmp;
+	unsigned char ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_char_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_char_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_char(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UCHAR_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -544,43 +725,61 @@ signed int add_signed_short_1(Py_ssize_t arraylen, int nosimd, signed short *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	signed short ovtmp;
+	signed short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_short_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_short_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = SHRT_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = SHRT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -590,44 +789,62 @@ signed int add_signed_short_2(Py_ssize_t arraylen, int nosimd, signed short *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	signed short ovtmp;
+	signed short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_short_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_short_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data1[x]; 
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = SHRT_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = SHRT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -637,43 +854,61 @@ signed int add_signed_short_3(Py_ssize_t arraylen, int nosimd, signed short para
 
 	// array index counter.
 	Py_ssize_t x;
-	signed short ovtmp;
+	signed short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_short_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_short_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = SHRT_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = SHRT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -683,44 +918,62 @@ signed int add_signed_short_4(Py_ssize_t arraylen, int nosimd, signed short para
 
 	// array index counter.
 	Py_ssize_t x;
-	signed short ovtmp;
+	signed short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_short_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_short_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data2[x]; 
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data2[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_short(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = SHRT_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = SHRT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -738,7 +991,7 @@ signed int add_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *dat
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 			add_signed_short_5_simd(arraylen, data1, data2);
 			return ARR_NO_ERR;
 		}
@@ -750,11 +1003,11 @@ signed int add_signed_short_5(Py_ssize_t arraylen, int nosimd, signed short *dat
 	} else {
 	// Math error checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (SHRT_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (SHRT_MIN - data2[x]))) {return ARR_ERR_OVFL;}
+			if (loop_willoverflow_signed_short(data1[x], data2[x])) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] + data2[x];
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -765,28 +1018,28 @@ signed int add_signed_short_6(Py_ssize_t arraylen, int nosimd, signed short *dat
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
 			add_signed_short_6_simd(arraylen, data1, data2, data3);
 			return ARR_NO_ERR;
 		}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+			if (loop_willoverflow_signed_short(data1[x], data2[x])) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (SHRT_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (SHRT_MIN - data2[x]))) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
 	return ARR_NO_ERR;
 
 }
@@ -805,30 +1058,48 @@ signed int add_unsigned_short_1(Py_ssize_t arraylen, int nosimd, unsigned short 
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_short(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = USHRT_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -838,30 +1109,48 @@ signed int add_unsigned_short_2(Py_ssize_t arraylen, int nosimd, unsigned short 
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_short(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = USHRT_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -871,30 +1160,48 @@ signed int add_unsigned_short_3(Py_ssize_t arraylen, int nosimd, unsigned short 
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_short(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data2[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = USHRT_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data2[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -904,65 +1211,99 @@ signed int add_unsigned_short_4(Py_ssize_t arraylen, int nosimd, unsigned short 
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_short(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = USHRT_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
-
-
 
 // param_arr_arr_none
 signed int add_unsigned_short_5(Py_ssize_t arraylen, int nosimd, unsigned short *data1, unsigned short *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_5_simd_ovfl(arraylen, data1, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_short(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = USHRT_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -972,30 +1313,48 @@ signed int add_unsigned_short_6(Py_ssize_t arraylen, int nosimd, unsigned short 
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned short ovtmp;
+	unsigned short ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_short_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_short_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_short(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = USHRT_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1014,43 +1373,61 @@ signed int add_signed_int_1(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 
 	// array index counter.
 	Py_ssize_t x;
-	signed int ovtmp;
+	signed int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_int_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_int_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = INT_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = INT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1060,44 +1437,62 @@ signed int add_signed_int_2(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 
 	// array index counter.
 	Py_ssize_t x;
-	signed int ovtmp;
+	signed int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_int_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_int_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data1[x]; 
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = INT_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = INT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1107,43 +1502,61 @@ signed int add_signed_int_3(Py_ssize_t arraylen, int nosimd, signed int param, s
 
 	// array index counter.
 	Py_ssize_t x;
-	signed int ovtmp;
+	signed int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_int_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_int_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = INT_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = INT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1153,44 +1566,62 @@ signed int add_signed_int_4(Py_ssize_t arraylen, int nosimd, signed int param, s
 
 	// array index counter.
 	Py_ssize_t x;
-	signed int ovtmp;
+	signed int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_signed_int_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_signed_int_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data2[x]; 
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data2[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_int(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = INT_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = INT_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1208,7 +1639,7 @@ signed int add_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 			add_signed_int_5_simd(arraylen, data1, data2);
 			return ARR_NO_ERR;
 		}
@@ -1220,11 +1651,11 @@ signed int add_signed_int_5(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	} else {
 	// Math error checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (INT_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (INT_MIN - data2[x]))) {return ARR_ERR_OVFL;}
+			if (loop_willoverflow_signed_int(data1[x], data2[x])) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] + data2[x];
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1235,28 +1666,28 @@ signed int add_signed_int_6(Py_ssize_t arraylen, int nosimd, signed int *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
 			add_signed_int_6_simd(arraylen, data1, data2, data3);
 			return ARR_NO_ERR;
 		}
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+			if (loop_willoverflow_signed_int(data1[x], data2[x])) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (INT_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (INT_MIN - data2[x]))) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1275,30 +1706,48 @@ signed int add_unsigned_int_1(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_1_simd(arraylen, data1, param);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_1_simd_ovfl(arraylen, data1, param);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_int(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = UINT_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1308,30 +1757,48 @@ signed int add_unsigned_int_2(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_2_simd(arraylen, data1, param, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_2_simd_ovfl(arraylen, data1, param, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_int(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = UINT_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + param;
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1341,30 +1808,48 @@ signed int add_unsigned_int_3(Py_ssize_t arraylen, int nosimd, unsigned int para
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_3_simd(arraylen, param, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_3_simd_ovfl(arraylen, param, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_int(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data2[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UINT_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data2[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1374,65 +1859,99 @@ signed int add_unsigned_int_4(Py_ssize_t arraylen, int nosimd, unsigned int para
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_4_simd(arraylen, param, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_4_simd_ovfl(arraylen, param, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_int(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UINT_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = param + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
-
-
 
 // param_arr_arr_none
 signed int add_unsigned_int_5(Py_ssize_t arraylen, int nosimd, unsigned int *data1, unsigned int *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_5_simd(arraylen, data1, data2);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_5_simd_ovfl(arraylen, data1, data2);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_int(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UINT_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1442,30 +1961,48 @@ signed int add_unsigned_int_6(Py_ssize_t arraylen, int nosimd, unsigned int *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned int ovtmp;
+	unsigned int ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
 #if defined(AF_HASSIMD_ARM_AARCH64)
-		// SIMD version.
-		if (!nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE)) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			add_unsigned_int_6_simd(arraylen, data1, data2, data3);
-			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			ovflresult = add_unsigned_int_6_simd_ovfl(arraylen, data1, data2, data3);
+			if (ovflresult) { return ARR_ERR_OVFL; }
 		}
+
+	} else {
 #endif
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_int(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = UINT_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
+
+
+#if defined(AF_HASSIMD_ARM_AARCH64)
 	}
+#endif
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1484,35 +2021,40 @@ signed int add_signed_long_1(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long ovtmp;
+	signed long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = LONG_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = LONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1522,36 +2064,41 @@ signed int add_signed_long_2(Py_ssize_t arraylen, signed long *data1, signed lon
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long ovtmp;
+	signed long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data1[x]; 
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = LONG_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = LONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1561,35 +2108,40 @@ signed int add_signed_long_3(Py_ssize_t arraylen, signed long param, signed long
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long ovtmp;
+	signed long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = LONG_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = LONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1599,36 +2151,41 @@ signed int add_signed_long_4(Py_ssize_t arraylen, signed long param, signed long
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long ovtmp;
+	signed long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data2[x]; 
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data2[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = LONG_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = LONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1650,11 +2207,11 @@ signed int add_signed_long_5(Py_ssize_t arraylen, signed long *data1, signed lon
 	} else {
 	// Math error checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (LONG_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (LONG_MIN - data2[x]))) {return ARR_ERR_OVFL;}
+			if (loop_willoverflow_signed_long(data1[x], data2[x])) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] + data2[x];
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1665,20 +2222,20 @@ signed int add_signed_long_6(Py_ssize_t arraylen, signed long *data1, signed lon
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+			if (loop_willoverflow_signed_long(data1[x], data2[x])) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (LONG_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (LONG_MIN - data2[x]))) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
 	return ARR_NO_ERR;
 
 }
@@ -1697,22 +2254,27 @@ signed int add_unsigned_long_1(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = ULONG_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + param;
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1722,22 +2284,27 @@ signed int add_unsigned_long_2(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = ULONG_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + param;
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1747,22 +2314,27 @@ signed int add_unsigned_long_3(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data2[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULONG_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data2[x] = param + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1772,49 +2344,57 @@ signed int add_unsigned_long_4(Py_ssize_t arraylen, unsigned long param, unsigne
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULONG_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = param + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
-
-
 
 // param_arr_arr_none
 signed int add_unsigned_long_5(Py_ssize_t arraylen, unsigned long *data1, unsigned long *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_long(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULONG_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1824,22 +2404,27 @@ signed int add_unsigned_long_6(Py_ssize_t arraylen, unsigned long *data1, unsign
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long ovtmp;
+	unsigned long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_long(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULONG_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1858,35 +2443,40 @@ signed int add_signed_long_long_1(Py_ssize_t arraylen, signed long long *data1, 
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long long ovtmp;
+	signed long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = LLONG_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data1[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = LLONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data1[x] = data1[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1896,36 +2486,41 @@ signed int add_signed_long_long_2(Py_ssize_t arraylen, signed long long *data1, 
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long long ovtmp;
+	signed long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data1[x]; 
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data1[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data1[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data1[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = LLONG_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = LLONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data1[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data1[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1935,35 +2530,40 @@ signed int add_signed_long_long_3(Py_ssize_t arraylen, signed long long param, s
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long long ovtmp;
+	signed long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		// If the parameter is zero, we can take a shortcut.
-		if (param == 0) {
-			return ARR_NO_ERR;
-		}
-		if (param > 0) {
-			ovtmp = LLONG_MAX - param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			// If the parameter is zero, we can take a shortcut.
+			if (param == 0) {
+				return ARR_NO_ERR;
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data2[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param < 0) {
-			ovtmp = LLONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data2[x] = data2[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -1973,36 +2573,41 @@ signed int add_signed_long_long_4(Py_ssize_t arraylen, signed long long param, s
 
 	// array index counter.
 	Py_ssize_t x;
-	signed long long ovtmp;
+	signed long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
-		}
-	} else {
-	// Math error checking enabled.
-		if (param == 0) {
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
 			for (x = 0; x < arraylen; x++) {
-				data3[x] = data2[x]; 
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			if (param == 0) {
+				for (x = 0; x < arraylen; x++) {
+					data3[x] = data2[x]; 
+				}
+			}
+			if (param > 0) {
+				ovlimit = pos_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( pos_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
+			}
+			if (param < 0) {
+				ovlimit = neg_ovlimit_signed_long_long(param);
+				for (x = 0; x < arraylen; x++) {
+					if ( neg_willoverflow(data2[x], ovlimit) ) {return ARR_ERR_OVFL;}
+					data3[x] = data2[x] + param; 
+				}
 			}
 		}
-		if (param > 0) {
-			ovtmp = LLONG_MAX - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] > ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-		if (param < 0) {
-			ovtmp = LLONG_MIN - param;
-			for (x = 0; x < arraylen; x++) {
-				if (data2[x] < ovtmp) {return ARR_ERR_OVFL;}
-				data3[x] = data2[x] + param; 
-			}
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2024,11 +2629,11 @@ signed int add_signed_long_long_5(Py_ssize_t arraylen, signed long long *data1, 
 	} else {
 	// Math error checking enabled.
 		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (LLONG_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (LLONG_MIN - data2[x]))) {return ARR_ERR_OVFL;}
+			if (loop_willoverflow_signed_long_long(data1[x], data2[x])) {return ARR_ERR_OVFL;}
 			data1[x] = data1[x] + data2[x];
 		}
 	}
+
 	return ARR_NO_ERR;
 
 }
@@ -2039,20 +2644,20 @@ signed int add_signed_long_long_6(Py_ssize_t arraylen, signed long long *data1, 
 	// array index counter.
 	Py_ssize_t x;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+			if (loop_willoverflow_signed_long_long(data1[x], data2[x])) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			if ((data2[x] > 0) && (data1[x] > (LLONG_MAX - data2[x]))) {return ARR_ERR_OVFL;}
-			if ((data2[x] < 0) && (data1[x] < (LLONG_MIN - data2[x]))) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
 	return ARR_NO_ERR;
 
 }
@@ -2071,22 +2676,27 @@ signed int add_unsigned_long_long_1(Py_ssize_t arraylen, unsigned long long *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = ULLONG_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + param;
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2096,22 +2706,27 @@ signed int add_unsigned_long_long_2(Py_ssize_t arraylen, unsigned long long *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + param;
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + param;
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + param;
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		ovtmp = ULLONG_MAX - param;
-		for (x = 0; x < arraylen; x++) {
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + param;
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2121,22 +2736,27 @@ signed int add_unsigned_long_long_3(Py_ssize_t arraylen, unsigned long long para
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data2[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data2[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data2[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULLONG_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data2[x] = param + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2146,49 +2766,57 @@ signed int add_unsigned_long_long_4(Py_ssize_t arraylen, unsigned long long para
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = param + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = param + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			ovlimit = ovlimit_unsigned_long_long(param);
+			for (x = 0; x < arraylen; x++) {
+				if (pos_willoverflow(data2[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = param + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULLONG_MAX - data2[x];
-			if (param > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = param + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
-
-
 
 // param_arr_arr_none
 signed int add_unsigned_long_long_5(Py_ssize_t arraylen, unsigned long long *data1, unsigned long long *data2, unsigned int ignoreerrors) {
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data1[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data1[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_long_long(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data1[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULLONG_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data1[x] = data1[x] + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2198,22 +2826,27 @@ signed int add_unsigned_long_long_6(Py_ssize_t arraylen, unsigned long long *dat
 
 	// array index counter.
 	Py_ssize_t x;
-	unsigned long long ovtmp;
+	unsigned long long ovlimit;
 
-	// Math error checking disabled.
-	if (ignoreerrors) {
 
-		for (x = 0; x < arraylen; x++) {
-			data3[x] = data1[x] + data2[x];
+
+		// Non-SIMD version.
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			for (x = 0; x < arraylen; x++) {
+				data3[x] = data1[x] + data2[x];
+			}
+		} else {
+		// Math error checking enabled.
+			for (x = 0; x < arraylen; x++) {
+				ovlimit = ovlimit_unsigned_long_long(data2[x]);
+				if (pos_willoverflow(data1[x], ovlimit)) {return ARR_ERR_OVFL;}
+				data3[x] = data1[x] + data2[x];
+			}
 		}
-	} else {
-	// Math error checking enabled.
-		for (x = 0; x < arraylen; x++) {
-			ovtmp = ULLONG_MAX - data2[x];
-			if (data1[x] > ovtmp) {return ARR_ERR_OVFL;}
-			data3[x] = data1[x] + data2[x];
-		}
-	}
+
+
+
 	return ARR_NO_ERR;
 
 }
@@ -2238,7 +2871,7 @@ signed int add_float_1(Py_ssize_t arraylen, int nosimd, float *data1, float para
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_1_simd(arraylen, data1, param);
 			return ARR_NO_ERR;
 		}
@@ -2269,7 +2902,7 @@ signed int add_float_2(Py_ssize_t arraylen, int nosimd, float *data1, float para
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_2_simd(arraylen, data1, param, data3);
 			return ARR_NO_ERR;
 		}
@@ -2300,7 +2933,7 @@ signed int add_float_3(Py_ssize_t arraylen, int nosimd, float param, float *data
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_3_simd(arraylen, param, data2);
 			return ARR_NO_ERR;
 		}
@@ -2331,7 +2964,7 @@ signed int add_float_4(Py_ssize_t arraylen, int nosimd, float param, float *data
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_4_simd(arraylen, param, data2, data3);
 			return ARR_NO_ERR;
 		}
@@ -2364,7 +2997,7 @@ signed int add_float_5(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_5_simd(arraylen, data1, data2);
 			return ARR_NO_ERR;
 		}
@@ -2395,7 +3028,7 @@ signed int add_float_6(Py_ssize_t arraylen, int nosimd, float *data1, float *dat
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, FLOATSIMDSIZE)) {
 			add_float_6_simd(arraylen, data1, data2, data3);
 			return ARR_NO_ERR;
 		}
@@ -2435,7 +3068,7 @@ signed int add_double_1(Py_ssize_t arraylen, int nosimd, double *data1, double p
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_1_simd(arraylen, data1, param);
 			return ARR_NO_ERR;
 		}
@@ -2466,7 +3099,7 @@ signed int add_double_2(Py_ssize_t arraylen, int nosimd, double *data1, double p
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_2_simd(arraylen, data1, param, data3);
 			return ARR_NO_ERR;
 		}
@@ -2497,7 +3130,7 @@ signed int add_double_3(Py_ssize_t arraylen, int nosimd, double param, double *d
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_3_simd(arraylen, param, data2);
 			return ARR_NO_ERR;
 		}
@@ -2528,7 +3161,7 @@ signed int add_double_4(Py_ssize_t arraylen, int nosimd, double param, double *d
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_4_simd(arraylen, param, data2, data3);
 			return ARR_NO_ERR;
 		}
@@ -2561,7 +3194,7 @@ signed int add_double_5(Py_ssize_t arraylen, int nosimd, double *data1, double *
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_5_simd(arraylen, data1, data2);
 			return ARR_NO_ERR;
 		}
@@ -2592,7 +3225,7 @@ signed int add_double_6(Py_ssize_t arraylen, int nosimd, double *data1, double *
 
 #if defined(AF_HASSIMD_X86)
 		// SIMD version.
-		if (!nosimd && (arraylen >= (DOUBLESIMDSIZE * 2))) {
+		if (!nosimd && enoughforsimd(arraylen, DOUBLESIMDSIZE)) {
 			add_double_6_simd(arraylen, data1, data2, data3);
 			return ARR_NO_ERR;
 		}

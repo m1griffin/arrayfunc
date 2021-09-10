@@ -301,10 +301,9 @@ def writelinedataerror(f, label1, calcvalues):
 
 
 ########################################################
-def WriteRelativeResults(f, totalresults, funcnamelist, arraysize):
+def WriteRelativeResults(f, numerator, denominator, totalresults, funcnamelist, arraysize):
 	'''The relative performance stats in default configuration.
 	'''
-	f.write('Relative Performance - Python Time / Arrayfunc Time.\n\n')
 	f.write(FormatTableSep(RELCOLWIDTH))
 	f.write(FormatHeaderLabels(RELCOLWIDTH))
 	f.write(FormatTableSep(RELCOLWIDTH))
@@ -320,11 +319,11 @@ def WriteRelativeResults(f, totalresults, funcnamelist, arraysize):
 		# Make sure that valid data is present.
 		if 'error' not in funcvals:
 			# These will be dictionaries with the keys being the array codes.
-			pyvals = funcvals['pydata']
-			afvals = funcvals['afdata']
+			numervals = funcvals[numerator]
+			denomvals = funcvals[denominator]
 			# This does the actual calculation. None is inserted as a placeholder
 			# for values which cannot be calculated.
-			calcvalues = [relcalc(x, pyvals.get(x, None), afvals.get(x, None)) for x in arraycodes]
+			calcvalues = [relcalc(x, numervals.get(x, None), denomvals.get(x, None)) for x in arraycodes]
 			# Write out the formatted line.
 			writelinerel(f, func, calcvalues)
 			# Accumulate the values for the statistical summary. 
@@ -359,6 +358,7 @@ def WriteRelativeResults(f, totalresults, funcnamelist, arraysize):
 	
 
 
+
 ########################################################
 def WriteRelativeResultsSIMD(f, totalresults, funcnamelist, arraysize):
 	'''The relative performance stats in SIMD optimised configuration.
@@ -379,7 +379,7 @@ def WriteRelativeResultsSIMD(f, totalresults, funcnamelist, arraysize):
 		if 'error' not in funcvals:
 			# These will be dictionaries with the keys being the array codes.
 			pyvals = funcvals['pydata']
-			afvals = funcvals['afdatasimd']
+			afvals = funcvals['afdataerrtruesimdfalse']
 			# This does the actual calculation. None is inserted as a placeholder
 			# for values which cannot be calculated.
 			calcvalues = [relcalc(x, pyvals.get(x, None), afvals.get(x, None)) for x in arraycodes]
@@ -436,11 +436,11 @@ def WriteSIMDResults(f, totalresults, funcnamelist):
 		# Make sure that valid data is present.
 		if 'error' not in funcvals:
 			# These will be dictionaries with the keys being the array codes.
-			afdatanosimd = funcvals['afdatanosimd']
-			afdatasimd = funcvals['afdatasimd']
+			afdataerrtruesimdtrue = funcvals['afdataerrtruesimdtrue']
+			afdataerrtruesimdfalse = funcvals['afdataerrtruesimdfalse']
 			# This does the actual calculation. None is inserted as a placeholder
 			# for values which cannot be calculated.
-			calcvalues = [relcalc(x, afdatanosimd.get(x, None), afdatasimd.get(x, None)) for x in arraycodes]
+			calcvalues = [relcalc(x, afdataerrtruesimdtrue.get(x, None), afdataerrtruesimdfalse.get(x, None)) for x in arraycodes]
 			# Write out the formatted line.
 			writelinerel(f, func, calcvalues)
 		else:
@@ -506,7 +506,7 @@ def WriteFuncResultsFast(f, totalresults, funcnamelist):
 	''' Non-SIMD time.
 	'''
 	f.write('\n\nNon-SIMD time in micro-seconds. Math error checking turned off.\n')
-	WriteAbsResults(f, 'afdatanosimd', totalresults, funcnamelist)
+	WriteAbsResults(f, 'afdataerrtruesimdtrue', totalresults, funcnamelist)
 
 
 ########################################################
@@ -514,7 +514,7 @@ def WriteFuncResultsSIMD(f, totalresults, funcnamelist):
 	''' SIMD results.
 	'''
 	f.write('\n\nSIMD Optimised time in micro-seconds.\n')
-	WriteAbsResults(f, 'afdatasimd', totalresults, funcnamelist)
+	WriteAbsResults(f, 'afdataerrtruesimdfalse', totalresults, funcnamelist)
 
 
 ##############################################################################
@@ -534,18 +534,31 @@ def WriteResults(totalresults, funcnamelist, totalerrors, arraysize):
 		f.write('\n\n')
 
 		# The relative performance stats in default configuration.
-		WriteRelativeResults(f, totalresults, funcnamelist, arraysize)
+		f.write('Relative Performance - Python Time / Arrayfunc Time.\n\n')
+		WriteRelativeResults(f, 'pydata', 'afdata', totalresults, funcnamelist, arraysize)
 
 		f.write('\n\n\n')
 
 		# The relative performance stats in SIMD optimised configuration.
-		WriteRelativeResultsSIMD(f, totalresults, funcnamelist, arraysize)
+		f.write('Effect of leaving error checking on and disabling SIMD for functions with both.\n\n')
+		WriteRelativeResults(f, 'afdata', 'afdataerrfalsesimdtrue', totalresults, funcnamelist, arraysize)
+
 
 		f.write('\n\n\n')
 
-		WriteSIMDResults(f, totalresults, funcnamelist)
+		f.write('Effect of turning both error checking and SIMD off.\n\n')
+		WriteRelativeResults(f, 'afdata', 'afdataerrtruesimdtrue', totalresults, funcnamelist, arraysize)
+
 
 		f.write('\n\n\n')
+
+
+		f.write('Effect of turning error checking off and leaving SIMD on for functions with both.\n\n')
+		WriteRelativeResults(f, 'afdata', 'afdataerrtruesimdfalse', totalresults, funcnamelist, arraysize)
+
+
+		f.write('\n\n\n')
+
 
 		WritePyResults(f, totalresults, funcnamelist)
 

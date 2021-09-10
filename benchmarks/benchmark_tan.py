@@ -5,7 +5,7 @@
 # Purpose:  Benchmark tests for 'arrayfunc' functions.
 # Language: Python 3.5
 # Date:     20-Dec-2018.
-# Ver:      31-May-2021.
+# Ver:      07-Sep-2021.
 #
 ###############################################################################
 #
@@ -204,18 +204,18 @@ def calibrateruntime(arraycode, arraysize, arraydata, optiondata, runtimetarget)
 
 
 ########################################################
-def calibratenosimdruntime(arraycode, arraydata, optiondata, runtimetarget):
+def calibratesimdruntime(arraycode, arraydata, optiondata, runtimetarget):
 	"""Calibrate the run time with SIMD disabled.
 	"""
-	afiternosidmcounts = 50
+	afitersidmcounts = 50
 
 	# Arrayfunc time without SIMD for functions with SIMD.
-	aftimenosimd = BenchmarkAFNoSIMD(afiternosidmcounts, arraycode, arraydata, optiondata)
-	afiternosidmcounts = int(runtimetarget / aftimenosimd)
-	if afiternosidmcounts < 1:
-		afiternosidmcounts = 1
+	aftimenosimd = BenchmarkAFErrTrueSimdFalse(afitersidmcounts, arraycode, arraydata, optiondata)
+	afitersidmcounts = int(runtimetarget / aftimenosimd)
+	if afitersidmcounts < 1:
+		afitersidmcounts = 1
 
-	return afiternosidmcounts
+	return afitersidmcounts
 
 
 ########################################################
@@ -265,7 +265,7 @@ def BenchmarkPython(pyitercounts, arraycode, arraysize, arraydata, optiondata):
 
 ########################################################
 def BenchmarkAF(afitercounts, arraycode, arraydata, optiondata):
-	"""Measure execution time for arrayfunc.
+	"""Measure execution time for arrayfunc with defaults.
 	"""
 	# This is used for some tests only. 
 	result = True
@@ -297,8 +297,8 @@ def BenchmarkAF(afitercounts, arraycode, arraydata, optiondata):
 
 
 ########################################################
-def BenchmarkAFNoSIMD(afiternosidmcounts, arraycode, arraydata, optiondata):
-	"""Measure execution time for arrayfunc with SIMD turned off calls.
+def BenchmarkAFErrTrueSimdTrue(afitercounts, arraycode, arraydata, optiondata):
+	"""Measure execution time for arrayfunc with MathErrors ignored and SIMD turned off.
 	"""
 	# This is used for some tests only. 
 	result = True
@@ -320,19 +320,53 @@ def BenchmarkAFNoSIMD(afiternosidmcounts, arraycode, arraydata, optiondata):
 
 	# Time for arrayfunc version.
 	starttime = time.perf_counter()
-	for i in range(afiternosidmcounts):
+	for i in range(afitercounts):
 		arrayfunc.tan(datax, dataout, matherrors=True)
 	endtime = time.perf_counter()
 
-	aftime = (endtime - starttime) / afiternosidmcounts
+	aftime = (endtime - starttime) / afitercounts
 
 	return aftime
 
 
 
 ########################################################
-def BenchmarkAFSIMD(afitercounts, arraycode, arraydata, optiondata):
-	"""Measure execution time for arrayfunc with SIMD.
+def BenchmarkAFErrFalseSimdTrue(afitercounts, arraycode, arraydata, optiondata):
+	"""Measure execution time for arrayfunc with SIMD turned off.
+	"""
+	# This is used for some tests only. 
+	result = True
+
+	# We provide a local reference to the arrays to make the representation simpler.
+	datax = arraydata.datax
+	dataout = arraydata.dataout
+	yvalue = arraydata.yvalue
+	zvalue = arraydata.zvalue
+	# Used for ldexp only.
+	ldexp_y = optiondata.ldexp_y
+	compval = optiondata.compval
+	fidataout = optiondata.fidataout
+	startcycle = optiondata.startcycle
+	endcycle = optiondata.endcycle
+	pycomp = optiondata.pycomp
+	compdata = optiondata.compdata
+
+
+	# Time for arrayfunc version.
+	starttime = time.perf_counter()
+	for i in range(afitercounts):
+		arrayfunc.tan(datax, dataout)
+	endtime = time.perf_counter()
+
+	aftime = (endtime - starttime) / afitercounts
+
+	return aftime
+
+
+
+########################################################
+def BenchmarkAFErrTrueSimdFalse(afitercounts, arraycode, arraydata, optiondata):
+	"""Measure execution time for arrayfunc with matherrors=True.
 	"""
 	# This is used for some tests only. 
 	result = True
@@ -369,6 +403,7 @@ def BenchmarkAFSIMD(afitercounts, arraycode, arraydata, optiondata):
 def GetCmdArguments():
 	""" Get any command line arguments. These modify the operation of the program.
 			rawoutput = If specified, will output raw data instead of a report.
+			mintest = If specified, will do a minimal test.
 			arraysize = Size of the array in elements.
 			runtimetarget = The target length of time in seconds to run a benchmark for.
 	"""
@@ -380,6 +415,9 @@ def GetCmdArguments():
 
 	# Output just the raw data.
 	parser.add_argument('--rawoutput', action = 'store_true', help = 'Output raw data.')
+
+	# Do a minimal test. This will save time when full results are not required.
+	parser.add_argument('--mintest', action = 'store_true', help = 'Do minimal test.')
 
 	# Size of the test arrays.
 	parser.add_argument('--arraysize', type = int, default = arraysize, 
@@ -410,8 +448,8 @@ funcname = 'tan'
 supportedarrays = ('f', 'd')
 
 
-# True if function uses SIMD.
-HasSIMD = arrayfunc.simdsupport.hassimd
+# True if platform supports SIMD.
+PlatformHasSIMD = arrayfunc.simdsupport.hassimd
 
 
 # Detect the hardware platform, and assign the correct platform data table to it.
@@ -437,20 +475,42 @@ def platformdetect():
 	return signatures.get(platform.machine(), '')
 
 
-if HasSIMD:
+if PlatformHasSIMD:
 	SIMDArrays = platformdetect()
 else:
 	SIMDArrays = ''
 
 
+# Uses SIMD on at least one array type.
+HasSIMDOption = len(SIMDArrays) > 0
+
+##############################################################################
+
+
+# True if this benchmark allows math error detection to be turned off.
+# We check a copy of the equation from the template in order to check this.
+# Note: Need double quotes around the equation because some functions contain
+# a string with single quotes, and this would cause a conflict if we used single
+# quotes to enclose this.
+HasMathErrorOption = 'matherrors' in "arrayfunc.tan(datax, dataout, matherrors=True)"
+
+
+##############################################################################
+
 # Used to collect the results.
 PyData = {}
 AfData = {}
-AfDataNoSIMD = {}
-AfDataSIMD = {}
+AfDataErrTrueSimdTrue = {}
+AfDataErrFalseSimdTrue = {}
+AfDataErrTrueSimdFalse = {}
 
 # Test using each array type.
 for arraycode in supportedarrays:
+
+	# This array type supports SIMD. Some functions do not support SIMD at all,
+	# while others support it only for some array types on some platforms.
+	ArrayHasSIMD = arraycode in SIMDArrays
+
 	# Initialise the data arrays.
 	ArrayData = InitDataArrays(arraycode, ArraySize)
 
@@ -459,24 +519,42 @@ for arraycode in supportedarrays:
 
 	# Calibrate the test runtime targets.
 	pyitercounts, afitercounts = calibrateruntime(arraycode, ArraySize, ArrayData, OptionData, RunTimeTarget)
-	if arraycode in SIMDArrays:
-		afiternosidmcounts = calibratenosimdruntime(arraycode, ArrayData, OptionData, RunTimeTarget)
+	if ArrayHasSIMD:
+		afitersidmcounts = calibratesimdruntime(arraycode, ArrayData, OptionData, RunTimeTarget)
 
 	# Benchmark the Python implementation.
 	PyData[arraycode] = BenchmarkPython(pyitercounts, arraycode, ArraySize, ArrayData, OptionData)
 
 
-	# Benchmark the Arrayfunc implementation.
+	# Benchmark the Arrayfunc implementation with default parameters.
+	# This covers user requested minimal tests, plus functions which do not
+	# have either error checking or SIMD.
 	AfData[arraycode] = BenchmarkAF(afitercounts, arraycode, ArrayData, OptionData)
 
 
-	# If the function supports SIMD operations, repeat the test
-	# with SIMD turned off and on. Some function calls only support
-	# SIMD if error checking is turned off, so we must do this again
-	# to be sure we have data both ways.
-	if arraycode in SIMDArrays:
-		AfDataNoSIMD[arraycode] = BenchmarkAFNoSIMD(afiternosidmcounts, arraycode, ArrayData, OptionData)
-		AfDataSIMD[arraycode] = BenchmarkAFSIMD(afiternosidmcounts, arraycode, ArrayData, OptionData)
+
+	# A minimal test only involves the default parameters. 
+	if not CmdArgs.mintest:
+
+		# Function has error checking but not SIMD. Test error checking turned off. 
+		# The default case covers with error checking turned on.
+		if HasMathErrorOption and not ArrayHasSIMD:
+			AfDataErrTrueSimdTrue[arraycode] = BenchmarkAFErrTrueSimdTrue(afitercounts, arraycode, ArrayData, OptionData)
+			
+		# Function does not have error checking but does have SIMD.
+		# Test SIMD turned off. The default case covers with SIMD turned on.
+		if (not HasMathErrorOption) and ArrayHasSIMD:
+			AfDataErrTrueSimdTrue[arraycode] = BenchmarkAFErrTrueSimdTrue(afitercounts, arraycode, ArrayData, OptionData)
+
+		# Function has both error checking and SIMD. Check for:
+		# error checking on and SIMD off,
+		# error checking off and SIMD off,
+		# error checking off and SIMD on
+		if HasMathErrorOption and ArrayHasSIMD:
+			AfDataErrFalseSimdTrue[arraycode] = BenchmarkAFErrFalseSimdTrue(afitercounts, arraycode, ArrayData, OptionData)
+			AfDataErrTrueSimdTrue[arraycode] = BenchmarkAFErrTrueSimdTrue(afitercounts, arraycode, ArrayData, OptionData)
+			AfDataErrTrueSimdFalse[arraycode] = BenchmarkAFErrTrueSimdFalse(afitersidmcounts, arraycode, ArrayData, OptionData)
+
 
 
 ##############################################################################
@@ -489,8 +567,10 @@ for arraycode in supportedarrays:
 def sformatter(pos, val):
 	if val is None:
 		return 17 * ' '
-	elif (val is not None) and (val < 10.0):
+	elif (val is not None) and (1.0 <= val < 10.0):
 		return '{%d:>8.1f}         ' % (pos + 1)
+	elif (val is not None) and (val < 1.0):
+		return '{%d:>8.2f}         ' % (pos + 1)
 	else:
 		return '{%d:>8.0f}         ' % (pos + 1)
 
@@ -500,12 +580,21 @@ def printline(label1, col2, col3, col4, col5):
 	standformat = '{0:^7}' + ''.join([sformatter(x,y) for x,y in enumerate(lineresult)])
 	print(standformat.format(label1, col2, col3, col4, col5))
 
+# Report labels will vary depending on the options available with this function.
+if HasMathErrorOption and HasSIMDOption:
+	theaderlabels = 'Err on SIMD off  Err off SIMD off Err off SIMD on'
+elif HasMathErrorOption and (not HasSIMDOption):
+	theaderlabels = '                 Error check off'
+elif (not HasMathErrorOption) and HasSIMDOption:
+	theaderlabels = '                     SIMD off'
+else:
+	theaderlabels = ''
 
 theader = """
 Function = {0}
 ======= ================ ================ ================ ================
- Array    AF vs Python     AF with SIMD      AF no SIMD     SIMD / no SIMD
-======= ================ ================ ================ ================""".format(funcname)
+ Array    AF vs Python   {1}
+======= ================ ================ ================ ================""".format(funcname, theaderlabels)
 
 tfooter = '======= ================ ================ ================ ================'
 
@@ -521,59 +610,76 @@ def calcstats(statscolumn):
 		return None, None, None
 	
 
-
 ########################################################
 def outputstandalone():
 	"""Output the results for when the benchmark is run in standalone mode.
+	This outputs whatever data is present, and so inherently adapts
+	itself to functions which have varying test options.
 	"""
 	totalpyrel = []
-	totalsimdrel = []
-	totalnosimdrel = []
+	totalmathnosimdrel = []
 	totalsimdvsnosimd = []
+	totalnoerrwithsimd = []
+
 
 	print(theader)
 	for x in supportedarrays:
+
+		# Default versus native Python.
 		pyafrel = PyData[x] / AfData[x]
 		totalpyrel.append(pyafrel)
-		if x in SIMDArrays:
-			# Python versus default ArrayFunc.
-			pysimdrel = PyData[x] / AfDataSIMD[x]
-			totalsimdrel.append(pysimdrel)
 
-			# Python versus Arrayfunc with SIMD disabled.
-			pynosimdrel = PyData[x] / AfDataNoSIMD[x]
-			totalnosimdrel.append(pynosimdrel)
+		# Default versus math error checking on and no SIMD.
+		# If the function doesn't use SIMD then comparing it with SIMD off
+		# is pointless. Also skip for array types which don't use SIMD or
+		# for minimal tests.
+		if x in AfDataErrFalseSimdTrue:
+			mathnosimdrel = AfData[x] / AfDataErrFalseSimdTrue[x]
+			totalmathnosimdrel.append(mathnosimdrel)
+		else:
+			mathnosimdrel = None
 
-			# Default versus no SIMD.
-			simdnosimdrel = AfDataNoSIMD[x] / AfDataSIMD[x]
-			totalsimdvsnosimd.append(simdnosimdrel)
+
+		# Default versus no error checking and no SIMD.
+		# If the function doesn't use math error checking then comparing it 
+		# with math error off is pointless. Also skip for minimal tests.
+		if x in AfDataErrTrueSimdTrue:
+			simdnoerrnosimdrel = AfData[x] / AfDataErrTrueSimdTrue[x]
+			totalsimdvsnosimd.append(simdnoerrnosimdrel)
+		else:
+			simdnoerrnosimdrel = None
+
+		# No data exists if SIMD is not available.
+		if x in AfDataErrTrueSimdFalse:
+
+			# Default versus error checking turned off but SIMD enabled.
+			noerrwithsimd = AfData[x] / AfDataErrTrueSimdFalse[x]
+			totalnoerrwithsimd.append(noerrwithsimd)
 
 		else:
-			pysimdrel = None
-			pynosimdrel = None
-			simdnosimdrel = None
+			noerrwithsimd = None
 
-		printline(x, pyafrel, pysimdrel, pynosimdrel, simdnosimdrel)
+
+		printline(x, pyafrel, mathnosimdrel, simdnoerrnosimdrel, noerrwithsimd)
 		
 
 	print(tfooter)
 
-
-	print('\n')
+	print()
 	print(tfooter)
 
-	# Calculate states.
-	# Native Python versus default ArrayFunc.
+	# Calculate stats.
+	# Default versus native Python.
 	col2avg, col2max, col2min = calcstats(totalpyrel)
 
-	# Native Python versus ArrayFunc with SIMD.
-	col3avg, col3max, col3min = calcstats(totalsimdrel)
+	# Default versus math error checking on and no SIMD.
+	col3avg, col3max, col3min = calcstats(totalmathnosimdrel)
 
-	# Native Python versus ArrayFunc with SIMD disabled.
-	col4avg, col4max, col4min = calcstats(totalnosimdrel)
+	# Default versus no error checking and no SIMD.
+	col4avg, col4max, col4min = calcstats(totalsimdvsnosimd)
 
-	# SIMD versus no SIMD.
-	col5avg, col5max, col5min = calcstats(totalsimdvsnosimd)
+	# Default versus error checking turned off but SIMD enabled.
+	col5avg, col5max, col5min = calcstats(totalnoerrwithsimd)
 
 	printline('avg', col2avg, col3avg, col4avg, col5avg)
 	printline('max', col2max, col3max, col4max, col5max)
@@ -594,8 +700,9 @@ if CmdArgs.rawoutput:
 	# Called by another process, return data as json.
 	testresults = {'pydata' : PyData,
 					'afdata' : AfData,
-					'afdatanosimd' : AfDataNoSIMD,
-					'afdatasimd' : AfDataSIMD,
+					'afdataerrtruesimdtrue' :  AfDataErrTrueSimdTrue,
+					'afdataerrtruesimdfalse' : AfDataErrTrueSimdFalse,
+					'afdataerrfalsesimdtrue' : AfDataErrFalseSimdTrue,
 					'benchname' : 'arrayfunc',
 					}
 

@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     12-Mar-2019
-// Ver:      27-Mar-2020.
+// Ver:      06-Sep-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -26,8 +26,14 @@
 //------------------------------------------------------------------------------
 
 
+void rshift_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed char param);
+void rshift_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3);
+void rshift_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param);
+void rshift_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsigned char param, unsigned char *data3);
 void rshift_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param);
 void rshift_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, unsigned short param, unsigned short *data3);
+void rshift_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int param);
+void rshift_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3);
 void rshift_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param);
 void rshift_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsigned int param, unsigned int *data3);
 

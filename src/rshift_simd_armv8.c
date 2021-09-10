@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     24-Mar-2020
-// Ver:      27-Mar-2020.
+// Ver:      06-Sep-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -45,6 +45,35 @@
 
 // Auto generated code goes below.
 
+// Function specific macros and other definitions.
+#include "rshift_defs.h"
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int8x16_t initvec_armshift_signed_char(signed char initval) {
+
+	unsigned int y;
+	signed char initvals[CHARSIMDSIZE];
+	int8x16_t simdvec;
+
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		initvals[y] = -(signed char)initval;
+	}
+	simdvec = vld1q_s8(initvals);
+
+	return simdvec;
+}
+#endif
+
+
+
+
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -62,27 +91,22 @@ void rshift_signed_char_1_simd(Py_ssize_t arraylen, signed char *data1, signed c
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int8x16_t datasliceleft;
 	int8x16_t datasliceright;
-	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		compvals[y] = -(signed char)param;
-	}
-	datasliceright = vld1q_s8(compvals);
+	datasliceright = initvec_armshift_signed_char(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s8(&data1[index]);
+		datasliceleft = vld1q_s8((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s8(datasliceleft, datasliceright);
 		// Store the result.
@@ -106,26 +130,22 @@ void rshift_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed c
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int8x16_t datasliceleft;
 	int8x16_t datasliceright;
-	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		compvals[y] = -(signed char)param;
-	}
-	datasliceright = vld1q_s8(compvals);
+	datasliceright = initvec_armshift_signed_char(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s8(&data1[index]);
+		datasliceleft = vld1q_s8((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s8(datasliceleft, datasliceright);
 		// Store the result.
@@ -139,6 +159,32 @@ void rshift_signed_char_2_simd(Py_ssize_t arraylen, signed char *data1, signed c
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int8x16_t initvec_armshift_unsigned_char(unsigned char initval) {
+
+	unsigned int y;
+	signed char initvals[CHARSIMDSIZE];
+	int8x16_t simdvec;
+
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		initvals[y] = -(signed char)initval;
+	}
+	simdvec = vld1q_s8(initvals);
+
+	return simdvec;
+}
+#endif
+
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -158,27 +204,22 @@ void rshift_unsigned_char_1_simd(Py_ssize_t arraylen, unsigned char *data1, unsi
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint8x16_t datasliceleft;
 	int8x16_t datasliceright;
-	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		compvals[y] = -(signed char)param;
-	}
-	datasliceright = vld1q_s8(compvals);
+	datasliceright = initvec_armshift_unsigned_char(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u8(&data1[index]);
+		datasliceleft = vld1q_u8((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u8(datasliceleft, datasliceright);
 		// Store the result.
@@ -202,26 +243,22 @@ void rshift_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsi
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint8x16_t datasliceleft;
 	int8x16_t datasliceright;
-	signed char compvals[CHARSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < CHARSIMDSIZE; y++) {
-		compvals[y] = -(signed char)param;
-	}
-	datasliceright = vld1q_s8(compvals);
+	datasliceright = initvec_armshift_unsigned_char(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u8(&data1[index]);
+		datasliceleft = vld1q_u8((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u8(datasliceleft, datasliceright);
 		// Store the result.
@@ -235,6 +272,32 @@ void rshift_unsigned_char_2_simd(Py_ssize_t arraylen, unsigned char *data1, unsi
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int16x8_t initvec_armshift_signed_short(signed short initval) {
+
+	unsigned int y;
+	signed short initvals[SHORTSIMDSIZE];
+	int16x8_t simdvec;
+
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		initvals[y] = -(signed short)initval;
+	}
+	simdvec = vld1q_s16(initvals);
+
+	return simdvec;
+}
+#endif
+
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -254,27 +317,22 @@ void rshift_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int16x8_t datasliceleft;
 	int16x8_t datasliceright;
-	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		compvals[y] = -(signed short)param;
-	}
-	datasliceright = vld1q_s16(compvals);
+	datasliceright = initvec_armshift_signed_short(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s16(&data1[index]);
+		datasliceleft = vld1q_s16((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s16(datasliceleft, datasliceright);
 		// Store the result.
@@ -298,26 +356,22 @@ void rshift_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int16x8_t datasliceleft;
 	int16x8_t datasliceright;
-	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		compvals[y] = -(signed short)param;
-	}
-	datasliceright = vld1q_s16(compvals);
+	datasliceright = initvec_armshift_signed_short(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s16(&data1[index]);
+		datasliceleft = vld1q_s16((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s16(datasliceleft, datasliceright);
 		// Store the result.
@@ -331,6 +385,32 @@ void rshift_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int16x8_t initvec_armshift_unsigned_short(unsigned short initval) {
+
+	unsigned int y;
+	signed short initvals[SHORTSIMDSIZE];
+	int16x8_t simdvec;
+
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		initvals[y] = -(signed short)initval;
+	}
+	simdvec = vld1q_s16(initvals);
+
+	return simdvec;
+}
+#endif
+
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -350,27 +430,22 @@ void rshift_unsigned_short_1_simd(Py_ssize_t arraylen, unsigned short *data1, un
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint16x8_t datasliceleft;
 	int16x8_t datasliceright;
-	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		compvals[y] = -(signed short)param;
-	}
-	datasliceright = vld1q_s16(compvals);
+	datasliceright = initvec_armshift_unsigned_short(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u16(&data1[index]);
+		datasliceleft = vld1q_u16((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u16(datasliceleft, datasliceright);
 		// Store the result.
@@ -394,26 +469,22 @@ void rshift_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, un
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint16x8_t datasliceleft;
 	int16x8_t datasliceright;
-	signed short compvals[SHORTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < SHORTSIMDSIZE; y++) {
-		compvals[y] = -(signed short)param;
-	}
-	datasliceright = vld1q_s16(compvals);
+	datasliceright = initvec_armshift_unsigned_short(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u16(&data1[index]);
+		datasliceleft = vld1q_u16((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u16(datasliceleft, datasliceright);
 		// Store the result.
@@ -427,6 +498,32 @@ void rshift_unsigned_short_2_simd(Py_ssize_t arraylen, unsigned short *data1, un
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int32x4_t initvec_armshift_signed_int(signed int initval) {
+
+	unsigned int y;
+	signed int initvals[INTSIMDSIZE];
+	int32x4_t simdvec;
+
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		initvals[y] = -(signed int)initval;
+	}
+	simdvec = vld1q_s32(initvals);
+
+	return simdvec;
+}
+#endif
+
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -446,27 +543,22 @@ void rshift_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int32x4_t datasliceleft;
 	int32x4_t datasliceright;
-	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		compvals[y] = -(signed int)param;
-	}
-	datasliceright = vld1q_s32(compvals);
+	datasliceright = initvec_armshift_signed_int(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s32(&data1[index]);
+		datasliceleft = vld1q_s32((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s32(datasliceleft, datasliceright);
 		// Store the result.
@@ -490,26 +582,22 @@ void rshift_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	int32x4_t datasliceleft;
 	int32x4_t datasliceright;
-	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		compvals[y] = -(signed int)param;
-	}
-	datasliceright = vld1q_s32(compvals);
+	datasliceright = initvec_armshift_signed_int(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_s32(&data1[index]);
+		datasliceleft = vld1q_s32((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_s32(datasliceleft, datasliceright);
 		// Store the result.
@@ -523,6 +611,32 @@ void rshift_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specified value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+   Right shift is implemented by a negative shift amount. This is coded
+   directly into the function. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int32x4_t initvec_armshift_unsigned_int(unsigned int initval) {
+
+	unsigned int y;
+	signed int initvals[INTSIMDSIZE];
+	int32x4_t simdvec;
+
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		initvals[y] = -(signed int)initval;
+	}
+	simdvec = vld1q_s32(initvals);
+
+	return simdvec;
+}
+#endif
+
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -542,27 +656,22 @@ void rshift_unsigned_int_1_simd(Py_ssize_t arraylen, unsigned int *data1, unsign
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint32x4_t datasliceleft;
 	int32x4_t datasliceright;
-	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		compvals[y] = -(signed int)param;
-	}
-	datasliceright = vld1q_s32(compvals);
+	datasliceright = initvec_armshift_unsigned_int(param);
 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u32(&data1[index]);
+		datasliceleft = vld1q_u32((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u32(datasliceleft, datasliceright);
 		// Store the result.
@@ -586,26 +695,22 @@ void rshift_unsigned_int_2_simd(Py_ssize_t arraylen, unsigned int *data1, unsign
 
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
-	unsigned int y;
 
 	uint32x4_t datasliceleft;
 	int32x4_t datasliceright;
-	signed int compvals[INTSIMDSIZE];
 
 	// Initialise the comparison values.
-	for (y = 0; y < INTSIMDSIZE; y++) {
-		compvals[y] = -(signed int)param;
-	}
-	datasliceright = vld1q_s32(compvals);
+	datasliceright = initvec_armshift_unsigned_int(param);
+
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_u32(&data1[index]);
+		datasliceleft = vld1q_u32((&data1[index]));
 		// The actual SIMD operation. 
 		datasliceleft = vshlq_u32(datasliceleft, datasliceright);
 		// Store the result.

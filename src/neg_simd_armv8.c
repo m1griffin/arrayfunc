@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     25-Mar-2020
-// Ver:      27-Mar-2020.
+// Ver:      06-Sep-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -45,6 +45,32 @@
 
 // Auto generated code goes below.
 
+// Function specific macros and other definitions.
+#include "neg_defs.h"
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specifired value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int8x16_t initvec_signed_char(signed char initval) {
+
+	unsigned int y;
+	signed char initvals[CHARSIMDSIZE];
+	int8x16_t simdvec;
+
+	for (y = 0; y < CHARSIMDSIZE; y++) {
+		initvals[y] = initval;
+	}
+	simdvec = vld1q_s8((initvals));
+
+	return simdvec;
+}
+#endif
+
+
+
 /*--------------------------------------------------------------------------- */
 /* The following series of functions reflect the different parameter options possible.
    arraylen = The length of the data arrays.
@@ -67,13 +93,13 @@ void neg_signed_char_1_simd(Py_ssize_t arraylen, signed char *data) {
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s8(datasliceleft);
 		// Store the result.
 		vst1q_s8( &data[index],  datasliceleft);
@@ -104,13 +130,13 @@ void neg_signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char 
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % CHARSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s8( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s8(datasliceleft);
 		// Store the result.
 		vst1q_s8( &dataout[index],  datasliceleft);
@@ -123,6 +149,159 @@ void neg_signed_char_2_simd(Py_ssize_t arraylen, signed char *data, signed char 
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+#if defined(AF_HASSIMD_ARM_AARCH64)
+char neg_signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	int8x16_t datasliceleft, ovflvec;
+	uint8x16_t ovcheck;
+	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_char(SCHAR_MIN);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_s8( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s8 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u8(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s8(datasliceleft);
+
+		// Store the result.
+		vst1q_s8( &data[index],  datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
+		data[index] = -data[index];
+	}
+
+	return 0;
+
+}
+
+
+// param_arr_arr
+char neg_signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data, signed char *dataout) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	int8x16_t datasliceleft, ovflvec;
+	uint8x16_t ovcheck;
+	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_char(SCHAR_MIN);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, CHARSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += CHARSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_s8( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s8 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u8(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s8(datasliceleft);
+
+		// Store the result.
+		vst1q_s8( &dataout[index],  datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_char(data[index]) ) {return ARR_ERR_OVFL;}
+		dataout[index] = -data[index];
+	}
+
+	return 0;
+
+}
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specifired value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int16x8_t initvec_signed_short(signed short initval) {
+
+	unsigned int y;
+	signed short initvals[SHORTSIMDSIZE];
+	int16x8_t simdvec;
+
+	for (y = 0; y < SHORTSIMDSIZE; y++) {
+		initvals[y] = initval;
+	}
+	simdvec = vld1q_s16((initvals));
+
+	return simdvec;
+}
+#endif
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -147,13 +326,13 @@ void neg_signed_short_1_simd(Py_ssize_t arraylen, signed short *data) {
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s16(datasliceleft);
 		// Store the result.
 		vst1q_s16( &data[index],  datasliceleft);
@@ -184,13 +363,13 @@ void neg_signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sho
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % SHORTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s16( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s16(datasliceleft);
 		// Store the result.
 		vst1q_s16( &dataout[index],  datasliceleft);
@@ -203,6 +382,159 @@ void neg_signed_short_2_simd(Py_ssize_t arraylen, signed short *data, signed sho
 
 }
 #endif
+
+
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+#if defined(AF_HASSIMD_ARM_AARCH64)
+char neg_signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	int16x8_t datasliceleft, ovflvec;
+	uint16x8_t ovcheck;
+	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_short(SHRT_MIN);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_s16( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s16 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u16(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s16(datasliceleft);
+
+		// Store the result.
+		vst1q_s16( &data[index],  datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
+		data[index] = -data[index];
+	}
+
+	return 0;
+
+}
+
+
+// param_arr_arr
+char neg_signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data, signed short *dataout) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	int16x8_t datasliceleft, ovflvec;
+	uint16x8_t ovcheck;
+	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_short(SHRT_MIN);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, SHORTSIMDSIZE);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += SHORTSIMDSIZE) {
+		// Load the data into the vector register.
+		datasliceleft = vld1q_s16( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s16 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u16(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s16(datasliceleft);
+
+		// Store the result.
+		vst1q_s16( &dataout[index],  datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_short(data[index]) ) {return ARR_ERR_OVFL;}
+		dataout[index] = -data[index];
+	}
+
+	return 0;
+
+}
+#endif
+
+
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specifired value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+*/
+#if defined(AF_HASSIMD_ARM_AARCH64)
+int32x4_t initvec_signed_int(signed int initval) {
+
+	unsigned int y;
+	signed int initvals[INTSIMDSIZE];
+	int32x4_t simdvec;
+
+	for (y = 0; y < INTSIMDSIZE; y++) {
+		initvals[y] = initval;
+	}
+	simdvec = vld1q_s32((initvals));
+
+	return simdvec;
+}
+#endif
+
 
 
 /*--------------------------------------------------------------------------- */
@@ -227,13 +559,13 @@ void neg_signed_int_1_simd(Py_ssize_t arraylen, signed int *data) {
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s32( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s32(datasliceleft);
 		// Store the result.
 		vst1q_s32( &data[index],  datasliceleft);
@@ -264,13 +596,13 @@ void neg_signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *da
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % INTSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
 		datasliceleft = vld1q_s32( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = vnegq_s32(datasliceleft);
 		// Store the result.
 		vst1q_s32( &dataout[index],  datasliceleft);
@@ -293,7 +625,7 @@ void neg_signed_int_2_simd(Py_ssize_t arraylen, signed int *data, signed int *da
 */
 // param_arr_none
 #if defined(AF_HASSIMD_ARM_AARCH64)
-void neg_float_1_simd(Py_ssize_t arraylen, float *data) {
+char neg_signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data) {
 
 	// array index counter. 
 	Py_ssize_t index; 
@@ -301,36 +633,60 @@ void neg_float_1_simd(Py_ssize_t arraylen, float *data) {
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
 
-	float32x4_t datasliceleft;
+	int32x4_t datasliceleft, ovflvec;
+	uint32x4_t ovcheck;
 	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
 
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_int(INT_MIN);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_f32( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = vnegq_f32(datasliceleft);
+		datasliceleft = vld1q_s32( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s32 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u32(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s32(datasliceleft);
+
 		// Store the result.
-		vst1q_f32( &data[index],  datasliceleft);
+		vst1q_s32( &data[index],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
 	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_int(data[index]) ) {return ARR_ERR_OVFL;}
 		data[index] = -data[index];
 	}
 
+	return 0;
+
 }
-#endif
 
 
 // param_arr_arr
-#if defined(AF_HASSIMD_ARM_AARCH64)
-void neg_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
+char neg_signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data, signed int *dataout) {
 
 	// array index counter. 
 	Py_ssize_t index; 
@@ -338,28 +694,54 @@ void neg_float_2_simd(Py_ssize_t arraylen, float *data, float *dataout) {
 	// SIMD related variables.
 	Py_ssize_t alignedlength;
 
-	float32x4_t datasliceleft;
+	int32x4_t datasliceleft, ovflvec;
+	uint32x4_t ovcheck;
 	
+	uint64x2_t veccombine;
+	uint64_t highresult, lowresult;
 
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_signed_int(INT_MIN);
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen % FLOATSIMDSIZE);
+	alignedlength = calcalignedlength(arraylen, INTSIMDSIZE);
 
 	// Perform the main operation using SIMD instructions.
-	for (index = 0; index < alignedlength; index += FLOATSIMDSIZE) {
+	for (index = 0; index < alignedlength; index += INTSIMDSIZE) {
 		// Load the data into the vector register.
-		datasliceleft = vld1q_f32( &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
-		datasliceleft = vnegq_f32(datasliceleft);
+		datasliceleft = vld1q_s32( &data[index]);
+
+		// Check for overflow. 
+		// Do an equal compare operation.
+			ovcheck = vceqq_s32 (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = vreinterpretq_u64_u32(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = vnegq_s32(datasliceleft);
+
 		// Store the result.
-		vst1q_f32( &dataout[index],  datasliceleft);
+		vst1q_s32( &dataout[index],  datasliceleft);
 	}
 
 	// Get the max value within the left over elements at the end of the array.
 	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_signed_int(data[index]) ) {return ARR_ERR_OVFL;}
 		dataout[index] = -data[index];
 	}
+
+	return 0;
 
 }
 #endif

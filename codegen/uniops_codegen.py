@@ -7,7 +7,7 @@
 #
 ###############################################################################
 #
-#   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+#   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ uniops_head = """//-------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -176,16 +176,18 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arr
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_%(funcmodifier)s(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_%(funcmodifier)s(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = -data[x];
 			}
 		}
 	}
+
+%(simd_call_close)s
 
 	return ARR_NO_ERR;
 
@@ -226,16 +228,18 @@ signed int %(funclabel)s_%(funcmodifier)s(Py_ssize_t arraylen, int nosimd, %(arr
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_%(funcmodifier)s(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == %(intminvalue)s) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_%(funcmodifier)s(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+%(simd_call_close)s
 
 	return ARR_NO_ERR;
 
@@ -271,13 +275,13 @@ void %(funclabel)s_%(funcmodifier)s_1_simd(Py_ssize_t arraylen, %(arraytype)s *d
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = %(simdop)s;
 		// Store the result.
 		%(vstinstr1)s &data[index], %(vstinstr2)s datasliceleft);
@@ -308,13 +312,13 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 
 	// Calculate array lengths for arrays whose lengths which are not even
 	// multipes of the SIMD slice length.
-	alignedlength = arraylen - (arraylen %% %(simdwidth)s);
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
 
 	// Perform the main operation using SIMD instructions.
 	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
 		// Load the data into the vector register.
 		datasliceleft = %(vldinstr)s &data[index]);
-		// The actual SIMD operation. The compiler generates the correct instruction.
+		// The actual SIMD operation. 
 		datasliceleft = %(simdop)s;
 		// Store the result.
 		%(vstinstr1)s &dataout[index], %(vstinstr2)s datasliceleft);
@@ -331,10 +335,350 @@ void %(funclabel)s_%(funcmodifier)s_2_simd(Py_ssize_t arraylen, %(arraytype)s *d
 """
 
 
-# SIMD call template.
+# ==============================================================================
+
+
+# Helper functions for SIMD support. There needs to be one for each data type.
+simd_helpers = """
+/*--------------------------------------------------------------------------- */
+/* Initialise an SIMD vector with a specifired value.
+   initval = The value to initialise the vector to.
+   Returns the initalised SIMD vector. 
+*/
+%(simdplatform)s
+%(simdattr)s initvec_%(funcmodifier)s(%(arraytype)s initval) {
+
+	unsigned int y;
+	%(arraytype)s initvals[%(simdwidth)s];
+	%(simdattr)s simdvec;
+
+	for (y = 0; y < %(simdwidth)s; y++) {
+		initvals[y] = initval;
+	}
+	simdvec = %(vldinstr)s(initvals));
+
+	return simdvec;
+}
+#endif
+
+
+"""
+
+
+# Used to calculate array alignment, and to determine if an array is long 
+# enough to use SIMD.
+
+alignedlength_macros = """
+/*--------------------------------------------------------------------------- */
+/*   calcalignedlength
+   Calculate the aligned length of the array. This is the length which is
+   evenly divisible by the SIMD register. Any array elements after this
+   one must be dealt with using non-SIMD clean-up code.
+   arraylen = The length of the array in number of elements.
+   simdwidth = The width of the SIMD registers for this data type.
+   Returns the length of the array which can be processed using SIMD.
+*/
+
+#define calcalignedlength(arraylen, simdwidth) (arraylen - (arraylen % simdwidth))
+
+
+/*   enoughforsimd
+   Calculate whether the array to be processed is big enough to be handled by
+   SIMD. We make the minimum size for this bigger than the actual minimum as
+   the overhead for setting up SIMD does not justify very small arrays. The
+   minimum size used here is arbitrary and was not tested with benchmarks.
+   arraylen = The length of the array in number of elements.
+   simdwidth = The width of the SIMD registers for this data type.
+*/
+
+#define enoughforsimd(arraylen, simdwidth) (arraylen >= (simdwidth * 2))
+
+"""
+
+# Create this for each signed integers type.
+intov_macros_signed = """
+/*--------------------------------------------------------------------------- */
+// For %(arraytype)s.
+// Use to detect if an overflow condition will occur due to negating a minimum integer. 
+#define minval_loop_willoverflow_%(funcmodifier)s(val) (val == %(intminvalue)s)
+"""
+
+# ==============================================================================
+
+# The template for overflow checks for x86_64. This requires the correct SIMD attribute
+# to be insertered before itself being inserted into the next template.
+simd_ovflchk1_x86 = '''// Do an equal compare operation.
+			ovcheck = %(veqinstr)s (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			if (!(__builtin_ia32_pmovmskb128((v16qi) ovcheck) == 0x0000)) {'''
+
+simd_equ_willoverflow_armv7 = '''// Do an equal compare operation.
+			ovcheck = %(veqinstr)s (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			if (!(%(vreinterpinstr)s(ovcheck) == 0x0000000000000000)){'''
+
+
+simd_equ_willoverflow_armv8 = '''// Do an equal compare operation.
+			ovcheck = %(veqinstr)s (datasliceleft, ovflvec);
+
+			// Check for overflow. 
+			// Combine the result to two 64 bit vectors.
+			veccombine = %(vreinterpinstr)s(ovcheck);
+			// Get the high and low lanes of the combined vector.
+			lowresult = vgetq_lane_u64(veccombine, 0);
+			highresult = vgetq_lane_u64(veccombine, 1);
+			// Check if overflow will happen.
+			if ((lowresult != 0x0000000000000000) || (highresult != 0x0000000000000000)) {'''
+
+
+# Extra variables needed for ARMv8.
+simd_ovflchk_extravars_armv8 = '''uint64x2_t veccombine;
+	uint64_t highresult, lowresult;'''
+
+# ==============================================================================
+
+# The abs_ operations using SIMD. This version checks for overflow.
+ops_simdsupport_ovfl_abs = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+%(simdplatform)s
+char %(funclabel)s_%(funcmodifier)s_1_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, ovflvec;
+	%(ovflsimdattr)s ovcheck;
+	%(vsignparam)s
+	%(simd_ovflchk_extravars)s
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_%(funcmodifier)s(%(intminvalue)s);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data[index]);
+
+		// Check for overflow. 
+		%(simd_equ_willoverflow)s
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceright = %(simdop)s;
+
+		// Take the max value to get the abs.
+		datasliceleft = %(simdmaxop)s(datasliceleft, datasliceright);
+
+		// Store the result.
+		%(vstinstr1)s &data[index], %(vstinstr2)s datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_%(funcmodifier)s(data[index]) ) {return ARR_ERR_OVFL;}
+		data[index] = data[index] >= 0 ? data[index] : -data[index];
+	}
+
+	return 0;
+
+}
+
+
+// param_arr_arr
+char %(funclabel)s_%(funcmodifier)s_2_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, datasliceright, ovflvec;
+	%(ovflsimdattr)s ovcheck;
+	%(vsignparam)s
+	%(simd_ovflchk_extravars)s
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_%(funcmodifier)s(%(intminvalue)s);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data[index]);
+
+		// Check for overflow. 
+		%(simd_equ_willoverflow)s
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceright = %(simdop)s;
+
+		// Take the max value to get the abs.
+		datasliceleft = %(simdmaxop)s(datasliceleft, datasliceright);
+
+		// Store the result.
+		%(vstinstr1)s &dataout[index], %(vstinstr2)s datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_%(funcmodifier)s(data[index]) ) {return ARR_ERR_OVFL;}
+		dataout[index] = data[index] >= 0 ? data[index] : -data[index];
+	}
+
+	return 0;
+
+}
+#endif
+
+"""
+
+
+# ==============================================================================
+
+
+# The neg operations using SIMD. This version checks for overflow.
+ops_simdsupport_ovfl_neg = """
+/*--------------------------------------------------------------------------- */
+/* The following series of functions reflect the different parameter options possible.
+   arraylen = The length of the data arrays.
+   data = The input data array.
+   dataout = The output data array.
+*/
+// param_arr_none
+%(simdplatform)s
+char %(funclabel)s_%(funcmodifier)s_1_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, ovflvec;
+	%(ovflsimdattr)s ovcheck;
+	%(vsignparam)s
+	%(simd_ovflchk_extravars)s
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_%(funcmodifier)s(%(intminvalue)s);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data[index]);
+
+		// Check for overflow. 
+		%(simd_equ_willoverflow)s
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = %(simdop)s;
+
+		// Store the result.
+		%(vstinstr1)s &data[index], %(vstinstr2)s datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_%(funcmodifier)s(data[index]) ) {return ARR_ERR_OVFL;}
+		data[index] = -data[index];
+	}
+
+	return 0;
+
+}
+
+
+// param_arr_arr
+char %(funclabel)s_%(funcmodifier)s_2_simd_ovfl(Py_ssize_t arraylen, %(arraytype)s *data, %(arraytype)s *dataout) {
+
+	// array index counter. 
+	Py_ssize_t index; 
+
+	// SIMD related variables.
+	Py_ssize_t alignedlength;
+
+	%(simdattr)s datasliceleft, ovflvec;
+	%(ovflsimdattr)s ovcheck;
+	%(vsignparam)s
+	%(simd_ovflchk_extravars)s
+
+
+	// This is used for detecting a potential overflow condition.
+	ovflvec = initvec_%(funcmodifier)s(%(intminvalue)s);
+
+	// Calculate array lengths for arrays whose lengths which are not even
+	// multipes of the SIMD slice length.
+	alignedlength = calcalignedlength(arraylen, %(simdwidth)s);
+
+	// Perform the main operation using SIMD instructions.
+	for (index = 0; index < alignedlength; index += %(simdwidth)s) {
+		// Load the data into the vector register.
+		datasliceleft = %(vldinstr)s &data[index]);
+
+		// Check for overflow. 
+		%(simd_equ_willoverflow)s
+			return 1;
+		}
+
+		// The actual SIMD operation. 
+		datasliceleft = %(simdop)s;
+
+		// Store the result.
+		%(vstinstr1)s &dataout[index], %(vstinstr2)s datasliceleft);
+	}
+
+	// Get the max value within the left over elements at the end of the array.
+	for (index = alignedlength; index < arraylen; index++) {
+		if ( minval_loop_willoverflow_%(funcmodifier)s(data[index]) ) {return ARR_ERR_OVFL;}
+		dataout[index] = -data[index];
+	}
+
+	return 0;
+
+}
+#endif
+
+"""
+
+
+# ==============================================================================
+
+
+# SIMD call template without integer overflow detection.
 SIMD_call = '''\n%(simdplatform)s
 	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (%(simdwidth)s * 2))) {
+	if (ignoreerrors && !nosimd && enoughforsimd(arraylen, %(simdwidth)s) ) {
 		if (hasoutputarray) {
 			%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data, dataout);
 		} else {
@@ -343,6 +687,44 @@ SIMD_call = '''\n%(simdplatform)s
 		return ARR_NO_ERR;
 	}
 #endif\n'''
+
+# For SIMD operations that have integer overflow detection.
+SIMD_call_ovfl = '''\n%(simdplatform)s
+	char ovflresult;
+
+	// SIMD version.
+	if (!nosimd && enoughforsimd(arraylen, %(simdwidth)s) ) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {
+				%(funclabel)s_%(funcmodifier)s_2_simd(arraylen, data, dataout);
+			} else {
+				%(funclabel)s_%(funcmodifier)s_1_simd(arraylen, data);
+			}
+			return ARR_NO_ERR;
+		} else {
+		// Math error checking enabled.
+			if (hasoutputarray) {
+				ovflresult = %(funclabel)s_%(funcmodifier)s_2_simd_ovfl(arraylen, data, dataout);
+			} else {
+				ovflresult = %(funclabel)s_%(funcmodifier)s_1_simd_ovfl(arraylen, data);
+			}
+
+			if (ovflresult) { 
+				return ARR_ERR_OVFL; 
+			} else {
+				return ARR_NO_ERR;
+			}
+		}
+
+	} else {
+#endif\n'''
+
+# For use with integer overflow detection.
+SIMD_call_close = '''\n%(simdplatform)s
+	}
+#endif\n'''
+
 
 
 # ==============================================================================
@@ -525,6 +907,17 @@ simdattr_x86 = {
 	'i' : 'v4si', 
 }
 
+ovflsimdattr_x86 = {
+	'b' : 'v16qi', 
+	'B' : 'v16qi', 
+	'h' : 'v8hi', 
+	'H' : 'v8hi', 
+	'i' : 'v4si', 
+	'I' : 'v4si', 
+	'f' : 'v4sf',
+	'd' : 'v2df',
+}
+
 vldinstr_x86 = {
 	'b' : '(v16qi) __builtin_ia32_lddqu((char *) ', 
 	'h' : '(v8hi) __builtin_ia32_lddqu((char *) ', 
@@ -543,9 +936,32 @@ vstinstr2_x86 = {
 	'i' : '(v16qi) ',
 }
 
+# Equal to instruction for overflow checking.
+veqinstr_x86 = {
+	'b' : '__builtin_ia32_pcmpeqb128', 
+	'h' : '__builtin_ia32_pcmpeqw128', 
+	'i' : '__builtin_ia32_pcmpeqd128 ', 
+	'f' : '', 
+	'd' : '',  
+}
+
+# Max instruction.
+vmaxops_x86 = {
+		'b' : '__builtin_ia32_pmaxsb128',
+		'B' : '__builtin_ia32_pmaxub128',
+		'h' : '__builtin_ia32_pmaxsw128',
+		'H' : '__builtin_ia32_pmaxuw128',
+		'i' : '__builtin_ia32_pmaxsd128',
+		'I' : '__builtin_ia32_pmaxud128',
+		'f' : '__builtin_ia32_maxps',
+		'd' : '__builtin_ia32_maxpd',
+}
+
 
 # Total list of which array types are supported by x86 SIMD instructions.
-SIMD_x86_support = simdattr_x86.keys()
+SIMD_x86_support = ('b', 'h', 'i')
+
+
 
 # ==============================================================================
 
@@ -573,6 +989,14 @@ simdattr_armv7 = {
 }
 
 
+ovflsimdattr_armv7 = {
+	'b' : 'uint8x8_t',
+	'B' : 'uint8x8_t',
+	'h' : 'uint16x4_t',
+	'H' : 'uint16x4_t',
+}
+
+
 vldinstr_armv7 = {
 	'b' : 'vld1_s8(', 
 	'h' : 'vld1_s16(', 
@@ -591,8 +1015,39 @@ vstinstr2_armv7 = {
 	'i' : '',
 }
 
+
+# For ARM NEON ARMv7 32 bit.
+vmaxops_armv7 = {
+		'b' : 'vmax_s8',
+		'B' : 'vmax_u8',
+		'h' : 'vmax_s16',
+		'H' : 'vmax_u16',
+		'i' : 'vmax_s32',
+		'I' : 'vmax_u32',
+		'f' : 'vmax_f32',
+}
+
+
+# Equal to.
+veqinstr_armv7 = {
+	'b' : 'vceq_s8',
+	'B' : 'vceq_u8',
+	'h' : 'vceq_s16',
+	'H' : 'vceq_u16',
+}
+
+
+# Used to turn vector results into integers so we can examine them.
+vreinterpinstr_armv7 = {
+	'b' : 'vreinterpret_u64_u8', 
+	'B' : 'vreinterpret_u64_u8', 
+	'h' : 'vreinterpret_u64_u16', 
+	'H' : 'vreinterpret_u64_u16', 
+}
+
+
 # Total list of which array types are supported by ARM SIMD instructions.
-SIMD_armv7_support = simdattr_armv7.keys()
+SIMD_armv7_support = ('b', 'h')
 
 
 
@@ -625,6 +1080,17 @@ simdattr_armv8 = {
 }
 
 
+ovflsimdattr_armv8 = {
+	'b' : 'uint8x16_t',
+	'B' : 'uint8x16_t',
+	'h' : 'uint16x8_t',
+	'H' : 'uint16x8_t',
+	'i' : 'uint32x4_t',
+	'I' : 'uint32x4_t',
+	'f' : 'float32x4_t',
+}
+
+
 vldinstr_armv8 = {
 	'b' : 'vld1q_s8(', 
 	'h' : 'vld1q_s16(', 
@@ -646,8 +1112,43 @@ vstinstr2_armv8 = {
 	'f' : '',
 }
 
+
+# For ARM NEON armv8 64 bit.
+vmaxops_armv8 = {
+		'b' : 'vmaxq_s8',
+		'B' : 'vmaxq_u8',
+		'h' : 'vmaxq_s16',
+		'H' : 'vmaxq_u16',
+		'i' : 'vmaxq_s32',
+		'I' : 'vmaxq_u32',
+		'f' : 'vmaxq_f32',
+}
+
+# Equal to.
+veqinstr_armv8 = {
+	'b' : 'vceqq_s8',
+	'B' : 'vceqq_u8',
+	'h' : 'vceqq_s16',
+	'H' : 'vceqq_u16',
+	'i' : 'vceqq_s32',
+	'I' : 'vceqq_u32',
+	'f' : 'vceqq_f32',
+}
+
+# Used to turn vector results into integers so we can examine them.
+vreinterpinstr_armv8 = {
+	'b' : 'vreinterpretq_u64_u8', 
+	'B' : 'vreinterpretq_u64_u8', 
+	'h' : 'vreinterpretq_u64_u16', 
+	'H' : 'vreinterpretq_u64_u16', 
+	'i' : 'vreinterpretq_u64_u32', 
+	'I' : 'vreinterpretq_u64_u32', 
+	'f' : '', 
+}
+
+
 # Total list of which array types are supported by ARM SIMD instructions.
-SIMD_armv8_support = simdattr_armv8.keys()
+SIMD_armv8_support = ('b', 'h', 'i')
 
 
 # ==============================================================================
@@ -711,17 +1212,105 @@ supportedtypes = (codegen_common.signedint + codegen_common.floatarrays)
 
 # ==============================================================================
 
-# Read in the op codes.
-oplist = codegen_common.ReadCSVData('funcs.csv')
 
-
-# Filter out the desired math functions.
-
-funclist = [x for x in oplist if x['c_code_template'] in ['template_uniop']]
+# The text to include the function specific macros.
+funcdefsblock = '''
+// Function specific macros and other definitions.
+#include "%s"
+''' 
 
 # ==============================================================================
 
 
+# Configuration data.
+funclist = [
+	{'funcname': 'neg', 
+	'c_operator_f': '-data[x]', 'c_operator_d': '-data[x]', 'c_operator_i': '-data[x]', 
+	'arraytypes': 'si,f', 
+	'opcodedocs': '-x', 
+	'matherrors': 'OverflowError,ArithmeticError',
+	},
+
+	{'funcname': 'abs_', 
+	'c_operator_f': 'fabsf(data[x])', 'c_operator_d': 'fabs(data[x])', 'c_operator_i': 'abs int', 
+	'arraytypes': 'si,f', 
+	'opcodedocs': 'abs(x)', 
+	'matherrors': 'OverflowError',
+	},
+]
+
+# Function specific templates.
+ops_simdsupport_ovfl = {
+	'abs_' : ops_simdsupport_ovfl_abs,
+	'neg'  : ops_simdsupport_ovfl_neg,
+}
+
+
+# ==============================================================================
+
+def CreateHeader(funcname):
+	''' The header and related code. This is returned as two blocks of text.
+	'''
+	headtext = uniops_head % {'funclabel' : funcname}
+
+	# Function specific includes.
+	includextext = funcdefsblock % (funcname + '_defs' + '.h')
+
+	return headtext, includextext
+
+
+def CreateArrayDataCCode(arraycode, funcname):
+	''' Conventional C code for a single data type.
+	This returns the data to be written later.
+	It returns two blocks of text, the C code and the call code.
+	'''
+
+	funcdata = {'funcmodifier' : codegen_common.arraytypes[arraycode].replace(' ', '_'),
+			'funclabel' : funcname,
+			'arraytype' : codegen_common.arraytypes[arraycode],
+			'intminvalue' : codegen_common.minvalue[arraycode],
+			'arraycode' : arraycode,
+		}
+
+
+	# Some array types have SIMD support.
+	if arraycode in (set(SIMD_x86_support) | set(SIMD_armv7_support) | set(SIMD_armv8_support)):
+		simd_call_vals = {'simdwidth' : simdwidth[arraycode], 
+			'funclabel' : funcdata['funclabel'], 
+			'funcmodifier' : funcdata['funcmodifier'],
+			'simdplatform' : findsimdplatform(arraycode),
+			}
+		funcdata['simd_call'] = SIMD_call_ovfl % simd_call_vals
+		funcdata['simd_call_close'] = SIMD_call_close % simd_call_vals
+	else:
+		funcdata['simd_call'] = ''
+		funcdata['simd_call_close'] = ''
+
+
+	if arraycode == 'f':
+		funcdata['copname'] = func['c_operator_f']
+		ops_calc = uniops_op_float
+	elif arraycode == 'd':
+		funcdata['copname'] = func['c_operator_d']
+		ops_calc = uniops_op_float
+	elif arraycode in codegen_common.signedint:
+		funcdata['copname'] = func['c_operator_i']
+		ops_calc = opstemplates[funcname]
+	else:
+		print('Error - Unsupported array code.', arraycode)
+
+
+	opscalctext = ops_calc % funcdata
+
+	# This is the call to the functions for this array type. This
+	# is inserted into another template below.
+	opscalltext = opscall % funcdata
+
+	return opscalctext, opscalltext
+
+
+# Output conventional C code.
+# Go through the list of functions being created. 
 for func in funclist:
 
 	# Function name.
@@ -730,89 +1319,97 @@ for func in funclist:
 	# Create the source code based on templates.
 	filename = funcname + '.c'
 	with open(filename, 'w') as f:
-		funcdata = {'funclabel' : funcname}
+		headtext, includextext = CreateHeader(funcname)
+		f.write(headtext)
+		f.write(includextext)
 
-		f.write(uniops_head % funcdata)
-		opscalltext = []
-
+		opscalcdatatext = []
+		opscalldatatext = []
 
 		# Check each array type. The types of arrays supported must be looked up.
 		for arraycode in supportedtypes:
-			funcdata['funcmodifier'] = codegen_common.arraytypes[arraycode].replace(' ', '_')
-			funcdata['arraytype'] = codegen_common.arraytypes[arraycode]
-			funcdata['intminvalue'] = codegen_common.minvalue[arraycode]
+			opscalctext, opscalltext = CreateArrayDataCCode(arraycode, funcname)
 
+			opscalcdatatext.append(opscalctext)
+			opscalldatatext.append(opscalltext)
 
-			# Some array types have SIMD support.
-			if arraycode in (set(SIMD_x86_support) | set(SIMD_armv7_support) | set(SIMD_armv8_support)):
-				simd_call_vals = {'simdwidth' : simdwidth[arraycode], 
-					'funclabel' : funcdata['funclabel'], 
-					'funcmodifier' : funcdata['funcmodifier'],
-					'simdplatform' : findsimdplatform(arraycode)}
-				funcdata['simd_call'] = SIMD_call % simd_call_vals
-			else:
-				funcdata['simd_call'] = ''
-
-
-			if arraycode == 'f':
-				funcdata['copname'] = func['c_operator_f']
-				ops_calc = uniops_op_float
-			elif arraycode == 'd':
-				funcdata['copname'] = func['c_operator_d']
-				ops_calc = uniops_op_float
-			elif arraycode in codegen_common.signedint:
-				funcdata['copname'] = func['c_operator_i']
-				ops_calc = opstemplates[funcname]
-			else:
-				print('Error - Unsupported array code.', arraycode)
-
-
-			f.write(ops_calc % funcdata)
-
-			# This is the call to the functions for this array type. This
-			# is inserted into another template below.
-			funcdata['arraycode'] = arraycode
-			opscalltext.append(opscall % funcdata)
-
+		f.write(''.join(opscalcdatatext))
 
 		supportedarrays = codegen_common.FormatDocsArrayTypes(func['arraytypes'])
 
+		# Write the remaining boilerplate C code. 
 		f.write(uniops_params % {'funclabel' : funcname, 
 				'opcodedocs' : func['opcodedocs'], 
 				'supportedarrays' : supportedarrays,
 				'matherrors' : ', '.join(func['matherrors'].split(',')),
-				'opscall' : ''.join(opscalltext)})
+				'opscall' : ''.join(opscalldatatext)})
+
+
 
 # ==============================================================================
 
 
-# ==============================================================================
+# This outputs helper macros.
+macrocodedate = '26-Aug-2021'
 
-# This outputs the SIMD version for x86-64.
-simdcodedate = '22-Mar-2019'
-simdfilename = '_simd_x86'
-
-# This outputs the SIMD version.
-
+# Go through the list of functions being created. 
 for func in funclist:
+
+	# Function name.
+	funcname = func['funcname']
+
 
 	outputlist = []
 
-	funcname = func['funcname']
+	# Macro definitions.
+	# Not array type specific. 
+	outputlist.append(alignedlength_macros)
 
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
+	# Array type specific macros.
+	for arraycode in codegen_common.signedint:
+
+		arraytype = codegen_common.arraytypes[arraycode]
+		funcdata = {'arraytype' : arraytype,
+			'funcmodifier' : arraytype.replace(' ', '_'),
+			'intminvalue' : codegen_common.minvalue[arraycode],
+			}
+		outputlist.append(intov_macros_signed % funcdata)
 
 
-	# Output the generated code.
+	macrofilename = funcname + '_defs' + '.h'
+
+	# Write out the file.
+	codegen_common.OutputCHeader(macrofilename, 
+		outputlist, 
+		'Additional macros for %s' % funcname, 
+		'', 
+		macrocodedate)
+
+
+
+# ==============================================================================
+
+# Write the SIMD code.
+
+# x86
+def SetSIMDData_x86(funcname, simdtempplate):
+	'''Set the SIMD template data for x86. This is for SIMD without
+	overflow checking.
+	'''
+	outputlist = []
+
+	# Generate code for each array type.
 	for arraycode in SIMD_x86_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
+
+		simd_equ_willoverflow = simd_ovflchk1_x86 % {'veqinstr' : veqinstr_x86[arraycode]}
 
 		# The compare_ops symbols is the same for integer and floating point.
 		datavals = {'funclabel' : funcname,
 					'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
+					'intminvalue' : codegen_common.minvalue[arraycode],
 					'simdwidth' : simdwidth[arraycode],
 					'simdplatform' : SIMD_platform_x86,
 					'simdop' : vsimdop_x86[arraycode][funcname],
@@ -822,62 +1419,45 @@ for func in funclist:
 					'vldinstr' : vldinstr_x86[arraycode],
 					'vstinstr1' : vstinstr1_x86[arraycode],
 					'vstinstr2' : vstinstr2_x86[arraycode],
+					'vstinstr2' : vstinstr2_x86[arraycode],
+					'simdmaxop' : vmaxops_x86[arraycode],
+					'simd_equ_willoverflow' : simd_equ_willoverflow,
+					'ovflsimdattr' : ovflsimdattr_x86[arraycode],
+					'simd_ovflchk_extravars' : '',
 					}
 
+		# Helper functions.
+		outputlist.append(simd_helpers % datavals)
 
 		# Start of function definition.
 		outputlist.append(ops_simdsupport % datavals)
 
+		# SIMD with integer overflow detection.
+		outputlist.append(simdtempplate % datavals)
+
+	return outputlist
 
 
-	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate,
-		'', ['simddefs'])
-
-
-	# Output the .h header file.
-	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
-
-	# Write out the file.
-	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate)
-
-# ==============================================================================
-
-
-# ==============================================================================
-
-# This outputs the SIMD version for ARM NEON ARMv7 32 bit.
-
-simdcodedate = '08-Oct-2019'
-simdfilename = '_simd_armv7'
-
-# This outputs the SIMD version.
-
-for func in funclist:
-
+# ARMv7
+def SetSIMDData_ARMv7(funcname, simdtempplate):
+	'''Set the SIMD template data for ARMv7. This is for SIMD without
+	overflow checking.
+	'''
 	outputlist = []
 
-	funcname = func['funcname']
-
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
-
-
-	# Output the generated code.
+	# Generate code for each array type.
 	for arraycode in SIMD_armv7_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
+
+		simd_equ_willoverflow = simd_equ_willoverflow_armv7 % {'veqinstr' : veqinstr_armv7[arraycode],
+																'vreinterpinstr' : vreinterpinstr_armv7[arraycode]}
 
 		# The compare_ops symbols is the same for integer and floating point.
 		datavals = {'funclabel' : funcname,
 					'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
+					'intminvalue' : codegen_common.minvalue[arraycode],
 					'simdwidth' : simdwidth[arraycode],
 					'simdplatform' : SIMD_platform_ARMv7,
 					'simdop' : vsimdop_armv7[arraycode][funcname],
@@ -887,62 +1467,45 @@ for func in funclist:
 					'vldinstr' : vldinstr_armv7[arraycode],
 					'vstinstr1' : vstinstr1_armv7[arraycode],
 					'vstinstr2' : vstinstr2_armv7[arraycode],
+					'simdmaxop' : vmaxops_armv7[arraycode],
+					'simd_equ_willoverflow' : simd_equ_willoverflow,
+					'ovflsimdattr' : ovflsimdattr_armv7[arraycode],
+					'simd_ovflchk_extravars' : '',
 					}
 
+		# Helper functions.
+		outputlist.append(simd_helpers % datavals)
 
 		# Start of function definition.
 		outputlist.append(ops_simdsupport % datavals)
 
+		# SIMD with integer overflow detection.
+		outputlist.append(simdtempplate % datavals)
+
+	return outputlist
 
 
-	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_armv7'])
 
-
-	# Output the .h header file.
-	headedefs = codegen_common.GenSIMDCHeaderText(outputlist, funcname)
-
-	# Write out the file.
-	codegen_common.OutputCHeader(funcname + simdfilename + '.h', headedefs, 
-		maindescription, 
-		codegen_common.SIMDDescription, 
-		simdcodedate)
-
-# ==============================================================================
-
-
-# ==============================================================================
-
-# This outputs the SIMD version for ARM NEON ARMv8 64 bit.
-
-simdcodedate = '25-Mar-2020'
-simdfilename = '_simd_armv8'
-
-# This outputs the SIMD version.
-
-for func in funclist:
-
+# ARMv8
+def SetSIMDData_ARMv8(funcname, simdtempplate):
+	'''Set the SIMD template data for ARMv8. This is for SIMD without
+	overflow checking.
+	'''
 	outputlist = []
 
-	funcname = func['funcname']
-
-	# This provides the description in the header of the file.
-	maindescription = 'Calculate the %s of values in an array.' % funcname
-
-
-	# Output the generated code.
+	# Generate code for each array type.
 	for arraycode in SIMD_armv8_support:
 
 		arraytype = codegen_common.arraytypes[arraycode]
+
+		simd_equ_willoverflow = simd_equ_willoverflow_armv8 % {'veqinstr' : veqinstr_armv8[arraycode],
+																'vreinterpinstr' : vreinterpinstr_armv8[arraycode]}
 
 		# The compare_ops symbols is the same for integer and floating point.
 		datavals = {'funclabel' : funcname,
 					'arraytype' : arraytype, 
 					'funcmodifier' : arraytype.replace(' ', '_'),
+					'intminvalue' : codegen_common.minvalue[arraycode],
 					'simdwidth' : simdwidth[arraycode],
 					'simdplatform' : SIMD_platform_ARM64v8,
 					'simdop' : vsimdop_armv8[arraycode][funcname],
@@ -952,20 +1515,46 @@ for func in funclist:
 					'vldinstr' : vldinstr_armv8[arraycode],
 					'vstinstr1' : vstinstr1_armv8[arraycode],
 					'vstinstr2' : vstinstr2_armv8[arraycode],
+					'simdmaxop' : vmaxops_armv8[arraycode],
+					'simd_equ_willoverflow' : simd_equ_willoverflow,
+					'ovflsimdattr' : ovflsimdattr_armv8[arraycode],
+					'simd_ovflchk_extravars' : simd_ovflchk_extravars_armv8,
 					}
 
+		# Helper functions.
+		outputlist.append(simd_helpers % datavals)
 
 		# Start of function definition.
 		outputlist.append(ops_simdsupport % datavals)
 
+		# SIMD with integer overflow detection.
+		outputlist.append(simdtempplate % datavals)
 
+	return outputlist
+
+
+
+def WriteSIMDCode(funcname, simdplatform, simdfilename, simdcodedate, includextext, outputlist):
+	'''This writes out the SIMD code to the .c and .h files.
+	'''
+	# The SIMD options to select the additional file header info.
+	simdoptions = {
+	'x86' : ['simddefs'],
+	'armv7' : ['simddefs', 'simdmacromsg_armv7'],
+	'armv8' : ['simddefs', 'simdmacromsg_armv8'],
+	}
+
+	outputfull = [includextext] + outputlist
+
+	# This provides the description in the header of the file.
+	maindescription = 'Calculate the %s of values in an array.' % funcname
 
 	# This outputs the SIMD version.
-	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputlist, 
+	codegen_common.OutputSourceCode(funcname + simdfilename + '.c', outputfull, 
 		maindescription, 
 		codegen_common.SIMDDescription, 
 		simdcodedate,
-		'', ['simddefs', 'simdmacromsg_armv8'])
+		'', simdoptions[simdplatform])
 
 
 	# Output the .h header file.
@@ -976,5 +1565,34 @@ for func in funclist:
 		maindescription, 
 		codegen_common.SIMDDescription, 
 		simdcodedate)
+
+
+# Output SIMD code.
+for func in funclist:
+
+	funcname = func['funcname']
+
+	# Function specific includes.
+	includextext = funcdefsblock % (funcname + '_defs' + '.h')
+
+	# Function specific templates.
+	simdtempplate = ops_simdsupport_ovfl[funcname]
+
+	# x86.
+	simdcodedate = '22-Mar-2019'
+	simdfilename = '_simd_x86'
+	outputlist = SetSIMDData_x86(funcname, simdtempplate)
+	WriteSIMDCode(funcname, 'x86', simdfilename, simdcodedate, includextext, outputlist)
+
+	simdcodedate = '08-Oct-2019'
+	simdfilename = '_simd_armv7'
+	outputlist = SetSIMDData_ARMv7(funcname, simdtempplate)
+	WriteSIMDCode(funcname, 'armv7', simdfilename, simdcodedate, includextext, outputlist)
+
+	simdcodedate = '25-Mar-2020'
+	simdfilename = '_simd_armv8'
+	outputlist = SetSIMDData_ARMv8(funcname, simdtempplate)
+	WriteSIMDCode(funcname, 'armv8', simdfilename, simdcodedate, includextext, outputlist)
+
 
 # ==============================================================================

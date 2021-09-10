@@ -5,11 +5,11 @@
 //           This file provides an SIMD version of the functions.
 // Language: C
 // Date:     1-Apr-2019
-// Ver:      27-Mar-2020.
+// Ver:      06-Sep-2021.
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -32,18 +32,30 @@ void add_signed_char_3_simd(Py_ssize_t arraylen, signed char param, signed char 
 void add_signed_char_4_simd(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3);
 void add_signed_char_5_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2);
 void add_signed_char_6_simd(Py_ssize_t arraylen, signed char *data1, signed char *data2, signed char *data3);
+char add_signed_char_1_simd_ovfl(Py_ssize_t arraylen, signed char *data1, signed char param);
+char add_signed_char_2_simd_ovfl(Py_ssize_t arraylen, signed char *data1, signed char param, signed char *data3);
+char add_signed_char_3_simd_ovfl(Py_ssize_t arraylen, signed char param, signed char *data2);
+char add_signed_char_4_simd_ovfl(Py_ssize_t arraylen, signed char param, signed char *data2, signed char *data3);
 void add_signed_short_1_simd(Py_ssize_t arraylen, signed short *data1, signed short param);
 void add_signed_short_2_simd(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3);
 void add_signed_short_3_simd(Py_ssize_t arraylen, signed short param, signed short *data2);
 void add_signed_short_4_simd(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3);
 void add_signed_short_5_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2);
 void add_signed_short_6_simd(Py_ssize_t arraylen, signed short *data1, signed short *data2, signed short *data3);
+char add_signed_short_1_simd_ovfl(Py_ssize_t arraylen, signed short *data1, signed short param);
+char add_signed_short_2_simd_ovfl(Py_ssize_t arraylen, signed short *data1, signed short param, signed short *data3);
+char add_signed_short_3_simd_ovfl(Py_ssize_t arraylen, signed short param, signed short *data2);
+char add_signed_short_4_simd_ovfl(Py_ssize_t arraylen, signed short param, signed short *data2, signed short *data3);
 void add_signed_int_1_simd(Py_ssize_t arraylen, signed int *data1, signed int param);
 void add_signed_int_2_simd(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3);
 void add_signed_int_3_simd(Py_ssize_t arraylen, signed int param, signed int *data2);
 void add_signed_int_4_simd(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3);
 void add_signed_int_5_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2);
 void add_signed_int_6_simd(Py_ssize_t arraylen, signed int *data1, signed int *data2, signed int *data3);
+char add_signed_int_1_simd_ovfl(Py_ssize_t arraylen, signed int *data1, signed int param);
+char add_signed_int_2_simd_ovfl(Py_ssize_t arraylen, signed int *data1, signed int param, signed int *data3);
+char add_signed_int_3_simd_ovfl(Py_ssize_t arraylen, signed int param, signed int *data2);
+char add_signed_int_4_simd_ovfl(Py_ssize_t arraylen, signed int param, signed int *data2, signed int *data3);
 void add_float_1_simd(Py_ssize_t arraylen, float *data1, float param);
 void add_float_2_simd(Py_ssize_t arraylen, float *data1, float param, float *data3);
 void add_float_3_simd(Py_ssize_t arraylen, float param, float *data2);

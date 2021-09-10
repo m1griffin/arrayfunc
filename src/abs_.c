@@ -7,7 +7,7 @@
 //
 //------------------------------------------------------------------------------
 //
-//   Copyright 2014 - 2020    Michael Griffin    <m12.griffin@gmail.com>
+//   Copyright 2014 - 2021    Michael Griffin    <m12.griffin@gmail.com>
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -58,6 +58,9 @@
 /*--------------------------------------------------------------------------- */
 
 
+// Function specific macros and other definitions.
+#include "abs__defs.h"
+
 /*--------------------------------------------------------------------------- */
 /* arraylen = The length of the data arrays.
    data = The input data array.
@@ -72,15 +75,34 @@ signed int abs__signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, 
 
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	char ovflresult;
+
 	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (CHARSIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			abs__signed_char_2_simd(arraylen, data, dataout);
+	if (!nosimd && enoughforsimd(arraylen, CHARSIMDSIZE) ) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {
+				abs__signed_char_2_simd(arraylen, data, dataout);
+			} else {
+				abs__signed_char_1_simd(arraylen, data);
+			}
+			return ARR_NO_ERR;
 		} else {
-			abs__signed_char_1_simd(arraylen, data);
+		// Math error checking enabled.
+			if (hasoutputarray) {
+				ovflresult = abs__signed_char_2_simd_ovfl(arraylen, data, dataout);
+			} else {
+				ovflresult = abs__signed_char_1_simd_ovfl(arraylen, data);
+			}
+
+			if (ovflresult) { 
+				return ARR_ERR_OVFL; 
+			} else {
+				return ARR_NO_ERR;
+			}
 		}
-		return ARR_NO_ERR;
-	}
+
+	} else {
 #endif
 
 	// Math error checking disabled.
@@ -98,16 +120,22 @@ signed int abs__signed_char(Py_ssize_t arraylen, int nosimd, signed char *data, 
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == SCHAR_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_char(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
+#endif
+
 
 	return ARR_NO_ERR;
 
@@ -128,15 +156,34 @@ signed int abs__signed_short(Py_ssize_t arraylen, int nosimd, signed short *data
 
 
 #if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	char ovflresult;
+
 	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (SHORTSIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			abs__signed_short_2_simd(arraylen, data, dataout);
+	if (!nosimd && enoughforsimd(arraylen, SHORTSIMDSIZE) ) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {
+				abs__signed_short_2_simd(arraylen, data, dataout);
+			} else {
+				abs__signed_short_1_simd(arraylen, data);
+			}
+			return ARR_NO_ERR;
 		} else {
-			abs__signed_short_1_simd(arraylen, data);
+		// Math error checking enabled.
+			if (hasoutputarray) {
+				ovflresult = abs__signed_short_2_simd_ovfl(arraylen, data, dataout);
+			} else {
+				ovflresult = abs__signed_short_1_simd_ovfl(arraylen, data);
+			}
+
+			if (ovflresult) { 
+				return ARR_ERR_OVFL; 
+			} else {
+				return ARR_NO_ERR;
+			}
 		}
-		return ARR_NO_ERR;
-	}
+
+	} else {
 #endif
 
 	// Math error checking disabled.
@@ -154,16 +201,22 @@ signed int abs__signed_short(Py_ssize_t arraylen, int nosimd, signed short *data
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == SHRT_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_short(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
+#endif
+
 
 	return ARR_NO_ERR;
 
@@ -183,16 +236,35 @@ signed int abs__signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, si
 	Py_ssize_t x;
 
 
-#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARMv7_32BIT) || defined(AF_HASSIMD_ARM_AARCH64)
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
+	char ovflresult;
+
 	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (INTSIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			abs__signed_int_2_simd(arraylen, data, dataout);
+	if (!nosimd && enoughforsimd(arraylen, INTSIMDSIZE) ) {
+		// Math error checking disabled.
+		if (ignoreerrors) {
+			if (hasoutputarray) {
+				abs__signed_int_2_simd(arraylen, data, dataout);
+			} else {
+				abs__signed_int_1_simd(arraylen, data);
+			}
+			return ARR_NO_ERR;
 		} else {
-			abs__signed_int_1_simd(arraylen, data);
+		// Math error checking enabled.
+			if (hasoutputarray) {
+				ovflresult = abs__signed_int_2_simd_ovfl(arraylen, data, dataout);
+			} else {
+				ovflresult = abs__signed_int_1_simd_ovfl(arraylen, data);
+			}
+
+			if (ovflresult) { 
+				return ARR_ERR_OVFL; 
+			} else {
+				return ARR_NO_ERR;
+			}
 		}
-		return ARR_NO_ERR;
-	}
+
+	} else {
 #endif
 
 	// Math error checking disabled.
@@ -210,16 +282,22 @@ signed int abs__signed_int(Py_ssize_t arraylen, int nosimd, signed int *data, si
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == INT_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_int(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == INT_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_int(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+
+#if defined(AF_HASSIMD_X86) || defined(AF_HASSIMD_ARM_AARCH64)
+	}
+#endif
+
 
 	return ARR_NO_ERR;
 
@@ -254,16 +332,18 @@ signed int abs__signed_long(Py_ssize_t arraylen, int nosimd, signed long *data, 
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == LONG_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_long(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == LONG_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_long(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+
 
 	return ARR_NO_ERR;
 
@@ -298,16 +378,18 @@ signed int abs__signed_long_long(Py_ssize_t arraylen, int nosimd, signed long lo
 	// Math error checking enabled.
 		if (hasoutputarray) {		
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_long_long(data[x]) ) {return ARR_ERR_OVFL;}
 				dataout[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		} else {
 			for (x = 0; x < arraylen; x++) {
-				if (data[x] == LLONG_MIN) {return ARR_ERR_OVFL;}
+				if ( minval_loop_willoverflow_signed_long_long(data[x]) ) {return ARR_ERR_OVFL;}
 				data[x] = data[x] >= 0 ? data[x] : -data[x];
 			}
 		}
 	}
+
+
 
 	return ARR_NO_ERR;
 
@@ -326,18 +408,6 @@ signed int abs__float(Py_ssize_t arraylen, int nosimd, float *data, float *datao
 	// array index counter.
 	Py_ssize_t x;
 
-
-#if defined(AF_HASSIMD_ARM_AARCH64)
-	// SIMD version.
-	if (ignoreerrors && !nosimd && (arraylen >= (FLOATSIMDSIZE * 2))) {
-		if (hasoutputarray) {
-			abs__float_2_simd(arraylen, data, dataout);
-		} else {
-			abs__float_1_simd(arraylen, data);
-		}
-		return ARR_NO_ERR;
-	}
-#endif
 
 	// Math error checking disabled.
 	if (ignoreerrors) {
