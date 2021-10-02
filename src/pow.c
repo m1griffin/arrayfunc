@@ -64,11 +64,38 @@ signed char arith_pow_signed_char(signed char x, signed char y, char *errflag) {
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == SCHAR_MIN) && (y == 1)) { return SCHAR_MIN; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y % 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 7)) { return -128; }
+
 
 	if (x > 0) {
 		ovtmp1 = SCHAR_MAX / x;
@@ -261,6 +288,11 @@ unsigned char arith_pow_unsigned_char(unsigned char x, unsigned char y, char *er
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
 
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
 	ovtmp1 = UCHAR_MAX / x;
 	for (i = 0; i < y; i++) {
 		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
@@ -451,11 +483,40 @@ signed short arith_pow_signed_short(signed short x, signed short y, char *errfla
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == SHRT_MIN) && (y == 1)) { return SHRT_MIN; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y % 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 15)) { return -32768; }
+	if ((x == -8) && (y == 5)) { return -32768; }
+	if ((x == -32) && (y == 3)) { return -32768; }
+
 
 	if (x > 0) {
 		ovtmp1 = SHRT_MAX / x;
@@ -648,6 +709,11 @@ unsigned short arith_pow_unsigned_short(unsigned short x, unsigned short y, char
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
 
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
 	ovtmp1 = USHRT_MAX / x;
 	for (i = 0; i < y; i++) {
 		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
@@ -838,11 +904,38 @@ signed int arith_pow_signed_int(signed int x, signed int y, char *errflag) {
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == INT_MIN) && (y == 1)) { return INT_MIN; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y % 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 31)) { return -2147483648; }
+
 
 	if (x > 0) {
 		ovtmp1 = INT_MAX / x;
@@ -1035,6 +1128,11 @@ unsigned int arith_pow_unsigned_int(unsigned int x, unsigned int y, char *errfla
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
 
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
 	ovtmp1 = UINT_MAX / x;
 	for (i = 0; i < y; i++) {
 		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
@@ -1225,11 +1323,54 @@ signed long arith_pow_signed_long(signed long x, signed long y, char *errflag) {
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == LONG_MIN) && (y == 1)) { return LONG_MIN; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y % 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+
+
+	// signed long will vary in size on different platforms, being either
+	// the same as signed int or the same as signed long long.
+	// Assumption is LONG_MIN is either -2147483648 or -9223372036854775808
+	// and LLONG_MIN == -9223372036854775808
+	// We can't put these literals directly in the code below due to 
+	// C compiler limitations.
+#if LONG_MIN == LLONG_MIN
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 63)) { return LLONG_MIN; }
+	if ((x == -8) && (y == 21)) { return LLONG_MIN; }
+	if ((x == -128) && (y == 9)) { return LLONG_MIN; }
+	if ((x == -512) && (y == 7)) { return LLONG_MIN; }
+	if ((x == -2097152) && (y == 3)) { return LLONG_MIN; }
+#else
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 31)) { return LONG_MIN; }
+
+#endif
+
 
 	if (x > 0) {
 		ovtmp1 = LONG_MAX / x;
@@ -1422,6 +1563,11 @@ unsigned long arith_pow_unsigned_long(unsigned long x, unsigned long y, char *er
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
 
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
 	ovtmp1 = ULONG_MAX / x;
 	for (i = 0; i < y; i++) {
 		if (z > ovtmp1) {*errflag = ARR_ERR_OVFL; return z;}
@@ -1612,11 +1758,45 @@ signed long long arith_pow_signed_long_long(signed long long x, signed long long
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
+
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == LLONG_MIN) && (y == 1)) { return LLONG_MIN; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y % 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+
+
+	// Special case to avoid integer overflow. 
+	// Assumption is LLONG_MIN == -9223372036854775808
+	// We can't put these literals directly in the code below due to 
+	// C compiler limitations.
+	if ((x == -2) && (y == 63)) { return LLONG_MIN; }
+	if ((x == -8) && (y == 21)) { return LLONG_MIN; }
+	if ((x == -128) && (y == 9)) { return LLONG_MIN; }
+	if ((x == -512) && (y == 7)) { return LLONG_MIN; }
+	if ((x == -2097152) && (y == 3)) { return LLONG_MIN; }
+
 
 	if (x > 0) {
 		ovtmp1 = LLONG_MAX / x;
@@ -1808,6 +1988,11 @@ unsigned long long arith_pow_unsigned_long_long(unsigned long long x, unsigned l
 
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
 
 	ovtmp1 = ULLONG_MAX / x;
 	for (i = 0; i < y; i++) {

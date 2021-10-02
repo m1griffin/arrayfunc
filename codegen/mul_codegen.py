@@ -816,7 +816,7 @@ intov_macros_signed = """
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_%(funcmodifier)s(lval, rval) ((lval < (%(intmaxvalue)s / rval)) || (lval > (%(intminvalue)s / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_%(funcmodifier)s(val) (val == %(intmaxvalue)s)
+#define minusone_loop_willoverflow_%(funcmodifier)s(val) (val == %(intminvalue)s)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_%(funcmodifier)s(lval, rval) ((rval != 0) && (lval > (%(intmaxvalue)s / rval)))

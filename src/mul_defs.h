@@ -5,7 +5,7 @@
 //           
 // Language: C
 // Date:     24-Aug-2021
-// Ver:      06-Sep-2021.
+// Ver:      01-Oct-2021.
 //
 //------------------------------------------------------------------------------
 //
@@ -72,7 +72,7 @@
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_signed_char(lval, rval) ((lval < (SCHAR_MAX / rval)) || (lval > (SCHAR_MIN / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_signed_char(val) (val == SCHAR_MAX)
+#define minusone_loop_willoverflow_signed_char(val) (val == SCHAR_MIN)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_signed_char(lval, rval) ((rval != 0) && (lval > (SCHAR_MAX / rval)))
@@ -102,7 +102,7 @@
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_signed_short(lval, rval) ((lval < (SHRT_MAX / rval)) || (lval > (SHRT_MIN / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_signed_short(val) (val == SHRT_MAX)
+#define minusone_loop_willoverflow_signed_short(val) (val == SHRT_MIN)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_signed_short(lval, rval) ((rval != 0) && (lval > (SHRT_MAX / rval)))
@@ -132,7 +132,7 @@
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_signed_int(lval, rval) ((lval < (INT_MAX / rval)) || (lval > (INT_MIN / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_signed_int(val) (val == INT_MAX)
+#define minusone_loop_willoverflow_signed_int(val) (val == INT_MIN)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_signed_int(lval, rval) ((rval != 0) && (lval > (INT_MAX / rval)))
@@ -162,7 +162,7 @@
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_signed_long(lval, rval) ((lval < (LONG_MAX / rval)) || (lval > (LONG_MIN / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_signed_long(val) (val == LONG_MAX)
+#define minusone_loop_willoverflow_signed_long(val) (val == LONG_MIN)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_signed_long(lval, rval) ((rval != 0) && (lval > (LONG_MAX / rval)))
@@ -192,7 +192,7 @@
 // Use when the rval is < -1.
 #define neg_loop_willoverflow_signed_long_long(lval, rval) ((lval < (LLONG_MAX / rval)) || (lval > (LLONG_MIN / rval)))
 // Use when the other value val is -1. 
-#define minusone_loop_willoverflow_signed_long_long(val) (val == LLONG_MAX)
+#define minusone_loop_willoverflow_signed_long_long(val) (val == LLONG_MIN)
 
 // For unsigned integer loops.
 #define uint_loop_willoverflow_signed_long_long(lval, rval) ((rval != 0) && (lval > (LLONG_MAX / rval)))

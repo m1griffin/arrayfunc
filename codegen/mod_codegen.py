@@ -107,17 +107,21 @@ signed int %(funclabel)s_%(funcmodifier)s_1(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error check.
 	if (param == 0) {return ARR_ERR_ZERODIV;}
 
-	// Division of min-int by -1 produces a similar error as division by 0.
+	// Division between min-int and -1 produces an integer overflow.
 	if (param == -1) {
 		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
-			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}		// Math error check.
-			dataouttmp = datatmp / param;
-			// This check is required for floor division.
-			if (((datatmp < 0) != (param < 0)) && ((dataouttmp * param) != datatmp)) { 
-				dataouttmp = dataouttmp - 1;
+			// This requires a special case to avoid integer overflow.
+			if (datatmp == %(intminvalue)s) {
+				data1[x] = 0;
+			} else {
+				dataouttmp = datatmp / param;
+				// This check is required for floor division.
+				if (((datatmp < 0) != (param < 0)) && ((dataouttmp * param) != datatmp)) { 
+					dataouttmp = dataouttmp - 1;
+				}
+				data1[x] = datatmp - param * dataouttmp;
 			}
-			data1[x] = datatmp - param * dataouttmp;
 		}
 	} else {
 		for (x = 0; x < arraylen; x++) {
@@ -147,17 +151,21 @@ signed int %(funclabel)s_%(funcmodifier)s_2(Py_ssize_t arraylen, %(arraytype)s *
 	// Math error check.
 	if (param == 0) {return ARR_ERR_ZERODIV;}
 
-	// Division of min-int by -1 produces a similar error as division by 0.
+	// Division between min-int and -1 produces an integer overflow.
 	if (param == -1) {
 		for (x = 0; x < arraylen; x++) {
 			datatmp = data1[x];
-			if (datatmp == %(intminvalue)s) {return ARR_ERR_OVFL;}		// Math error check.
-			dataouttmp = datatmp / param;
-			// This check is required for floor division.
-			if (((datatmp < 0) != (param < 0)) && ((dataouttmp * param) != datatmp)) { 
-				dataouttmp = dataouttmp - 1;
+			// This requires a special case to avoid integer overflow.
+			if (datatmp == %(intminvalue)s) {
+				data3[x] = 0;
+			} else {
+				dataouttmp = datatmp / param;
+				// This check is required for floor division.
+				if (((datatmp < 0) != (param < 0)) && ((dataouttmp * param) != datatmp)) { 
+					dataouttmp = dataouttmp - 1;
+				}
+				data3[x] = datatmp - param * dataouttmp;
 			}
-			data3[x] = datatmp - param * dataouttmp;
 		}
 	} else {
 		for (x = 0; x < arraylen; x++) {
@@ -184,19 +192,23 @@ signed int %(funclabel)s_%(funcmodifier)s_3(Py_ssize_t arraylen, %(arraytype)s p
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	// Division of min-int by -1 produces a similar error as division by 0.
+	// Division between min-int and -1 produces an integer overflow.
 	if (param == %(intminvalue)s) {
 		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
-			if (datatmp == -1) {return ARR_ERR_OVFL;}
-			dataouttmp = param / datatmp;
-			// This check is required for floor division.
-			if (((datatmp < 0) != (param < 0)) && ((dataouttmp * datatmp) != param)) { 
-				dataouttmp = dataouttmp - 1;
+			// This requires a special case to avoid integer overflow.
+			if (datatmp == -1) {
+				data2[x] = 0;
+			} else {
+				dataouttmp = param / datatmp;
+				// This check is required for floor division.
+				if (((datatmp < 0) != (param < 0)) && ((dataouttmp * datatmp) != param)) { 
+					dataouttmp = dataouttmp - 1;
+				}
+				data2[x] = param - datatmp * dataouttmp;
 			}
-			data2[x] = param - datatmp * dataouttmp;
 		}
 	} else {
 		for (x = 0; x < arraylen; x++) {
@@ -225,19 +237,23 @@ signed int %(funclabel)s_%(funcmodifier)s_4(Py_ssize_t arraylen, %(arraytype)s p
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	// Division of min-int by -1 produces a similar error as division by 0.
+	// Division between min-int and -1 produces an integer overflow.
 	if (param == %(intminvalue)s) {
 		for (x = 0; x < arraylen; x++) {
 			datatmp = data2[x];
 			// Math error check.
 			if (datatmp == 0) {return ARR_ERR_ZERODIV;}
-			if (datatmp == -1) {return ARR_ERR_OVFL;}
-			dataouttmp = param / datatmp;
-			// This check is required for floor division.
-			if (((datatmp < 0) != (param < 0)) && ((dataouttmp * datatmp) != param)) { 
-				dataouttmp = dataouttmp - 1;
+			// This requires a special case to avoid integer overflow.
+			if (datatmp == -1) {
+				data3[x] = 0;
+			} else {
+				dataouttmp = param / datatmp;
+				// This check is required for floor division.
+				if (((datatmp < 0) != (param < 0)) && ((dataouttmp * datatmp) != param)) { 
+					dataouttmp = dataouttmp - 1;
+				}
+				data3[x] = param - datatmp * dataouttmp;
 			}
-			data3[x] = param - datatmp * dataouttmp;
 		}
 	} else {
 		for (x = 0; x < arraylen; x++) {
@@ -266,19 +282,22 @@ signed int %(funclabel)s_%(funcmodifier)s_5(Py_ssize_t arraylen, %(arraytype)s *
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	// Division of min-int by -1 produces a similar error as division by 0.
 	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
 		if (data2tmp == 0) {return ARR_ERR_ZERODIV;}
-		if ((data2tmp == -1) && (datatmp == %(intminvalue)s)) {return ARR_ERR_OVFL;}
-		dataouttmp = datatmp / data2tmp;
-		// This check is required for floor division.
-		if (((datatmp < 0) != (data2tmp < 0)) && ((dataouttmp * data2tmp) != datatmp)) { 
-			dataouttmp = dataouttmp - 1;
+		// This requires a special case to avoid integer overflow.
+		if ((data2tmp == -1) && (datatmp == %(intminvalue)s)) {
+			data1[x] = 0;
+		} else {
+			dataouttmp = datatmp / data2tmp;
+			// This check is required for floor division.
+			if (((datatmp < 0) != (data2tmp < 0)) && ((dataouttmp * data2tmp) != datatmp)) { 
+				dataouttmp = dataouttmp - 1;
+			}
+			data1[x] = datatmp - data2tmp * dataouttmp;
 		}
-		data1[x] = datatmp - data2tmp * dataouttmp;
 	}
 	return ARR_NO_ERR;
 
@@ -294,19 +313,22 @@ signed int %(funclabel)s_%(funcmodifier)s_6(Py_ssize_t arraylen, %(arraytype)s *
 
 
 	// Cannot disable divide by zero checking because this causes a crash.
-	// Division of min-int by -1 produces a similar error as division by 0.
 	for (x = 0; x < arraylen; x++) {
 		datatmp = data1[x];
 		data2tmp = data2[x];
 		// Math error check.
 		if (data2tmp == 0) {return ARR_ERR_ZERODIV;}
-		if ((data2tmp == -1) && (datatmp == %(intminvalue)s)) {return ARR_ERR_OVFL;}
-		dataouttmp = datatmp / data2tmp;
-		// This check is required for floor division.
-		if (((datatmp < 0) != (data2tmp < 0)) && ((dataouttmp * data2tmp) != datatmp)) { 
-			dataouttmp = dataouttmp - 1;
+		// This requires a special case to avoid integer overflow.
+		if ((data2tmp == -1) && (datatmp == %(intminvalue)s)) {
+			data3[x] = 0;
+		} else {
+			dataouttmp = datatmp / data2tmp;
+			// This check is required for floor division.
+			if (((datatmp < 0) != (data2tmp < 0)) && ((dataouttmp * data2tmp) != datatmp)) { 
+				dataouttmp = dataouttmp - 1;
+			}
+			data3[x] = datatmp - data2tmp * dataouttmp;
 		}
-		data3[x] = datatmp - data2tmp * dataouttmp;
 	}
 	return ARR_NO_ERR;
 

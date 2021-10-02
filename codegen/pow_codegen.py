@@ -431,12 +431,34 @@ powtemplatesigned = """
 		return z;
 	}
 
+	// Next we need to deal with a series of special cases.
+
 	// Special case for raise to the power of zero.
 	if (y == 0) { return 1; }
 
 	// We need this special case to avoid dividing by zero.
-	if (x == 0) {return 0;}
+	if (x == 0) { return 0; }
 
+	// This special case handles limitations of the algorithm with
+	// the minimum integer. 
+	if ((x == %(intminvalue)s) && (y == 1)) { return %(intminvalue)s; }
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
+
+	// Same as above, but for -1. We have to account for odd and even powers.
+	if (x == -1) {
+		// Odd if there is a remainder.
+		if (y %% 2) { 
+			return -1; 
+		} else {
+			return 1;
+		}
+	}
+
+%(powoverflowspecialcase)s
 	if (x > 0) {
 		ovtmp1 = %(intmaxvalue)s / x;
 		for (i = 0; i < y; i++) {
@@ -469,6 +491,11 @@ powtemplateunsigned = """
 
 	// We need this special case to avoid dividing by zero.
 	if (x == 0) {return 0;}
+
+	// Special case for base of 1. This helps in instances with 
+	// very large powers where otherwise the algorithm will grind
+	// away for a long time before returning.
+	if (x == 1) { return 1; }
 
 	ovtmp1 = %(intmaxvalue)s / x;
 	for (i = 0; i < y; i++) {
@@ -667,6 +694,88 @@ PyMODINIT_FUNC PyInit_%(funclabel)s(void)
 
 # ==============================================================================
 
+# ==============================================================================
+
+# With certain combinations of base and power and with certain word
+# sizes we run into problems with the most negative integer not working
+# with the algorithm. We handle this with special cases.
+
+# array code b
+specialcase_signed_char = '''
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 7)) { return -128; }
+
+'''
+
+# array code h
+specialcase_signed_short = '''
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 15)) { return -32768; }
+	if ((x == -8) && (y == 5)) { return -32768; }
+	if ((x == -32) && (y == 3)) { return -32768; }
+
+'''
+
+# array code i
+specialcase_signed_int = '''
+
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 31)) { return -2147483648; }
+
+'''
+
+# array code l
+# The size of this may depend upon the platform. 
+# 
+specialcase_signed_long = '''
+
+	// signed long will vary in size on different platforms, being either
+	// the same as signed int or the same as signed long long.
+	// Assumption is LONG_MIN is either -2147483648 or -9223372036854775808
+	// and LLONG_MIN == -9223372036854775808
+	// We can't put these literals directly in the code below due to 
+	// C compiler limitations.
+#if LONG_MIN == LLONG_MIN
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 63)) { return LLONG_MIN; }
+	if ((x == -8) && (y == 21)) { return LLONG_MIN; }
+	if ((x == -128) && (y == 9)) { return LLONG_MIN; }
+	if ((x == -512) && (y == 7)) { return LLONG_MIN; }
+	if ((x == -2097152) && (y == 3)) { return LLONG_MIN; }
+#else
+	// Special case to avoid integer overflow. 
+	if ((x == -2) && (y == 31)) { return LONG_MIN; }
+
+#endif
+
+'''
+
+
+# array code q
+specialcase_signed_long_long = '''
+
+	// Special case to avoid integer overflow. 
+	// Assumption is LLONG_MIN == -9223372036854775808
+	// We can't put these literals directly in the code below due to 
+	// C compiler limitations.
+	if ((x == -2) && (y == 63)) { return LLONG_MIN; }
+	if ((x == -8) && (y == 21)) { return LLONG_MIN; }
+	if ((x == -128) && (y == 9)) { return LLONG_MIN; }
+	if ((x == -512) && (y == 7)) { return LLONG_MIN; }
+	if ((x == -2097152) && (y == 3)) { return LLONG_MIN; }
+
+'''
+
+powoverflowspecialcase = {
+	'b' : specialcase_signed_char,
+	'h' : specialcase_signed_short,
+	'i' : specialcase_signed_int,
+	'l' : specialcase_signed_long,
+	'q' : specialcase_signed_long_long,
+}
+
 
 # ==============================================================================
 
@@ -754,6 +863,10 @@ with open(filename, 'w') as f:
 
 		# This is used for pow only.
 		funcdata['abs'] = absfunc[arraycode]
+
+		# This handles special cases with signed integers.
+		if arraycode in powoverflowspecialcase:
+			funcdata['powoverflowspecialcase'] = powoverflowspecialcase[arraycode]
 
 		# This is for pow and inserts some of the data so far back into the 
 		# dictionary to be added in again.

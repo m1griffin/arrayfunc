@@ -32,10 +32,10 @@ import codegen_common
 # ==============================================================================
 
 # This template is for operators (e.g. +, -, /, *, etc.).
-test_op_templ = ''' 
+test_op_templ = '''
 
 ##############################################################################
-class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.TestCase):
+class %(funclabel)s_general_%(datagenerator)s_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.TestCase):
 	"""Test %(funclabel)s for basic general function operation using numeric data.
 	test_op_templ
 	"""
@@ -55,8 +55,33 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 				raise self.failureException('%%0.3f != %%0.3f' %% (expecteditem, dataoutitem))
 
 
+	##############################################################################
+	def FloatListassertEqual(self, dataout, expected, msg=None):
+		"""This function is patched into assertEqual to allow testing for 
+		the floating point special values NaN, Inf, and -Inf.
+		"""
+		for index, (dataoutitem, expecteditem) in enumerate(zip(dataout, expected)):
+			# NaN cannot be compared using normal means.
+			if math.isnan(dataoutitem) and math.isnan(expecteditem):
+				pass
+			# Anything else can be compared normally.
+			else:
+				if not math.isclose(expecteditem, dataoutitem, rel_tol=0.01, abs_tol=0.0):
+					raise self.failureException('%%0.3f != %%0.3f at index %%d' %% (expecteditem, dataoutitem, index))
+
+
+	##############################################################################
+	def IntListassertEqual(self, dataout, expected, msg=None):
+		"""This function is patched into assertEqual to allow testing for
+		lists of integers.
+		"""
+		for index, (dataoutitem, expecteditem) in enumerate(zip(dataout, expected)):
+			if expecteditem != dataoutitem:
+				raise self.failureException('%%d != %%d at index %%d' %% (expecteditem, dataoutitem, index))
+
+
 	########################################################
-	def expectop(self, x, y):
+	def inttruediv(self, x, y):
 		"""Perform the math operation. This needs to be specially handled
 		for truediv on large signed integer arrays. This is because of a 
 		combination of factors. Python will produce a floating point result, 
@@ -68,15 +93,259 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 		So, we need to take the absolute value, then do floor division, then
 		put the correct sign back into the result.
 		"""
+		# This is intended to catch template errors and should never 
+		# occur in normal usage. 
+
 		# For true division on integer arrays.
-		if ('%(pyoperator)s' == '/') and '%(typecode)s' not in ('f', 'd'):
-			# For when signs are opposite in signed arrays.
-			if ((x < 0) ^ (y < 0)):
-				return -(abs(x) // abs(y))
-			else:
-				return x // y
+		# For when signs are opposite in signed arrays.
+		if ((x < 0) ^ (y < 0)):
+			return -(abs(x) // abs(y))
 		else:
-			return x %(pyoperator)s y
+			return x // y
+
+
+	########################################################
+	def filtertestdata(self, opvalues, minint, maxint, opname):
+		"""Filter the test data for combinations that might cause errors.
+		Filtering for pow is handled elsewhere.
+		"""
+		# Avoid division by zero
+		if opname == 'floordiv':
+			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x // y) <= maxint) and ((x // y) >= minint))]
+		elif opname == 'mod':
+			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and ((x %% y) <= maxint) and ((x %% y) >= minint))]
+		# Truediv needs special handling for integer because the C function does 
+		# not do actual truediv for integer.
+		elif opname == 'truediv':
+			checkedvalues = [(x,y) for x,y in opvalues if ((y != 0) and (self.inttruediv(x, y) <= maxint) and (self.inttruediv(x, y) >= minint))]
+		elif opname == 'pow':
+			if '%(typecode)s' in ('f', 'd'):
+				checkedvalues = [(x, y) for x,y in opvalues if ((not((x == 0) and (y < 0))) and (minint <= (x**y) <= maxint))]
+			else:
+				checkedvalues = [(x, y) for x,y in opvalues if (y >= 0) and (minint <= (x**y) <= maxint)]
+		# Anything else. Note that since code generation is template driven the function used
+		# here may not be valid if one of the other cases above is used.
+		else:
+			checkedvalues = [(x,y) for x,y in opvalues if (%(operatorfunc)s(x, y) <= maxint) and (%(operatorfunc)s(x, y) >= minint)]
+
+		return checkedvalues
+
+
+
+	########################################################
+	def gendata_special(self, minint, maxint, opname):
+		""" Generate data for special cases which might cause problems. 
+		For integers these will be minimum and maximum values, as well as around 
+		the zero point.
+		"""
+		# Make sure that we have coverage for data around the maximum, minimum, and zero
+		# points, which we might otherwise not have with larger data sizes.
+		halfpoint = (maxint + minint) // 2
+		specialvals = [minint, minint + 1, minint + 2, minint + 3, 
+					maxint - 3, maxint - 2, maxint - 1, maxint,
+					halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
+					halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
+
+		# Create combinations of all of these values.
+		opvalues = list(itertools.product(specialvals, specialvals))
+
+		# Filter out values which might cause errors.
+		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
+
+		checkedvalues.sort()
+
+		return checkedvalues
+
+
+	########################################################
+	def gendata_specialpow(self, minint, maxint, opname):
+		""" Generate data for special cases which might cause problems. 
+		This one handles the data for pow only.
+		For integers these will be minimum and maximum values, as well as around 
+		the zero point.
+		"""
+		halfpoint = (maxint + minint) // 2
+		basevals = [minint, minint + 1, minint + 2, minint + 3, 
+					maxint - 3, maxint - 2, maxint - 1, maxint,
+					halfpoint - 3, halfpoint - 2, halfpoint - 1, halfpoint, 
+					halfpoint + 1, halfpoint + 2, halfpoint + 3, halfpoint + 4]
+
+		# Raise to the power of 0 or 1.
+		zerovals = [(x,0) for x in basevals]
+		onevals = [(x,1) for x in basevals]
+
+		# Raise 1 or zero to a power. Make sure we don't have negative powers.
+		zerovals2 = [(0,x) for x in basevals if x >= 0]
+		onevals2 = [(1,x) for x in basevals if x >= 0]
+
+		# Raise some simple values to some common powers.
+		if minint < 0:
+			minstart = -3
+		else:
+			minstart = 0
+		simplerange = list(range(minstart, 4))
+		simplevals = list(itertools.product(simplerange, [0, 1, 2, 3, 4]))
+
+		# These pairs were found to cause problems with some edge cases.
+		# They all produce maximum negative integer for certain array types.
+		# They represent tests for a variety of array types and have to be
+		# filtered for each array code. 
+		limitpairs = [(-2, 7), (-2, 15), (-8, 5), (-32, 3), (-2, 31),
+			(-2, 63), (-8, 21), (-127, 9), (-512, 7), (-2097152, 3)]
+
+		# Combine them all together.
+		allvals = zerovals + onevals + zerovals2 + onevals2 + simplevals + limitpairs
+
+		# Now filter them.
+		checkedvalues = self.filtertestdata(allvals, minint, maxint, opname)
+		
+		return checkedvalues
+
+
+	########################################################
+	def gendata_pow(self, minint, maxint, opname):
+		"""Generate data for general testing. This is specifically for pow as
+		that operation has special requirements. 
+		"""
+		# We need two values for lval ** rval. The left hand one can be no bigger
+		# than the square root of the maximum value in order to fit within the
+		# data range (lval ** 2).
+		lval = int(math.sqrt(maxint))
+
+		stepcount = lval // 256
+		stepcount = max(stepcount, 1)
+
+		if minint < 0:
+			lvalstart = -lval
+		else:
+			lvalstart = 0
+		lvalspread = list(range(lvalstart, lval, stepcount))
+
+		# Make sure we have a good selection of smaller values as well.
+		if (maxint > 32768):
+			if minint < 0:
+				mindata = -128
+				maxdata = 127
+			else:
+				mindata = 0
+				maxdata = 255
+
+			lvalspread.extend(range(mindata, maxdata, 3))
+			# Remove duplicates.
+			lvalspread = list(set(lvalspread))
+
+		lvalspread.sort()
+
+		# Take a few values which we will add back in later.
+		lvalcentre = len(lvalspread) // 2
+		extralvals = lvalspread[2:4] + lvalspread[-4:-2] + lvalspread[lvalcentre : lvalcentre + 2]
+
+		# The right hand one (power to raise by) can be no bigger than 'x' where
+		# 2 ** x. and the result is the maximum integer value.
+		raisevals = {127 : 7, 255 : 8, 32767 : 15, 65535 : 16, 
+			2147483647 : 31, 4294967295 : 32, 
+			9223372036854775807 : 63, 18446744073709551615 : 64}
+		rval = raisevals[maxint]
+
+		# We start the range at 2 because 0 and 1 are trivial and we don't want
+		# too many of them in the data mix.
+		rvalspread = list(range(2, rval))
+
+
+		# Create the combinations
+		opvalues = list(itertools.product(lvalspread, rvalspread))
+
+		# Filter out the values which would go out of range.
+		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
+		
+
+		# Sort the data out in order.
+		checkedvalues.sort()
+
+		# Now pick a smaller and more reasonable size selection over the full range.
+		skipsize = len(checkedvalues) // 256
+		skipsize = max(skipsize, 1)
+		selectedvals = checkedvalues[::skipsize]
+
+		# Create the additional values involving the trivial cases of raise
+		# to the power of 0 or 1.
+		additionalvals = list(itertools.product(extralvals, [0, 1]))
+		selectedvals.extend(additionalvals)
+
+		selectedvals.sort()
+
+		return selectedvals
+
+
+	########################################################
+	def gendata_int(self, minint, maxint, opname):
+		"""Generate data for general testing. This does not worry about edge case
+		data. Edge cases must be created and tested separately. This function 
+		generates a wide selection of data over the numeric range. 
+		"""
+		# This will generate a selection of data spread over most of the integer 
+		# while giving the same amount of data for each data type.
+		intrange = maxint - minint 
+		stepcount = intrange // 256
+		stepcount = max(stepcount, 1)
+		
+		spreaddata = list(range(minint, maxint + 1, stepcount))
+
+		# Make sure we have a good selection of smaller values as well.
+		if (maxint > 256):
+			if minint < 0:
+				mindata = -128
+				maxdata = 127
+			else:
+				mindata = 0
+				maxdata = 255
+
+			spreaddata.extend(range(mindata, maxdata, 3))
+			# Remove duplicates.
+			spreaddata = list(set(spreaddata))
+
+		# Sort the data out in order.
+		spreaddata.sort()
+
+		# Trim down the size of the sample.
+		selectedspread = spreaddata[::3]
+
+		# Create combinations of all of these values.
+		opvalues = list(itertools.product(selectedspread, selectedspread))
+
+		# Filter out values which might cause errors.
+		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
+
+		# Sort the data out in order.
+		checkedvalues.sort()
+
+		# Now pick a smaller and more reasonable size selection over the full range.
+		skipsize = len(checkedvalues) // 256
+		skipsize = max(skipsize, 1)
+		selectedvals = checkedvalues[::skipsize]
+
+		return selectedvals
+
+
+	########################################################
+	def gendata_fullrange(self, minint, maxint, opname):
+		"""Generate data for general testing. Generate all combinations of data
+		that do not result in an overflow. This should only be used for small integers
+		as otherwise the amount of data generated is excessive.
+		This version does handle pow (**) as well as other operations.
+		"""
+		spreaddata = list(range(minint, maxint + 1, 1))
+
+		# Create combinations of all of these values.
+		opvalues = list(itertools.product(spreaddata, spreaddata))
+
+		# Filter out values which might cause errors.
+		checkedvalues = self.filtertestdata(opvalues, minint, maxint, opname)
+
+		# Sort the data out in order.
+		checkedvalues.sort()
+
+		return checkedvalues
 
 
 
@@ -87,10 +356,29 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 		# This is active for float numbers only. 
 		self.addTypeEqualityFunc(float, self.FloatassertEqual)
 
+		# These handles lists of floats and ints respectively. 
+		# Without using a specialised comparison function it's not 
+		# possibly to compare floats properly. These functions allow
+		# for better performance on very large data sets than calling
+		# assertEqual repeatedly on individual items.
+		if '%(typecode)s' in ('f', 'd'):
+			self.addTypeEqualityFunc(list, self.FloatListassertEqual)
+		else:
+			self.addTypeEqualityFunc(list, self.IntListassertEqual)
+
+
+		# For operations that support SIMD, this is intended to allow 
+		# selecting data sets that fit evenly in the SIMD register width,
+		# and also data sets that don't, and so require the non-SIMD
+		# clean-up code to be exercised.
+		# Since SIMD registers can be 256 bits wide (although not all
+		# platforms, we want at least that much data for byte arrays.
+		self.simdincr = 256 // 8
 		if '%(arrayevenodd)s' == 'even':
-			testdatasize = 160
+			self.testdatasize = self.simdincr * 4
 		if '%(arrayevenodd)s' == 'odd':
-			testdatasize = 159
+			self.testdatasize = (self.simdincr * 4) - 1
+
 
 		# For floating point values limit the test values to within
 		# the range of precision so that we don't create artificial 
@@ -105,141 +393,20 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 			minval = arrayfunc.arraylimits.%(typelabel)s_min
 			maxval = arrayfunc.arraylimits.%(typelabel)s_max
 
-		# The tests are created using a common template. The data used
-		# in the tests varies depending on the operator.
 
-		# Addition.
-		if '%(pyoperator)s' == '+':
-			# Data for two arrays.
-			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10),  
-					(maxval, 0), (maxval, -10), (maxval - 12, 10), (maxval -12, -10), (0, 0), 
-					(0, 1), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
-					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
+		# Generate the test data for this set of tests.
+		tdata = self.gendata_%(datagenerator)s(minval, maxval, '%(funclabel)s')
 
-			# Data for an array and a number.
-			arr_num1a = [minval + 12, minval + 15, 0, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
-			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
-
-			# Data tests - expect an empty set.
-			# [(x,y) for x,y in arr_arr if ((x + y) < minval) or ((x + y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x + y) < minval) or ((x + y) > maxval)]
-
-		# Subtraction.
-		elif '%(pyoperator)s' == '-':
-			arr_arr = [(minval + 1, 1), (minval , -1), (minval +12, 10), (minval +12, -10),  
-					(maxval, 0), (maxval - 10, -10), (maxval - 12, 10), (maxval -12, -10), 
-					(0, 0), (1, 0), (0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), 
-					((minval // 2) + 11, 10), (minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
-
-			arr_num1a = [minval + 12, minval + 15, -1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
-			arr_num1b = [0, 1, -1, 2, -2, 10, -10]
-
-			# Data tests:
-			# [(x,y) for x,y in arr_arr if ((x - y) < minval) or ((x - y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x - y) < minval) or ((x - y) > maxval)]
-
-		# Division.
-		elif '%(pyoperator)s' in ('/', '//'):
-			arr_arr = [(minval, 1), (minval + 1, -1), (minval +12, 10), (minval +12, -10), 
-					(maxval, 10), (maxval , -10), (maxval -12, -10), (0, 1), (0, -1), 
-					(10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 2, 10), 
-					(minval //2, -10), (maxval // 2, 10), (maxval // 2, -10)]
-
-			arr_num1a = [minval + 12, minval + 15, -1, 1, 10, -10, maxval // 2, (maxval // 2) + 10, maxval -12]
-			arr_num1b = [1, -1, 2, -2, 10, -10]
-
-			# Data tests:
-			# [(x,y) for x,y in arr_arr if ((x // y) < minval) or ((x // y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x // y) < minval) or ((x // y) > maxval)]
-
-
-		# Multiplication.
-		elif '%(pyoperator)s' == '*':
-			arr_arr = [(minval, 1), (minval + 1, -1), (minval // 4, 2), (minval // 4, -2), 
-					(maxval, 0), (maxval // 15, -10), (maxval // 15, 10), (0, 0), (0, 1), 
-					(0, -1), (10, 5), (10, -5), (-10, 5), (-10, -5), (minval // 15, 10), 
-					(minval // 15, -10), (maxval // 15, 10), (maxval // 15, -10)]
-
-			arr_num1a = [minval // 4, minval // 5, 0, -1, 1, 10, -10, maxval // 4, maxval // 5, -5, 6, -6, 7, -7, 8, -8, 9, -9]
-			arr_num1b = [0, 1, -1, 2, -2, 3, -3]
-
-			# Data tests:
-			# [(x,y) for x,y in arr_arr if ((x * y) < minval) or ((x * y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x * y) < minval) or ((x * y) > maxval)]
-
-		# Modulo.
-		elif '%(pyoperator)s' == '%%':
-			arr_arr = [(10, 3), (-10, 3), (10, -3), (-10, -3), (minval // 4, 3), (maxval // 4, 3), (0, 3), (0, -3), 
-						(10, 2), (-10, 2), (10, -2), (-10, -2), (minval // 4, 2), (maxval // 4, 2), (0, 2), (0, -2),
-						(59, 3), (59, 4), (59, 5), (59, 6)]
-
-			arr_num1a = [x for x,y in arr_arr]
-			arr_num1b = [y for x,y in arr_arr]
-
-			# Data tests. Note in the template the symbols are doubled.
-			# [(x,y) for x,y in arr_arr if ((x %% y) < minval) or ((x %% y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x %% y) < minval) or ((x %% y) > maxval)]
-
-
-		# Raise to power. This requires a different approach to prevent
-		# data from rapidly going out of range.
-		elif '%(pyoperator)s' == '**':
-
-			# Reduce the large value so that very large integers don't overflow
-			# when losing resolution when converting integers to floating point. 
-			powerval = (maxval / 4) * 3
-
-			arr_arr = [ (9, 2), (7, 2), (3, 3), (3, 4), (2, 5), (int(math.sqrt(powerval)), 2), (int(powerval ** (1/3)), 3), (int(powerval ** (1/4)), 4)]
-
-			arr_num1a = [9, 7, 3, 2, int(math.sqrt(powerval)), int(math.sqrt(powerval // 2)), int(math.sqrt(powerval // 10))]
-			arr_num1b = [2, 2, 2, 2, 2, 2, 2]
-
-			# Data tests:
-			# [(x,y) for x,y in arr_arr if ((x ** y) < minval) or ((x ** y) > maxval)]
-			# [(x,y) for x,y in zip(arr_num1a, itertools.cycle(arr_num1b)) if ((x ** y) < minval) or ((x ** y) > maxval)]
-
-
-		else:
-			print('Unknown operator.', '%(pyoperator)s')
-
-
-		# If we are dealing with an unsigned array, filter the test data to remove negative values.
-		if '%(typecode)s' in ('B', 'H', 'I', 'L', 'Q'):
-			tdata_arr_arr = [(x,y) for x,y in arr_arr if (x >= 0) and (y >= 0)]
-			tdata_arr_num1a = [x for x in arr_num1a if x >= 0]
-			tdata_arr_num1b = [x for x in arr_num1b if x >= 0]
 		# If floating point, convert the data to the correct type.
-		elif '%(typecode)s' in ('f', 'd'):
-			tdata_arr_arr = [(float(x), float(y)) for x,y in arr_arr]
-			tdata_arr_num1a = [float(x) for x in arr_num1a]
-			tdata_arr_num1b = [float(x) for x in arr_num1b]
-		# No conversion is required for signed integers.
+		if '%(typecode)s' in ('f', 'd'):
+			testdata = [(float(x), float(y)) for x,y in tdata]
 		else:
-			tdata_arr_arr = arr_arr
-			tdata_arr_num1a = arr_num1a
-			tdata_arr_num1b = arr_num1b
-
-		self.datacheck1 = tdata_arr_arr
-		self.datacheck2 = tdata_arr_num1a
-		self.datacheck3 = tdata_arr_num1b
-
-		# Expand the data out to the desired length by repeating it.
-		ttdata = list(itertools.islice(itertools.cycle(tdata_arr_arr), 0, testdatasize))
-
-		# And separate the data pairs. These are used for tests with two arrays.
-		self.datax_aa = [x for x,y in ttdata]
-		self.datay_aa = [y for x,y in ttdata]
+			testdata = tdata
 
 
-		# This is used for testing with single parameters. We use a limited
-		# data set to avoid excessive numbers of sub-tests.
-		# First when we have an array then a number.
-		self.datax_an = list(itertools.islice(itertools.cycle(tdata_arr_num1a), 0, testdatasize))
-		self.datay_an = tdata_arr_num1b
-
-		# And for a number as the first parameter and an array as the second.
-		self.datax_na = tdata_arr_num1a
-		self.datay_na = list(itertools.islice(itertools.cycle(tdata_arr_num1b), 0, testdatasize))
+		# And separate the data pairs. 
+		self.datax = [x for x,y in testdata]
+		self.datay = [y for x,y in testdata]
 
 
 
@@ -253,9 +420,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 		# data sets after we have pruned them. This condition should not
 		# arise unless the test has been edited carelessly.
 
-		self.assertTrue(len(self.datacheck1) > 2)
-		self.assertTrue(len(self.datacheck2) > 2)
-		self.assertTrue(len(self.datacheck3) > 2)
+		self.assertTrue(len(self.datax) >= self.simdincr)
+		self.assertTrue(len(self.datay) >= self.simdincr)
 
 
 
@@ -263,78 +429,78 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_none_a1(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 
-				expected = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(data1, testval)
+				arrayfunc.%(funcname)s(data1, testvaly)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_none_a2(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 
-				expected = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(data1, testval, matherrors=True)
+				arrayfunc.%(funcname)s(data1, testvaly, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_none_a3(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
-				arrayfunc.%(funcname)s(data1, testval, maxlen=limited)
+				arrayfunc.%(funcname)s(data1, testvaly, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_none_a4(self):
 		"""Test %(funclabel)s as *array-num-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
-				arrayfunc.%(funcname)s(data1, testval, matherrors=True, maxlen=limited)
+				arrayfunc.%(funcname)s(data1, testvaly, matherrors=True, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 
@@ -342,82 +508,82 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_num_array_b1(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(data1, testval, dataout)
+				arrayfunc.%(funcname)s(data1, testvaly, dataout)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_array_b2(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True)
+				arrayfunc.%(funcname)s(data1, testvaly, dataout, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_array_b3(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
-				arrayfunc.%(funcname)s(data1, testval, dataout, maxlen=limited)
+				arrayfunc.%(funcname)s(data1, testvaly, dataout, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_num_array_b4(self):
 		"""Test %(funclabel)s as *array-num-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datay_an:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datax_an)
+				data1 = array.array('%(typecode)s', [testvalx] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(x, testval) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
-				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True, maxlen=limited)
+				arrayfunc.%(funcname)s(data1, testvaly, dataout, matherrors=True, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 
@@ -425,78 +591,78 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_none_c1(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 
-				expected = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(testval, data1)
+				arrayfunc.%(funcname)s(testvalx, data1)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_none_c2(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 
-				expected = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(testval, data1, matherrors=True)
+				arrayfunc.%(funcname)s(testvalx, data1, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_none_c3(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
-				arrayfunc.%(funcname)s(testval, data1, maxlen=limited)
+				arrayfunc.%(funcname)s(testvalx, data1, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_none_c4(self):
 		"""Test %(funclabel)s as *num-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(data1)[limited:]
 
-				arrayfunc.%(funcname)s(testval, data1, matherrors=True, maxlen=limited)
+				arrayfunc.%(funcname)s(testvalx, data1, matherrors=True, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 
@@ -504,82 +670,82 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_num_array_array_d1(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(testval, data1, dataout)
+				arrayfunc.%(funcname)s(testvalx, data1, dataout)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_array_d2(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
-				expected = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				expected = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 
-				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True)
+				arrayfunc.%(funcname)s(testvalx, data1, dataout, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_array_d3(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
-				arrayfunc.%(funcname)s(testval, data1, dataout, maxlen=limited)
+				arrayfunc.%(funcname)s(testvalx, data1, dataout, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_num_array_array_d4(self):
 		"""Test %(funclabel)s as *num-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		for testval in self.datax_na:
-			with self.subTest(msg='Failed with parameter', testval = testval):
+		for testvalx, testvaly in zip(self.datax, self.datay):
+			with self.subTest(msg='Failed with parameter', testval = (testvalx, testvaly)):
 
-				data1 = array.array('%(typecode)s', self.datay_na)
+				data1 = array.array('%(typecode)s', [testvaly] * self.testdatasize)
 				dataout = array.array('%(typecode)s', [0]*len(data1))
 
 				limited = len(data1) // 2
 
-				pydataout = [self.expectop(testval, x) for x in data1]
+				# Only need to calculate one value as they are all the same.
+				pydataout = [%(operatorfunc)s(testvalx, testvaly)]  * len(data1)
 				expected = pydataout[0:limited] + list(dataout)[limited:]
 
-				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True, maxlen=limited)
+				arrayfunc.%(funcname)s(testvalx, data1, dataout, matherrors=True, maxlen=limited)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 
@@ -587,125 +753,117 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_%(typelabel)s(unittest.Te
 	def test_%(funclabel)s_basic_array_array_none_e1(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 
-		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		expected = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 
 		arrayfunc.%(funcname)s(data1, data2)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_none_e2(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 
-		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		expected = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 
 		arrayfunc.%(funcname)s(data1, data2, matherrors=True)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_none_e3(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 
 		limited = len(data1) // 2
 
-		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		pydataout = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, maxlen=limited)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_none_e4(self):
 		"""Test %(funclabel)s as *array-array-none* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 
 		limited = len(data1) // 2
 
-		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		pydataout = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(data1)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, matherrors=True, maxlen=limited)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_array_f1(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
-		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		expected = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 
 		arrayfunc.%(funcname)s(data1, data2, dataout)
 
-		for dataoutitem, expecteditem in zip(dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
-
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_array_f2(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
-		expected = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		expected = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 
 		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True)
 
-		for dataoutitem, expecteditem in zip(dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(dataout), expected)
 
 
 	########################################################
 	def test_%(funclabel)s_basic_array_array_array_f3(self):
 		"""Test %(funclabel)s as *array-array-array* for basic function with matherrors=True and with array limit - Array code %(typelabel)s.
 		"""
-		data1 = array.array('%(typecode)s', self.datax_aa)
-		data2 = array.array('%(typecode)s', self.datay_aa)
+		data1 = array.array('%(typecode)s', self.datax)
+		data2 = array.array('%(typecode)s', self.datay)
 		dataout = array.array('%(typecode)s', [0]*len(data1))
 
 		limited = len(data1) // 2
 
-		pydataout = [self.expectop(x, y) for (x, y) in zip(data1, data2)]
+		pydataout = [%(operatorfunc)s(x, y) for (x, y) in zip(data1, data2)]
 		expected = pydataout[0:limited] + list(dataout)[limited:]
 
 		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True, maxlen=limited)
 
-		for dataoutitem, expecteditem in zip(dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(dataout), expected)
 
 
 
@@ -777,9 +935,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -795,9 +952,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -813,9 +969,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval, matherrors=True, nosimd=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 
@@ -833,9 +988,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval, dataout)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
@@ -852,9 +1006,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
@@ -871,9 +1024,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(data1, testval, dataout, matherrors=True, nosimd=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 
@@ -890,9 +1042,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -908,9 +1059,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -926,9 +1076,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1, matherrors=True, nosimd=True)
 
-				for dataoutitem, expecteditem in zip(data1, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(data1), expected)
 
 
 
@@ -946,9 +1095,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1, dataout)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
@@ -965,9 +1113,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 	########################################################
@@ -984,9 +1131,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 
 				arrayfunc.%(funcname)s(testval, data1, dataout, matherrors=True, nosimd=True)
 
-				for dataoutitem, expecteditem in zip(dataout, expected):
-					# The behavour of assertEqual is modified by addTypeEqualityFunc.
-					self.assertEqual(dataoutitem, expecteditem)
+				# The behavour of assertEqual is modified by addTypeEqualityFunc.
+				self.assertEqual(list(dataout), expected)
 
 
 
@@ -1000,9 +1146,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
 		arrayfunc.%(funcname)s(data1, data2)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -1015,9 +1160,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
 		arrayfunc.%(funcname)s(data1, data2, matherrors=True, nosimd=True)
 
-		for dataoutitem, expecteditem in zip(data1, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(data1), expected)
 
 
 	########################################################
@@ -1031,9 +1175,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
 		arrayfunc.%(funcname)s(data1, data2, dataout)
 
-		for dataoutitem, expecteditem in zip(dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(dataout), expected)
 
 
 	########################################################
@@ -1047,9 +1190,8 @@ class %(funclabel)s_general_%(arrayevenodd)s_arraysize_simd_%(typelabel)s(unitte
 		expected = %(typeconv1)s [x %(pyoperator)s y for (x, y) in zip(data1, data2)] %(typeconv2)s
 		arrayfunc.%(funcname)s(data1, data2, dataout, matherrors=True, nosimd=True)
 
-		for dataoutitem, expecteditem in zip(dataout, expected):
-			# The behavour of assertEqual is modified by addTypeEqualityFunc.
-			self.assertEqual(dataoutitem, expecteditem)
+		# The behavour of assertEqual is modified by addTypeEqualityFunc.
+		self.assertEqual(list(dataout), expected)
 
 
 
@@ -4872,190 +5014,6 @@ class overflow_signed_divzero_errors_%(typelabel)s(unittest.TestCase):
 
 # ==============================================================================
 
-# The template used to generate the tests for overflows using minimum value.
-param_overflow_mod_mindivminus1_template = '''
-
-##############################################################################
-class overflow_signed_mindivminus1_%(typelabel)s(unittest.TestCase):
-	"""Test mod for value overflow for min values divided by -1.
-	param_overflow_mod_mindivminus1_template
-	"""
-
-	########################################################
-	def setUp(self):
-		"""Initialise.
-		"""
-		arraysize = 200
-		self.MaxLimit = arrayfunc.arraylimits.%(typecode)s_max
-		self.MinLimit = arrayfunc.arraylimits.%(typecode)s_min
-
-
-		self.inparray1amin = array.array('%(typecode)s', [self.MinLimit] * arraysize)
-		self.inparray1bmin = copy.copy(self.inparray1amin)
-
-
-		self.zero1array = array.array('%(typecode)s', [0%(decimalpoint)s] * arraysize)
-		self.plus1array = array.array('%(typecode)s', [1%(decimalpoint)s] * arraysize)
-		self.minus1array = array.array('%(typecode)s', [-1%(decimalpoint)s] * arraysize)
-
-		self.dataout = array.array('%(typecode)s', itertools.repeat(0%(decimalpoint)s, arraysize))
-
-
-
-	########################################################
-	def test_mod_array_num_none_a1(self):
-		"""Test mod as *array-num-none* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, 1%(decimalpoint)s)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, -1%(decimalpoint)s)
-
-
-	########################################################
-	def test_mod_array_num_none_a2(self):
-		"""Test mod as *array-num-none* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, 1%(decimalpoint)s, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, -1%(decimalpoint)s, matherrors=True)
-
-
-	########################################################
-	def test_mod_array_num_array_b1(self):
-		"""Test mod as *array-num-array* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, 1%(decimalpoint)s, self.dataout)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, -1%(decimalpoint)s, self.dataout)
-
-
-	########################################################
-	def test_mod_array_num_array_b2(self):
-		"""Test mod as *array-num-array* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, 1%(decimalpoint)s, self.dataout, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, -1%(decimalpoint)s, self.dataout, matherrors=True)
-
-
-	########################################################
-	def test_mod_num_array_none_c1(self):
-		"""Test mod as *num-array-none* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.MinLimit, self.plus1array)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.MinLimit, self.minus1array)
-
-
-	########################################################
-	def test_mod_num_array_none_c2(self):
-		"""Test mod as *num-array-none* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.MinLimit, self.plus1array, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.MinLimit, self.minus1array, matherrors=True)
-
-
-	########################################################
-	def test_mod_num_array_array_d1(self):
-		"""Test mod as *num-array-array* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.MinLimit, self.plus1array, self.dataout)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.MinLimit, self.minus1array, self.dataout)
-
-
-	########################################################
-	def test_mod_num_array_array_d2(self):
-		"""Test mod as *num-array-array* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.MinLimit, self.plus1array, self.dataout, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.MinLimit, self.minus1array, self.dataout, matherrors=True)
-
-
-	########################################################
-	def test_mod_array_num_none_e1(self):
-		"""Test mod as *array-array-none* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, self.plus1array)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, self.minus1array)
-
-
-	########################################################
-	def test_mod_array_num_none_e2(self):
-		"""Test mod as *array-array-none* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, self.plus1array, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, self.minus1array, matherrors=True)
-
-
-	########################################################
-	def test_mod_array_num_none_f1(self):
-		"""Test mod as *array-array-array* for min value %% -1%(decimalpoint)s - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, self.plus1array, self.dataout)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, self.minus1array, self.dataout)
-
-
-	########################################################
-	def test_mod_array_num_none_f2(self):
-		"""Test mod as *array-array-array* for min value %% -1%(decimalpoint)s matherrors=True - Array code %(typelabel)s.
-		"""
-		# This version is expected to pass.
-		arrayfunc.mod(self.inparray1amin, self.plus1array, self.dataout, matherrors=True)
-
-		# This is the actual test.
-		with self.assertRaises(%(exceptioncode)s):
-			arrayfunc.mod(self.inparray1bmin, self.minus1array, self.dataout, matherrors=True)
-
-
-
-##############################################################################
-
-'''
-
-
-# ==============================================================================
-
-# ==============================================================================
-
 
 # The template used to generate the tests for inf, -inf in data arrays
 # when exceptions are expected. This is for "mod" only.
@@ -6026,8 +5984,7 @@ opstemplates = {
 			'float' : [param_overflow_floordiv_divzero_template]
 	},
 	'%' : {'int' : [param_overflow_mod_divzero_template, 
-					param_overflow_mod_divzero_errors_template,
-					param_overflow_mod_mindivminus1_template],
+					param_overflow_mod_divzero_errors_template],
 			'uint' : [param_overflow_mod_divzero_template,
 					param_overflow_mod_divzero_errors_template],
 			'float' : [param_overflow_mod_divzero_template]
@@ -6053,6 +6010,22 @@ test_templates = {'test_template_op' : test_op_templ,
 			'inf_mod_data_error_template' : inf_mod_data_error_template,
 			'nan_data_pow_template' : nan_data_pow_template,
 }
+
+
+# ==============================================================================
+
+# Used for creating test data. This covers everything except truediv on integers, 
+# which has to be handled by a function inside the test class as we use native
+# division for this. 
+operatorfunc = {
+	'+' : 'operator.add',
+	'//' : 'operator.floordiv',
+	'%' : 'operator.mod',
+	'*' : 'operator.mul',
+	'**' : 'operator.pow',
+	'-' : 'operator.sub',
+	'/' : 'operator.truediv',
+	}
 
 
 # ==============================================================================
@@ -6142,7 +6115,8 @@ for func in funclist:
 			test_op_y = ','.join([str(x) for x in yvalues])
 
 
-			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : func['pyoperator'],
+			pyoperator = func['pyoperator']
+			funcdata = {'funclabel' : func['funcname'], 'funcname' : funcname, 'pyoperator' : pyoperator,
 				'typelabel' : functype, 'typecode' : functype, 'test_op_x' : test_op_x,
 				'test_op_y' : test_op_y, 'zero_const' : zero_const, 
 				'incvalue' : incvalue, 'decvalue' : decvalue,
@@ -6154,15 +6128,42 @@ for func in funclist:
 			# result.
 			# Python itself outputs a float value for true division, while we 
 			# want to keep output array types the same as the input types.
-			if (funcdata['pyoperator'] == '/') and (functype in codegen_common.intarrays):
+			if (pyoperator == '/') and (functype in codegen_common.intarrays):
 				funcdata['typeconv1'] = 'list(map(int,'
 				funcdata['typeconv2'] = '))'
+				funcdata['operatorfunc'] = 'self.inttruediv'
 			else:
 				funcdata['typeconv1'] = ''
 				funcdata['typeconv2'] = ''
+				funcdata['operatorfunc'] = operatorfunc[pyoperator]
 
 
-			# Basic tests.
+			# Basic tests. Select the test data generator.
+			# The data generator forms part of the class name to differentiate
+			# between them.
+			if funcname == 'pow':
+				funcdata['datagenerator'] = 'pow'
+			else:
+				funcdata['datagenerator'] = 'int'
+
+
+			# Even array size.
+			funcdata['arrayevenodd'] = 'even'
+			f.write(test_op_templ % funcdata)
+
+
+			# Odd array size.
+			funcdata['arrayevenodd'] = 'odd'
+			f.write(test_op_templ % funcdata)
+
+
+			# Special data. These values were hand selected.
+			if funcname == 'pow':
+				funcdata['datagenerator'] = 'specialpow'
+			else:
+				funcdata['datagenerator'] = 'special'
+
+
 			# Even array size.
 			funcdata['arrayevenodd'] = 'even'
 			f.write(test_op_templ % funcdata)
@@ -6170,6 +6171,25 @@ for func in funclist:
 			# Odd array size.
 			funcdata['arrayevenodd'] = 'odd'
 			f.write(test_op_templ % funcdata)
+
+
+			# We do a full range test only for the smallest array types
+			# as otherwise the test would be excessively long. This
+			# tests all possible combinations of values which would
+			# not overflow the result.
+			if functype in ('b', 'B'):
+				# This data generator handles pow data as well as 
+				# all other types.
+				funcdata['datagenerator'] = 'fullrange'
+
+				# Even array size.
+				funcdata['arrayevenodd'] = 'even'
+				f.write(test_op_templ % funcdata)
+
+				# Odd array size.
+				funcdata['arrayevenodd'] = 'odd'
+				f.write(test_op_templ % funcdata)
+
 
 			#####
 

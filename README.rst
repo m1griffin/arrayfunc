@@ -5,7 +5,7 @@ ArrayFunc
 :Authors:
     Michael Griffin
 
-:Version: 7.0.0 for 2021-09-07
+:Version: 7.1.0 for 2021-10-01
 :Copyright: 2014 - 2021
 :License: This document may be distributed under the Apache 2.0 License.
 :Language: Python 3.6 or later
@@ -351,6 +351,19 @@ setup.py directly is no longer done.
 
 Release History
 ===============
+* 7.1.0 - This is a bugfix release to correct mod, mul, and pow. This affects
+          integer overflow checking at extremes, particularly with the greatest
+          magnitude negative number on signed arrays. Certain combinations of
+          numbers may have produced an overflow error when the result was at 
+          the negative margin of the numeric range (e.g. -128 for array type
+          'b' when -2 is raised to the power of 7). The errors have been fixed,
+          including adding special cases. Also, when 1 or -1 was raised to a
+          very large power this would cause the algorithm to work for a very
+          long time to produce an answer (e.g. 1 to the power of 4 billion).
+          This is now detected and a special case added to short circuit the
+          calculation to produce the answer. The unit tests for these and 
+          related functions have been updated to include a much wider range 
+          of test data.
 * 7.0.0 - Major speed improvements to add, sub, mul, abs, neg using SIMD with 
           overflow checking on integer array types. SIMD is now active as the 
           default on integer arrays with smaller word sizes for these 
